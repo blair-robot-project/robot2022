@@ -1,2 +1,2 @@
-# robot2020
-The code for our 2020 robot, Atlas!
+# robot2021
+The code for the 2021 season, for Atlas!
