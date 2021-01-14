@@ -16,7 +16,7 @@ public class SimulatedMotor implements Loggable {
   /** (Ohms) Used to calculate output current. */
   private static final double RESISTANCE = 1;
   /** (N*m / V) Torque per volt due to force of motor. */
-  private static final double TORQUE_COEFF = 450;
+  private static final double TORQUE_COEFF = 450000;
   /** (N*m / (R/s)) Torque per RPS due to motor internal friction. */
   private static final double FRICTION_COEFF = -10;
   /**
@@ -25,6 +25,8 @@ public class SimulatedMotor implements Loggable {
    */
   @Log(name = "maxSpeed")
   private static final double TRUE_MAX_SPEED = TORQUE_COEFF * NOMINAL_VOLTAGE / -FRICTION_COEFF;
+
+  private static final double EPSILON = 0.0001;
 
   private final double moment;
   private final double torqueCoeff;
@@ -66,6 +68,9 @@ public class SimulatedMotor implements Loggable {
 
     this.velocity += angularAcceleration * deltaSecs;
     this.position += this.velocity * deltaSecs;
+
+    if (Math.abs(this.velocity) < EPSILON) this.velocity = 0;
+    if (Math.abs(this.position) < EPSILON) this.position = 0;
   }
 
   @Log

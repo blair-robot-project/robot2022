@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
- * A mix-in for {@link edu.wpi.first.wpilibj2.command.Subsystem} that adds JsonTypeInfo and then
+ * A mix-in for {@link Subsystem} that adds JsonTypeInfo and then
  * ignores getters/setters. Don't make sublasses of this.
  */
 @JsonTypeInfo(
@@ -19,7 +19,7 @@ public abstract class SubsystemMixIn {
   @JsonIgnore
   abstract Command getDefaultCommand();
 
-  /** @see Subsystem#setDefaultCommand(edu.wpi.first.wpilibj2.command.Command) */
+  /** @see Subsystem#setDefaultCommand(Command) */
   @JsonIgnore
   abstract void setDefaultCommand(Command command);
 
