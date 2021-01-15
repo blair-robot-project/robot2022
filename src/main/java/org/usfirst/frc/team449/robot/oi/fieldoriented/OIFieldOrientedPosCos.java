@@ -103,14 +103,4 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
     return vel;
   }
 
-  //    /**
-  //     * Get the name of this object.
-  //     *
-  //     * @return A string that will identify this object in the log file.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String getLogName() {
-  //        return "OI";
-  //    }
 }

@@ -12,6 +12,8 @@ public interface AutonomousCommand extends Command {
     @Nullable
     default Double getRunTimeSeconds(){ return null; }
 
+    //TODO Make this a normal boolean. Making it nullable could cause a
+    // NullPointerException below, with this::autoFinishedCondition
     @Nullable
     default Boolean autoFinishedCondition(){ return null; }
 

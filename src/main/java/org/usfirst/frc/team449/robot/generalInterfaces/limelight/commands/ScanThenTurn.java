@@ -24,7 +24,7 @@ public class ScanThenTurn extends CommandBase implements Loggable {
 
   private final Limelight limelight;
   private final int scannerPipe;
-  private final NavXTurnToAngleLimelight turnCommand;
+  private final NavXTurnToAngleLimelight<?> turnCommand;
   private final int driverPipe;
 
   /**
@@ -38,7 +38,7 @@ public class ScanThenTurn extends CommandBase implements Loggable {
   @JsonCreator
   public ScanThenTurn(
       @JsonProperty(required = true) int scannerPipe,
-      @NotNull @JsonProperty(required = true) NavXTurnToAngleLimelight turnCommand,
+      @NotNull @JsonProperty(required = true) NavXTurnToAngleLimelight<?> turnCommand,
       @JsonProperty(required = true) int driverPipe,
       @JsonProperty(required = true) Limelight limelight) {
     this.limelight = limelight;

@@ -42,11 +42,7 @@ public class LEDComponent {
     int checkedLowerBound;
     int checkedUpperBound;
 
-    if (lowerBound < 0) {
-      checkedLowerBound = 0;
-    } else {
-      checkedLowerBound = lowerBound;
-    }
+    checkedLowerBound = Math.max(lowerBound, 0);
 
     if (upperBound < buffer.getLength()) {
       Shuffleboard.addEventMarker(
@@ -63,13 +59,33 @@ public class LEDComponent {
     }
   }
 
+  public void setSpecificRangeRGB(int lowerBound, int upperBound, int r, int g, int b) {
+    int checkedLowerBound;
+    int checkedUpperBound;
+
+    checkedLowerBound = Math.max(lowerBound, 0);
+
+    if (upperBound < buffer.getLength()) {
+      Shuffleboard.addEventMarker(
+          "LED Controller",
+          "Set range larger than set strip length! defaulting to set strip length",
+          EventImportance.kTrivial);
+      checkedUpperBound = buffer.getLength();
+    } else {
+      checkedUpperBound = upperBound;
+    }
+
+    for (int i = checkedLowerBound; i < checkedUpperBound; i++) {
+      buffer.setRGB(i, r, g, b);
+    }
+  }
+
   public void setStripColor(Color color) {
     setStripRGB((int) (color.red * 255), (int) (color.green * 255), (int) (color.blue * 255));
   }
 
   public void setStripRGB(int r, int g, int b) {
-    int[] HSVConversion = RGBtoHSV(r, g, b);
-    setStripHSV(HSVConversion[0], HSVConversion[1], HSVConversion[2]);
+    setSpecificRangeRGB(0, buffer.getLength(), r, g, b);
   }
 
   public void setStripHSV(int h, int s, int v) {

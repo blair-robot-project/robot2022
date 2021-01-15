@@ -27,13 +27,13 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController;
     property = "@class")
 public class RamseteControllerGoToPosition extends CommandBase implements Loggable {
 
-  private DriveUnidirectionalWithGyro drivetrain;
-  private MappedPIDController leftPidController;
-  private MappedPIDController rightPidController;
-  private Pose2d endingPose;
-  private List<Translation2d> translations;
+  private final DriveUnidirectionalWithGyro drivetrain;
+  private final MappedPIDController leftPidController;
+  private final MappedPIDController rightPidController;
+  private final Pose2d endingPose;
+  private final List<Translation2d> translations;
   private RamseteCommand wrappedCommand;
-  private TrajectoryConfig config;
+  private final TrajectoryConfig config;
 
   @JsonCreator
   public RamseteControllerGoToPosition(

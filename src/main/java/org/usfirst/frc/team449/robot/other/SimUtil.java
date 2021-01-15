@@ -95,7 +95,7 @@ public class SimUtil {
     if (Boolean.class.equals(value.getClass())) return HALValue.makeBoolean((Boolean) value);
     if (Double.class.equals(value.getClass())) return HALValue.makeDouble((Double) value);
     if (Integer.class.equals(value.getClass())) return HALValue.makeInt((Integer) value);
-    if (Enum.class.equals(value.getClass())) return HALValue.makeEnum(((Enum<?>) value).ordinal());
+    if (Enum.class.isAssignableFrom(value.getClass())) return HALValue.makeEnum(((Enum<?>) value).ordinal());
     if (Long.class.equals(value.getClass())) return HALValue.makeLong((Long) value);
     throw new IllegalArgumentException("value must be Boolean, Double, Integer, Enum, or Long.");
   }

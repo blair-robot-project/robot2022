@@ -17,9 +17,9 @@ public abstract class OIArcade implements OIUnidirectional {
   /** Whether or not to scale the left and right outputs so the max output is 1. */
   private final boolean rescaleOutputs;
   /** Cached forwards and rotational output. */
-  @Nullable private double[] fwdRotOutputCached;
+  private double @Nullable[] fwdRotOutputCached;
   /** Cached left-right output values */
-  @Nullable private double[] leftRightOutputCached;
+  private double @Nullable[] leftRightOutputCached;
 
   /**
    * Default constructor.
@@ -50,8 +50,7 @@ public abstract class OIArcade implements OIUnidirectional {
    *     for the right, both from [-1, 1].
    */
   @Override
-  @NotNull
-  public double[] getLeftRightOutput() {
+  public double @NotNull[] getLeftRightOutput() {
     fwdRotOutputCached = getFwdRotOutput();
 
     // Unscaled, unclipped values for left and right output.
@@ -88,8 +87,7 @@ public abstract class OIArcade implements OIUnidirectional {
    *     for the right, both from [-1, 1].
    */
   @Override
-  @NotNull
-  public double[] getLeftRightOutputCached() {
+  public double @NotNull[] getLeftRightOutputCached() {
     return leftRightOutputCached != null
         ? leftRightOutputCached
         : (leftRightOutputCached = getLeftRightOutput());
@@ -102,8 +100,7 @@ public abstract class OIArcade implements OIUnidirectional {
    *     the rotational, both from [-1, 1]
    */
   @Override
-  @NotNull
-  public double[] getFwdRotOutputCached() {
+  public double @NotNull[] getFwdRotOutputCached() {
     return fwdRotOutputCached != null
         ? fwdRotOutputCached
         : (fwdRotOutputCached = getFwdRotOutput());
@@ -116,38 +113,4 @@ public abstract class OIArcade implements OIUnidirectional {
     leftRightOutputCached = getLeftRightOutput();
   }
 
-  //    /**
-  //     * Get the headers for the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of String labels for data, where N is the length of the
-  // Object[] returned by getData().
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String[] getHeader() {
-  //        return new String[]{
-  //                "left",
-  //                "right",
-  //                "commandingStraight",
-  //                "fwd",
-  //                "rot"
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public Object[] getData() {
-  //        return new Object[]{
-  //                getLeftRightOutputCached()[0],
-  //                getLeftRightOutputCached()[1],
-  //                commandingStraight(),
-  //                getFwdRotOutputCached()[0],
-  //                getFwdRotOutputCached()[1]
-  //        };
-  //    }
 }
