@@ -46,7 +46,7 @@ public class Limelight extends SubsystemBase implements Loggable {
   private final NetworkTableEntry camtran;
 
   /** pipeline for driver camera */
-  private int driverPipeline;
+  private final int driverPipeline;
 
   // Cached values for the most recent state of the limelight while it was on
   private double validTarget;

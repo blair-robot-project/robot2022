@@ -153,16 +153,6 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   //                (linRegComponent != null && PDP != null) ? -linRegComponent.getSlope() : null;
   //        };
   //    }
-  //
-  //    /**
-  //     * Get the name of this object.
-  //     *
-  //     * @return A string that will identify this object in the log file.
-  //     */
-  //    @Override
-  //    public @NotNull String getLogName() {
-  //        return "talon_" + talonSRX.getDeviceID();
-  //    }
 
   @Log
   public double getOutputCurrent() {

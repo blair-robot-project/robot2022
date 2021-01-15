@@ -20,7 +20,7 @@ public class MapInterpolationComponent {
   /**
    * LookUpTable, the table of experimentally optimized values
    */
-  private TreeMap<Double, Double> LUT;
+  private final TreeMap<Double, Double> LUT;
 
   /**
    * Upper and lower limits of an interpolation calc
@@ -85,7 +85,7 @@ public class MapInterpolationComponent {
    */
   private void setBounds(double x) {
     lower = LUT.floorEntry(x) != null ? LUT.floorEntry(x) : new AbstractMap.SimpleEntry<>(0., 0.);
-    upper = //maybe should allow this to be null, and return the lower value when it is.
+    upper =
         LUT.ceilingEntry(x) != null ? LUT.ceilingEntry(x) : new AbstractMap.SimpleEntry<>(0., 0.);
   }
 
