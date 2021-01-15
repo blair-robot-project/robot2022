@@ -13,7 +13,7 @@ import java.util.TreeMap;
 public class MapInterpolationComponent {
 
   /**
-   * Linear or cosine, until more functionality is added
+   * LINEAR, COSINE, or CUBIC
    */
   private InterpolationMethod currentMethod;
 
@@ -60,7 +60,7 @@ public class MapInterpolationComponent {
     if (LUT.containsKey(x)) {
       return LUT.get(x);
     }
-    updateEntries(x);
+    setBounds(x);
     double ratio;
     try {
       ratio = (x - lower.getKey()) / (upper.getKey() - lower.getKey());
@@ -72,18 +72,20 @@ public class MapInterpolationComponent {
         return linear(ratio);
       case COSINE:
         return cosine(ratio);
+      case CUBIC:
+        return cubic(ratio);
       default:
         return 0;
     }
   }
 
   /**
-   * Sets the upper and lower limits of the next interpolation
+   * Sets the upper and lower bounds of the interpolation from distance x
    * @param x the distance from the target
    */
-  private void updateEntries(double x) {
+  private void setBounds(double x) {
     lower = LUT.floorEntry(x) != null ? LUT.floorEntry(x) : new AbstractMap.SimpleEntry<>(0., 0.);
-    upper =
+    upper = //maybe should allow this to be null, and return the lower value when it is.
         LUT.ceilingEntry(x) != null ? LUT.ceilingEntry(x) : new AbstractMap.SimpleEntry<>(0., 0.);
   }
 
@@ -106,9 +108,32 @@ public class MapInterpolationComponent {
     return linear(smoothpoint);
   }
 
+  /**
+   * Cubic interpolation method
+   * @param x the distance from the target
+   * @return the shooter vel
+   */
+  private double cubic(double x) {
+    //The entries above higher and below lower
+    Map.Entry<Double, Double> highUpper = LUT.higherEntry(upper.getKey());
+    Map.Entry<Double, Double> lowLower = LUT.lowerEntry(lower.getKey());
+    //Use cosine if the segment is on the end
+    if(highUpper == null || lowLower == null){
+      return cosine(x);
+    }
+    //Some weird coefficients to simplify calculations
+    double c1, c2, c3, c4;
+    c1 = highUpper.getValue() + lower.getValue() - upper.getValue() - lowLower.getValue();
+    c2 = lowLower.getValue() - lower.getValue() - c1;
+    c3 = upper.getValue() - lowLower.getValue();
+    c4 = lower.getValue();
+    return (c1*Math.pow(x, 3) + c2*Math.pow(x, 2) + c3*x + c4);
+  }
+
   // http://paulbourke.net/miscellaneous/interpolation/
   enum InterpolationMethod {
     LINEAR,
-    COSINE
+    COSINE,
+    CUBIC //this one is a bit sketchy...
   }
 }
