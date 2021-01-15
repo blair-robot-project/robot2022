@@ -12,11 +12,27 @@ import java.util.TreeMap;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MapInterpolationComponent {
 
+  /**
+   * Linear or cosine, until more functionality is added
+   */
   private InterpolationMethod currentMethod;
+
+  /**
+   * LookUpTable, the table of experimentally optimized values
+   */
   private TreeMap<Double, Double> LUT;
+
+  /**
+   * Upper and lower limits of an interpolation calc
+   */
   private Map.Entry<Double, Double> upper;
   private Map.Entry<Double, Double> lower;
 
+  /**
+   * Default constructor
+   * @param method the interpolation method
+   * @param entries the list of experimentally derived values for the LUT
+   */
   @JsonCreator
   public MapInterpolationComponent(
       @JsonProperty(required = true) InterpolationMethod method,
@@ -28,10 +44,18 @@ public class MapInterpolationComponent {
     }
   }
 
+  /**
+   * Changes the interpolation method
+   */
   public void updateMethod(InterpolationMethod method) {
     currentMethod = method;
   }
 
+  /**
+   * Calculates the appropriate value from distance x
+   * @param x the distance from the target
+   * @return the shooter velocity from distance x
+   */
   public double calculate(double x) {
     if (LUT.containsKey(x)) {
       return LUT.get(x);
@@ -53,16 +77,30 @@ public class MapInterpolationComponent {
     }
   }
 
+  /**
+   * Sets the upper and lower limits of the next interpolation
+   * @param x the distance from the target
+   */
   private void updateEntries(double x) {
     lower = LUT.floorEntry(x) != null ? LUT.floorEntry(x) : new AbstractMap.SimpleEntry<>(0., 0.);
     upper =
         LUT.ceilingEntry(x) != null ? LUT.ceilingEntry(x) : new AbstractMap.SimpleEntry<>(0., 0.);
   }
 
+  /**
+   * Linear interpolation method
+   * @param x the distance from the target
+   * @return the shooter vel
+   */
   private double linear(double x) {
     return lower.getValue() * (1 - x) + upper.getValue() * x;
   }
 
+  /**
+   * Cosine interpolation method
+   * @param x the distance from the target
+   * @return the shooter vel
+   */
   private double cosine(double x) {
     double smoothpoint = (1 - Math.cos(x * Math.PI)) / 2;
     return linear(smoothpoint);
