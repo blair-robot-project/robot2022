@@ -107,6 +107,15 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
     flywheelStoppedCached = flywheelStoppedNow;
   }
 
+  /**
+   * 2021 code to determine whether the balls were placed
+   * in the red or blue formations
+   * @return true if the system has a ball, false otherwise
+   */
+  public boolean hasBall(){
+    return numBalls != 0;
+  }
+
   public boolean shouldBeRunning() {
     return sensor1.getAsBoolean() || sensor2.getAsBoolean();
   }
