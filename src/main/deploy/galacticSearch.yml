@@ -892,7 +892,9 @@ useCameraServer: false
           - org.usfirst.frc.team449.robot._2020.intake.IntakeCluster:
               bumperAndTransitionWheel
         commands:
-          - #TODO add trajectories
+          - #TODO go to C3
+          - #TODO wait a sec... (no literally, wait one second)
+          - #TODO conditional command using new FeederSystemBooleanSupplier to run correct paths
 
 ########################################################################################################################
 *UPDATER:
