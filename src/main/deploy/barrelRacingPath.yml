@@ -884,92 +884,87 @@ useCameraServer: false
 
   *AUTONOMOUS_COMMANDS:
     - *BARREL_RACING_PATH
-    - edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-        '@id': doBarrelRacing
+    - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+        '@id': barrelRace
         drivetrain:
           org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
             drive
-        maxSpeedMeters: 3
+        maxSpeedMeters: 2
         maxAccelMeters: 1.2
-        leftPidController:
+        left:
           org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDControllers:
-            '@id': leftPidController
-            Kp: # todo
-            Ki: # todo
-            Kd: # todo
-            name: 'Alice'
-        rightPidController:
+            '@id': left
+            Kp: 1 # todo
+            Ki: 1 # todo
+            Kd: 1 # todo
+        right:
           org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDControllers:
-            '@id': rightPidController
-            Kp: # todo
-            Ki: # todo
-            Kd: # todo
-            name: 'Bob'
+            '@id': right
+            Kp: 1 # todo
+            Ki: 1 # todo
+            Kd: 1 # todo
         endingPose:
           edu.wpi.first.wpilibj.geometry.Pose2d:
-            x: 4.202473748631064
-            y: -6.150550795593635
+            x: 1.322650116267645
+            y: -1.8916606949857533
             rotation:
               edu.wpi.first.wpilibj.geometry.Rotation2d:
-                x: -1.4407653159827358
-                y: -0.020292469239192812
+                x: -0.7966148102053517
+                y: 0.011979170078276313
         translations:
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 3.9386716485215487
-              y: -8.098627842556205
+              x: 1.2028584154848851
+              y: -2.1492128516686857
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 9.985827481801197
-              y: -7.408683888423629
+              x: 4.287494710640945
+              y: -2.694265090230242
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 14.28783096051021
-              y: -9.701732912452487
+              x: 4.341400975993188
+              y: -3.3111923492614546
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 12.278876505830059
-              y: -11.791857244089416
+              x: 3.712494546883699
+              y: -3.5208278256312844
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 11.243960574631192
-              y: -9.011788958319912
+              x: 3.3411402744571443
+              y: -3.023692267382832
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 16.19532306899439
-              y: -7.5710236423371775
+              x: 3.7664008122359416
+              y: -2.4966087839386892
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 20.842298524769692
-              y: -6.495522772659923
+              x: 5.155984541315953
+              y: -2.2091087020600657
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 22.14101655607808
-              y: -5.0141725181988015
+              x: 6.5455682703959654
+              y: -1.813796089476959
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 20.781421117052112
-              y: -3.228435225149778
+              x: 6.689318311335277
+              y: -1.238795925719713
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 18.508664562262446
-              y: -4.4053984410229985
+              x: 6.042443127108375
+              y: -0.963275013919366
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 18.81305160085035
-              y: -6.576692649616697
+              x: 5.563276323977337
+              y: -1.4903584973635084
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 21.22785544031437
-              y: -9.29588352766862
+              x: 5.8747347460125106
+              y: -2.334889987881964
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 23.175932487276942
-              y: -10.959866005282484
+              x: 6.797130842039761
+              y: -3.2333277437526613
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 26.260387811634352
-              y: -10.93957353604329
+              x: 7.785412373497527
+              y: -3.5208278256312844
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 27.031501642723697
-              y: -8.950911550602331
+              x: 8.27655834670684
+              y: -3.011713097304556
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 25.326934226631447
-              y: -7.753655865489918
+              x: 7.863276979006321
+              y: -2.4486921036255853
           - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 21.309025317271146
-              y: -7.5101462346195955
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 13.902274044965536
-              y: -6.617277588095084
+              x: 6.341922379065275
+              y: -2.3229108178036877
 
-          ########################################################################################################################
+              ########################################################################################################################
 *UPDATER:
   org.usfirst.frc.team449.robot.other.Updater:
     '@id': updater
