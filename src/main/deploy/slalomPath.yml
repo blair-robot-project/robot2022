@@ -891,15 +891,13 @@ useCameraServer: false
             drive
         maxSpeedMeters: 2
         maxAccelMeters: 1.2
-        left:
-          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDControllers:
-            '@id': left
+        leftPidController:
+          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
             Kp: 1 # todo
             Ki: 1 # todo
             Kd: 1 # todo
-        right:
-          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDControllers:
-            '@id': right
+        rightPidController:
+          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
             Kp: 1 # todo
             Ki: 1 # todo
             Kd: 1 # todo
