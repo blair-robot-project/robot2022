@@ -890,6 +890,7 @@ useCameraServer: false
         commands:
           # Go to A3
           - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+              '@id': bounce1
               drivetrain:
                 org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
                   drive
@@ -918,14 +919,13 @@ useCameraServer: false
                       x: 0.012369685607554831
                       y: 1.0081293770157063
               translations:
-                - edu.wpi.first.wpilibj.geometry.Translation2d:
-                    x: 1.3303302354601068
-                    y: -2.301350555653149
-                - edu.wpi.first.wpilibj.geometry.Translation2d:
-                    x: 2.0168477866793917
-                    y: -1.7632692317245207
+                - x: 1.3303302354601068
+                  y: -2.301350555653149
+                - x: 2.0168477866793917
+                  y: -1.7632692317245207
           # Go from A3 to A6
           - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+              '@id': bounce2
               drivetrain:
                 org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
                   drive
@@ -947,20 +947,17 @@ useCameraServer: false
                       x: 0.05566358523399646
                       y: 0.6184842803777341
               translations:
-                - edu.wpi.first.wpilibj.geometry.Translation2d:
-                    x: 2.282840597378848
-                    y: -0.8533983541603168
-                - edu.wpi.first.wpilibj.geometry.Translation2d:
-                    x: 3.148674019770645
-                    y: -3.154858862574422
-                - edu.wpi.first.wpilibj.geometry.Translation2d:
-                    x: 3.748603771737047
-                    y: -3.5816130160350585
-                - edu.wpi.first.wpilibj.geometry.Translation2d:
-                    x: 4.286685095665676
-                    y: -3.457916159959512
+                - x: 2.282840597378848
+                  y: -0.8533983541603168
+                - x: 3.148674019770645
+                  y: -3.154858862574422
+                - x: 3.748603771737047
+                  y: -3.5816130160350585
+                - x: 4.286685095665676
+                  y: -3.457916159959512
           # Go from A6 to A9
           - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+              '@id': bounce3
               drivetrain:
                 org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
                   drive
@@ -981,17 +978,15 @@ useCameraServer: false
                       x: 0.0
                       y: 0.6803327084155074
               translations:
-                - edu.wpi.first.wpilibj.geometry.Translation2d:
-                    x: 4.577263029564158
-                    y: -0.8533983541603168
-                - edu.wpi.first.wpilibj.geometry.Translation2d:
-                    x: 5.152563088194503
-                    y: -3.495025216782176
-                - edu.wpi.first.wpilibj.geometry.Translation2d:
-                    x: 6.377161963342417
-                    y: -3.53213427360484
+                - x: 4.577263029564158
+                  y: -0.8533983541603168
+                - x: 5.152563088194503
+                  y: -3.495025216782176
+                - x: 6.377161963342417
+                  y: -3.53213427360484
           # Go from A9 to the finish zone
           - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+              '@id': bounce4
               drivetrain:
                 org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
                   drive
@@ -1013,12 +1008,10 @@ useCameraServer: false
                       x: 0.8658779925288284
                       y: -0.03710905682266422
               translations:
-                - edu.wpi.first.wpilibj.geometry.Translation2d:
-                    x: 6.865894544346236
-                    y: -0.8533983541603168
-                - edu.wpi.first.wpilibj.geometry.Translation2d:
-                    x: 7.292518698301463
-                    y: -1.8560418737811808
+                - x: 6.865894544346236
+                  y: -0.8533983541603168
+                - x: 7.292518698301463
+                  y: -1.8560418737811808
 
           ########################################################################################################################
 *UPDATER:

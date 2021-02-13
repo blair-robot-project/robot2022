@@ -911,49 +911,34 @@ useCameraServer: false
                 x: -0.7305288926109643
                 y: 0.44643432326225696
         translations:
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 4.161888810152676
-              y: -12.360046382786832
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 7.327514011466856
-              y: -9.965535012562004
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 10.148167235714745
-              y: -7.8145332732074975
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 15.525671584101012
-              y: -6.962249565161374
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 21.613412355859047
-              y: -9.052373896798299
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 24.007923726083874
-              y: -11.994781936481349
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 26.787992011853376
-              y: -11.913612059524576
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 27.822907943052243
-              y: -9.884365135605231
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 26.585067319461444
-              y: -7.550731173097983
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 23.80499903369194
-              y: -7.5710236423371775
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 21.39019519422792
-              y: -11.101913289956837
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 16.215615538233585
-              y: -12.847065644527474
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 10.249629581910712
-              y: -11.974489467242156
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 6.637570057334278
-              y: -9.17412871223346
-
+          - x: 4.161888810152676
+            y: -12.360046382786832
+          - x: 7.327514011466856
+            y: -9.965535012562004
+          - x: 10.148167235714745
+            y: -7.8145332732074975
+          - x: 15.525671584101012
+            y: -6.962249565161374
+          - x: 21.613412355859047
+            y: -9.052373896798299
+          - x: 24.007923726083874
+            y: -11.994781936481349
+          - x: 26.787992011853376
+            y: -11.913612059524576
+          - x: 27.822907943052243
+            y: -9.884365135605231
+          - x: 26.585067319461444
+            y: -7.550731173097983
+          - x: 23.80499903369194
+            y: -7.5710236423371775
+          - x: 21.39019519422792
+            y: -11.101913289956837
+          - x: 16.215615538233585
+            y: -12.847065644527474
+          - x: 10.249629581910712
+            y: -11.974489467242156
+          - x: 6.637570057334278
+            y: -9.17412871223346
 
             ########################################################################################################################
 *UPDATER:
