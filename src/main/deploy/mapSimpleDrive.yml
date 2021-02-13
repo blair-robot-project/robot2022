@@ -690,6 +690,7 @@ useCameraServer: false
                     feeder
               commands:
                 - org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
+                    '@id': feederIndexingCommand
                     runMode: IN_FAST
                     timeout: *feederIndexingTimeoutSecs
                     subsystem:

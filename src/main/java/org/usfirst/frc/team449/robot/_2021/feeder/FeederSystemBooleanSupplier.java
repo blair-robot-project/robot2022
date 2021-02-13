@@ -1,10 +1,8 @@
 package org.usfirst.frc.team449.robot._2021.feeder;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.StringIdGenerator;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot._2020.feeder.commands.BallCountingFeederCommand;
+import org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand;
 
 import java.util.function.BooleanSupplier;
 
@@ -18,14 +16,14 @@ import java.util.function.BooleanSupplier;
 public class FeederSystemBooleanSupplier implements BooleanSupplier{
 
   /** The default counting command to be checked */
-  @NotNull private BallCountingFeederCommand command;
+  @NotNull private DefaultFeederCommand feederCommand;
 
   /**
-   * @param command the counting command to check balls in
+   * @param feederCommand the counting command to check balls in
    */
   @JsonCreator
-  public FeederSystemBooleanSupplier(@NotNull BallCountingFeederCommand command) {
-    this.command = command;
+  public FeederSystemBooleanSupplier(@NotNull DefaultFeederCommand feederCommand) {
+    this.feederCommand = feederCommand;
   }
 
   /**
@@ -35,6 +33,6 @@ public class FeederSystemBooleanSupplier implements BooleanSupplier{
    */
   @Override
   public boolean getAsBoolean() {
-    return command.hasBall();
+    return feederCommand.hasGotBall();
   }
 }

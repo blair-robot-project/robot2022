@@ -117,9 +117,9 @@ public class MapInterpolationComponent {
     //The entries above higher and below lower
     Map.Entry<Double, Double> highUpper = LUT.higherEntry(upper.getKey());
     Map.Entry<Double, Double> lowLower = LUT.lowerEntry(lower.getKey());
-    //Use cosine if the segment is on the end
+    //Use linear if the segment is on the end
     if(highUpper == null || lowLower == null){
-      return cosine(x);
+      return linear(x);
     }
     //Some weird coefficients to simplify calculations
     double c1, c2, c3, c4;

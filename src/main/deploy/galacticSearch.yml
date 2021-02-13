@@ -856,6 +856,7 @@ useCameraServer: false
           feeder
       command:
         org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
+          '@id': feederIndexingCommand
           requiredSubsystems:
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                 feeder
@@ -894,7 +895,11 @@ useCameraServer: false
         commands:
           - #TODO go to C3
           - #TODO wait a sec... (no literally, wait one second)
-          - #TODO conditional command using new FeederSystemBooleanSupplier to run correct paths
+          - edu.wpi.first.wpilibj2.command.ConditionalCommand:
+              m_onTrue: #TODO write paths
+              m_onFalse: #TODO write paths
+              m_condition:
+                feederCommand:
 
 ########################################################################################################################
 *UPDATER:
