@@ -999,6 +999,7 @@ useCameraServer: false
           feeder
       command:
         org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
+          '@id': feederIndexingCommand
           requiredSubsystems:
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                 feeder

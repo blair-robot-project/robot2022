@@ -1,7 +1,9 @@
 package org.usfirst.frc.team449.robot._2020.feeder.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import io.github.oblarg.oblog.Loggable;
 
@@ -17,6 +19,7 @@ import org.usfirst.frc.team449.robot.other.Clock;
 /**
  * Runs feeder when shooting and feeder (along with index wheel) when indexing sensor tripped.
  */
+@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class DefaultFeederCommand extends CommandBase implements Loggable {
     @NotNull
     private final SubsystemIntake.IntakeMode transitionWheelIndexingMode;
@@ -43,6 +46,12 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
 
     @NotNull
     private final ConditionTimingComponentDecorator indexingSensor, indexing, shooting, flywheelOn;
+
+    /**
+     * Whether or not the feeder has picked up a ball yet.
+     * Used in 2021 code, b/c this was the indexer we were using, not the counter
+     */
+    private boolean gotBall;
 
     /**
      * Default constructor
@@ -104,6 +113,8 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
             // Run when either sensor is being actively tripped.
             return this.indexingSensor.isTrue();
         }, false);
+
+        this.gotBall = false;
     }
 
     @Override
@@ -154,6 +165,11 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
         if (this.indexing.justBecameTrue()) {
             this.transitionWheel.setMode(this.transitionWheelIndexingMode);
             this.feeder.setMode(this.feederIndexingMode);
+            this.gotBall = true;
         }
+    }
+
+    public boolean hasGotBall(){
+        return this.gotBall;
     }
 }

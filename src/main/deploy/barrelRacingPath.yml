@@ -894,14 +894,14 @@ useCameraServer: false
         leftPidController:
           org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
             Kp: 1 # todo
-            Ki: 1 # todo
-            Kd: 1 # todo
+            Ki: 0 # todo
+            Kd: 0 # todo
             name: leftPidController
         rightPidController:
           org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
             Kp: 1 # todo
-            Ki: 1 # todo
-            Kd: 1 # todo
+            Ki: 0 # todo
+            Kd: 0 # todo
             name: rightPidController
         endingPose:
           edu.wpi.first.wpilibj.geometry.Pose2d:
@@ -912,57 +912,40 @@ useCameraServer: false
                 x: -0.7966148102053517
                 y: 0.011979170078276313
         translations:
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 1.2028584154848851
-              y: -2.1492128516686857
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 4.287494710640945
-              y: -2.694265090230242
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 4.341400975993188
-              y: -3.3111923492614546
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 3.712494546883699
-              y: -3.5208278256312844
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 3.3411402744571443
-              y: -3.023692267382832
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 3.7664008122359416
-              y: -2.4966087839386892
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 5.155984541315953
-              y: -2.2091087020600657
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 6.5455682703959654
-              y: -1.813796089476959
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 6.689318311335277
-              y: -1.238795925719713
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 6.042443127108375
-              y: -0.963275013919366
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 5.563276323977337
-              y: -1.4903584973635084
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 5.8747347460125106
-              y: -2.334889987881964
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 6.797130842039761
-              y: -3.2333277437526613
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 7.785412373497527
-              y: -3.5208278256312844
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 8.27655834670684
-              y: -3.011713097304556
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 7.863276979006321
-              y: -2.4486921036255853
-          - edu.wpi.first.wpilibj.geometry.Translation2d:
-              x: 6.341922379065275
-              y: -2.3229108178036877
+          - x: 1.2028584154848851
+            y: -2.1492128516686857
+          - x: 4.287494710640945
+            y: -2.694265090230242
+          - x: 4.341400975993188
+            y: -3.3111923492614546
+          - x: 3.712494546883699
+            y: -3.5208278256312844
+          - x: 3.3411402744571443
+            y: -3.023692267382832
+          - x: 3.7664008122359416
+            y: -2.4966087839386892
+          - x: 5.155984541315953
+            y: -2.2091087020600657
+          - x: 6.5455682703959654
+            y: -1.813796089476959
+          - x: 6.689318311335277
+            y: -1.238795925719713
+          - x: 6.042443127108375
+            y: -0.963275013919366
+          - x: 5.563276323977337
+            y: -1.4903584973635084
+          - x: 5.8747347460125106
+            y: -2.334889987881964
+          - x: 6.797130842039761
+            y: -3.2333277437526613
+          - x: 7.785412373497527
+            y: -3.5208278256312844
+          - x: 8.27655834670684
+            y: -3.011713097304556
+          - x: 7.863276979006321
+            y: -2.4486921036255853
+          - x: 6.341922379065275
+            y: -2.3229108178036877
 
               ########################################################################################################################
 *UPDATER:
