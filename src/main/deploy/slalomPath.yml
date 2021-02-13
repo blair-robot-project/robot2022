@@ -896,11 +896,13 @@ useCameraServer: false
             Kp: 1 # todo
             Ki: 1 # todo
             Kd: 1 # todo
+            name: leftPidController
         rightPidController:
           org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
             Kp: 1 # todo
             Ki: 1 # todo
             Kd: 1 # todo
+            name: rightPidController
         endingPose:
           edu.wpi.first.wpilibj.geometry.Pose2d:
             x: 4.121303871674289

@@ -883,7 +883,7 @@ useCameraServer: false
               shooter
 
   *AUTONOMOUS_COMMANDS:
-    - *BARREL_RACING_PATH
+    #- *BARREL_RACING_PATH
     - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
         '@id': barrelRace
         drivetrain:
@@ -896,11 +896,13 @@ useCameraServer: false
             Kp: 1 # todo
             Ki: 1 # todo
             Kd: 1 # todo
+            name: leftPidController
         rightPidController:
           org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
             Kp: 1 # todo
             Ki: 1 # todo
             Kd: 1 # todo
+            name: rightPidController
         endingPose:
           edu.wpi.first.wpilibj.geometry.Pose2d:
             x: 1.322650116267645
