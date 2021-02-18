@@ -13,10 +13,10 @@ import java.util.function.BooleanSupplier;
  * To be clear, this exists b/c 2020 code was a bit of a mess, not b/c this is a good solution to the issue
  * If this issue recurs, this code can be adapted to take any boolean-supplying method from any default command
  */
-public class FeederSystemBooleanSupplier implements BooleanSupplier{
+public class FeederSystemBooleanSupplier implements BooleanSupplier {
 
   /** The default counting command to be checked */
-  @NotNull private DefaultFeederCommand feederCommand;
+  @NotNull private final DefaultFeederCommand feederCommand;
 
   /**
    * @param feederCommand the counting command to check balls in

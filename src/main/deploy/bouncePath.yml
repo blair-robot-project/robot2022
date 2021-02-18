@@ -90,6 +90,8 @@ CONSTANTS:
       - &shooterMaxSpeedError 1.25 # In RPS.
       - &shooterMaxSpeedDifferenceType maxAbsSpeedRange
       - &shooterMaxShootingSpeedDifference 0.5 # In RPS.
+      - &autoMaxSpeed 2.0 # In meters
+      - &autoMaxAccel 1.2 # In meters
       - &kickerThrottle -0.7
   - Other:
       - &feederIndexingTimeoutSecs 60
@@ -894,30 +896,28 @@ useCameraServer: false
               drivetrain:
                 org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
                   drive
-              maxSpeedMeters: 2
-              maxAccelMeters: 1.2
+              maxSpeedMeters: *autoMaxSpeed
+              maxAccelMeters: *autoMaxAccel
               leftPidController:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   &left
                   Kp: 1 # todo
                   Ki: 1 # todo
                   Kd: 1 # todo
-                  name: leftPidController
+                  name: leftPidController1
               rightPidController:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   &right
                   Kp: 1 # todo
                   Ki: 1 # todo
                   Kd: 1 # todo
-                  name: rightPidController
+                  name: rightPidController1
               endingPose:
                 edu.wpi.first.wpilibj.geometry.Pose2d:
                   x: 2.282796027241817
                   y: -0.8533983541603168
                   rotation:
-                    edu.wpi.first.wpilibj.geometry.Rotation2d:
-                      x: 0.012369685607554831
-                      y: 1.0081293770157063
+                    radians: 1.559
               translations:
                 - x: 1.3303302354601068
                   y: -2.301350555653149
@@ -929,15 +929,17 @@ useCameraServer: false
               drivetrain:
                 org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
                   drive
-              maxSpeedMeters: 2
-              maxAccelMeters: 1.2
+              maxSpeedMeters: *autoMaxSpeed
+              maxAccelMeters: *autoMaxAccel
               reversed: true
               leftPidController:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   <<: *left
+                  name: leftPidController2
               rightPidController:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   <<: *right
+                  name: rightPidController2
               endingPose:
                 edu.wpi.first.wpilibj.geometry.Pose2d:
                   x: 4.577372707443211
@@ -961,14 +963,16 @@ useCameraServer: false
               drivetrain:
                 org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
                   drive
-              maxSpeedMeters: 2
-              maxAccelMeters: 1.2
+              maxSpeedMeters: *autoMaxSpeed
+              maxAccelMeters: *autoMaxAccel
               leftPidController:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   <<: *left
+                  name: leftPidController3
               rightPidController:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   <<: *right
+                  name: rightPidController3
               endingPose:
                 edu.wpi.first.wpilibj.geometry.Pose2d:
                   x: 6.865764544840827
@@ -990,15 +994,17 @@ useCameraServer: false
               drivetrain:
                 org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
                   drive
-              maxSpeedMeters: 2
-              maxAccelMeters: 1.2
+              maxSpeedMeters: *autoMaxSpeed
+              maxAccelMeters: *autoMaxAccel
               reversed: true
               leftPidController:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   <<: *left
+                  name: leftPidController4
               rightPidController:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   <<: *right
+                  name: rightPidController4
               endingPose:
                 edu.wpi.first.wpilibj.geometry.Pose2d:
                   x: 7.9975907779320785

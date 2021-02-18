@@ -90,6 +90,8 @@ CONSTANTS:
       - &shooterMaxSpeedError 1.25 # In RPS.
       - &shooterMaxSpeedDifferenceType maxAbsSpeedRange
       - &shooterMaxShootingSpeedDifference 0.5 # In RPS.
+      - &autoMaxSpeed 2.0 # In meters
+      - &autoMaxAccel 1.2 # In meters
       - &kickerThrottle -0.7
   - Other:
       - &feederIndexingTimeoutSecs 60
@@ -889,8 +891,8 @@ useCameraServer: false
         drivetrain:
           org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
             drive
-        maxSpeedMeters: 2
-        maxAccelMeters: 1.2
+        maxSpeedMeters: *autoMaxSpeed
+        maxAccelMeters: *autoMaxAccel
         leftPidController:
           org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
             Kp: 1 # todo
@@ -908,9 +910,7 @@ useCameraServer: false
             x: 1.322650116267645
             y: -1.8916606949857533
             rotation:
-              edu.wpi.first.wpilibj.geometry.Rotation2d:
-                x: -0.7966148102053517
-                y: 0.011979170078276313
+              radians: -0.0472
         translations:
           - x: 1.2028584154848851
             y: -2.1492128516686857
