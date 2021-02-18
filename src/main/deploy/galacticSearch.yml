@@ -927,8 +927,8 @@ useCameraServer: false
           - edu.wpi.first.wpilibj2.command.WaitCommand:
               seconds: 1.0
           # If there's a ball, it's red Path A. Else try red Path B
-          - edu.wpi.first.wpilibj2.command.ConditionalCommand:
-              m_onTrue:
+          - org.usfirst.frc.team449.robot.mixIn.ConditionalCommandMixIn:
+              onTrue:
                 org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
                   &ramseteGoToPointsWithDelayBase
                   '@id': redA
@@ -959,7 +959,7 @@ useCameraServer: false
                       y: -2.073
                       rotation:
                         radians: -0.4644
-              m_onFalse: # Otherwise, try red path B first, then blue path B, then blue path A
+              onFalse: # Otherwise, try red path B first, then blue path B, then blue path A
                 edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
                   '@id': ifNotRedA
                   requiredSubsystems:
@@ -988,7 +988,7 @@ useCameraServer: false
                     - edu.wpi.first.wpilibj2.command.WaitCommand:
                         seconds: 1.0
                     - edu.wpi.first.wpilibj2.command.ConditionalCommand: # If there's a ball, it's red Path B. Else try blue Path B
-                        m_onTrue:
+                        onTrue:
                           org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
                             <<: *ramseteGoToPointsWithDelayBase
                             '@id': redB
@@ -1013,7 +1013,7 @@ useCameraServer: false
                                 y: -1.961
                                 rotation:
                                   radians: -0.1026
-                        m_onFalse:
+                        onFalse:
                           edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
                             '@id': ifNotRedAOrB
                             requiredSubsystems:
@@ -1040,8 +1040,9 @@ useCameraServer: false
                                       radians: 0
                               - edu.wpi.first.wpilibj2.command.WaitCommand:
                                   seconds: 1.0
-                              - edu.wpi.first.wpilibj2.command.ConditionalCommand: # If there's a ball, it's red Path B. Else try blue Path B
-                                  m_onTrue:
+                              # If there's a ball, it's red Path B. Else try blue Path B
+                              - edu.wpi.first.wpilibj2.command.ConditionalCommand:
+                                  onTrue:
                                     org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
                                       <<: *ramseteGoToPointsWithDelayBase
                                       '@id': blueB
@@ -1066,7 +1067,7 @@ useCameraServer: false
                                           y: -2.369
                                           rotation:
                                             radians: 0.6792
-                                  m_onFalse:
+                                  onFalse:
                                     org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
                                       <<: *ramseteGoToPointsWithDelayBase
                                       '@id': blueA
@@ -1095,17 +1096,17 @@ useCameraServer: false
                                           y: -2.493
                                           rotation:
                                             radians: 0.0
-                                  m_condition:
+                                  condition:
                                     org.usfirst.frc.team449.robot._2021.feeder.FeederSystemBooleanSupplier:
                                       feederCommand:
                                         org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
                                           feederIndexingCommand
-                        m_condition:
+                        condition:
                           org.usfirst.frc.team449.robot._2021.feeder.FeederSystemBooleanSupplier:
                             feederCommand:
                               org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
                                 feederIndexingCommand
-              m_condition:
+              condition:
                 org.usfirst.frc.team449.robot._2021.feeder.FeederSystemBooleanSupplier:
                   feederCommand:
                     org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
