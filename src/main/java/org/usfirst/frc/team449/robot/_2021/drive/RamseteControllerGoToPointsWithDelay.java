@@ -49,7 +49,7 @@ public class RamseteControllerGoToPointsWithDelay extends SequentialCommandGroup
       boolean reversed) {
     int numPoses = poses.size();
     Command[] res = new Command[poses.size() * 2];
-    Command waitCommand = new WaitCommand(waitSeconds);
+//    Command waitCommand = new WaitCommand(waitSeconds);
 
     for (int i = 0; i < numPoses; i++) {
       res[i * 2] = new RamseteControllerGoToPosition(
@@ -63,7 +63,7 @@ public class RamseteControllerGoToPointsWithDelay extends SequentialCommandGroup
           Collections.emptyList(),
           reversed
       );
-      res[i * 2 + 1] = waitCommand;
+      res[i * 2 + 1] = new WaitCommand(waitSeconds);//waitCommand;
     }
 
     return res;

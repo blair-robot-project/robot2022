@@ -927,7 +927,7 @@ useCameraServer: false
           - edu.wpi.first.wpilibj2.command.WaitCommand:
               seconds: 1.0
           # If there's a ball, it's red Path A. Else try red Path B
-          - org.usfirst.frc.team449.robot.mixIn.ConditionalCommandMixIn:
+          - edu.wpi.first.wpilibj2.command.ConditionalCommand:
               onTrue:
                 org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
                   &ramseteGoToPointsWithDelayBase

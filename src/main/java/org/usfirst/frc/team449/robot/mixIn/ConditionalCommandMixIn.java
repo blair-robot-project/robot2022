@@ -17,8 +17,8 @@ public abstract class ConditionalCommandMixIn {
    */
   @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
   public ConditionalCommandMixIn(
-      @JsonProperty final Command onTrue,
-      @JsonProperty final Command onFalse,
-      @JsonProperty(required = true) final BooleanSupplier condition) {
+      @JsonProperty(value = "onTrue", required = true) final Command onTrue,
+      @JsonProperty(value = "onFalse", required = true) final Command onFalse,
+      @JsonProperty(value = "condition", required = true) final BooleanSupplier condition) {
   }
 }
