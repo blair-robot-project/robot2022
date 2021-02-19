@@ -793,6 +793,7 @@ useCameraServer: false
           - org.usfirst.frc.team449.robot._2020.intake.IntakeCluster:
               bumperAndTransitionWheel
         commands:
+          # TODO start intake (we want it running the whole time)
           # Go to Column 3 (C3 in Path A, B3 in Path B)
           - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
               &ramseteGoToPositionBase
@@ -808,17 +809,17 @@ useCameraServer: false
                   Kp: 1 # todo
                   Ki: 0 # todo
                   Kd: 0 # todo
-                  name: left1
+                  name: LeftC3
               rightPidController:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   &rightPID
                   Kp: 1 # todo
                   Ki: 0 # todo
                   Kd: 0 # todo
-                  name: right1
+                  name: RightC3
               endingPose:
-                x: 2.286
-                y: -2.286
+                x: 1.524
+                y: 0
                 rotation:
                   radians: 0 # radians
           # wait a sec... (no literally, wait one second)
@@ -827,61 +828,139 @@ useCameraServer: false
           # If there's a ball, it's a red path. Try A first, then B.
           - edu.wpi.first.wpilibj2.command.ConditionalCommand:
               onTrue:
-                org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPosition:
-                  &ramseteGoToPointsWithDelayBase
-                  '@id': redA
-                  drivetrain:
-                    org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
-                      drive
-                  maxSpeedMeters: *autoMaxSpeed
-                  maxAccelMeters: *autoMaxAccel
-                  leftPidController:
-                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                      <<: *leftPID
-                      name: left2
-                  rightPidController:
-                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                      <<: *rightPID
-                      name: right2
-                  waitSeconds: 1.0
-                  poses:
-                    - x: 3.73
-                      y: -3.056
-                      rotation:
-                        radians: 0.0
-                    - x: 4.466
-                      y: -0.78
-                      rotation:
-                        radians: 0.6629
-                    - x: 8.548
-                      y: -2.073
-                      rotation:
-                        radians: -0.4644
-              onFalse: # Otherwise, try red path B first, then blue path B, then blue path A
-                edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-                  '@id': ifNotRedA
+                edu.wpi.first.wpilibj2.command.SequentialCommandGroup: #TODO implement comment above
+                  '@id': ifRed
                   requiredSubsystems:
                     - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
                         drive
-                    - org.usfirst.frc.team449.robot._2020.intake.IntakeCluster:
-                        bumperAndTransitionWheel
                   commands:
                     - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
                         <<: *ramseteGoToPositionBase
-                        '@id': goToB3
+                        '@id': redSecond
                         leftPidController:
                           org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                             <<: *leftPID
-                            name: left3
+                            name: LeftRed2
                         rightPidController:
                           org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                             <<: *rightPID
-                            name: right3
+                            name: RightRed2
                         endingPose:
-                          x: 2.286
-                          y: -1.524
+                          x: 3.048 # TODO make sure these are supposed to be absolute or else fix
+                          y: -0.762
                           rotation:
                             radians: 0
+                    - edu.wpi.first.wpilibj2.command.ConditionalCommand:
+                        onTrue:
+                          org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
+                            &ramseteGoToPointsWithDelayBase
+                            '@id': redAFinish
+                            drivetrain:
+                              org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
+                                drive
+                            maxSpeedMeters: *autoMaxSpeed
+                            maxAccelMeters: *autoMaxAccel
+                            leftPidController:
+                              org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                                <<: *leftPID
+                                name: LeftRedAFinish
+                            rightPidController:
+                              org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                                <<: *rightPID
+                                name: RightRedAFinish
+                            waitSeconds: 1.0
+                            poses:
+                              - x: 3.81
+                                y: 1.524
+                                rotation:
+                                  radians: 0
+                              - x: 8.382
+                                y: 1.524
+                                rotation:
+                                  radians: 0 #End Red A
+                        onFalse:
+                          edu.wpi.first.wpilibj2.command.SequentialCommandGroup: #TODO implement comment above
+                            '@id': redBFinishSequence
+                            requiredSubsystems:
+                              - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
+                                  drive
+                            commands:
+                              #Right turn, so we go straight down
+                              - org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleRelative:
+                                  <<: *Fine_Adjust_Right_Command
+                                  '@id': redBTurn1
+                                  kP: 0.001
+                                  setpoint: -90.
+                                  inverted: false
+                              - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+                                  <<: *ramseteGoToPositionBase
+                                  '@id': goToBallRedB2
+                                  leftPidController:
+                                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                                      <<: *leftPID
+                                      name: LeftRedBPose2
+                                  rightPidController:
+                                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                                      <<: *rightPID
+                                      name: RightRedBPose2
+                                  endingPose:
+                                    x: 3.048
+                                    y: -1.524
+                                    rotation:
+                                      radians: -1.5708
+                              # wait a sec... (no literally, wait one second)
+                              - edu.wpi.first.wpilibj2.command.WaitCommand:
+                                  seconds: 1.0
+                              - org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleRelative:
+                                  <<: *Fine_Adjust_Right_Command
+                                  '@id': redBTurn2
+                                  kP: 0.001
+                                  setpoint: 180
+                                  inverted: false
+                              - org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
+                                  <<: *ramseteGoToPointsWithDelayBase
+                                  '@id': redBFinish
+                                  leftPidController:
+                                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                                      <<: *leftPID
+                                      name: redBFinishLeft
+                                  rightPidController:
+                                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                                      <<: *rightPID
+                                      name: redBFinishRight
+                                  poses:
+                                    - x: 4.572
+                                      y: 0
+                                      rotation:
+                                        radians: 0
+                        condition:
+                          org.usfirst.frc.team449.robot._2021.feeder.FeederSystemBooleanSupplier:
+                            feederCommand:
+                              org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
+                                feederIndexingCommand
+              onFalse: # Otherwise, blue path. Start going to (D/E)6, where blue 1 is, then to (A/B)7
+                edu.wpi.first.wpilibj2.command.SequentialCommandGroup: #TODO implement comment above
+                  '@id': ifNotRed
+                  requiredSubsystems:
+                    - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
+                        drive
+                  commands:
+                    - org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
+                        <<: *ramseteGoToPointsWithDelayBase
+                        '@id': blueStart
+                        leftPidController:
+                          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                            <<: *leftPID
+                            name: left6
+                        rightPidController:
+                          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                            <<: *rightPID
+                            name: right6
+                        poses:
+                          - x: 2.286
+                            y: -1.524
+                            rotation:
+                              radians: 0
                     # Wait a sec... (no literally, wait one second)
                     - edu.wpi.first.wpilibj2.command.WaitCommand:
                         seconds: 1.0
@@ -893,11 +972,11 @@ useCameraServer: false
                             leftPidController:
                               org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                                 <<: *leftPID
-                                name: left4
+                                name: left6
                             rightPidController:
                               org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                                 <<: *rightPID
-                                name: right4
+                                name: right6
                             poses:
                               - x: 3.681
                                 y: -3.056
@@ -917,8 +996,6 @@ useCameraServer: false
                             requiredSubsystems:
                               - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
                                   drive
-                              - org.usfirst.frc.team449.robot._2020.intake.IntakeCluster:
-                                  bumperAndTransitionWheel
                             commands:
                               - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
                                   <<: *ramseteGoToPositionBase
@@ -926,11 +1003,11 @@ useCameraServer: false
                                   leftPidController:
                                     org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                                       <<: *leftPID
-                                      name: left5
+                                      name: left7
                                   rightPidController:
                                     org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                                       <<: *rightPID
-                                      name: right5
+                                      name: right7
                                   endingPose:
                                     x: 4.417
                                     y: -3.056
@@ -947,11 +1024,11 @@ useCameraServer: false
                                       leftPidController:
                                         org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                                           <<: *leftPID
-                                          name: left6
+                                          name: left8
                                       rightPidController:
                                         org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                                           <<: *rightPID
-                                          name: right6
+                                          name: right8
                                       poses:
                                         - x: 5.994
                                           y: -1.497
@@ -972,11 +1049,11 @@ useCameraServer: false
                                       leftPidController:
                                         org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                                           <<: *leftPID
-                                          name: left7
+                                          name: left9
                                       rightPidController:
                                         org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                                           <<: *rightPID
-                                          name: right7
+                                          name: right9
                                       poses:
                                         - x: 4.479 # E6
                                           y: -3.712
