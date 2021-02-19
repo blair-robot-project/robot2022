@@ -169,7 +169,16 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
         }
     }
 
+    /**
+     * 2021 code for the Galactic Search sub-challenge.
+     * Checks if a ball has been picked up to determine which of 4 possible paths need to run
+     * Then resets to prepare for the next checkpoint
+     * @return true if a ball has been picked up since the most recent checkpoint,
+     *          false otherwise
+     */
     public boolean hasGotBall(){
-        return this.gotBall;
+        boolean out = this.gotBall;
+        this.gotBall = false;
+        return out;
     }
 }

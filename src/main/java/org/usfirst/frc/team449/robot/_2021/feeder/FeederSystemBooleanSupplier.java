@@ -33,6 +33,8 @@ public class FeederSystemBooleanSupplier implements BooleanSupplier {
    */
   @Override
   public boolean getAsBoolean() {
-    return feederCommand.hasGotBall();
+    boolean out = feederCommand.hasGotBall();
+    feederCommand.
+    return out;
   }
 }

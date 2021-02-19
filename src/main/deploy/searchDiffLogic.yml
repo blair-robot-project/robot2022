@@ -649,108 +649,6 @@ useCameraServer: false
                 mode: "OFF"
       action: WHEN_PRESSED
 
-    #***********************************************************************************************************************
-    - *SHOOTER_COMMANDS
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shooterStartButton_far
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: *shooterStartFar
-      command:
-        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-          '@id': shooterStartCommandSequence_far
-          commands:
-            - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
-                '@id': spinUpFlywheelCommand_far
-                targetSpeed: *shooterThrottleFar
-                flywheel:
-                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
-                    shooter
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
-                '@id': kickerStartCommand_far
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
-                    kicker
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shooterStartButton_mid
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: *shooterStartMid
-      command:
-        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-          '@id': shooterStartCommandSequence_mid
-          commands:
-            - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
-                '@id': spinUpFlywheelCommand_mid
-                targetSpeed: *shooterThrottleMid
-                flywheel:
-                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
-                    shooter
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
-                '@id': kickerStartCommand_mid
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
-                    kicker
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shooterStartButton_close
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: *shooterStartClose
-      command:
-        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-          '@id': shooterStartCommandSequence_close
-          commands:
-            - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
-                '@id': spinUpFlywheelCommand_close
-                targetSpeed: *shooterThrottleClose
-                flywheel:
-                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
-                    shooter
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
-                '@id': kickerStartCommand_close
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
-                    kicker
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.TriggerButton:
-          '@id': shooterStopButton
-          throttle:
-            org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
-              '@id': stopShooterThrottle
-              stick:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                  mechanismsJoystick
-              axis: *shooterStop
-              inverted: false
-          triggerAt: *shooterStopThrottle
-      command:
-        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-          '@id': shooterStopCommandSequence
-          commands:
-            - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOff:
-                '@id': shooterStopCommand
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
-                    shooter
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOff:
-                '@id': kickerStopCommand
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
-                    kicker
-      action: WHEN_PRESSED
-
   ########################################################################################################################
   *DEFAULT_COMMANDS:
     #***********************************************************************************************************************
@@ -895,10 +793,10 @@ useCameraServer: false
           - org.usfirst.frc.team449.robot._2020.intake.IntakeCluster:
               bumperAndTransitionWheel
         commands:
-          # Go to C3
+          # Go to Column 3 (C3 in Path A, B3 in Path B)
           - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
               &ramseteGoToPositionBase
-              '@id': goToC3
+              '@id': goToColumn3
               drivetrain:
                 org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
                   drive
@@ -923,13 +821,13 @@ useCameraServer: false
                 y: -2.286
                 rotation:
                   radians: 0 # radians
-          #TODO wait a sec... (no literally, wait one second)
+          # wait a sec... (no literally, wait one second)
           - edu.wpi.first.wpilibj2.command.WaitCommand:
               seconds: 1.0
-          # If there's a ball, it's red Path A. Else try red Path B
+          # If there's a ball, it's a red path. Try A first, then B.
           - edu.wpi.first.wpilibj2.command.ConditionalCommand:
               onTrue:
-                org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
+                org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPosition:
                   &ramseteGoToPointsWithDelayBase
                   '@id': redA
                   drivetrain:
