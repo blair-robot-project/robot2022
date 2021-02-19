@@ -1038,5 +1038,3 @@ useCameraServer: false
       - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro: drive
       - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
       - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
-      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic: stopShooterThrottle
-      - org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout: shooter
