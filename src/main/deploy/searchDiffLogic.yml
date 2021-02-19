@@ -933,6 +933,10 @@ useCameraServer: false
                                       y: 0
                                       rotation:
                                         radians: 0
+                                    - x: 8.382
+                                      y: 0
+                                      rotation:
+                                        radians: 0 #End Red B
                         condition:
                           org.usfirst.frc.team449.robot._2021.feeder.FeederSystemBooleanSupplier:
                             feederCommand:
