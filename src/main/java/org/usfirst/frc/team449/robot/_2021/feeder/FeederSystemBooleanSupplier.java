@@ -34,7 +34,6 @@ public class FeederSystemBooleanSupplier implements BooleanSupplier {
   @Override
   public boolean getAsBoolean() {
     boolean out = feederCommand.hasGotBall();
-    feederCommand.
     return out;
   }
 }
