@@ -787,6 +787,28 @@ useCameraServer: false
     - *SEARCH_ROUTINE
     - org.usfirst.frc.team449.robot._2021.auto.AutoSearchCommand:
         '@id': searchRoutine
+        intakeStart:
+          edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+            '@id': startIntakeAuto
+            commands:
+              - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetSolenoidPose:
+                  '@id': intakePistonOutGrouped
+                  subsystem:
+                    org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
+                      intakeSolenoid
+                  value: kForward
+              - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                  '@id': intakeBumperStartCommand
+                  subsystem:
+                    org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                      intakeBumper
+                  mode: IN_FAST
+              - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                  '@id': intakeTransitionWheelStartCommand
+                  subsystem:
+                    org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                      intakeTransitionWheel
+                  mode: IN_FAST
         goToCol3:
           org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
             &ramseteGoToPositionBase

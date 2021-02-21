@@ -40,6 +40,7 @@ public class AutoSearchCommand extends SequentialCommandGroup {
      */
     @JsonCreator
     public AutoSearchCommand(@JsonProperty(required = true) Command goToCol3,
+                             @JsonProperty(required = true) Command intakeStart,
                              @JsonProperty(required = true) Command redSecond,
                              @JsonProperty(required = true) Command redA,
                              @JsonProperty(required = true) Command redB,
@@ -48,6 +49,7 @@ public class AutoSearchCommand extends SequentialCommandGroup {
                              @JsonProperty(required = true) Command blueB,
                              @JsonProperty(required = true) DefaultFeederCommand feederCommand) {
         ballFound = feederCommand::hasGotBall;
+        addCommands(intakeStart);
         addCommands(goToCol3);
         addCommands(new WaitCommand(1.));
         addCommands(new ConditionalCommand( //Red or blue?
