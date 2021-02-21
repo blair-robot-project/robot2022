@@ -55,9 +55,11 @@ public class AutoSearchCommand extends SequentialCommandGroup {
         addCommands(new ConditionalCommand( //Red or blue?
                 new SequentialCommandGroup(
                         redSecond,
+                        new WaitCommand(1.),
                         new ConditionalCommand(redA, redB, ballFound)), //A or B?
                 new SequentialCommandGroup(
                         blueStart,
+                        new WaitCommand(1.),
                         new ConditionalCommand(blueA, blueB, ballFound)), //A or B?
                 ballFound));
     }
