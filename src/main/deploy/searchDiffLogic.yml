@@ -792,19 +792,19 @@ useCameraServer: false
             '@id': startIntakeAuto
             commands:
               - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetSolenoidPose:
-                  '@id': intakePistonOutGrouped
+                  '@id': intakePistonOutAuto
                   subsystem:
                     org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
                       intakeSolenoid
                   value: kForward
               - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                  '@id': intakeBumperStartCommand
+                  '@id': intakeBumperStartAuto
                   subsystem:
                     org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                       intakeBumper
                   mode: IN_FAST
               - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                  '@id': intakeTransitionWheelStartCommand
+                  '@id': intakeTransitionWheelStartAuto
                   subsystem:
                     org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                       intakeTransitionWheel

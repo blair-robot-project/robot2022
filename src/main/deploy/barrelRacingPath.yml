@@ -187,62 +187,6 @@ useCameraServer: false
           inverted: false
       action: WHEN_PRESSED
 
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': turnToAngleButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: 7
-      command:
-        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-          '@id': limelightAngleStart
-          requiredSubsystems:
-            - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
-                drive
-          commands:
-            - org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.SetPipeline:
-                limelight:
-                  org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                    '@id': limelight
-                    driverPipeline: 0
-                index: 1
-            - org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleLimelight:
-                '@id': turnToAngleCommand
-                absoluteTolerance: 3
-                kP: .009
-                drive:
-                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
-                    drive
-                timeout: 100
-                limelight:
-                  org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                    limelight
-                offset: 0
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': turnToAngleStopButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: 7
-      command:
-        #this is a really jank ass fix for interrupting the turn command
-        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-          '@id': limelightAngleStop
-          requiredSubsystems:
-            - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
-                drive
-          commands:
-            - org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.SetPipeline:
-                limelight:
-                  org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                    limelight
-                index: 0
-      action: WHEN_PRESSED
-
     #***********************************************************************************************************************
 
   ########################################################################################################################
