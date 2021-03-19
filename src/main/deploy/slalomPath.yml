@@ -312,8 +312,9 @@ useCameraServer: false
             Kd: 1 # todo
             name: rightPidController
         endingPose:
-          x: 4.121303871674289
-          y: -7.246344134510082
+          translation:
+            x: 4.121303871674289
+            y: -7.246344134510082
           rotation:
             radians: -0.5485
         translations:
