@@ -9,11 +9,12 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.shooter.SubsystemFlywheel;
 import org.usfirst.frc.team449.robot.components.MapInterpolationComponent;
-import org.usfirst.frc.team449.robot.components.limelight.LimelightDistanceComponent;
+import java.util.function.DoubleSupplier;
 
 /**
  * Signals the flywheel to turn on and optionally forces the specified subsystem that feeds the
  * flywheel to the off state.
+ * Uses a MapInterpolationComponent to calculate the appropriate speed to set the flywheel to.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SpinUpFlywheelInterpolating extends InstantCommand {
@@ -22,19 +23,20 @@ public class SpinUpFlywheelInterpolating extends InstantCommand {
 
   private final MapInterpolationComponent targetSpeed;
 
-  private final LimelightDistanceComponent limelightComponent;
+  private final DoubleSupplier limelightComponent;
 
   /**
    * Default constructor
    *
    * @param flywheel The subsystem to execute this command on.
    * @param targetSpeed The target speed in arbitrary units at which to run the flywheel.
+   * @param limelightComponent The component that calculates the distance to the target using the limelight
    */
   @JsonCreator
   public SpinUpFlywheelInterpolating(
       @NotNull @JsonProperty(required = true) final SubsystemFlywheel flywheel,
       @NotNull @JsonProperty(required = true) final MapInterpolationComponent targetSpeed,
-      @NotNull @JsonProperty(required = true) final LimelightDistanceComponent limelightComponent) {
+      @NotNull @JsonProperty(required = true) final DoubleSupplier limelightComponent) {
     this.flywheel = flywheel;
     this.targetSpeed = targetSpeed;
     this.limelightComponent = limelightComponent;
