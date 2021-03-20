@@ -25,10 +25,10 @@ public class LimelightDistanceComponent implements DoubleSupplier {
   /**
    * Default constructor
    *
-   * @param limelight the limelight that supplies the angles
+   * @param limelight The limelight that supplies the angles
    * @param limelightHeight The height of the Limelight
    * @param limelightAngleUp The angle of the Limelight, in degrees
-   * @param targetHeight the height of the expected vision target, probably provided by the game
+   * @param targetHeight The height of the expected vision target, probably provided by the game
    *     manual
    */
   @JsonCreator
