@@ -680,8 +680,8 @@ useCameraServer: false
                     limelight:
                       org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
                         limelight
-                    limelightHeight: 2.5 #placeholder
-                    limelightAngleUp: 45 #placeholder
+                    limelightHeight: 1.5975
+                    limelightAngleUp: 54
                     targetHeight: 8.8125
                 flywheel:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
