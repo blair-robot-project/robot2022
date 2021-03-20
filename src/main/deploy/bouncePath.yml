@@ -317,11 +317,11 @@ useCameraServer: false
                   Kd: 1 # todo
                   name: rightPidController
               endingPose:
-                edu.wpi.first.wpilibj.geometry.Pose2d:
+                translation:
                   x: 2.282796027241817
                   y: -0.8533983541603168
-                  rotation:
-                    radians: 1.559
+                rotation:
+                  radians: 1.559
               translations:
                 - x: 1.3303302354601068
                   y: -2.301350555653149
@@ -343,11 +343,11 @@ useCameraServer: false
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   <<: *right
               endingPose:
-                edu.wpi.first.wpilibj.geometry.Pose2d:
+                translation:
                   x: 4.577372707443211
                   y: -0.8533983541603168
-                  rotation:
-                    radians: 1.4810
+                rotation:
+                  radians: 1.4810
               translations:
                 - x: 2.282840597378848
                   y: -0.8533983541603168
@@ -372,11 +372,11 @@ useCameraServer: false
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   <<: *right
               endingPose:
-                edu.wpi.first.wpilibj.geometry.Pose2d:
+                translation:
                   x: 6.865764544840827
                   y: -0.8533983541603168
-                  rotation:
-                    radians: 1.5708 # pi/2
+                rotation:
+                  radians: 1.5708 # pi/2
               translations:
                 - x: 4.577263029564158
                   y: -0.8533983541603168
@@ -400,11 +400,11 @@ useCameraServer: false
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                   <<: *right
               endingPose:
-                edu.wpi.first.wpilibj.geometry.Pose2d:
+                translation:
                   x: 7.9975907779320785
                   y: -2.239502127615376
-                  rotation:
-                    radians: -0.0428
+                rotation:
+                  radians: -0.0428
               translations:
                 - x: 6.865894544346236
                   y: -0.8533983541603168

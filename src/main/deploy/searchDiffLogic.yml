@@ -833,8 +833,9 @@ useCameraServer: false
                 Kd: 0 # todo
                 name: RightC3
             endingPose:
-              x: 1.524
-              y: 0
+              translation:
+                x: 1.524
+                y: 0
               rotation:
                 radians: 0 # radians
         redSecond:
@@ -850,8 +851,9 @@ useCameraServer: false
                 <<: *rightPID
                 name: RightRed2
             endingPose:
-              x: 3.048
-              y: -0.762
+              translation:
+                x: 3.048
+                y: -0.762
               rotation:
                 radians: 0
         redA:
@@ -873,12 +875,14 @@ useCameraServer: false
                 name: RightRedAFinish
             waitSeconds: 1.0
             poses:
-              - x: 3.81
-                y: 1.524
+              - translation:
+                  x: 3.81
+                  y: 1.524
                 rotation:
                   radians: 0
-              - x: 8.382
-                y: 1.524
+              - translation:
+                  x: 8.382
+                  y: 1.524
                 rotation:
                   radians: 0
         redB:
@@ -905,8 +909,9 @@ useCameraServer: false
                       <<: *rightPID
                       name: RightRedBPose2
                   endingPose:
-                    x: 3.048
-                    y: -1.524
+                    translation:
+                      x: 3.048
+                      y: -1.524
                     rotation:
                       radians: -1.5708
               # wait a sec... (no literally, wait one second)
@@ -928,12 +933,14 @@ useCameraServer: false
                       <<: *rightPID
                       name: redBFinishRight
                   poses:
-                    - x: 4.572
-                      y: 0
+                    - translation:
+                        x: 4.572
+                        y: 0
                       rotation:
                         radians: 0
-                    - x: 8.382
-                      y: 0
+                    - translation:
+                        x: 8.382
+                        y: 0
                       rotation:
                         radians: 0
         blueStart:
@@ -949,12 +956,14 @@ useCameraServer: false
                 <<: *rightPID
                 name: blueStartRight
             poses:
-              - x: 3.81
-                y: 0
+              - translation:
+                  x: 3.81
+                  y: 0
                 rotation:
                   radians: 0
-              - x: 4.572
-                y: 2.286
+              - translation:
+                  x: 4.572
+                  y: 2.286
                 rotation:
                   radians: 0
         blueA:
@@ -970,12 +979,14 @@ useCameraServer: false
                 <<: *rightPID
                 name: blueARight
             poses:
-              - x: 6.096
-                y: 1.524
+              - translation:
+                  x: 6.096
+                  y: 1.524
                 rotation:
                   radians: 0.0
-              - x: 8.382
-                y: 1.524
+              - translation:
+                  x: 8.382
+                  y: 1.524
                 rotation:
                   radians: 0.0
         blueB:
@@ -991,16 +1002,19 @@ useCameraServer: false
                 <<: *rightPID
                 name: right8
             poses:
-              - x: 5.334
-                y: 1.524
+              - translation:
+                  x: 5.334
+                  y: 1.524
                 rotation:
                   radians: -1.5708 # pi/2
-              - x: 6.858
-                y: 0
+              - translation:
+                  x: 6.858
+                  y: 0
                 rotation:
                   radians: 0.0
-              - x: 8.382
-                y: 0
+              - translation:
+                  x: 8.382
+                  y: 0
                 rotation:
                   radians: 0
         feederCommand:

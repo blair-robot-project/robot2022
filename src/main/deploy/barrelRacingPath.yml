@@ -313,11 +313,11 @@ useCameraServer: false
             Kd: 0 # todo
             name: rightPidController
         endingPose:
-          edu.wpi.first.wpilibj.geometry.Pose2d:
+          translation:
             x: 1.322650116267645
             y: -1.8916606949857533
-            rotation:
-              radians: -0.0472
+          rotation:
+            radians: -0.0472
         translations:
           - x: 1.2028584154848851
             y: -2.1492128516686857
