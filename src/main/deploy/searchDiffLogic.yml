@@ -824,14 +824,14 @@ useCameraServer: false
                 Kp: 1 # todo
                 Ki: 0 # todo
                 Kd: 0 # todo
-                name: LeftC3
+                name: "left"
             rightPidController:
               org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                 &rightPID
                 Kp: 1 # todo
                 Ki: 0 # todo
                 Kd: 0 # todo
-                name: RightC3
+                name: "right"
             endingPose:
               translation:
                 x: 1.524
@@ -842,14 +842,6 @@ useCameraServer: false
           org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
             <<: *ramseteGoToPositionBase
             '@id': redSecond
-            leftPidController:
-              org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                <<: *leftPID
-                name: LeftRed2
-            rightPidController:
-              org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                <<: *rightPID
-                name: RightRed2
             endingPose:
               translation:
                 x: 3.048
@@ -865,15 +857,13 @@ useCameraServer: false
                 drive
             maxSpeedMeters: *autoMaxSpeed
             maxAccelMeters: *autoMaxAccel
+            waitSeconds: 1.0
             leftPidController:
               org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                 <<: *leftPID
-                name: LeftRedAFinish
             rightPidController:
               org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                 <<: *rightPID
-                name: RightRedAFinish
-            waitSeconds: 1.0
             poses:
               - translation:
                   x: 3.81
@@ -900,14 +890,6 @@ useCameraServer: false
               - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
                   <<: *ramseteGoToPositionBase
                   '@id': goToBallRedB2
-                  leftPidController:
-                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                      <<: *leftPID
-                      name: LeftRedBPose2
-                  rightPidController:
-                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                      <<: *rightPID
-                      name: RightRedBPose2
                   endingPose:
                     translation:
                       x: 3.048
@@ -924,14 +906,6 @@ useCameraServer: false
               - org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
                   <<: *ramseteGoToPointsWithDelayBase
                   '@id': redBFinish
-                  leftPidController:
-                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                      <<: *leftPID
-                      name: redBFinishLeft
-                  rightPidController:
-                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                      <<: *rightPID
-                      name: redBFinishRight
                   poses:
                     - translation:
                         x: 4.572
@@ -947,14 +921,6 @@ useCameraServer: false
           org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
             <<: *ramseteGoToPointsWithDelayBase
             '@id': blueStart
-            leftPidController:
-              org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                <<: *leftPID
-                name: blueStartLeft
-            rightPidController:
-              org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                <<: *rightPID
-                name: blueStartRight
             poses:
               - translation:
                   x: 3.81
@@ -970,14 +936,6 @@ useCameraServer: false
           org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
             <<: *ramseteGoToPointsWithDelayBase
             '@id': blueA
-            leftPidController:
-              org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                <<: *leftPID
-                name: blueALeft
-            rightPidController:
-              org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                <<: *rightPID
-                name: blueARight
             poses:
               - translation:
                   x: 6.096
@@ -993,14 +951,6 @@ useCameraServer: false
           org.usfirst.frc.team449.robot._2021.drive.RamseteControllerGoToPointsWithDelay:
             <<: *ramseteGoToPointsWithDelayBase
             '@id': blueB
-            leftPidController:
-              org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                <<: *leftPID
-                name: left8
-            rightPidController:
-              org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-                <<: *rightPID
-                name: right8
             poses:
               - translation:
                   x: 5.334
