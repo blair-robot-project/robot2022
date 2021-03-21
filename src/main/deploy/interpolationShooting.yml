@@ -658,39 +658,49 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *shooterStartInterpolation
       command:
-        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-          '@id': shooterStartCommandSequence_interpolation
+        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+          '@id': limelightAndShooterOn
+          requiredSubsystems:
+            - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
+                drive
+            - org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
+                shooter
+            - org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+                limelight
           commands:
             - org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.SetPipeline:
                 limelight:
                   org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
                     limelight
                 index: 1
-            - org.usfirst.frc.team449.robot._2021.shooter.SpinUpFlywheelInterpolating:
-                '@id': spinUpFlywheelCommand_interpotation
-                targetSpeed:
-                  '@id': interpolator
-                  method: COSINE
-                  entries:
-                    - 10.: 41.63
-                    - 20.: 41.63
-                    - 30.: 45.25
-                limelightComponent:
-                  org.usfirst.frc.team449.robot.components.limelight.LimelightDistanceComponent:
-                    limelight:
-                      org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                        limelight
-                    limelightHeight: 1.5975
-                    limelightAngleUp: 54
-                    targetHeight: 8.8125
-                flywheel:
-                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
-                    shooter
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
-                '@id': kickerStartCommand_interpolation
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
-                    kicker
+            - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+                '@id': shooterStartCommandSequence_interpolation
+                commands:
+                  - org.usfirst.frc.team449.robot._2021.shooter.SpinUpFlywheelInterpolating:
+                      '@id': spinUpFlywheelCommand_interpotation
+                      targetSpeed:
+                        '@id': interpolator
+                        method: COSINE
+                        entries:
+                          - 10.: *shooterThrottleClose
+                          - 20.: *shooterThrottleMid
+                          - 30.: *shooterThrottleFar
+                      limelightComponent:
+                        org.usfirst.frc.team449.robot.components.limelight.LimelightDistanceComponent:
+                          limelight:
+                            org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+                              limelight
+                          limelightHeight: 1.5975
+                          limelightAngleUp: 54
+                          targetHeight: 8.8125
+                      flywheel:
+                        org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
+                          shooter
+                  - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+                      '@id': kickerStartCommand_interpolation
+                      subsystem:
+                        org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+                          kicker
       action: WHEN_PRESSED
 
     - button:
@@ -709,6 +719,11 @@ useCameraServer: false
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
           '@id': shooterStopCommandSequence
           commands:
+            - org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.SetPipeline:
+                limelight:
+                  org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+                    limelight
+                index: 0
             - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOff:
                 '@id': shooterStopCommand
                 subsystem:
