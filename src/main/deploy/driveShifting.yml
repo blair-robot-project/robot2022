@@ -67,8 +67,7 @@ CONSTANTS:
       - &driverIntakeOff 2 #intakeNeutralDeployed
       - &driverIntakeRev 3 #intakeReverse
       - &driverIntakeInOff 4 #intakeNeutral
-      - &fineAdjustLeft 5
-      - &fineAdjustRight 6
+      - &shiftUp 5
   - MechsButtonNumbers:
       - &shooterStartClose 1
       - &shooterStartFar 4
@@ -406,40 +405,35 @@ useCameraServer: false
     - *DRIVE_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': fineAdjustRightButtonDrive
+          '@id': shiftUpDrive
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               driveJoystick
-          buttonNumber: *fineAdjustRight
+          buttonNumber: *shiftUp
       command:
-        org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleRelative:
-          &Fine_Adjust_Right_Command
-          '@id': fineAdjustRightCommand
-          absoluteTolerance: 0
-          kP: -0.001
-          setpoint: -5.
-          drive:
+        org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.ShiftGears:
+          &shiftCommand
+          '@id': shiftUpCommand
+          subsystem:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
               drive
-          timeout: 1
-          inverted: true
       action: WHEN_PRESSED
 
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': fineAdjustLeftButtonDrive
+          '@id': shiftDownDrive
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               driveJoystick
-          buttonNumber: *fineAdjustLeft
+          buttonNumber: *shiftUp
       command:
-        org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleRelative:
-          <<: *Fine_Adjust_Right_Command
-          '@id': fineAdjustLeftCommand
-          kP: 0.001
-          setpoint: 5.
-          inverted: false
-      action: WHEN_PRESSED
+        org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.ShiftGears:
+          <<: *shiftCommand
+          '@id': shiftDownCommand
+          subsystem:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
+      action: WHEN_RELEASED
 
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -800,6 +794,8 @@ useCameraServer: false
                   org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
                     kicker
       action: WHEN_PRESSED
+
+    #***********************************************************************************************************************
     - *CLIMBER_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -985,7 +981,7 @@ useCameraServer: false
                     #2: 0.25
           autoshiftComponent:
             '@id': autoshiftComponent
-            upshiftSpeed: 3
+            upshiftSpeed: 100
             downshiftSpeed: 1
             upshiftDebouncer:
               '@id': upshiftDebouncer
