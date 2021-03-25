@@ -919,8 +919,9 @@ useCameraServer: false
                   Kd: 0 # todo
                   name: right1
               endingPose:
-                x: 2.286
-                y: -2.286
+                translation:
+                  x: 2.286
+                  y: -2.286
                 rotation:
                   radians: 0 # radians
           #TODO wait a sec... (no literally, wait one second)
@@ -947,16 +948,19 @@ useCameraServer: false
                       name: right2
                   waitSeconds: 1.0
                   poses:
-                    - x: 3.73
-                      y: -3.056
+                    - translation:
+                        x: 3.73
+                        y: -3.056
                       rotation:
                         radians: 0.0
-                    - x: 4.466
-                      y: -0.78
+                    - translation:
+                        x: 4.466
+                        y: -0.78
                       rotation:
                         radians: 0.6629
-                    - x: 8.548
-                      y: -2.073
+                    - translation:
+                        x: 8.548
+                        y: -2.073
                       rotation:
                         radians: -0.4644
               onFalse: # Otherwise, try red path B first, then blue path B, then blue path A
@@ -980,8 +984,9 @@ useCameraServer: false
                             <<: *rightPID
                             name: right3
                         endingPose:
-                          x: 2.286
-                          y: -1.524
+                          translation:
+                            x: 2.286
+                            y: -1.524
                           rotation:
                             radians: 0
                     # Wait a sec... (no literally, wait one second)
@@ -1001,16 +1006,19 @@ useCameraServer: false
                                 <<: *rightPID
                                 name: right4
                             poses:
-                              - x: 3.681
-                                y: -3.056
+                              - translation:
+                                  x: 3.681
+                                  y: -3.056
                                 rotation:
                                   radians: 0.0
-                              - x: 5.196
-                                y: -1.522
+                              - translation:
+                                  x: 5.196
+                                  y: -1.522
                                 rotation:
                                   radians: 0.0
-                              - x: 8.579
-                                y: -1.961
+                              - translation:
+                                  x: 8.579
+                                  y: -1.961
                                 rotation:
                                   radians: -0.1026
                         onFalse:
@@ -1034,8 +1042,9 @@ useCameraServer: false
                                       <<: *rightPID
                                       name: right5
                                   endingPose:
-                                    x: 4.417
-                                    y: -3.056
+                                    translation:
+                                      x: 4.417
+                                      y: -3.056
                                     rotation:
                                       radians: 0
                               - edu.wpi.first.wpilibj2.command.WaitCommand:
@@ -1055,16 +1064,19 @@ useCameraServer: false
                                           <<: *rightPID
                                           name: right6
                                       poses:
-                                        - x: 5.994
-                                          y: -1.497
+                                        - translation:
+                                            x: 5.994
+                                            y: -1.497
                                           rotation:
                                             radians: 0.0
-                                        - x: 7.522
-                                          y: -3.05
+                                        - translation:
+                                            x: 7.522
+                                            y: -3.05
                                           rotation:
                                             radians: 0.0
-                                        - x: 8.53
-                                          y: -2.369
+                                        - translation:
+                                            x: 8.53
+                                            y: -2.369
                                           rotation:
                                             radians: 0.6792
                                   onFalse:
@@ -1080,20 +1092,24 @@ useCameraServer: false
                                           <<: *rightPID
                                           name: right7
                                       poses:
-                                        - x: 4.479 # E6
-                                          y: -3.712
+                                        - translation:
+                                            x: 4.479 # E6
+                                            y: -3.712
                                           rotation:
                                             radians: -1.1196
-                                        - x: 5.184
-                                          y: -1.522
+                                        - translation:
+                                            x: 5.184
+                                            y: -1.522
                                           rotation:
                                             radians: 0.0
-                                        - x: 6.767
-                                          y: -2.246
+                                        - translation:
+                                            x: 6.767
+                                            y: -2.246
                                           rotation:
                                             radians: -0.2854
-                                        - x: 8.53
-                                          y: -2.493
+                                        - translation:
+                                            x: 8.53
+                                            y: -2.493
                                           rotation:
                                             radians: 0.0
                                   condition:

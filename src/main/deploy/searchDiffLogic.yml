@@ -821,14 +821,14 @@ useCameraServer: false
             leftPidController:
               org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                 &leftPID
-                Kp: 1 # todo
+                Kp: 0.1 # todo
                 Ki: 0 # todo
                 Kd: 0 # todo
                 name: "left"
             rightPidController:
               org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                 &rightPID
-                Kp: 1 # todo
+                Kp: 0.1 # todo
                 Ki: 0 # todo
                 Kd: 0 # todo
                 name: "right"
@@ -857,13 +857,13 @@ useCameraServer: false
                 drive
             maxSpeedMeters: *autoMaxSpeed
             maxAccelMeters: *autoMaxAccel
-            waitSeconds: 1.0
             leftPidController:
               org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                 <<: *leftPID
             rightPidController:
               org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
                 <<: *rightPID
+            waitSeconds: 1.0
             poses:
               - translation:
                   x: 3.81
@@ -890,6 +890,12 @@ useCameraServer: false
               - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
                   <<: *ramseteGoToPositionBase
                   '@id': goToBallRedB2
+                  leftPidController:
+                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                      <<: *leftPID
+                  rightPidController:
+                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                      <<: *rightPID
                   endingPose:
                     translation:
                       x: 3.048
