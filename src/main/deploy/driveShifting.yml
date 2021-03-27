@@ -67,7 +67,7 @@ CONSTANTS:
       - &driverIntakeOff 2 #intakeNeutralDeployed
       - &driverIntakeRev 3 #intakeReverse
       - &driverIntakeInOff 4 #intakeNeutral
-      - &shiftUp 5
+      - &shiftUp 6
   - MechsButtonNumbers:
       - &shooterStartClose 1
       - &shooterStartFar 4

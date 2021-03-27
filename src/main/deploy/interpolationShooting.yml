@@ -53,6 +53,7 @@ CONSTANTS:
       - &leftMasterEncoder1Port 2
       - &leftMasterEncoder2Port 3
       - &feederSensor1Port 8
+      - &feederSensor2Port 7
   - JoystickPorts:
       - &mechanismsJoystickPort 0
       - &driveJoystickPort 1
@@ -64,16 +65,17 @@ CONSTANTS:
       - &fineAdjustLeft 5
       - &fineAdjustRight 6
   - MechsButtonNumbers:
-#      - &shooterStartClose 1
-#      - &shooterStartFar 4
-#      - &shooterStartMid 3
-      - &shooterStartInterpolation 1
+      - &shooterStartClose 1
+      - &shooterStartFar 4
+      - &shooterStartMid 3
+#      - &shooterStartInterpolation 1
       - &shooterStop 3 # Actually an axis.
       - &shooterStopThrottle 0.8
       - &mechsIntakeInDPad 180
       - &mechsIntakeOutDPad 0
-      - &mechsIntakeStop 5
-      - &mechsIntakeStart 6
+      - &mechsIntakeStop 7
+      - &mechsIntakeStart 8
+      - &turnToAngle 6
       - &cough 10 # TODO Should coughing be an actual back-and-forth motion?
   - MotorSpeeds:
       - &intakeBumperIntakingVel 1
@@ -86,7 +88,7 @@ CONSTANTS:
       - &shooterMaxSpeed 90.5 # Unused.
       - &shooterThrottleFar 45.25 # 0.5 * 90.5
       - &shooterThrottleMid 41.63
-      - &shooterThrottleClose 41.63
+      - &shooterThrottleClose 41.13
       - &shooterErrorType maxAbsSpeedError
       - &shooterMaxSpeedError 1.25 # In RPS.
       - &shooterMaxSpeedDifferenceType maxAbsSpeedRange
@@ -396,7 +398,7 @@ useCameraServer: false
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
-          buttonNumber: 7
+          buttonNumber: *turnToAngle
       command:
         edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
           '@id': limelightAngleStart
@@ -650,57 +652,128 @@ useCameraServer: false
 
     #***********************************************************************************************************************
     - *SHOOTER_COMMANDS
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': shooterStartButton_interpolation
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsJoystick
+#          buttonNumber: *shooterStartInterpolation
+#      command:
+#        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+#          '@id': limelightAndShooterOn
+#          requiredSubsystems:
+#            - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
+#                drive
+#            - org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
+#                shooter
+#            - org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+#                limelight
+#          commands:
+#            - org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.SetPipeline:
+#                limelight:
+#                  org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+#                    limelight
+#                index: 1
+#            - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+#                '@id': shooterStartCommandSequence_interpolation
+#                commands:
+#                  - org.usfirst.frc.team449.robot._2021.shooter.SpinUpFlywheelInterpolating:
+#                      '@id': spinUpFlywheelCommand_interpotation
+#                      targetSpeed:
+#                        '@id': interpolator
+#                        method: COSINE
+#                        entries:
+#                          - 10.: *shooterThrottleClose
+#                          - 20.: *shooterThrottleMid
+#                          - 30.: *shooterThrottleFar
+#                      limelightComponent:
+#                        org.usfirst.frc.team449.robot.components.limelight.LimelightDistanceComponent:
+#                          limelight:
+#                            org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+#                              limelight
+#                          limelightHeight: 1.5975
+#                          limelightAngleUp: 54
+#                          targetHeight: 8.6125
+#                      flywheel:
+#                        org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
+#                          shooter
+#                  - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+#                      '@id': kickerStartCommand_interpolation
+#                      subsystem:
+#                        org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+#                          kicker
+#      action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shooterStartButton_interpolation
+          '@id': shooterStartButton_far
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
-          buttonNumber: *shooterStartInterpolation
+          buttonNumber: *shooterStartFar
       command:
-        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-          '@id': limelightAndShooterOn
-          requiredSubsystems:
-            - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
-                drive
-            - org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
-                shooter
-            - org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                limelight
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': shooterStartCommandSequence_far
           commands:
-            - org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.SetPipeline:
-                limelight:
-                  org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                    limelight
-                index: 1
-            - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-                '@id': shooterStartCommandSequence_interpolation
-                commands:
-                  - org.usfirst.frc.team449.robot._2021.shooter.SpinUpFlywheelInterpolating:
-                      '@id': spinUpFlywheelCommand_interpotation
-                      targetSpeed:
-                        '@id': interpolator
-                        method: COSINE
-                        entries:
-                          - 10.: *shooterThrottleClose
-                          - 20.: *shooterThrottleMid
-                          - 30.: *shooterThrottleFar
-                      limelightComponent:
-                        org.usfirst.frc.team449.robot.components.limelight.LimelightDistanceComponent:
-                          limelight:
-                            org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                              limelight
-                          limelightHeight: 1.5975
-                          limelightAngleUp: 54
-                          targetHeight: 8.8125
-                      flywheel:
-                        org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
-                          shooter
-                  - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
-                      '@id': kickerStartCommand_interpolation
-                      subsystem:
-                        org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
-                          kicker
+            - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
+                '@id': spinUpFlywheelCommand_far
+                targetSpeed: *shooterThrottleFar
+                flywheel:
+                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
+                    shooter
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+                '@id': kickerStartCommand_far
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+                    kicker
+      action: WHEN_PRESSED
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': shooterStartButton_mid
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *shooterStartMid
+      command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': shooterStartCommandSequence_mid
+          commands:
+            - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
+                '@id': spinUpFlywheelCommand_mid
+                targetSpeed: *shooterThrottleMid
+                flywheel:
+                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
+                    shooter
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+                '@id': kickerStartCommand_mid
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+                    kicker
+      action: WHEN_PRESSED
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': shooterStartButton_close
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *shooterStartClose
+      command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': shooterStartCommandSequence_close
+          commands:
+            - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
+                '@id': spinUpFlywheelCommand_close
+                targetSpeed: *shooterThrottleClose
+                flywheel:
+                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
+                    shooter
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+                '@id': kickerStartCommand_close
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+                    kicker
       action: WHEN_PRESSED
 
     - button:
@@ -838,6 +911,27 @@ useCameraServer: false
 
     #***********************************************************************************************************************
     - *FEEDER_DEFAULT_COMMAND
+#    - subsystem:
+#        org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+#          feeder
+#      command:
+#        org.usfirst.frc.team449.robot._2020.feeder.commands.BallCountingFeederCommand:
+#          '@id': feederIndexingCommand
+#          feeder:
+#            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+#              feeder
+#          sensor1:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+#              '@id': feederSensor1
+#              channel: *feederSensor1Port
+#          sensor2:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+#              '@id': feederSensor2
+#              channel: *feederSensor2Port
+#          flywheelStopCommand:
+#            edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+#              shooterStopCommandSequence
+#          ballThreshold: 4
     - subsystem:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
           feeder
