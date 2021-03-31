@@ -53,7 +53,6 @@ CONSTANTS:
       - &leftMasterEncoder1Port 2
       - &leftMasterEncoder2Port 3
       - &feederSensor1Port 8
-      - &feederSensor2Port 7
   - JoystickPorts:
       - &mechanismsJoystickPort 0
       - &driveJoystickPort 1
@@ -911,27 +910,6 @@ useCameraServer: false
 
     #***********************************************************************************************************************
     - *FEEDER_DEFAULT_COMMAND
-#    - subsystem:
-#        org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-#          feeder
-#      command:
-#        org.usfirst.frc.team449.robot._2020.feeder.commands.BallCountingFeederCommand:
-#          '@id': feederIndexingCommand
-#          feeder:
-#            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-#              feeder
-#          sensor1:
-#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-#              '@id': feederSensor1
-#              channel: *feederSensor1Port
-#          sensor2:
-#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-#              '@id': feederSensor2
-#              channel: *feederSensor2Port
-#          flywheelStopCommand:
-#            edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-#              shooterStopCommandSequence
-#          ballThreshold: 4
     - subsystem:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
           feeder

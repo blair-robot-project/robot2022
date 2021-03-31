@@ -15,11 +15,13 @@ public class LimelightDistanceComponent implements DoubleSupplier {
 
   /** The limelight being used */
   private final Limelight limelight;
-  /** The height of the Limelight above the ground */
+  /** The height of the Limelight above the ground.
+   * Unit-agnostic, but be consistent within the entire Limelight system */
   private final double limelightHeight;
   /** The mounting angle above the horizontal of the limelight, in degrees */
   private final double limelightAngle;
-  /** The height of the vision target */
+  /** The height of the vision target.
+   * Same units as limelightHeight above */
   private final double targetHeight;
 
   /**
