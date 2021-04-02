@@ -9,7 +9,10 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.BooleanSupplier;
 
-/** A roboRIO digital input pin. */
+/**
+ * A roboRIO digital input pin.
+ * Logging currently disabled b/c I xcouldn't figure out why it didn't like me using 2 of them - Jade
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedDigitalInput extends DigitalInput implements Loggable, BooleanSupplier {
 
@@ -30,7 +33,7 @@ public class MappedDigitalInput extends DigitalInput implements Loggable, Boolea
    * @return the status of the digital input
    */
   @Override
-  @Log
+//  @Log
   public boolean get() {
     return !super.get(); // true is off by default in WPILib, and that's dumb
   }

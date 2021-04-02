@@ -53,6 +53,7 @@ CONSTANTS:
       - &leftMasterEncoder1Port 2
       - &leftMasterEncoder2Port 3
       - &feederSensor1Port 8
+      - &feederSensor2Port 9
   - JoystickPorts:
       - &mechanismsJoystickPort 0
       - &driveJoystickPort 1
@@ -87,7 +88,7 @@ CONSTANTS:
       - &shooterMaxSpeed 90.5 # Unused.
       - &shooterThrottleFar 45.25 # 0.5 * 90.5
       - &shooterThrottleMid 41.63
-      - &shooterThrottleClose 41.13
+      - &shooterThrottleClose 10. #slow for testing
       - &shooterErrorType maxAbsSpeedError
       - &shooterMaxSpeedError 1.25 # In RPS.
       - &shooterMaxSpeedDifferenceType maxAbsSpeedRange
@@ -910,6 +911,28 @@ useCameraServer: false
 
     #***********************************************************************************************************************
     - *FEEDER_DEFAULT_COMMAND
+#    - subsystem:
+#        org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+#          feeder
+#      command:
+#        org.usfirst.frc.team449.robot._2020.feeder.commands.BallCountingFeederCommand:
+#          '@id': feederIndexingCommand
+#          feeder:
+#            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+#              feeder
+#          sensor1:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+#              '@id': feederSensor1
+#              channel: *feederSensor1Port
+#          sensor2:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+#              '@id': feederSensor2
+#              channel: *feederSensor2Port
+#          defaultMode: IN_FAST
+#          flywheelStopCommand:
+#            edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+#              shooterStopCommandSequence
+#          ballThreshold: 4
     - subsystem:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
           feeder
@@ -929,6 +952,10 @@ useCameraServer: false
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
               '@id': feederSensor1
               channel: *feederSensor1Port
+          sensor2:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': feederSensor2
+              channel: *feederSensor2Port
           bumper:
             org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
               intakeBumper

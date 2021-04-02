@@ -323,14 +323,14 @@ useCameraServer: false
         leftPidController:
           org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
             &leftPID
-            Kp: 0.01 # todo
+            Kp: 0.001 # todo
             Ki: 0 # todo
             Kd: 0 # todo
             name: "left"
         rightPidController:
           org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
             &rightPID
-            Kp: 0.01 # todo
+            Kp: 0.001 # todo
             Ki: 0 # todo
             Kd: 0 # todo
             name: "right"

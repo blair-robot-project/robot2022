@@ -45,7 +45,7 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
     private final FlywheelWithTimeout shooter;
 
     @NotNull
-    private final ConditionTimingComponentDecorator indexingSensor, indexing, shooting, flywheelOn;
+    private final ConditionTimingComponentDecorator sensor1, sensor2, indexing, shooting, flywheelOn;
 
     /**
      * Whether or not the feeder has picked up a ball yet.
@@ -67,6 +67,7 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
      * @param feederShootingMode          the {@link SubsystemIntake.IntakeMode} to run the feeder at when
      *                                    indexing
      * @param sensor                      the first sensor of the transition from intake to feeder
+     * @param sensor2                     the second sensor of the transition
      * @param transitionWheel             the transition wheel of the intake
      * @param feeder                      the feeder
      * @param shooter                     the shooter
@@ -81,6 +82,7 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
             @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode feederCoughingMode,
             @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode feederShootingMode,
             @NotNull @JsonProperty(required = true) final BooleanSupplier sensor,
+            @Nullable final BooleanSupplier sensor2,
             @NotNull @JsonProperty(required = true) final SubsystemIntake bumper,
             @NotNull @JsonProperty(required = true) final SubsystemIntake transitionWheel,
             @NotNull @JsonProperty(required = true) final SubsystemIntake feeder,
@@ -101,17 +103,28 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
 
         this.flywheelOn = new ConditionTimingComponentDecorator(shooter::isFlywheelOn, false);
         this.shooting = new ConditionTimingComponentDecorator(shooter::isConditionTrueCached, false);
-        this.indexingSensor = new ConditionTimingComponentDecorator(sensor, false);
+
+        this.sensor1 = new ConditionTimingComponentDecorator(sensor, false);
+        if(sensor2 != null){
+            this.sensor2 = new ConditionTimingComponentDecorator(sensor2, false);
+        } else{
+            this.sensor2 = null;
+        }
+
         this.indexing = new ConditionTimingComponentDecorator(() -> {
             // Give up if it's been long enough after either sensor last activated and there's still something
             // activating one of them. This specifically will continue giving up even if one of the sensors
             // deactivates but the other still surpasses the timeout.
-            if (this.indexingTimeout != null && this.indexingSensor.timeSinceLastBecameTrue() > this.indexingTimeout) {
+            if (this.indexingTimeout != null && (this.sensor1.timeSinceLastBecameTrue() > this.indexingTimeout ||
+                    (this.sensor2 != null && this.sensor2.timeSinceLastBecameTrue() > this.indexingTimeout))) {
                 return false;
             }
 
             // Run when either sensor is being actively tripped.
-            return this.indexingSensor.isTrue();
+            if(sensor2 != null){
+                return this.sensor1.isTrue() || this.sensor2.isTrue();
+            }
+            return this.sensor1.isTrue();
         }, false);
 
         this.gotBall = false;
@@ -121,7 +134,10 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
     public void execute() {
         final double currentTime = Clock.currentTimeSeconds();
 
-        this.indexingSensor.update(currentTime);
+        this.sensor1.update(currentTime);
+        if(sensor2 != null){
+            this.sensor2.update(currentTime);
+        }
         this.indexing.update(currentTime);
         this.shooting.update(currentTime);
         this.flywheelOn.update(currentTime);
@@ -151,7 +167,10 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
 
             // Indexing will time out if not being able to shoot is why the transition wheel was stopped,
             // so we must pretend that the sensor has just activated if it was already activated while shooting.
-            this.indexingSensor.forceUpdate(currentTime, this.indexingSensor.isTrue());
+            this.sensor1.forceUpdate(currentTime, this.sensor1.isTrue());
+            if(sensor2 != null){
+                this.sensor2.forceUpdate(currentTime, this.sensor2.isTrue());
+            }
 
             return;
         }

@@ -54,6 +54,7 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
     // todo consider using generics
     addRequirements((Subsystem) feeder);
 
+    this.numBalls = 0;
     this.feeder = feeder;
     this.sensor1 = sensor1;
     this.sensor2 = sensor2;
