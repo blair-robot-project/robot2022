@@ -22,8 +22,6 @@ NAVIGATION:
       - &DEFAULT_COMMANDS defaultCommands:
           - &DRIVE_DEFAULT_COMMAND
           - &FEEDER_DEFAULT_COMMAND
-      - &AUTONOMOUS_COMMANDS autoStartupCommand:
-          - &SIMPLE_ROUTINE
   - &UPDATER updater
 
 # Anchors for transclusion into the rest of the map.
@@ -58,20 +56,14 @@ CONSTANTS:
       - &driveJoystickPort 1
       - &overrideJoystickPort 2
   - DriverButtonNumbers:
-      - &driverIntakeOutOn 2 #intakeForward
-      - &driverIntakeOff 3 #intakeNeutralDeployed
-      - &driverIntakeRev 4 #intakeReverse
-  - MechsButtonNumbers:
-      - &shooterStart 1
-      - &shooterStop 3 # Actually an axis.
-      - &shooterStopThrottle 0.8
-      - &mechsIntakeInDPad 180
-      - &mechsIntakeOutDPad 0
-      - &mechsIntakeStop 5
-      - &mechsIntakeStart 6
-      - &cough 10
+      - &driverIntakeOutOn 1 #intakeForward
+      - &driverIntakeOff 4 #intakeNeutralDeployed
+      - &driverIntakeRev 2 #intakeReverse
   - OverrideButtonNumbers:
-      - &fullStop 1
+      - &shooterStart 1
+      - &shooterStop 3
+      - &cough 10
+      - &fullStop 2
   - MotorSpeeds:
       - &intakeBumperIntakingVel 1
       - &intakeBumperOutVel -1
@@ -91,17 +83,12 @@ CONSTANTS:
       - &feederIndexingTimeoutSecs 60
       - &flywheelSpinUpTimeoutSecs 4
       - &flywheelKP 0.00001
-      - &basicAutoDriveBackSpeed -0.3
-      - &basicAutoDriveBackTimeSeconds 2
       - &coughDurationSeconds 0.1
 
 
 #Outright move the joystick classes up here so we don't have to keep figuring out where the first
 #usage is whenever we change the commands.
 joysticks:
-  - org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-      '@id': mechanismsJoystick
-      port: *mechanismsJoystickPort
   - org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
       '@id': driveJoystick
       port: *driveJoystickPort
@@ -367,37 +354,6 @@ useCameraServer: false
 
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': driveIntakeInOffButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              driveJoystick
-          buttonNumber: *driverIntakeInOff
-      command:
-        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-          '@id': intakePistonInOffGroup
-          commands:
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetSolenoidPose:
-                '@id': intakePistonInGrouped
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
-                    intakeSolenoid
-                value: kReverse
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                '@id': intakeBumperStopCommand
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                    intakeBumper
-                mode: "OFF"
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                '@id': intakeTransitionWheelStopCommand
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                    intakeTransitionWheel
-                mode: "OFF"
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': intakeReverseButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
@@ -425,33 +381,65 @@ useCameraServer: false
     - *FEEDER_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': coughButton
+          '@id': feederRevStartButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
+              overrideJoystick
           buttonNumber: *cough
       command:
-        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-          '@id': coughCommandSequence
-          requiredSubsystems:
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                feeder
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': coughStartGroup
           commands:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeBumperCoughCommand
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeBumper
+                mode: OUT_SLOW
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeTransitionCoughCommand
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeTransitionWheel
+                mode: OUT_SLOW
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
                 '@id': feederStartCommand_coughing
                 subsystem:
                   org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                     feeder
                 mode: OUT_SLOW
-            - edu.wpi.first.wpilibj2.command.WaitCommand:
-                seconds: *coughDurationSeconds
+      action: WHEN_PRESSED
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': feederRevStopButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              overrideJoystick
+          buttonNumber: *cough
+      command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': coughStopGroup
+          commands:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeBumperOff_coughing
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeBumper
+                mode: "OFF"
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeTransitionWheelOff_coughing
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeTransitionWheel
+                mode: "OFF"
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
                 '@id': feederStopCommand_coughing
                 subsystem:
                   org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                     feeder
                 mode: "OFF"
-      action: WHEN_PRESSED
+      action: WHEN_RELEASED
 
     #***********************************************************************************************************************
     - *SHOOTER_COMMANDS
@@ -460,7 +448,7 @@ useCameraServer: false
           '@id': shooterStartButton_close
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
+              overrideJoystick
           buttonNumber: *shooterStart
       command:
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
@@ -480,17 +468,12 @@ useCameraServer: false
       action: WHEN_PRESSED
 
     - button:
-        org.usfirst.frc.team449.robot.oi.buttons.TriggerButton:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': shooterStopButton
-          throttle:
-            org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
-              '@id': stopShooterThrottle
-              stick:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                  mechanismsJoystick
-              axis: *shooterStop
-              inverted: false
-          triggerAt: *shooterStopThrottle
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              overrideJoystick
+          buttonNumber: *shooterStop
       command:
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
           '@id': shooterStopCommandSequence
@@ -533,7 +516,7 @@ useCameraServer: false
                     org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
                       &orotThrottle
                       '@id': orotThrottle
-                      stick: kidGamepad
+                      stick: driveJoystick
                       axis: 0
                       smoothingTimeSecs: 0.04
                       deadband: 0.08
@@ -544,7 +527,7 @@ useCameraServer: false
                           powerToCoefficientMap: !!map
                             1: .5
                             3: .5
-                      scale: .65
+                      scale: .25
                   fwdThrottle:
                     org.usfirst.frc.team449.robot.oi.throttles.ThrottleSum:
                       '@id': ofwdThrottle
@@ -589,12 +572,12 @@ useCameraServer: false
                   '@id': oiOverride
                   gamepad:
                     org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                      driverGamepad
+                      overrideJoystick
                   rotThrottle:
                     org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
                       &rotThrottle
                       '@id': rotThrottle
-                      stick: driverGamepad
+                      stick: overrideJoystick
                       axis: 0
                       smoothingTimeSecs: 0.04
                       deadband: 0.08
@@ -687,55 +670,6 @@ useCameraServer: false
           shooter:
             org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
               shooter
-
-  *AUTONOMOUS_COMMANDS:
-    - *SIMPLE_ROUTINE
-    - edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-        '@id': basicRoutine
-        requiredSubsystems:
-          - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
-              drive
-          - org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
-              shooterFlywheels
-        commands:
-          - edu.wpi.first.wpilibj2.command.WaitCommand:
-              seconds: 5
-          - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-              '@id': shooterInitLineShoot
-              commands:
-                - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
-                    '@id': startFlywheelAuto
-                    targetSpeed: *shooterThrottleClose
-                    flywheel:
-                      org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
-                        shooterFlywheels
-                - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
-                    '@id': startKickerAuto
-                    subsystem:
-                      org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
-                        kicker
-          - edu.wpi.first.wpilibj2.command.WaitCommand:
-              seconds: 5
-          - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-              '@id': shooterStopAuto
-              commands:
-                - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOff:
-                    '@id': shooterStopAutoCommand
-                    subsystem:
-                      org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
-                        shooterFlywheels
-                - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOff:
-                    '@id': kickerStopAutoCommand
-                    subsystem:
-                      org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
-                        kicker
-          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.DriveAtSpeed:
-              '@id': drivebackauto
-              subsystem:
-                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
-                  drive
-              velocity: *basicAutoDriveBackSpeed
-              seconds: *basicAutoDriveBackTimeSeconds
 
 ########################################################################################################################
 *UPDATER:
