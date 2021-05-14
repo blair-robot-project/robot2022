@@ -58,15 +58,11 @@ CONSTANTS:
       - &driveJoystickPort 1
       - &overrideJoystickPort 2
   - DriverButtonNumbers:
-      - &driverIntakeOutOn 1 #intakeForward
-      - &driverIntakeOff 2 #intakeNeutralDeployed
-      - &driverIntakeRev 3 #intakeReverse
-      - &driverIntakeInOff 4 #intakeNeutral
-      - &shiftUp 6
+      - &driverIntakeOutOn 2 #intakeForward
+      - &driverIntakeOff 3 #intakeNeutralDeployed
+      - &driverIntakeRev 4 #intakeReverse
   - MechsButtonNumbers:
-      - &shooterStartClose 1
-      - &shooterStartFar 4
-      - &shooterStartMid 3
+      - &shooterStart 1
       - &shooterStop 3 # Actually an axis.
       - &shooterStopThrottle 0.8
       - &mechsIntakeInDPad 180
@@ -74,6 +70,8 @@ CONSTANTS:
       - &mechsIntakeStop 5
       - &mechsIntakeStart 6
       - &cough 10
+  - OverrideButtonNumbers:
+      - &fullStop 1
   - MotorSpeeds:
       - &intakeBumperIntakingVel 1
       - &intakeBumperOutVel -1
@@ -83,9 +81,7 @@ CONSTANTS:
       - &feederCoughingVel -0.4
       - &intakeTransitionWheelCoughingVel -0.1
       - &shooterMaxSpeed 90.5 # Unused.
-      - &shooterThrottleFar 45.25 # 0.5 * 90.5
-      - &shooterThrottleMid 41.63
-      - &shooterThrottleClose 41.63
+      - &shooterThrottle 10.
       - &shooterErrorType maxAbsSpeedError
       - &shooterMaxSpeedError 1.25 # In RPS.
       - &shooterMaxSpeedDifferenceType maxAbsSpeedRange
@@ -312,96 +308,6 @@ useCameraServer: false
 *COMMANDS:
   ########################################################################################################################
   *BUTTONS:
-    - *DRIVE_COMMANDS
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shiftUpDrive
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              driveJoystick
-          buttonNumber: *shiftUp
-      command:
-        org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.ShiftGears:
-          &shiftCommand
-          '@id': shiftUpCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
-              drive
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shiftDownDrive
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              driveJoystick
-          buttonNumber: *shiftUp
-      command:
-        org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.ShiftGears:
-          <<: *shiftCommand
-          '@id': shiftDownCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
-              drive
-      action: WHEN_RELEASED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': turnToAngleButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: 7
-      command:
-        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-          '@id': limelightAngleStart
-          requiredSubsystems:
-            - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
-                drive
-          commands:
-            - org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.SetPipeline:
-                limelight:
-                  org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                    '@id': limelight
-                    driverPipeline: 0
-                index: 1
-            - org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleLimelight:
-                '@id': turnToAngleCommand
-                absoluteTolerance: 3
-                kP: .009
-                drive:
-                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
-                    drive
-                timeout: 100
-                limelight:
-                  org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                    limelight
-                offset: 0
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': turnToAngleStopButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: 7
-      command:
-        #this is a really jank ass fix for interrupting the turn command
-        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-          '@id': limelightAngleStop
-          requiredSubsystems:
-            - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
-                drive
-          commands:
-            - org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.SetPipeline:
-                limelight:
-                  org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                    limelight
-                index: 0
-      action: WHEN_PRESSED
-
-    #***********************************************************************************************************************
     - *INTAKE_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -457,62 +363,6 @@ useCameraServer: false
                   org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                     intakeTransitionWheel
                 mode: "OFF"
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': mechsIntakeStartButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: *mechsIntakeStart
-      command:
-        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-          runBumperAndTransitionWheel
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': mechsIntakeStopButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: *mechsIntakeStop
-      command:
-        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-          intakeOffGroup
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
-          '@id': mechsIntakePistonOutButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          angle: *mechsIntakeOutDPad
-      command:
-        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetSolenoidPose:
-          '@id': intakePistonOut
-          subsystem:
-            org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
-              intakeSolenoid
-          value: kForward
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
-          '@id': mechsIntakePistonInButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          angle: *mechsIntakeInDPad
-      command:
-        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetSolenoidPose:
-          '@id': intakePistonIn
-          subsystem:
-            org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
-              intakeSolenoid
-          value: kReverse
       action: WHEN_PRESSED
 
     - button:
@@ -607,66 +457,18 @@ useCameraServer: false
     - *SHOOTER_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shooterStartButton_far
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: *shooterStartFar
-      command:
-        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-          '@id': shooterStartCommandSequence_far
-          commands:
-            - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
-                '@id': spinUpFlywheelCommand_far
-                targetSpeed: *shooterThrottleFar
-                flywheel:
-                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
-                    shooter
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
-                '@id': kickerStartCommand_far
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
-                    kicker
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shooterStartButton_mid
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: *shooterStartMid
-      command:
-        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-          '@id': shooterStartCommandSequence_mid
-          commands:
-            - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
-                '@id': spinUpFlywheelCommand_mid
-                targetSpeed: *shooterThrottleMid
-                flywheel:
-                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
-                    shooter
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
-                '@id': kickerStartCommand_mid
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
-                    kicker
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': shooterStartButton_close
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
-          buttonNumber: *shooterStartClose
+          buttonNumber: *shooterStart
       command:
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
           '@id': shooterStartCommandSequence_close
           commands:
             - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
                 '@id': spinUpFlywheelCommand_close
-                targetSpeed: *shooterThrottleClose
+                targetSpeed: *shooterThrottle
                 flywheel:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
                     shooter
@@ -850,102 +652,7 @@ useCameraServer: false
                   joystick:
                     org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
                       driverGamepad
-                  buttonNumber: 1 #A
-#    - subsystem:     TODO finish merging this with the command above. Then delete.
-#        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
-#          drive
-#      command:
-#        org.usfirst.frc.team449.robot.drive.unidirectional.commands.UnidirectionalNavXShiftingDefaultDrive:
-#          '@id': defaultDriveCommand
-#          kP: 0.0
-#          kI: 0.0
-#          kD: 0.0
-#          maximumOutput: 1
-#          absoluteTolerance: 0
-#          deadband: 2
-#          maxAngularVelToEnterLoop: 3
-#          inverted: false
-#          highGearAngularCoefficient: 3
-#          rampComponent:
-#            org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent:
-#              maxIncreasePerSecond: 3
-#              maxDecreasePerSecond: 3
-#          driveStraightLoopEntryTimer:
-#            '@id': driveStraightLoopEntryTimer
-#            bufferTimeSeconds: 0.15
-#          subsystem:
-#            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
-#              drive
-#          oi:
-#            org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
-#              '@id': oi
-#              gamepad:
-#                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#                  driveJoystick
-#              rotThrottle:
-#                org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
-#                  &rotThrottle
-#                  '@id': rotThrottle
-#                  stick: driveJoystick
-#                  axis: 0
-#                  smoothingTimeSecs: 0.04
-#                  deadband: 0.08
-#                  inverted: false
-#                  polynomial:
-#                    org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
-#                      '@id': rotPoly
-#                      powerToCoefficientMap: !!map
-#                        1: .5
-##                        3: .5
-#                  scale: .7
-#              fwdThrottle:
-#                org.usfirst.frc.team449.robot.oi.throttles.ThrottleSum:
-#                  '@id': fwdThrottle
-#                  throttles:
-#                    - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
-#                        <<: *rotThrottle
-#                        '@id': posThrottle
-#                        axis: 3
-#                        inverted: false
-#                        deadband: 0.05
-#                        polynomial:
-#                          org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
-#                            '@id': posPoly
-#                            powerToCoefficientMap: !!map
-#                              1: 2
-#                              2: 1
-#                    - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
-#                        <<: *rotThrottle
-#                        '@id': negThrottle
-#                        axis: 2
-#                        inverted: true
-#                        deadband: 0.05
-#                        polynomial:
-#                          org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
-#                            '@id': negPoly
-#                            powerToCoefficientMap: !!map
-#                              1: 2
-#                              2: 1
-#              invertDPad: false
-#              dPadShift: 0.1
-#              turnInPlaceRotScale: 1
-#              rescaleOutputs: true
-#              scaleRotByFwdPoly:
-#                org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
-#                  '@id': scaleRotByFwdPoly
-#                  powerToCoefficientMap: !!map
-#                    0.5: 0.4
-#                    0: 0.2
-#                    #1 : 0.25
-#                    #2: 0.25
-#          autoshiftComponent:
-#            '@id': autoshiftComponent
-#            upshiftSpeed: 100
-#            downshiftSpeed: 1
-#            upshiftDebouncer:
-#              '@id': upshiftDebouncer
-#              bufferTimeSeconds: 0.06
-#            upshiftFwdThresh: 0.4
+                  buttonNumber: *fullStop
 
     #***********************************************************************************************************************
     - *FEEDER_DEFAULT_COMMAND
