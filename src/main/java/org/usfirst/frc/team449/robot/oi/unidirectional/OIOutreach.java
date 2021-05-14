@@ -30,14 +30,21 @@ public class OIOutreach implements OIUnidirectional {
   /** The data to log. Field to avoid garbage collection. */
   private Object[] loggingData, overridenData, overridingData;
 
+  /**
+   * Default constructor
+   *
+   * @param overridingOI the controller for children's use
+   * @param overridenOI the override controller with the full-stop button
+   * @param stopButton the button to stop all robot functions while held
+   */
   @JsonCreator
   public OIOutreach(
       @NotNull @JsonProperty(required = true) final OIUnidirectional overridingOI,
       @NotNull @JsonProperty(required = true) final OIUnidirectional overridenOI,
-      @NotNull @JsonProperty(required = true) final Button button) {
+      @NotNull @JsonProperty(required = true) final Button stopButton) {
     this.overridingOI = overridingOI;
     this.overridenOI = overridenOI;
-    this.button = button;
+    this.button = stopButton;
   }
 
   /**
