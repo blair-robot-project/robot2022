@@ -57,11 +57,11 @@ CONSTANTS:
       - &overrideJoystickPort 2
   - DriverButtonNumbers:
       - &driverIntakeOutOn 1 #intakeForward
-      - &driverIntakeOff 4 #intakeNeutralDeployed
-      - &driverIntakeRev 2 #intakeReverse
+      - &driverIntakeOff 2 #intakeNeutralDeployed
   - OverrideButtonNumbers:
       - &shooterStart 1
       - &shooterStop 3
+      - &overrideIntakeRev 4 #intakeReverse
       - &cough 10
       - &fullStop 2
   - MotorSpeeds:
@@ -357,8 +357,8 @@ useCameraServer: false
           '@id': intakeReverseButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              driveJoystick
-          buttonNumber: *driverIntakeRev
+              overrideJoystick
+          buttonNumber: *overrideIntakeRev
       command:
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
           '@id': intakeReverseCommandGroup
