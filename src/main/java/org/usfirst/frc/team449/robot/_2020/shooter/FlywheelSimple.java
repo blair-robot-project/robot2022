@@ -72,6 +72,8 @@ public class FlywheelSimple extends SubsystemBase
     // Register variables with the WPILib simulation GUI.
     simDevice = SimDevice.create(this.getClass().getSimpleName(), motor.getPort());
     if (simDevice != null) {
+      //TODO figure out why using SimDevice.Direction.kInput instead of false
+      // for the parameter readonly gives a NoSuchMethodError
       sim_manualStates = simDevice.createBoolean("ManualStates", false, false);
       sim_isAtSpeed = simDevice.createBoolean("IsAtSpeed", false, false);
     } else {
