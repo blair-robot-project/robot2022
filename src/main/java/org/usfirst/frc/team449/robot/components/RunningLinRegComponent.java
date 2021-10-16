@@ -29,12 +29,6 @@ public class RunningLinRegComponent {
   /** The number of points currently in the buffer. */
   private int numPoints;
 
-  /** The X and Y most recently popped from the buffer. Fields to avoid garbage collection. */
-  private double backX, backY;
-
-  /** The variances. Field to avoid garbage collection */
-  private double xVariance, yVariance, covariance;
-
   /**
    * Default constructor.
    *
@@ -60,9 +54,9 @@ public class RunningLinRegComponent {
       return Double.NaN;
     }
 
-    xVariance = (xSquaredSum / numPoints) - Math.pow(xSum / numPoints, 2);
-    yVariance = (ySquaredSum / numPoints) - Math.pow(ySum / numPoints, 2);
-    covariance = (xySum - xSum * ySum / numPoints) / (numPoints - 1);
+    double xVariance = (xSquaredSum / numPoints) - Math.pow(xSum / numPoints, 2);
+    double yVariance = (ySquaredSum / numPoints) - Math.pow(ySum / numPoints, 2);
+    double covariance = (xySum - xSum * ySum / numPoints) / (numPoints - 1);
 
     if (covariance * covariance / (xVariance * yVariance) > rSquaredThreshhold) {
       return covariance / xVariance;
@@ -85,8 +79,8 @@ public class RunningLinRegComponent {
   public void addPoint(double x, double y) {
     if (numPoints >= bufferSize) {
       // Pop the last point and remove it from the sums
-      backX = xBuffer.removeLast();
-      backY = yBuffer.removeLast();
+      double backX = xBuffer.removeLast();
+      double backY = yBuffer.removeLast();
       xSum -= backX;
       ySum -= backY;
       xSquaredSum -= backX * backX;

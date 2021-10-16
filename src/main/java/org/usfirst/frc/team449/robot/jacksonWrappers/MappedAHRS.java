@@ -24,9 +24,6 @@ public class MappedAHRS implements Updatable, Loggable {
   /** A multiplier for the yaw angle. -1 to invert, 1 to not. */
   protected final int invertYaw;
 
-  /** The 9-axis heading value to return. Field to avoid garbage collection. */
-  private double toRet;
-
   /** Cached values. */
   private double cachedHeading,
       cachedAngularDisplacement,
@@ -75,9 +72,7 @@ public class MappedAHRS implements Updatable, Loggable {
    * @return The heading, in degrees from [-180, 180]
    */
   public double getHeading() {
-    toRet = invertYaw * ahrs.getYaw();
-    //        toRet = Math.IEEEremainder(toRet, 360);
-    return toRet;
+    return invertYaw * ahrs.getYaw();
   }
 
   /**

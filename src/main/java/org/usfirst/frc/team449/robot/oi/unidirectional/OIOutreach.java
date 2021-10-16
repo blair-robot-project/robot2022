@@ -28,9 +28,6 @@ public class OIOutreach implements OIUnidirectional {
   /** The cached forwards and rotational outputs. */
   private double[] cachedFwdRotOutput;
 
-  /** The data to log. Field to avoid garbage collection. */
-  private Object[] loggingData, overridenData, overridingData;
-
   /**
    * Default constructor
    *

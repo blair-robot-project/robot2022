@@ -58,12 +58,6 @@ public class MappedSparkMax implements SmartMotor {
   /** The most recently set setpoint. */
   private double setpoint;
 
-  /** RPS as used in a unit conversion method. Field to avoid garbage collection. */
-  private Double RPS;
-
-  /** The setpoint in native units. Field to avoid garbage collection. */
-  @Log private double nativeSetpoint;
-
   /**
    * Create a new SPARK MAX Controller
    *
@@ -341,7 +335,7 @@ public class MappedSparkMax implements SmartMotor {
    */
   @Override
   public double encoderToUPS(final double encoderReading) {
-    RPS = nativeToRPS(encoderReading);
+    Double RPS = nativeToRPS(encoderReading);
     return RPS * postEncoderGearing * unitPerRotation;
   }
 
@@ -403,10 +397,10 @@ public class MappedSparkMax implements SmartMotor {
   @Override
   public void setPositionSetpoint(final double feet) {
     this.setpoint = feet;
-    this.nativeSetpoint = this.unitToEncoder(feet);
+    double nativeSetpoint = this.unitToEncoder(feet);
     this.pidController.setFF(this.currentGearSettings.feedForwardCalculator.ks / 12.);
     this.pidController.setReference(
-        this.nativeSetpoint,
+        nativeSetpoint,
         ControlType.kPosition,
         0,
         this.currentGearSettings.feedForwardCalculator.ks,
@@ -453,7 +447,7 @@ public class MappedSparkMax implements SmartMotor {
   @Override
   public void setVelocityUPS(final double velocity) {
     this.currentControlMode = ControlType.kVelocity;
-    this.nativeSetpoint = UPSToEncoder(velocity);
+    double nativeSetpoint = UPSToEncoder(velocity);
     this.setpoint = velocity;
     this.pidController.setFF(0);
     this.pidController.setReference(

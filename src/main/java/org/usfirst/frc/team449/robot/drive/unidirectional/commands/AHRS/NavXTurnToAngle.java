@@ -34,9 +34,6 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
   /** The time this command was initiated */
   protected long startTime;
 
-  /** The output of the PID loop. Field to avoid garbage collection. */
-  private double output;
-
   /**
    * Default constructor.
    *
@@ -109,7 +106,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
   @Override
   public void execute() {
     // Process the output with deadband, minimum output, etc.
-    output = this.getOutput();
+    double output = this.getOutput();
 
     // spin to the right angle
     subsystem.setOutput(-output, output);

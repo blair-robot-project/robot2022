@@ -15,15 +15,6 @@ public class ThrottleExponential extends ThrottleDeadbanded {
   /** The base that is raised to the power of the joystick input. */
   protected final double base;
 
-  /** The input from the joystick. Declared outside of getValue to avoid garbage collection. */
-  private double input;
-
-  /**
-   * The sign of the input from the joystick. Declared outside of getValue to avoid garbage
-   * collection.
-   */
-  private double sign;
-
   /**
    * A basic constructor.
    *
@@ -54,10 +45,10 @@ public class ThrottleExponential extends ThrottleDeadbanded {
    */
   @Override
   public double getValue() {
-    input = super.getValue();
+    double input = super.getValue();
 
     // Extract the sign
-    sign = Math.signum(input);
+    double sign = Math.signum(input);
     input = Math.abs(input);
 
     // Exponentially scale

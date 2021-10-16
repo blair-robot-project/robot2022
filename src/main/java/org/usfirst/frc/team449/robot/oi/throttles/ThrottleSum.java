@@ -17,9 +17,6 @@ public class ThrottleSum implements Throttle {
   /** The cached output. */
   protected double cachedValue;
 
-  /** The sum. Field to avoid garbage collection. */
-  private double sum;
-
   /**
    * Default constructor.
    *
@@ -38,7 +35,7 @@ public class ThrottleSum implements Throttle {
   @Log
   public double getValue() {
     // sum throttles
-    sum = 0;
+    double sum = 0;
     for (Throttle throttle : throttles) {
       sum += throttle.getValue();
     }

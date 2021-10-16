@@ -42,15 +42,6 @@ public class AHRSRumbleComponent implements Runnable {
    */
   private double lastFrontBackAccel, lastLeftRightAccel;
 
-  /**
-   * Variables for the per-call rumble calculation representing the rumble outputs. Fields to avoid
-   * garbage collection.
-   */
-  private double left, right;
-
-  /** Variables for per-call acceleration calculation. Fields to avoid garbage collection. */
-  private double frontBack, leftRight;
-
   /** The time at which the acceleration was last measured. */
   private long timeLastCalled;
 
@@ -89,45 +80,45 @@ public class AHRSRumbleComponent implements Runnable {
   @Override
   public void run() {
     // TODO Both branches of this if statement are the exact same!
+    double frontBack;
+    double leftRight;
     if (this.yIsFrontBack) {
       // Put an abs() here because we can't differentiate front vs back when rumbling, so we only
       // care about
       // magnitude.
-      this.frontBack = Math.abs(this.ahrs.getYAccel());
-      this.leftRight = this.ahrs.getXAccel() * (this.invertLeftRight ? -1 : 1);
+      frontBack = Math.abs(this.ahrs.getYAccel());
+      leftRight = this.ahrs.getXAccel() * (this.invertLeftRight ? -1 : 1);
     } else {
-      this.frontBack = Math.abs(this.ahrs.getYAccel());
-      this.leftRight = this.ahrs.getXAccel() * (this.invertLeftRight ? -1 : 1);
+      frontBack = Math.abs(this.ahrs.getYAccel());
+      leftRight = this.ahrs.getXAccel() * (this.invertLeftRight ? -1 : 1);
     }
 
     // Left is negative jerk, so we subtract it from left so that when we're going left, left is
     // bigger and vice
     // versa
-    this.left =
-        ((this.frontBack - this.lastFrontBackAccel) - (this.leftRight - this.lastLeftRightAccel))
-            / (Clock.currentTimeMillis() - this.timeLastCalled);
-    this.right =
-        ((this.frontBack - this.lastFrontBackAccel) + (this.leftRight - this.lastLeftRightAccel))
-            / (Clock.currentTimeMillis() - this.timeLastCalled);
+    double left = ((frontBack - this.lastFrontBackAccel) - (leftRight - this.lastLeftRightAccel))
+        / (Clock.currentTimeMillis() - this.timeLastCalled);
+    double right = ((frontBack - this.lastFrontBackAccel) + (leftRight - this.lastLeftRightAccel))
+        / (Clock.currentTimeMillis() - this.timeLastCalled);
 
-    if (this.left > this.minJerk) {
-      this.left = (this.left - this.minJerk) / this.maxJerk;
+    if (left > this.minJerk) {
+      left = (left - this.minJerk) / this.maxJerk;
     } else {
-      this.left = 0;
+      left = 0;
     }
 
-    if (this.right > this.minJerk) {
-      this.right = (this.right - this.minJerk) / this.maxJerk;
+    if (right > this.minJerk) {
+      right = (right - this.minJerk) / this.maxJerk;
     } else {
-      this.right = 0;
+      right = 0;
     }
 
     for (final Rumbleable rumbleable : this.rumbleables) {
-      rumbleable.rumble(this.left, this.right);
+      rumbleable.rumble(left, right);
     }
 
-    this.lastLeftRightAccel = this.leftRight;
-    this.lastFrontBackAccel = this.frontBack;
+    this.lastLeftRightAccel = leftRight;
+    this.lastFrontBackAccel = frontBack;
     this.timeLastCalled = Clock.currentTimeMillis();
   }
 }

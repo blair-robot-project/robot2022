@@ -29,7 +29,6 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
   /** The velocity value calculated the last time calcValues was called. */
   private double vel;
 
-  /** Variables for the outputs of the x and y throttles. Fields to avoid garbage collection. */
   private double x, y;
 
   /**

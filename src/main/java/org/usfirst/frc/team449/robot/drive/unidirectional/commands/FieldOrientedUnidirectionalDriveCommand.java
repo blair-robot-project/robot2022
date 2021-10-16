@@ -34,12 +34,6 @@ public class FieldOrientedUnidirectionalDriveCommand<
   /** The points to snap the PID controller input to. */
   @NotNull private final List<AngularSnapPoint> snapPoints;
 
-  /** The absolute angular setpoint for the robot to go to. Field to avoid garbage collection. */
-  @Nullable private Double theta;
-
-  /** The output of the PID loop. Field to avoid garbage collection. */
-  private double output;
-
   /**
    * Default constructor
    *
@@ -118,26 +112,26 @@ public class FieldOrientedUnidirectionalDriveCommand<
   /** Set PID setpoint to processed controller setpoint. */
   @Override
   public void execute() {
-    this.theta = this.oi.getThetaCached();
+    Double theta = this.oi.getThetaCached();
 
-    if (this.theta != null) {
+    if (theta != null) {
       for (final AngularSnapPoint snapPoint : this.snapPoints) {
         // See if we should snap
-        if (snapPoint.getLowerBound() < this.theta && this.theta < snapPoint.getUpperBound()) {
-          this.theta = snapPoint.getSnapTo();
+        if (snapPoint.getLowerBound() < theta && theta < snapPoint.getUpperBound()) {
+          theta = snapPoint.getSnapTo();
           // Break to shorten runtime, we'll never snap twice.
           break;
         }
       }
-      this.setSetpoint(this.theta);
+      this.setSetpoint(theta);
     }
 
     // Process or zero the input depending on whether the NavX is being overriden.
-    this.output = this.subsystem.getOverrideGyro() ? 0 : this.getOutput();
+    double output = this.subsystem.getOverrideGyro() ? 0 : this.getOutput();
 
     // Adjust the heading according to the PID output, it'll be positive if we want to go right.
     this.subsystem.setOutput(
-        this.oi.getVelCached() - this.output, this.oi.getVelCached() + this.output);
+        this.oi.getVelCached() - output, this.oi.getVelCached() + output);
   }
 
   /**

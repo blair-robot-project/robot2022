@@ -28,9 +28,6 @@ public class SecondDerivativeLimit implements DoubleUnaryOperator {
   /** The time a value was most recently received */
   private double previousTime;
 
-  /** The time between the last value being received and now. Field to avoid garbage collection. */
-  private double deltaTime;
-
   /**
    * Default constructor.
    *
@@ -56,7 +53,7 @@ public class SecondDerivativeLimit implements DoubleUnaryOperator {
   @Override
   public double applyAsDouble(double value) {
     // Time between the last value and this one
-    deltaTime = Clock.currentTimeMillis() - previousTime;
+    double deltaTime = Clock.currentTimeMillis() - previousTime;
     if (value - previousValue > previousFirstDerivative) {
       // If the first derivative is increasing, make sure it's increasing slower than the
       // secondDerivativeLimit

@@ -39,9 +39,6 @@ public class OIArcadeWithDPad extends OIArcade {
   /** The scalar that scales the rotational throttle while turning in place. */
   private final double turnInPlaceRotScale;
 
-  /** Forwards output. Field to avoid garbage collection. */
-  private double fwd;
-
   /**
    * Default constructor
    *
@@ -86,7 +83,7 @@ public class OIArcadeWithDPad extends OIArcade {
    */
   @Override
   public double[] getFwdRotOutput() {
-    fwd = fwdThrottle.getValue();
+    double fwd = fwdThrottle.getValue();
 
     // If the gamepad is being pushed to the left or right
     if (gamepad != null && !(gamepad.getPOV() == -1 || gamepad.getPOV() % 180 == 0)) {

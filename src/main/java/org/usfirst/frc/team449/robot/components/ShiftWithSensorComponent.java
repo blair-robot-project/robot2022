@@ -49,9 +49,6 @@ public class ShiftWithSensorComponent extends ShiftComponent {
   /** Whether the piston's position was correct the last time checkToReenable was run. */
   private boolean pistonWasCorrect;
 
-  /** Whether the piston's position is currently correct. Field to avoid garbage collection. */
-  private boolean pistonCorrect;
-
   /**
    * Default constructor.
    *
@@ -90,25 +87,25 @@ public class ShiftWithSensorComponent extends ShiftComponent {
   /** Check the sensors and enable/disable the motors accordingly. */
   private void checkToReenable() {
     // Check if the piston is in correct position by making sure each sensor is reading correctly.
-    this.pistonCorrect = true;
+    boolean pistonCorrect = true;
     if (this.currentGear == Shiftable.Gear.HIGH.getNumVal()) {
       for (final MappedDigitalInput sensor : this.highGearSensors) {
         // The position is correct if all the sensors read true.
-        this.pistonCorrect = this.pistonCorrect && sensor.get();
+        pistonCorrect = pistonCorrect && sensor.get();
       }
     } else {
       for (final MappedDigitalInput sensor : this.lowGearSensors) {
         // The position is correct if all the sensors read true.
-        this.pistonCorrect = this.pistonCorrect && sensor.get();
+        pistonCorrect = pistonCorrect && sensor.get();
       }
     }
 
     // If the pistons haven't been correct for more than a certain amount of time, we assume
     // something went wrong and
     // keep the motors enabled (essentially ignoring the sensors) so the robot can still drive.
-    if (this.motorDisableTimer.get(!this.pistonCorrect)) {
+    if (this.motorDisableTimer.get(!pistonCorrect)) {
       // We set pistonCorrect here because we're basically just overriding what the sensors say.
-      this.pistonCorrect = true;
+      pistonCorrect = true;
       for (final SimpleMotor motor : this.motorsToDisable) {
         motor.enable();
       }
@@ -118,7 +115,7 @@ public class ShiftWithSensorComponent extends ShiftComponent {
     // other part of
     // the code tries to re-enable them.
     // TODO set up a lock system so no other part of the code can re-enable the motors.
-    else if (!this.pistonCorrect) {
+    else if (!pistonCorrect) {
       for (final SimpleMotor motor : this.motorsToDisable) {
         motor.disable();
       }
@@ -134,7 +131,7 @@ public class ShiftWithSensorComponent extends ShiftComponent {
     }
 
     // Record the piston position so we can have rising/falling edge detection
-    this.pistonWasCorrect = this.pistonCorrect;
+    this.pistonWasCorrect = pistonCorrect;
   }
 
   /**

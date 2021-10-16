@@ -42,9 +42,6 @@ public class AutoshiftComponent {
   /** The time we last downshifted (milliseconds) */
   private long timeLastDownshifted;
 
-  /** Whether it's okay to up or down shift. Fields to avoid garbage collection. */
-  private boolean okayToUpshift, okayToDownshift;
-
   /**
    * Default constructor
    *
@@ -88,7 +85,7 @@ public class AutoshiftComponent {
    */
   private boolean shouldDownshift(double forwardThrottle, double leftVel, double rightVel) {
     // We should shift if we're going slower than the downshift speed
-    okayToDownshift = Math.max(Math.abs(leftVel), Math.abs(rightVel)) < downshiftSpeed;
+    boolean okayToDownshift = Math.max(Math.abs(leftVel), Math.abs(rightVel)) < downshiftSpeed;
     // Or if we're just turning in place.
     okayToDownshift = okayToDownshift || (forwardThrottle == 0);
     // Or commanding a low speed.
@@ -121,7 +118,7 @@ public class AutoshiftComponent {
    */
   private boolean shouldUpshift(double forwardThrottle, double leftVel, double rightVel) {
     // We should shift if we're going faster than the upshift speed...
-    okayToUpshift = Math.min(Math.abs(leftVel), Math.abs(rightVel)) > upshiftSpeed;
+    boolean okayToUpshift = Math.min(Math.abs(leftVel), Math.abs(rightVel)) > upshiftSpeed;
     // AND the driver's trying to go forward fast.
     okayToUpshift = okayToUpshift && Math.abs(forwardThrottle) > upshiftFwdThresh;
     // But we can only shift if we're out of the cooldown period.

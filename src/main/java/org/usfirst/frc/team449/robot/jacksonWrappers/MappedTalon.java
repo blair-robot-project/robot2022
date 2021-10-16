@@ -58,11 +58,6 @@ public class MappedTalon implements SmartMotor {
   private double postEncoderGearing;
   /** The most recently set setpoint. */
   private double setpoint;
-  /** RPS as used in a unit conversion method. Field to avoid garbage collection. */
-  private Double RPS;
-
-  /** The setpoint in native units. Field to avoid garbage collection. */
-  private double nativeSetpoint;
 
   private boolean voltageCompEnabled;
 
@@ -464,11 +459,11 @@ public class MappedTalon implements SmartMotor {
    */
   @Override
   public double encoderToUPS(final double encoderReading) {
-    RPS = nativeToRPS(encoderReading);
+    Double RPS = nativeToRPS(encoderReading);
     if (RPS == null) {
       return Double.NaN;
     }
-    return this.RPS * this.postEncoderGearing * this.unitPerRotation;
+    return RPS * this.postEncoderGearing * this.unitPerRotation;
   }
 
   /**
@@ -540,11 +535,11 @@ public class MappedTalon implements SmartMotor {
   @Override
   public void setPositionSetpoint(final double feet) {
     this.setpoint = feet;
-    this.nativeSetpoint = this.unitToEncoder(feet);
+    double nativeSetpoint = this.unitToEncoder(feet);
     this.canTalon.config_kF(0, 0);
     this.canTalon.set(
         ControlMode.Position,
-        this.nativeSetpoint,
+        nativeSetpoint,
         DemandType.ArbitraryFeedForward,
         this.currentGearSettings.feedForwardCalculator.ks / 12.);
   }
@@ -586,7 +581,7 @@ public class MappedTalon implements SmartMotor {
    */
   @Override
   public void setVelocityUPS(final double velocity) {
-    nativeSetpoint = UPSToEncoder(velocity);
+    double nativeSetpoint = UPSToEncoder(velocity);
     setpoint = velocity;
     canTalon.config_kF(0, 0, 0);
     canTalon.set(

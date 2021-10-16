@@ -67,12 +67,6 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   /** The most recently set setpoint. */
   private double setpoint;
 
-  /** RPS as used in a unit conversion method. Field to avoid garbage collection. */
-  private Double RPS;
-
-  /** The setpoint in native units. Field to avoid garbage collection. */
-  @Log private double nativeSetpoint;
-
   private double lastTimeUpdate;
 
   @Log private double timeDiff;
@@ -364,8 +358,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
    */
   @Override
   public double encoderToUPS(final double encoderReading) {
-    RPS = nativeToRPS(encoderReading);
-    return RPS * postEncoderGearing * unitPerRotation;
+    return nativeToRPS(encoderReading) * postEncoderGearing * unitPerRotation;
   }
 
   /**
@@ -422,7 +415,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   @Override
   public void setPositionSetpoint(final double feet) {
     this.setpoint = feet;
-    this.nativeSetpoint = this.unitToEncoder(feet);
+    double nativeSetpoint = this.unitToEncoder(feet);
     setVoltage(
         currentGearSettings.feedForwardCalculator.ks
             + pidController.calculate(encoderPosition(), nativeSetpoint));
@@ -450,7 +443,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   @Override
   public void setVelocityUPS(final double velocity) {
     this.currentControlMode = ControlType.kVelocity;
-    this.nativeSetpoint = UPSToEncoder(velocity);
+    double nativeSetpoint = UPSToEncoder(velocity);
     this.setpoint = velocity;
     setVoltage(
         currentGearSettings.feedForwardCalculator.calculate(velocity)

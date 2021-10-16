@@ -17,15 +17,6 @@ public class Polynomial implements DoubleUnaryOperator {
   /** A map of the powers and coefficients of each term. */
   @NotNull private final Map<Double, Double> powerToCoefficientMap;
 
-  /** The sign of the most recent input. This is a field to avoid garbage collection. */
-  private double sign;
-
-  /** The absolute value of the most recent input. This is a field to avoid garbage collection. */
-  private double abs;
-
-  /** The value to return when get() is called. This is a field to avoid garbage collection. */
-  private double toRet;
-
   /**
    * Default constructor.
    *
@@ -59,9 +50,9 @@ public class Polynomial implements DoubleUnaryOperator {
    */
   @Override
   public double applyAsDouble(double x) {
-    sign = Math.signum(x);
-    abs = Math.abs(x);
-    toRet = 0;
+    double sign = Math.signum(x);
+    double abs = Math.abs(x);
+    double toRet = 0;
     for (double power : powerToCoefficientMap.keySet()) {
       toRet += Math.pow(abs, power) * powerToCoefficientMap.get(power);
     }

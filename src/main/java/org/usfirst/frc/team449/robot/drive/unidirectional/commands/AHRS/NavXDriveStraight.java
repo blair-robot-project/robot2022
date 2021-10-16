@@ -29,9 +29,6 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
   /** Whether to use the left joystick to drive straight. */
   private final boolean useLeft;
 
-  /** The output of the PID loop. Field to avoid garbage collection. */
-  private double output;
-
   /**
    * Default constructor.
    *
@@ -100,7 +97,7 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
   @Override
   public void execute() {
     // Process the PID output with deadband, minimum output, etc.
-    output = this.getOutput();
+    double output = this.getOutput();
 
     // Set throttle to the specified stick.
     // TODO Both branches of this if statement are the exact same!

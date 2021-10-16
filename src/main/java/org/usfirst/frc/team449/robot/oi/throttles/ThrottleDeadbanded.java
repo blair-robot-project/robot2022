@@ -18,13 +18,6 @@ public class ThrottleDeadbanded extends ThrottleBasic {
   protected final double deadband;
   /** The smoothing filter for this joystick. */
   private final LinearFilter filter;
-  /** The input from the joystick. Declared outside of getValue to avoid garbage collection. */
-  private double input;
-  /**
-   * The sign of the input from the joystick. Declared outside of getValue to avoid garbage
-   * collection.
-   */
-  private double sign;
 
   /**
    * A basic constructor.
@@ -58,19 +51,19 @@ public class ThrottleDeadbanded extends ThrottleBasic {
   @Override
   public double getValue() {
     // Get the smoothed value
-    this.input = this.filter.calculate(this.pidGet());
+    double input = this.filter.calculate(this.pidGet());
 
-    this.sign = Math.signum(this.input);
-    this.input = Math.abs(this.input);
+    double sign = Math.signum(input);
+    input = Math.abs(input);
 
     // apply the deadband.
-    if (this.input < this.deadband) {
+    if (input < this.deadband) {
       return 0;
     }
 
     // scale so f(deadband) is 0 and f(1) is 1.
-    this.input = (this.input - this.deadband) / (1. - this.deadband);
+    input = (input - this.deadband) / (1. - this.deadband);
 
-    return this.sign * this.input;
+    return sign * input;
   }
 }

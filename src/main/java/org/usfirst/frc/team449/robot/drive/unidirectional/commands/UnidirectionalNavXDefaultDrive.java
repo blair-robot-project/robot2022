@@ -49,10 +49,6 @@ public class UnidirectionalNavXDefaultDrive<
   @Nullable private final DoubleUnaryOperator leftRamp, rightRamp;
   /** Whether or not we should be using the NavX to drive straight stably. */
   private boolean drivingStraight;
-  /** Logging variables. */
-  private double rawOutput, processedOutput, finalOutput;
-  /** Output to the left and right sides of the drive. Field to avoid garbage collection. */
-  private double leftOutput, rightOutput;
 
   /**
    * Default constructor
@@ -168,38 +164,40 @@ public class UnidirectionalNavXDefaultDrive<
     }
 
     // Get the outputs
-    this.rawOutput = this.getRawOutput();
-    this.leftOutput = this.oi.getLeftRightOutputCached()[0];
-    this.rightOutput = this.oi.getLeftRightOutputCached()[1];
+    double rawOutput = this.getRawOutput();
+    double leftOutput = this.oi.getLeftRightOutputCached()[0];
+    double rightOutput = this.oi.getLeftRightOutputCached()[1];
 
     // Ramp if it exists
     if (this.leftRamp != null && this.rightRamp != null) {
-      this.leftOutput = this.leftRamp.applyAsDouble(this.leftOutput);
-      this.rightOutput = this.rightRamp.applyAsDouble(this.rightOutput);
+      leftOutput = this.leftRamp.applyAsDouble(leftOutput);
+      rightOutput = this.rightRamp.applyAsDouble(rightOutput);
     }
 
     // If we're driving straight..
+    double processedOutput;
+    double finalOutput;
     if (this.drivingStraight) {
       // Process the output (minimumOutput, deadband, etc.)
-      this.processedOutput = this.getOutput();
+      processedOutput = this.getOutput();
 
       // Deadband if we're stationary
-      if (this.leftOutput == 0 && this.rightOutput == 0) {
-        this.finalOutput = this.deadbandOutput(this.processedOutput);
+      if (leftOutput == 0 && rightOutput == 0) {
+        finalOutput = this.deadbandOutput(processedOutput);
       } else {
-        this.finalOutput = this.processedOutput;
+        finalOutput = processedOutput;
       }
 
       // Adjust the heading according to the PID output, it'll be positive if we want to go right.
       this.subsystem.setOutput(
-          this.leftOutput - this.finalOutput, this.rightOutput + this.finalOutput);
+          leftOutput - finalOutput, rightOutput + finalOutput);
     }
     // If we're free driving...
     else {
-      this.processedOutput = 0;
-      this.finalOutput = 0;
+      processedOutput = 0;
+      finalOutput = 0;
       // Set the throttle to normal arcade throttle.
-      this.subsystem.setOutput(this.leftOutput, this.rightOutput);
+      this.subsystem.setOutput(leftOutput, rightOutput);
     }
   }
 
