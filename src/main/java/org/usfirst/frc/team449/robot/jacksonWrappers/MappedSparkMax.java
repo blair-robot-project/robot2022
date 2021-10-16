@@ -115,7 +115,7 @@ public class MappedSparkMax implements SmartMotor {
       @Nullable final Integer currentLimit,
       final boolean enableVoltageComp,
       @Nullable final List<PerGearSettings> perGearSettings,
-      @Nullable final Shiftable.gear startingGear,
+      @Nullable final Shiftable.Gear startingGear,
       @Nullable final Integer startingGearNum,
       @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
       @Nullable final Integer controlFrameRateMillis,
@@ -509,7 +509,7 @@ public class MappedSparkMax implements SmartMotor {
   }
 
   @Override
-  public void setGearScaledVelocity(final double velocity, final gear gear) {
+  public void setGearScaledVelocity(final double velocity, final Gear gear) {
     this.setGearScaledVelocity(velocity, gear.getNumVal());
   }
 
