@@ -7,12 +7,13 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.Objects;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.ConditionTimingComponentObserver;
 import org.usfirst.frc.team449.robot.other.Clock;
+
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Flywheel that reports readiness to shoot based on both readiness of underlying implementation and
@@ -26,19 +27,21 @@ public class FlywheelWithTimeout extends SubsystemBase implements SubsystemFlywh
 
   /** Time from giving the multiSubsystem voltage to being ready to fire, in seconds. */
   private final double timeout;
+
   private boolean isFlywheelOn;
 
   /**
    * @param implementation
    * @param timeoutOverride The override for the timeout value shooting condition to be reached
-   * before signalling that it is ready to shoot regardless.
+   *     before signalling that it is ready to shoot regardless.
    */
   @JsonCreator
   public FlywheelWithTimeout(
       @NotNull @JsonProperty(required = true) final SubsystemFlywheel implementation,
       @Nullable final Double timeoutOverride) {
     this.implementation = implementation;
-    this.timeout = Objects.requireNonNullElse(timeoutOverride, this.implementation.getSpinUpTimeSecs());
+    this.timeout =
+        Objects.requireNonNullElse(timeoutOverride, this.implementation.getSpinUpTimeSecs());
 
     this.speedConditionTimer = new ConditionTimingComponentObserver(false);
   }
@@ -78,7 +81,9 @@ public class FlywheelWithTimeout extends SubsystemBase implements SubsystemFlywh
   @Override
   public void update() {
     this.implementation.update();
-    this.speedConditionTimer.update(Clock.currentTimeSeconds(), this.isFlywheelOn && !this.implementation.isConditionTrueCached());
+    this.speedConditionTimer.update(
+        Clock.currentTimeSeconds(),
+        this.isFlywheelOn && !this.implementation.isConditionTrueCached());
 
     SubsystemFlywheel.super.update();
   }

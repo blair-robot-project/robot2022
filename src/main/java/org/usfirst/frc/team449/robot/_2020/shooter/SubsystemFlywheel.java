@@ -1,9 +1,10 @@
 package org.usfirst.frc.team449.robot._2020.shooter;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemConditional;
+
+import java.util.Optional;
 
 /** A subsystem with a flywheel and feeder. */
 @JsonTypeInfo(
@@ -18,12 +19,12 @@ public interface SubsystemFlywheel extends SubsystemConditional {
   /** Turn the flywheel off. */
   void turnFlywheelOff();
 
-//  /** @return The current state of the flywheel. */
-//  @NotNull
-//  FlywheelState getFlywheelState();
-//
-//  /** @param state The state to switch the flywheel to. */
-//  void setFlywheelState(@NotNull FlywheelState state);
+  //  /** @return The current state of the flywheel. */
+  //  @NotNull
+  //  FlywheelState getFlywheelState();
+  //
+  //  /** @param state The state to switch the flywheel to. */
+  //  void setFlywheelState(@NotNull FlywheelState state);
 
   /** @return Expected time from giving the flywheel voltage to being ready to fire, in seconds. */
   double getSpinUpTimeSecs();
@@ -41,13 +42,13 @@ public interface SubsystemFlywheel extends SubsystemConditional {
     return Optional.empty();
   }
 
-//  /** An enum for the possible states of the flywheel. */
-//  enum FlywheelState {
-//    // Both flywheel and feeder off
-//    OFF,
-//    // Feeder off, flywheel on
-//    SPINNING_UP,
-//    // Both flywheel and feeder on
-//    SHOOTING
-//  }
+  //  /** An enum for the possible states of the flywheel. */
+  //  enum FlywheelState {
+  //    // Both flywheel and feeder off
+  //    OFF,
+  //    // Feeder off, flywheel on
+  //    SPINNING_UP,
+  //    // Both flywheel and feeder on
+  //    SHOOTING
+  //  }
 }

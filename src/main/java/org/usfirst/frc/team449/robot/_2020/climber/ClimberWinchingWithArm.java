@@ -1,7 +1,5 @@
 package org.usfirst.frc.team449.robot._2020.climber;
 
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,6 +10,8 @@ import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemBinaryMotor;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemSolenoid;
+
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
  * A climber subsystem that has an arm that is raised pneumatically and lowered with force by means
@@ -118,11 +118,7 @@ public class ClimberWinchingWithArm extends SubsystemBase
     return this.solenoidSubsystem.getSolenoidPosition();
   }
 
-  /**
-   * Whether or not the winch up command is enabled
-   *
-   * @return
-   */
+  /** Whether or not the winch up command is enabled */
   public boolean winchUpEnabled() {
     return manualControlEnabled || armState == ArmState.UP;
   }
@@ -130,17 +126,13 @@ public class ClimberWinchingWithArm extends SubsystemBase
   /**
    * Set the manualControlEnabled field
    *
-   * @param manualControlEnabled
+   * @param manualControlEnabled Whether or not manual control should be enabled
    */
   public void setManualControl(boolean manualControlEnabled) {
     this.manualControlEnabled = manualControlEnabled;
   }
 
-  /**
-   * Whether or not manual control is enabled
-   *
-   * @return
-   */
+  /** Whether or not manual control is enabled */
   public boolean isManualControlEnabled() {
     return manualControlEnabled;
   }

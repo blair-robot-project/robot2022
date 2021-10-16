@@ -2,10 +2,11 @@ package org.usfirst.frc.team449.robot._2020.feeder;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
+
+import java.util.Map;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,
@@ -23,7 +24,8 @@ public class FeederSystem extends IntakeSimple {
    * @param velocities The velocity for the motor to go at for each {@link IntakeMode}, on the
    */
   @JsonCreator
-  public FeederSystem(@NotNull final SimpleMotor motor, @NotNull final Map<IntakeMode, Double> velocities) {
+  public FeederSystem(
+      @NotNull final SimpleMotor motor, @NotNull final Map<IntakeMode, Double> velocities) {
     super(motor, velocities);
   }
 

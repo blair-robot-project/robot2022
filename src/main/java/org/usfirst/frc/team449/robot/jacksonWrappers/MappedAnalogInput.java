@@ -55,5 +55,4 @@ public class MappedAnalogInput extends AnalogInput implements Updatable, Loggabl
   public void update() {
     percentValueCached = getPercentValue();
   }
-
 }

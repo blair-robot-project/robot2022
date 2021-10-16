@@ -12,7 +12,8 @@ import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
     use = JsonTypeInfo.Id.CLASS,
     include = JsonTypeInfo.As.WRAPPER_OBJECT,
     property = "@class")
-public class SetIntakeModeAndOverriding<T extends Subsystem & SubsystemIntake> extends SetIntakeMode<T> {
+public class SetIntakeModeAndOverriding<T extends Subsystem & SubsystemIntake>
+    extends SetIntakeMode<T> {
 
   /** The subsystem to execute this command on. */
   @NotNull @Log.Exclude private final T subsystem;
@@ -25,16 +26,8 @@ public class SetIntakeModeAndOverriding<T extends Subsystem & SubsystemIntake> e
    */
   @JsonCreator
   public SetIntakeModeAndOverriding(
-      @NotNull final T subsystem,
-      final SubsystemIntake.@NotNull IntakeMode mode) {
+      @NotNull final T subsystem, final SubsystemIntake.@NotNull IntakeMode mode) {
     super(subsystem, mode);
     this.subsystem = subsystem;
-  }
-
-  /** Set the intake to the given mode. */
-  @Override
-  public void execute() {
-    super.execute();
-
   }
 }

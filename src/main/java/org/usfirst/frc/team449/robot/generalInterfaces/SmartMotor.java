@@ -19,21 +19,17 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMax;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
-import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
-import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
-import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
-import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
+import org.usfirst.frc.team449.robot.jacksonWrappers.*;
 import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimulated;
 import org.usfirst.frc.team449.robot.other.Updater;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
@@ -209,7 +205,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
       for (final Object frame : statusFrameRatesMillis.keySet()) {
         if (frame instanceof String) {
           // Must put it in quotes so Jackson recognizes it as a string.
-          final String toBeParsed = "\"" + frame.toString() + "\"";
+          final String toBeParsed = "\"" + frame + "\"";
           try {
             if (actualType == Type.TALON) {
               talonStatusFramesMap.put(

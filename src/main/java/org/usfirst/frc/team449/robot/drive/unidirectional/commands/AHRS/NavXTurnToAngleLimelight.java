@@ -88,14 +88,10 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
     // Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
     // Do math to setup the setpoint.
     this.setSetpoint(clipTo180(subsystem.getHeadingCached() - limelight.getX()));
-    //System.out.println("Current setpoint = " + limelight.getX());
-    final LimelightDistanceComponent distanceComponent = new LimelightDistanceComponent(limelight, 20. / 12., 36, 7.5);
+    // System.out.println("Current setpoint = " + limelight.getX());
+    final LimelightDistanceComponent distanceComponent =
+        new LimelightDistanceComponent(limelight, 20. / 12., 36, 7.5);
     System.out.println(distanceComponent.getAsDouble());
-  }
-
-  @Override
-  public void execute() {
-    super.execute();
   }
 
   /** Log when the command ends. */

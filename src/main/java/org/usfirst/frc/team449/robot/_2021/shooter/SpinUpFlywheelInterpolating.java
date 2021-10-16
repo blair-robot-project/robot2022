@@ -9,12 +9,13 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.shooter.SubsystemFlywheel;
 import org.usfirst.frc.team449.robot.components.MapInterpolationComponent;
+
 import java.util.function.DoubleSupplier;
 
 /**
  * Signals the flywheel to turn on and optionally forces the specified subsystem that feeds the
- * flywheel to the off state.
- * Uses a MapInterpolationComponent to calculate the appropriate speed to set the flywheel to.
+ * flywheel to the off state. Uses a MapInterpolationComponent to calculate the appropriate speed to
+ * set the flywheel to.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SpinUpFlywheelInterpolating extends InstantCommand {
@@ -30,7 +31,8 @@ public class SpinUpFlywheelInterpolating extends InstantCommand {
    *
    * @param flywheel The subsystem to execute this command on.
    * @param targetSpeed The target speed in arbitrary units at which to run the flywheel.
-   * @param limelightComponent The component that calculates the distance to the target using the limelight
+   * @param limelightComponent The component that calculates the distance to the target using the
+   *     limelight
    */
   @JsonCreator
   public SpinUpFlywheelInterpolating(

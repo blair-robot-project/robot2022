@@ -7,10 +7,11 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.other.InjectiveDependencyHelper;
+
+import java.util.Map;
 
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
@@ -36,7 +37,7 @@ public class IntakeSimple extends SubsystemBase
    *
    * @param motor The motor this subsystem controls.
    * @param velocities The velocity for the motor to go at for each {@link IntakeMode}, on the
-   * interval [-1, 1]. Modes can be missing to indicate that this intake doesn't have/use them.
+   *     interval [-1, 1]. Modes can be missing to indicate that this intake doesn't have/use them.
    */
   @JsonCreator
   public IntakeSimple(
@@ -85,11 +86,11 @@ public class IntakeSimple extends SubsystemBase
       this.motor.enable();
       this.motor.setVelocity(this.velocities.get(mode));
     } else {
-//      System.err.println(getLogPrefix(this) + "Warning: use of undefined mode " + mode);
-//      Shuffleboard.addEventMarker(
-//          "Undefined " + getLogPrefix(this) + "mode used",
-//          "mode: " + mode,
-//          EventImportance.kCritical);
+      //      System.err.println(getLogPrefix(this) + "Warning: use of undefined mode " + mode);
+      //      Shuffleboard.addEventMarker(
+      //          "Undefined " + getLogPrefix(this) + "mode used",
+      //          "mode: " + mode,
+      //          EventImportance.kCritical);
 
       DriverStation.reportError("Mode not defined for instance: " + mode, false);
     }

@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
-import java.util.function.BooleanSupplier;
-
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake.IntakeMode;
+
+import java.util.function.BooleanSupplier;
 
 /** A feeder that counts balls */
 @JsonIdentityInfo(generator = StringIdGenerator.class)
@@ -86,19 +86,19 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
       }
     }
 
-    //todo check if sensor2 should also be checked
+    // todo check if sensor2 should also be checked
     if (!sensor1Now && sensor1Cached) {
-      //A ball has moved in
-      numBalls ++;
+      // A ball has moved in
+      numBalls++;
     }
 
-//     If it's taking in balls and it's over the limit, stop
-//     If it's not supposed to be running, stop
+    //     If it's taking in balls and it's over the limit, stop
+    //     If it's not supposed to be running, stop
     if ((numBalls > ballThreshold /*&& feeder.getMode() == IntakeMode.IN_FAST*/)
         || !shouldBeRunning()) {
       feeder.setMode(IntakeMode.OFF);
     } else {
-      //keep going otherwise
+      // keep going otherwise
       feeder.setMode(defaultMode);
     }
 
@@ -109,11 +109,11 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
   }
 
   /**
-   * 2021 code to determine whether the balls were placed
-   * in the red or blue formations
+   * 2021 code to determine whether the balls were placed in the red or blue formations
+   *
    * @return true if the system has a ball, false otherwise
    */
-  public boolean hasBall(){
+  public boolean hasBall() {
     return numBalls != 0;
   }
 

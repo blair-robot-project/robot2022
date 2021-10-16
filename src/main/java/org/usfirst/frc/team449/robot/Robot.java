@@ -11,21 +11,16 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.yaml.snakeyaml.Yaml;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.*;
 
 /** The main class of the robot, constructs all the subsystems and initializes default commands. */
 public class Robot extends TimedRobot {
@@ -42,18 +37,17 @@ public class Robot extends TimedRobot {
    */
   @NotNull public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
   /** The name of the map to read from. Should be overriden by a subclass to change the name. */
+  @NotNull public static final String mapName = "outreach.yml";
+  /** The filepath to the resources folder containing the config files. */
   @NotNull
-  public static final String mapName = "outreach.yml";
-  /**
-   * The filepath to the resources folder containing the config files.
-   */
-  @NotNull
-  public static final String RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
+  public static final String RESOURCES_PATH =
+      RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
   /**
    * Format for the reference chain (place in the map where the error occurred) when a map error is
    * printed.
    */
   private static final MapErrorFormat MAP_REF_CHAIN_FORMAT = MapErrorFormat.TABLE;
+
   private static boolean isUnitTesting = false;
   private static boolean isTestingHasBeenCalled = false;
   /** The object constructed directly from the yaml map. */
@@ -63,8 +57,7 @@ public class Robot extends TimedRobot {
   public static @Nullable RobotMap loadMap() {
     try {
       // Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
-      final Map<?, ?> normalized =
-          (Map<?, ?>) new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
+      final Map<?, ?> normalized = new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
 
       final YAMLMapper mapper = new YAMLMapper();
 
@@ -99,8 +92,8 @@ public class Robot extends TimedRobot {
   /**
    * Whether robot code is being unit tested. Note that this is NOT the same as test mode.
    *
-   * <p>The return value will never change observably. {@link Robot#notifyTesting()} will thus
-   * throw an exception if it is called after the first time that this method is called.
+   * <p>The return value will never change observably. {@link Robot#notifyTesting()} will thus throw
+   * an exception if it is called after the first time that this method is called.
    *
    * @return whether the current run is a unit test
    */
@@ -114,7 +107,7 @@ public class Robot extends TimedRobot {
    *
    * @throws UnsupportedOperationException if the robot is not running in a simulation
    * @throws IllegalStateException if {@link Robot#isUnitTesting()} has already been called before
-   * this method is called
+   *     this method is called
    */
   public static void notifyTesting() throws UnsupportedOperationException, IllegalStateException {
     if (RobotBase.isReal())

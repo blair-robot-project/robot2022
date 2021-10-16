@@ -1,7 +1,5 @@
 package org.usfirst.frc.team449.robot._2020.climber;
 
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,6 +14,8 @@ import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemBinaryMotor;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemSolenoid;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 import org.usfirst.frc.team449.robot.other.Clock;
+
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
  * Like {@link ClimberWinchingWithArm} with safety features (stuff needs to be enabled to move)
@@ -33,9 +33,9 @@ public class SafeWinchingClimber extends SubsystemBase
   private final SubsystemSolenoid solenoidSubsystem;
 
   private final long extensionTimeMillis;
+  @Log private final boolean enableArm = true;
   @Log private boolean armIsExtending = false;
   @Log private long extensionStartTime = 0L;
-  @Log private boolean enableArm = true;
   @Log private boolean reallySure = false;
 
   @JsonCreator
@@ -100,13 +100,13 @@ public class SafeWinchingClimber extends SubsystemBase
    */
   @Override
   public void turnMotorOn() {
-//    if (this.armIsUp()) {
-//      if (!this.reallySure) {
-//        this.reallySure = true;
-//      } else {
-//        this.enableArm = false;
-//      }
-//    }
+    //    if (this.armIsUp()) {
+    //      if (!this.reallySure) {
+    //        this.reallySure = true;
+    //      } else {
+    //        this.enableArm = false;
+    //      }
+    //    }
     this.setSolenoid(DoubleSolenoid.Value.kReverse);
     Timer.delay(3.);
     this.motorSubsystem.turnMotorOn();
