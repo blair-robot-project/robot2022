@@ -1,2 +1,2 @@
-# robot2021
-The code for the 2021 season, for Atlas!
+# bunnybot2021
+The 2021 Bunnybots code!
