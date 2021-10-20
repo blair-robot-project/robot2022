@@ -1,6 +1,6 @@
 import org.junit.Assert;
 import org.junit.Test;
-import org.usfirst.frc.team449.robot.Robot;
+import frc.team449.Robot;
 
 public final class Tests {
   @org.junit.Before
