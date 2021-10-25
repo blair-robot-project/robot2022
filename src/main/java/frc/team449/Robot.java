@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.team449.javaMaps.Bunnybot2021Map;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +56,8 @@ public class Robot extends TimedRobot {
 
   /** The method that runs when the robot is turned on. Initializes all subsystems from the map. */
   public static @Nullable RobotMap loadMap() {
-    try {
+    return Bunnybot2021Map.createRobotMap();
+    /*try {
       // Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
       final Map<?, ?> normalized = new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
 
@@ -86,7 +88,7 @@ public class Robot extends TimedRobot {
       // Suppress IntelliJ inspections.
       //noinspection InfiniteLoopStatement,StatementWithEmptyBody
       while (true) {}
-    }
+    }*/
   }
 
   /**
