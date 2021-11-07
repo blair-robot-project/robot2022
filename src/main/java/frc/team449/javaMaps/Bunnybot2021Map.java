@@ -9,6 +9,9 @@ import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449._2020.multiSubsystem.SolenoidSimple;
 import frc.team449._2020.multiSubsystem.commands.SetSolenoidPose;
+import frc.team449._2021BunnyBot.Elevator.OneMotorPulleyElevator;
+import frc.team449._2021BunnyBot.Elevator.commands.LowerElevator;
+import frc.team449._2021BunnyBot.Elevator.commands.RaiseElevator;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.components.ShiftComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyroShiftable;
@@ -36,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Bunnybot2021Map {
 
@@ -62,21 +66,29 @@ public class Bunnybot2021Map {
         rightMasterPort = 2,
         rightMasterSlave1Port = 4,
         rightMasterSlave2Port = 6,
-        intakeMotorPort = 7;
+        intakeMotorPort = 7,
+        elevatorMotorPort = 8;
+
     // Solenoid ports
     int intakeSolenoidForward = 2, intakeSolenoidReverse = 3;
+
     // Drive input-output ports. Things like encoders go here
+
     // Joystick ports
     int mechanismsJoystickPort = 0, driveJoystickPort = 1;
+
     // Driver button numbers
     int driverIntakeOutOn = 1,
         driverIntakeOff = 2,
         driverIntakeRev = 3,
         driverIntakeInOff = 4,
         shiftUp = 5;
-    // Mechs button numbers
 
+    // Mechs button numbers
+    int elevatorLift = 2,
+        elevatorLower = 3;
     // Motor speeds
+    double elevatorMotorSpeed = 0.5;
 
     var useCameraServer = false;
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
@@ -158,7 +170,18 @@ public class Bunnybot2021Map {
                 List.of(leftMaster, rightMaster), new DoubleSolenoid(0, 0, 1), Shiftable.Gear.LOW),
             false);
 
-    var subsystems = List.<Subsystem>of(drive);
+    //Elevator
+    var elevatorPulleyMotor = new SmartMotorBuilder()
+            .name("elevator")
+            .type(SmartMotor.Type.SPARK)
+            .currentLimit(40)
+            .pdp(pdp)
+            .enableBrakeMode(true)
+            .port(elevatorMotorPort)
+            .build();
+    var elevator = new OneMotorPulleyElevator(elevatorPulleyMotor, elevatorMotorSpeed);
+
+    var subsystems = List.<Subsystem>of(drive, elevator);
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
@@ -227,7 +250,19 @@ public class Bunnybot2021Map {
             new CommandButton(
                 new SimpleButton(driveJoystick, shiftUp),
                 new ShiftGears(drive),
-                CommandButton.Action.WHEN_PRESSED));
+                CommandButton.Action.WHEN_PRESSED),
+            // elevator UP
+            new CommandButton(
+                new SimpleButton(mechanismsJoystick, elevatorLift),
+                new RaiseElevator(elevator),
+                CommandButton.Action.WHILE_HELD
+            ),
+            // elevator DOWN
+            new CommandButton(
+                    new SimpleButton(mechanismsJoystick, elevatorLower),
+                    new LowerElevator(elevator),
+                    CommandButton.Action.WHILE_HELD
+            ));
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();
