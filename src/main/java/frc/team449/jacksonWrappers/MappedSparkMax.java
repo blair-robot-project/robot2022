@@ -105,9 +105,9 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
         slaveSparks);
     this.canEncoder = this.spark.getEncoder();
     this.pidController = this.spark.getPIDController();
-
     // todo determine if encoderCPR will ever be needed
     this.encoderCPR = this.canEncoder.getCountsPerRevolution();
+    this.resetPosition();
   }
 
   @Override

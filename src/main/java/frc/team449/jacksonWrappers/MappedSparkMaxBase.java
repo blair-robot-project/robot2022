@@ -115,8 +115,8 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
     // Set brake mode
     this.spark.setIdleMode(
         enableBrakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
-    // Reset the position
-    this.resetPosition();
+//    Reset the position
+//    this.resetPosition(); //causes null pointer exception
 
     // Set frame rates
     if (controlFrameRateMillis != null) {
@@ -164,8 +164,9 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
       currentGear = startingGear.getNumVal();
     }
     this.currentGearSettings = this.perGearSettings.get(currentGear);
-    // Set up gear-based settings.
-    this.setGear(currentGear);
+//    Set up gear-based settings.
+//    this.setGear(currentGear);  // causes null pointer exception
+
     // postEncoderGearing defaults to 1
     this.postEncoderGearing = postEncoderGearing != null ? postEncoderGearing : 1.;
 

@@ -19,11 +19,8 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.shiftable.commands.ShiftGears;
+import frc.team449.jacksonWrappers.*;
 import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
-import frc.team449.jacksonWrappers.MappedAHRS;
-import frc.team449.jacksonWrappers.MappedJoystick;
-import frc.team449.jacksonWrappers.PDP;
-import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
 import frc.team449.javaMaps.builders.SmartMotorBuilder;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
@@ -34,6 +31,7 @@ import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -171,14 +169,32 @@ public class Bunnybot2021Map {
             false);
 
     //Elevator
-    var elevatorPulleyMotor = new SmartMotorBuilder()
-            .name("elevator")
-            .type(SmartMotor.Type.SPARK)
-            .currentLimit(40)
-            .pdp(pdp)
-            .enableBrakeMode(true)
-            .port(elevatorMotorPort)
-            .build();
+    var elevatorPulleyMotor = new MappedSparkMax(
+            elevatorMotorPort,
+            "elevator",
+            false,
+            true,
+            pdp,
+            null,
+            null,
+            null,
+            null,
+            null,
+            1.0,
+            1.0,
+            40,
+            false,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
+    // PID for elevator
+    elevatorPulleyMotor.setPID(
+            0,
+            0,
+            0);
     var elevator = new OneMotorPulleyElevator(elevatorPulleyMotor, elevatorMotorSpeed);
 
     var subsystems = List.<Subsystem>of(drive, elevator);
