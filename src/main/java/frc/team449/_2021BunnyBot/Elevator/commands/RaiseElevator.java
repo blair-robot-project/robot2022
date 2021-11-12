@@ -3,6 +3,7 @@ package frc.team449._2021BunnyBot.Elevator.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449._2021BunnyBot.Elevator.OneMotorPulleyElevator;
+import frc.team449._2021BunnyBot.Elevator.OneMotorPulleyElevator.ElevatorPosition;
 
 
 public class RaiseElevator extends CommandBase {
@@ -11,18 +12,21 @@ public class RaiseElevator extends CommandBase {
         addRequirements(elevator);
         this.elevator = elevator;
     }
+    /**
+     * Moves the elevator one above the current level of elevation
+     */
     @Override
     public void execute(){
-        elevator.setSameVelocity();
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        elevator.setVelocity(0);
+        switch(elevator.getPosition()){
+            // Case TOP does not exist because we cannot move above the top of the elevator
+            case UPPER: elevator.moveToPosition(ElevatorPosition.TOP);break;
+            case LOWER: elevator.moveToPosition(ElevatorPosition.UPPER);break;
+            case BOTTOM: elevator.moveToPosition(ElevatorPosition.LOWER);break;
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

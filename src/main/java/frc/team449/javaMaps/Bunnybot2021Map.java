@@ -10,7 +10,9 @@ import frc.team449.RobotMap;
 import frc.team449._2020.multiSubsystem.SolenoidSimple;
 import frc.team449._2020.multiSubsystem.commands.SetSolenoidPose;
 import frc.team449._2021BunnyBot.Elevator.OneMotorPulleyElevator;
+import frc.team449._2021BunnyBot.Elevator.OneMotorPulleyElevator.ElevatorPosition;
 import frc.team449._2021BunnyBot.Elevator.commands.LowerElevator;
+import frc.team449._2021BunnyBot.Elevator.commands.MoveToPosition;
 import frc.team449._2021BunnyBot.Elevator.commands.RaiseElevator;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.components.ShiftComponent;
@@ -31,7 +33,6 @@ import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -190,12 +191,14 @@ public class Bunnybot2021Map {
             null,
             null,
             null);
-    // PID for elevator
+    // PID constants for elevator
     elevatorPulleyMotor.setPID(
             0,
             0,
             0);
-    var elevator = new OneMotorPulleyElevator(elevatorPulleyMotor, elevatorMotorSpeed);
+    // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
+    // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
+    var elevator = new OneMotorPulleyElevator(elevatorPulleyMotor, ElevatorPosition.BOTTOM);
 
     var subsystems = List.<Subsystem>of(drive, elevator);
 
@@ -267,17 +270,29 @@ public class Bunnybot2021Map {
                 new SimpleButton(driveJoystick, shiftUp),
                 new ShiftGears(drive),
                 CommandButton.Action.WHEN_PRESSED),
-            // elevator UP
+            // elevator move to TOP position
             new CommandButton(
-                new SimpleButton(mechanismsJoystick, elevatorLift),
-                new RaiseElevator(elevator),
-                CommandButton.Action.WHILE_HELD
+                    new SimpleButton(mechanismsJoystick, 1),
+                    new MoveToPosition(ElevatorPosition.TOP, elevator),
+                    CommandButton.Action.WHEN_PRESSED
             ),
-            // elevator DOWN
+            // elevator move to UPPER position
             new CommandButton(
-                    new SimpleButton(mechanismsJoystick, elevatorLower),
-                    new LowerElevator(elevator),
-                    CommandButton.Action.WHILE_HELD
+                    new SimpleButton(mechanismsJoystick, 2),
+                    new MoveToPosition(ElevatorPosition.UPPER, elevator),
+                    CommandButton.Action.WHEN_PRESSED
+            ),
+            // elevator move to LOWER position
+            new CommandButton(
+                    new SimpleButton(mechanismsJoystick, 3),
+                    new MoveToPosition(ElevatorPosition.LOWER, elevator),
+                    CommandButton.Action.WHEN_PRESSED
+            ),
+            // elevator move to BOTTOM position
+            new CommandButton(
+                    new SimpleButton(mechanismsJoystick, 4),
+                    new MoveToPosition(ElevatorPosition.BOTTOM, elevator),
+                    CommandButton.Action.WHEN_PRESSED
             ));
 
     var robotStartupCommands = List.<Command>of();

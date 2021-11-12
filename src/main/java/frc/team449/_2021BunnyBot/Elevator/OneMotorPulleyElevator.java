@@ -7,38 +7,59 @@ import frc.team449.generalInterfaces.SmartMotor;
 import org.jetbrains.annotations.NotNull;
 
 public class OneMotorPulleyElevator extends SubsystemBase {
+
     @NotNull private final SmartMotor pulleyMotor;
-    private double velocity;
+    @NotNull private ElevatorPosition position;
 
     /**
         @param pulleyMotor single motor used for the pulley
-        @param velocity the speed the elevator should rise and lower at, should be in interval [-1, 1]
      */
     @JsonCreator
     public OneMotorPulleyElevator(
-            @NotNull @JsonProperty(required = true) SmartMotor pulleyMotor,
-            @JsonProperty(required = true) double velocity) {
+            @NotNull SmartMotor pulleyMotor,
+            @NotNull ElevatorPosition position) {
         this.pulleyMotor = pulleyMotor;
-        this.velocity = velocity;
+        this.position = position;
     }
 
-    // spin in the same direction of the velocity
-    public void setSameVelocity(){
-        pulleyMotor.setVelocity(velocity);
-    }
-
-    // spin in opposite direction of the velocity
-    public void setOppositeVelocity(){
-        pulleyMotor.setVelocity(-velocity);
-    }
-
-    // returns the currrent velocity of the pulley motor
+    /**
+     * @return velocity of the elevator motor
+     */
     public double getVelocity(){
         return pulleyMotor.getVelocity();
     }
 
-    // set to any velocity [-1, 1]
-    public void setVelocity(double vel){
-        pulleyMotor.setVelocity(vel);
+    /**
+     * @return the current position of the elevator
+     */
+    @NotNull public ElevatorPosition getPosition(){
+        return position;
+    }
+
+    /**
+        @param pos the desired position to set the elevator
+     */
+    public void moveToPosition(@NotNull ElevatorPosition pos){
+        pulleyMotor.setPositionSetpoint(pos.distanceFromBottom);
+
+        // convert the position into a string to send a message to the console on the updated position
+        String positionString = pos == ElevatorPosition.TOP? "TOP": pos == ElevatorPosition.UPPER? "UPPER": pos == ElevatorPosition.LOWER? "LOWER": "BOTTOM";
+        System.out.println("Moving to " + positionString + " position.");
+
+        // update position
+        position = pos;
+    }
+
+    public enum ElevatorPosition {
+        TOP(0.3), UPPER (0.2), LOWER (0.1), BOTTOM(0.0);
+
+        /**
+         * The distance of this position from the bottom in meters
+         */
+        public final double distanceFromBottom;
+
+        ElevatorPosition(double distanceFromBottom) {
+            this.distanceFromBottom = distanceFromBottom;
+        }
     }
 }
