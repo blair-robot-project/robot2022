@@ -79,19 +79,10 @@ public class AHRSRumbleComponent implements Runnable {
   /** Read the NavX jerk data and rumble the joysticks based off of it. */
   @Override
   public void run() {
-    // TODO Both branches of this if statement are the exact same!
     double frontBack;
     double leftRight;
-    if (this.yIsFrontBack) {
-      // Put an abs() here because we can't differentiate front vs back when rumbling, so we only
-      // care about
-      // magnitude.
-      frontBack = Math.abs(this.ahrs.getYAccel());
-      leftRight = this.ahrs.getXAccel() * (this.invertLeftRight ? -1 : 1);
-    } else {
-      frontBack = Math.abs(this.ahrs.getYAccel());
-      leftRight = this.ahrs.getXAccel() * (this.invertLeftRight ? -1 : 1);
-    }
+    frontBack = Math.abs(this.ahrs.getYAccel());
+    leftRight = this.ahrs.getXAccel() * (this.invertLeftRight ? -1 : 1);
 
     // Left is negative jerk, so we subtract it from left so that when we're going left, left is
     // bigger and vice

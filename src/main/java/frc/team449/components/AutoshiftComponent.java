@@ -10,6 +10,7 @@ import frc.team449.other.Debouncer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 /** A component class for autoshifting. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -147,7 +148,7 @@ public class AutoshiftComponent {
    * @param shift The function to actually shift gears.
    */
   public void autoshift(
-      double forwardThrottle, double leftVel, double rightVel, Consumer<Integer> shift) {
+      double forwardThrottle, double leftVel, double rightVel, IntConsumer shift) {
     if (shouldDownshift(forwardThrottle, leftVel, rightVel)) {
       shift.accept(Shiftable.Gear.LOW.getNumVal());
     } else if (shouldUpshift(forwardThrottle, leftVel, rightVel)) {

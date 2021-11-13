@@ -23,7 +23,6 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
   private final int ballThreshold;
   private final SubsystemIntake.IntakeMode defaultMode;
   private final Command flywheelStopCommand;
-  // private final double updateTimeMillis;
 
   /** The previous values from the IR sensors */
   private boolean sensor1Cached, sensor2Cached, flywheelStoppedCached;
@@ -64,7 +63,6 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
     sensor1Cached = sensor1.getAsBoolean();
     sensor2Cached = sensor2.getAsBoolean();
     flywheelStoppedCached = flywheelStopCommand.isFinished();
-    // this.updateTimeMillis = updateTimeMillis;
   }
 
   @Override
@@ -75,13 +73,11 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
     boolean sensor1Now = sensor1.getAsBoolean(),
         sensor2Now = sensor2.getAsBoolean(),
         flywheelStoppedNow = flywheelStopCommand.isFinished();
-    // var mode = feeder.getMode();
     if (!flywheelStoppedCached && flywheelStopCommand.isFinished()) {
       if (!sensor2Now) {
         numBalls = 0;
       } else {
         // Having a ball still there wouldn't make sense. Maybe set numBalls to 1?
-        // numBalls --;
       }
     }
 
