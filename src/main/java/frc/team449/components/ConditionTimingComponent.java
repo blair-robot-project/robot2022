@@ -18,7 +18,7 @@ public abstract class ConditionTimingComponent implements Loggable {
   @Log.ToString private double lastBecameTrue = Double.NaN;
   @Log.ToString private double lastBecameFalse = Double.NaN;
 
-  public ConditionTimingComponent(final boolean initialValue) {
+  protected ConditionTimingComponent(final boolean initialValue) {
     this.current = initialValue;
 
     RegistrationOrderIDUtil.registerInstance(this);
