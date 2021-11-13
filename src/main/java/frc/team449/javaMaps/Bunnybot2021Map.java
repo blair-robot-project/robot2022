@@ -35,7 +35,6 @@ import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -209,10 +208,7 @@ public class Bunnybot2021Map {
             .axis(0)
             .deadband(0.08)
             .inverted(false)
-            .polynomial(
-                new Polynomial(
-                    // We can't use just Map.of because a mutable Map is needed
-                    new HashMap<>(Map.of(1., 0.5)), null))
+            .polynomial(new Polynomial(Map.of(1., 0.5), null))
             .build();
     var fwdThrottle =
         new ThrottleSum(
@@ -223,10 +219,9 @@ public class Bunnybot2021Map {
                   .inverted(false)
                   .polynomial(
                       new Polynomial(
-                          new HashMap<>(
-                              Map.of(
-                                  1., 2.,
-                                  2., 1.)),
+                          Map.of(
+                              1., 2.,
+                              2., 1.),
                           null))
                   .build(),
               throttlePrototype.axis(2).inverted(true).build()
@@ -239,10 +234,9 @@ public class Bunnybot2021Map {
             false,
             driveJoystick,
             new Polynomial(
-                new HashMap<>(
-                    Map.of(
-                        0.5, 0.4,
-                        0., 0.2)),
+                Map.of(
+                    0.5, 0.4,
+                    0., 0.2),
                 null),
             1.0,
             true);
