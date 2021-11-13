@@ -12,8 +12,6 @@ import frc.team449.other.Util;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 
-import static frc.team449.other.Util.getLogPrefix;
-
 /**
  * A climber subsystem that has an arm that is raised pneumatically and lowered with force by means
  * of a winch.

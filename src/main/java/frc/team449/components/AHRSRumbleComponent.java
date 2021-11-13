@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.generalInterfaces.rumbleable.Rumbleable;
 import frc.team449.jacksonWrappers.MappedAHRS;
-import org.jetbrains.annotations.NotNull;
 import frc.team449.other.Clock;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class AHRSRumbleComponent implements Runnable {
   private final double maxJerk;
 
   /** Whether the NavX Y-axis measures forwards-back jerk or left-right jerk. */
-  private final boolean yIsFrontBack;
+  private final boolean yIsFrontBack; //TODO why is this never accessed
 
   /** Whether to invert the left-right jerk measurement. */
   private final boolean invertLeftRight;

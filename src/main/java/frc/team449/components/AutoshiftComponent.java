@@ -9,7 +9,6 @@ import frc.team449.other.Clock;
 import frc.team449.other.Debouncer;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 /** A component class for autoshifting. */

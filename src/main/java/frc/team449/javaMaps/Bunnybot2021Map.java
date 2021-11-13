@@ -38,20 +38,22 @@ import java.util.List;
 import java.util.Map;
 
 public class Bunnybot2021Map {
-
+  private Bunnybot2021Map() {
+    throw new IllegalStateException("This is a utility class!");
+  }
   // Drive system
-  public static final int leftMasterPort = 1,
-      leftMasterSlave1Port = 3,
-      leftMasterSlave2Port = 5,
-      rightMasterPort = 2,
-      rightMasterSlave1Port = 4,
-      rightMasterSlave2Port = 6;
+  public static final int LEFT_MASTER_PORT = 1,
+      LEFT_MASTER_SLAVE_1_PORT = 3,
+      LEFT_MASTER_SLAVE_2_PORT = 5,
+      RIGHT_MASTER_PORT = 2,
+      RIGHT_MASTER_SLAVE_1_PORT = 4,
+      RIGHT_MASTER_SLAVE_2_PORT = 6;
   // Intake system
-  public static final int intakeMotorPort = 7;
+  public static final int INTAKE_MOTOR_PORT = 7;
 
   // Solenoid ports
-  public static final int intakeSolenoidForwardPort = 2, intakeSolenoidReversePort = 3;
-  public static final int mechanismsJoystickPort = 0, driveJoystickPort = 1;
+  public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
+  public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
 
   @NotNull
   public static RobotMap createRobotMap() {
@@ -62,7 +64,7 @@ public class Bunnybot2021Map {
         rightMasterPort = 2,
         rightMasterSlave1Port = 4,
         rightMasterSlave2Port = 6,
-        intakeMotorPort = 7,
+        intakeMotorPort = 7, //TODO This is never used
         elevatorMotorPort = 8;
 
     // Solenoid ports
@@ -75,16 +77,16 @@ public class Bunnybot2021Map {
 
     // Driver button numbers
     int driverIntakeOutOn = 1,
-        driverIntakeOff = 2,
-        driverIntakeRev = 3,
-        driverIntakeInOff = 4,
+        driverIntakeOff = 2, //TODO This is never used
+        driverIntakeRev = 3, //TODO This is never used
+        driverIntakeInOff = 4, //TODO This is never used
         shiftUp = 5;
 
     // Mechs button numbers
-    int elevatorLift = 2,
-        elevatorLower = 3;
+    int elevatorLift = 2, //TODO This is never used
+        elevatorLower = 3; //TODO This is never used
     // Motor speeds
-    double elevatorMotorSpeed = 0.5;
+    double elevatorMotorSpeed = 0.5; //TODO This is never used
 
     var useCameraServer = false;
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
