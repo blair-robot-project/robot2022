@@ -45,11 +45,11 @@ public class OneMotorPulleyElevator extends SubsystemBase {
   * Sets the velocity of the elevator.
   * <p>
   * This allows for fine adjustment via the joystick if the setpoints aren't enough.
-  * @param newVelocity the requested new velocity to be set
+  * @param newVelocity the requested new velocity to be set (in m/s)
   * @return true if velocity set successfully, false if newVelocity was higher than maxVelocity
   */
   public boolean setVelocity(double newVelocity) {
-    if (newVelocity <= this.maxVelocity) {
+    if (Math.abs(newVelocity) <= Math.abs(this.maxVelocity)) {
       pulleyMotor.setVelocityUPS(newVelocity);
       return true;
     } else {
