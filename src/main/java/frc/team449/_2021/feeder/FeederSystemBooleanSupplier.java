@@ -15,22 +15,26 @@ import java.util.function.BooleanSupplier;
  */
 public class FeederSystemBooleanSupplier implements BooleanSupplier {
 
-  /** The default counting command to be checked */
-  @NotNull private final DefaultFeederCommand feederCommand;
+    /**
+     * The default counting command to be checked
+     */
+    @NotNull
+    private final DefaultFeederCommand feederCommand;
 
-  /** @param feederCommand the counting command to check balls in */
-  @JsonCreator
-  public FeederSystemBooleanSupplier(@NotNull DefaultFeederCommand feederCommand) {
-    this.feederCommand = feederCommand;
-  }
+    /**
+     * @param feederCommand the counting command to check balls in
+     */
+    @JsonCreator
+    public FeederSystemBooleanSupplier(@NotNull DefaultFeederCommand feederCommand) {
+        this.feederCommand = feederCommand;
+    }
 
-  /**
-   * Checks whether the supplier is true or false
-   *
-   * @return Whatever the supplier says. Defaults to false
-   */
-  @Override
-  public boolean getAsBoolean() {
-    return feederCommand.hasGotBall();
-  }
+    /**
+     * Checks whether the supplier is true or false
+     * @return Whatever the supplier says. Defaults to false
+     */
+    @Override
+    public boolean getAsBoolean() {
+        return feederCommand.hasGotBall();
+    }
 }

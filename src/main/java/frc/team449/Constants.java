@@ -1,3 +1,4 @@
 package frc.team449;
 
-public class Constants {}
+public class Constants {
+}

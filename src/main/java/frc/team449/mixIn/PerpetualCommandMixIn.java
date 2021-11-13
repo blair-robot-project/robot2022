@@ -13,8 +13,11 @@ import edu.wpi.first.wpilibj2.command.PerpetualCommand;
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public abstract class PerpetualCommandMixIn {
-  /** @see PerpetualCommand#PerpetualCommand(Command) */
-  @JsonCreator
-  public PerpetualCommandMixIn(
-      @JsonProperty(value = "command", required = true) final Command command) {}
+    /**
+     * @see PerpetualCommand#PerpetualCommand(Command)
+     */
+    @JsonCreator
+    public PerpetualCommandMixIn(
+            @JsonProperty(value = "command", required = true) final Command command) {
+    }
 }

@@ -10,16 +10,20 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import org.jetbrains.annotations.NotNull;
 
-/** Shifts gears. Basically a "ToggleGear" command. */
+/**
+ * Shifts gears. Basically a "ToggleGear" command.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ShiftGears extends InstantCommand {
 
-  /** The drive to execute this command on */
-  @NotNull private final Shiftable subsystem;
+  /**
+   * The drive to execute this command on
+   */
+  @NotNull
+  private final Shiftable subsystem;
 
   /**
    * Default constructor
-   *
    * @param subsystem The drive to execute this command on
    */
   @JsonCreator
@@ -27,31 +31,37 @@ public class ShiftGears extends InstantCommand {
     this.subsystem = subsystem;
   }
 
-  /** Log when this command is initialized */
+  /**
+   * Log when this command is initialized
+   */
   @Override
   public void initialize() {
     Shuffleboard.addEventMarker(
-        "ShiftGears init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+            "ShiftGears init.", this.getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("ShiftGears init.", this.getClass());
   }
 
-  /** Switch gears */
+  /**
+   * Switch gears
+   */
   @Override
   public void execute() {
     subsystem.setGear(
-        subsystem.getGear() == Shiftable.Gear.LOW.getNumVal()
-            ? Shiftable.Gear.HIGH.getNumVal()
-            : Shiftable.Gear.LOW.getNumVal());
+            subsystem.getGear() == Shiftable.Gear.LOW.getNumVal()
+                    ? Shiftable.Gear.HIGH.getNumVal()
+                    : Shiftable.Gear.LOW.getNumVal());
   }
 
-  /** Log when this command ends */
+  /**
+   * Log when this command ends
+   */
   @Override
   public void end(boolean interrupted) {
     if (interrupted) {
       Shuffleboard.addEventMarker(
-          "ShiftGears Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+              "ShiftGears Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
     Shuffleboard.addEventMarker(
-        "ShiftGears end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+            "ShiftGears end.", this.getClass().getSimpleName(), EventImportance.kNormal);
   }
 }

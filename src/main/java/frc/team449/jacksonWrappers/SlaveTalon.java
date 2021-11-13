@@ -17,20 +17,28 @@ import org.jetbrains.annotations.Nullable;
  */
 public class SlaveTalon implements SlaveMotor, Loggable {
 
-  /** The TalonSRX this object wraps. */
-  @NotNull private final TalonSRX talonSRX;
-  /** The PDP this talon runs on. Used for resistance logging purposes. */
-  @Nullable private PDP PDP;
+  /**
+   * The TalonSRX this object wraps.
+   */
+  @NotNull
+  private final TalonSRX talonSRX;
+  /**
+   * The PDP this talon runs on. Used for resistance logging purposes.
+   */
+  @Nullable
+  private PDP PDP;
 
-  /** The linear regression component for logging resistance. */
-  @Nullable private RunningLinRegComponent linRegComponent;
+  /**
+   * The linear regression component for logging resistance.
+   */
+  @Nullable
+  private RunningLinRegComponent linRegComponent;
 
   /**
    * Default constructor.
-   *
-   * @param port The CAN ID of this Talon SRX.
+   * @param port       The CAN ID of this Talon SRX.
    * @param invertType Whether or not to invert this Talon. Defaults to FollowMaster , but can be
-   *     changed to OpposeMaster.
+   *                   changed to OpposeMaster.
    */
   @JsonCreator
   public SlaveTalon(@JsonProperty(required = true) final int port, final InvertType invertType) {
@@ -40,9 +48,9 @@ public class SlaveTalon implements SlaveMotor, Loggable {
     // Turn off features we don't want a slave to have
     this.talonSRX.setInverted(invertType == null ? InvertType.FollowMaster : invertType);
     this.talonSRX.configForwardLimitSwitchSource(
-        LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+            LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
     this.talonSRX.configReverseLimitSwitchSource(
-        LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+            LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
     this.talonSRX.configForwardSoftLimitEnable(false, 0);
     this.talonSRX.configReverseSoftLimitEnable(false, 0);
     this.talonSRX.configPeakOutputForward(1, 0);
@@ -67,22 +75,21 @@ public class SlaveTalon implements SlaveMotor, Loggable {
 
   /**
    * Set this Talon to follow another CAN device.
-   *
-   * @param port The CAN ID of the device to follow.
-   * @param brakeMode Whether this Talon should be in brake mode or coast mode.
-   * @param currentLimit The current limit for this Talon. Can be null for no current limit.
+   * @param port               The CAN ID of the device to follow.
+   * @param brakeMode          Whether this Talon should be in brake mode or coast mode.
+   * @param currentLimit       The current limit for this Talon. Can be null for no current limit.
    * @param voltageCompSamples The number of voltage compensation samples to use, or null to not
-   *     compensate voltage.
-   * @param PDP The PDP this Talon is connected to.
-   * @param linRegComponent The linear regression component for logging resistance.
+   *                           compensate voltage.
+   * @param PDP                The PDP this Talon is connected to.
+   * @param linRegComponent    The linear regression component for logging resistance.
    */
   public void setMaster(
-      final int port,
-      final boolean brakeMode,
-      @Nullable final Integer currentLimit,
-      @Nullable final Integer voltageCompSamples,
-      @Nullable final PDP PDP,
-      @Nullable final RunningLinRegComponent linRegComponent) {
+          final int port,
+          final boolean brakeMode,
+          @Nullable final Integer currentLimit,
+          @Nullable final Integer voltageCompSamples,
+          @Nullable final PDP PDP,
+          @Nullable final RunningLinRegComponent linRegComponent) {
     // Brake mode doesn't automatically follow master
     this.talonSRX.setNeutralMode(brakeMode ? NeutralMode.Brake : NeutralMode.Coast);
 
@@ -162,7 +169,7 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   @Log
   public Double getResistance() {
     return (this.linRegComponent != null && this.PDP != null)
-        ? -this.linRegComponent.getSlope()
-        : Double.NaN;
+            ? - this.linRegComponent.getSlope()
+            : Double.NaN;
   }
 }

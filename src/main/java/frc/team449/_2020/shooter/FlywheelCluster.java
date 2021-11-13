@@ -20,36 +20,42 @@ import java.util.Optional;
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FlywheelCluster extends SubsystemBase implements SubsystemFlywheel, Loggable {
-  @NotNull private final List<SubsystemFlywheel> flywheels;
-  @Nullable private final Double maxAbsSpeedRange;
-  @Nullable private final Double maxRelSpeedRange;
-  @Log private double targetSpeed;
+  @NotNull
+  private final List<SubsystemFlywheel> flywheels;
+  @Nullable
+  private final Double maxAbsSpeedRange;
+  @Nullable
+  private final Double maxRelSpeedRange;
+  @Log
+  private double targetSpeed;
   private boolean conditionMetCached;
 
   /**
-   * @param flywheels the flywheels that make up this cluster
+   * @param flywheels        the flywheels that make up this cluster
    * @param maxAbsSpeedRange max range of speeds of flywheels in cluster (in the units of {@link
-   *     SubsystemFlywheel#getSpeed()}) at which the cluster is ready to shoot; {@code null} to not
-   *     impose such a requirement
+   *                         SubsystemFlywheel#getSpeed()}) at which the cluster is ready to shoot; {@code null} to not
+   *                         impose such a requirement
    * @param maxRelSpeedRange Similar to {@code maxAbsSpeedRange}, but specified as a fraction of the
-   *     mean speed. At most one of these two argumrelatients can be non-null.
+   *                         mean speed. At most one of these two argumrelatients can be non-null.
    */
   @JsonCreator
   public FlywheelCluster(
-      @NotNull @JsonProperty(required = true) final SubsystemFlywheel[] flywheels,
-      @Nullable final Double maxAbsSpeedRange,
-      @Nullable final Double maxRelSpeedRange) {
+          @NotNull @JsonProperty(required = true) final SubsystemFlywheel[] flywheels,
+          @Nullable final Double maxAbsSpeedRange,
+          @Nullable final Double maxRelSpeedRange) {
 
     if (maxAbsSpeedRange != null && maxRelSpeedRange != null)
       throw new IllegalArgumentException(
-          "Can't specify both absolute and relative max speed range.");
+              "Can't specify both absolute and relative max speed range.");
 
     this.flywheels = List.of(flywheels);
     this.maxAbsSpeedRange = maxAbsSpeedRange;
     this.maxRelSpeedRange = maxRelSpeedRange;
   }
 
-  /** Turn on each flywheel in the cluster to the speed passed to the constructor. */
+  /**
+   * Turn on each flywheel in the cluster to the speed passed to the constructor.
+   */
   @Override
   public void turnFlywheelOn(final double speed) {
     this.targetSpeed = speed;
@@ -57,7 +63,9 @@ public class FlywheelCluster extends SubsystemBase implements SubsystemFlywheel,
     this.flywheels.forEach(x -> x.turnFlywheelOn(speed));
   }
 
-  /** Turn each flywheel in the cluster off. */
+  /**
+   * Turn each flywheel in the cluster off.
+   */
   @Override
   public void turnFlywheelOff() {
     this.targetSpeed = Double.NaN;
@@ -78,24 +86,61 @@ public class FlywheelCluster extends SubsystemBase implements SubsystemFlywheel,
   //    this.flywheels.forEach(x -> x.setFlywheelState(state));
   //  }
 
-  /** @return Longest spin-up time of any flywheel in the cluster. */
+  /**
+   * @return Longest spin-up time of any flywheel in the cluster.
+   */
   @Override
   public double getSpinUpTimeSecs() {
     return this.flywheels.stream()
-        .mapToDouble(SubsystemFlywheel::getSpinUpTimeSecs)
-        .max()
-        .orElse(0);
+            .mapToDouble(SubsystemFlywheel::getSpinUpTimeSecs)
+            .max()
+            .orElse(0);
+  }
+
+  @Override
+  public boolean isConditionTrue() {
+    return this.isReadyToShoot();
   }
 
   /**
    * @return Whether all flywheels in the cluster individually are ready to shoot and the speed
-   *     range requirement of the cluster, if active, is met.
+   * range requirement of the cluster, if active, is met.
    */
   @Override
   @Log
   public boolean isReadyToShoot() {
-    if (!this.flywheels.stream().allMatch(SubsystemFlywheel::isReadyToShoot)) return false;
+    if (! this.flywheels.stream().allMatch(SubsystemFlywheel::isReadyToShoot)) return false;
     return this.speedRangeRequirementMet();
+  }
+
+  /**
+   * Returns mean speed of the flywheels in the cluster
+   * @return mean speed of the flywheels in the cluster
+   */
+  @Override
+  public @NotNull Optional<Double> getSpeed() {
+    double sum = 0;
+    int count = 0;
+    for (final SubsystemFlywheel flywheel : this.flywheels) {
+      final Optional<Double> speed = flywheel.getSpeed();
+      if (speed.isPresent()) {
+        count++;
+        sum += speed.get();
+      }
+    }
+    return Optional.of(sum / count);
+  }
+
+  @Override
+  @Log
+  public boolean isConditionTrueCached() {
+    return this.conditionMetCached;
+  }
+
+  @Override
+  public void update() {
+    this.flywheels.forEach(SubsystemConditional::update);
+    this.conditionMetCached = this.isConditionTrue();
   }
 
   @Log
@@ -125,41 +170,5 @@ public class FlywheelCluster extends SubsystemBase implements SubsystemFlywheel,
       final double averageSpeed = sum / count;
       return speedRange / averageSpeed <= this.maxRelSpeedRange;
     }
-  }
-
-  /**
-   * Returns mean speed of the flywheels in the cluster
-   *
-   * @return mean speed of the flywheels in the cluster
-   */
-  @Override
-  public @NotNull Optional<Double> getSpeed() {
-    double sum = 0;
-    int count = 0;
-    for (final SubsystemFlywheel flywheel : this.flywheels) {
-      final Optional<Double> speed = flywheel.getSpeed();
-      if (speed.isPresent()) {
-        count++;
-        sum += speed.get();
-      }
-    }
-    return Optional.of(sum / count);
-  }
-
-  @Override
-  public boolean isConditionTrue() {
-    return this.isReadyToShoot();
-  }
-
-  @Override
-  @Log
-  public boolean isConditionTrueCached() {
-    return this.conditionMetCached;
-  }
-
-  @Override
-  public void update() {
-    this.flywheels.forEach(SubsystemConditional::update);
-    this.conditionMetCached = this.isConditionTrue();
   }
 }

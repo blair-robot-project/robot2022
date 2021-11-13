@@ -11,61 +11,77 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntConsumer;
 
-/** A component class for autoshifting. */
+/**
+ * A component class for autoshifting.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class AutoshiftComponent {
 
-  /** The speed setpoint at the upshift break */
+  /**
+   * The speed setpoint at the upshift break
+   */
   private final double upshiftSpeed;
 
-  /** The speed setpoint at the downshift break */
+  /**
+   * The speed setpoint at the downshift break
+   */
   private final double downshiftSpeed;
 
-  /** The robot isn't eligible to shift again for this many milliseconds after upshifting. */
+  /**
+   * The robot isn't eligible to shift again for this many milliseconds after upshifting.
+   */
   private final long cooldownAfterUpshift;
 
-  /** The robot isn't eligible to shift again for this many milliseconds after downshifting. */
+  /**
+   * The robot isn't eligible to shift again for this many milliseconds after downshifting.
+   */
   private final long cooldownAfterDownshift;
 
   /**
    * BufferTimers for shifting that make it so all the other conditions to shift must be met for
    * some amount of time before shifting actually happens.
    */
-  @Nullable private final Debouncer upshiftDebouncer, downshiftDebouncer;
+  @Nullable
+  private final Debouncer upshiftDebouncer, downshiftDebouncer;
 
-  /** The forward velocity setpoint (on a 0-1 scale) below which we stay in low gear */
+  /**
+   * The forward velocity setpoint (on a 0-1 scale) below which we stay in low gear
+   */
   private final double upshiftFwdThresh;
 
-  /** The time we last upshifted (milliseconds) */
+  /**
+   * The time we last upshifted (milliseconds)
+   */
   private long timeLastUpshifted;
 
-  /** The time we last downshifted (milliseconds) */
+  /**
+   * The time we last downshifted (milliseconds)
+   */
   private long timeLastDownshifted;
 
   /**
    * Default constructor
-   *
-   * @param upshiftSpeed The minimum speed both sides the drive must be going at to shift to high
-   *     gear.
-   * @param downshiftSpeed The maximum speed both sides must be going at to shift to low gear.
-   * @param upshiftDebouncer Buffer timer for upshifting.
-   * @param downshiftDebouncer Buffer timer for downshifting.
+   * @param upshiftSpeed           The minimum speed both sides the drive must be going at to shift to high
+   *                               gear.
+   * @param downshiftSpeed         The maximum speed both sides must be going at to shift to low gear.
+   * @param upshiftDebouncer       Buffer timer for upshifting.
+   * @param downshiftDebouncer     Buffer timer for downshifting.
    * @param cooldownAfterDownshift The minimum time, in seconds, between downshifting and then
-   *     upshifting again. Defaults to 0.
-   * @param cooldownAfterUpshift The minimum time, in seconds, between upshifting and then
-   *     downshifting again. Defaults to 0.
-   * @param upshiftFwdThresh The minimum amount the forward joystick must be pushed forward in order
-   *     to upshift, on [0, 1]. Defaults to 0.
+   *                               upshifting again. Defaults to 0.
+   * @param cooldownAfterUpshift   The minimum time, in seconds, between upshifting and then
+   *                               downshifting again. Defaults to 0.
+   * @param upshiftFwdThresh       The minimum amount the forward joystick must be pushed forward in order
+   *                               to upshift, on [0, 1]. Defaults to 0.
    */
   @JsonCreator
   public AutoshiftComponent(
-      @JsonProperty(required = true) double upshiftSpeed,
-      @JsonProperty(required = true) double downshiftSpeed,
-      @Nullable Debouncer upshiftDebouncer,
-      @Nullable Debouncer downshiftDebouncer,
-      double upshiftFwdThresh,
-      double cooldownAfterUpshift,
-      double cooldownAfterDownshift) {
+          @JsonProperty(required = true) double upshiftSpeed,
+          @JsonProperty(required = true) double downshiftSpeed,
+          @Nullable Debouncer upshiftDebouncer,
+          @Nullable Debouncer downshiftDebouncer,
+          double upshiftFwdThresh,
+          double cooldownAfterUpshift,
+          double cooldownAfterDownshift) {
     this.upshiftSpeed = upshiftSpeed;
     this.downshiftSpeed = downshiftSpeed;
     this.upshiftFwdThresh = upshiftFwdThresh;
@@ -76,11 +92,26 @@ public class AutoshiftComponent {
   }
 
   /**
-   * Determine whether the robot should downshift.
-   *
+   * Determine if the subsystem should shift, and if yes, do the shifting.
    * @param forwardThrottle The forwards throttle, on [-1, 1].
-   * @param leftVel The velocity of the left side of the drive.
-   * @param rightVel The velocity of the right side of the drive.
+   * @param leftVel         The velocity of the left side of the drive.
+   * @param rightVel        The velocity of the right side of the drive.
+   * @param shift           The function to actually shift gears.
+   */
+  public void autoshift(
+          double forwardThrottle, double leftVel, double rightVel, IntConsumer shift) {
+    if (shouldDownshift(forwardThrottle, leftVel, rightVel)) {
+      shift.accept(Shiftable.Gear.LOW.getNumVal());
+    } else if (shouldUpshift(forwardThrottle, leftVel, rightVel)) {
+      shift.accept(Shiftable.Gear.HIGH.getNumVal());
+    }
+  }
+
+  /**
+   * Determine whether the robot should downshift.
+   * @param forwardThrottle The forwards throttle, on [-1, 1].
+   * @param leftVel         The velocity of the left side of the drive.
+   * @param rightVel        The velocity of the right side of the drive.
    * @return True if the drive should downshift, false otherwise.
    */
   private boolean shouldDownshift(double forwardThrottle, double leftVel, double rightVel) {
@@ -92,7 +123,7 @@ public class AutoshiftComponent {
     okayToDownshift = okayToDownshift || (Math.abs(forwardThrottle) < upshiftFwdThresh);
     // But we can only shift if we're out of the cooldown period.
     okayToDownshift =
-        okayToDownshift && Clock.currentTimeMillis() - timeLastUpshifted > cooldownAfterUpshift;
+            okayToDownshift && Clock.currentTimeMillis() - timeLastUpshifted > cooldownAfterUpshift;
 
     if (downshiftDebouncer != null) {
       // We use a Debouncer so we only shift if the conditions are met for a specific continuous
@@ -110,10 +141,9 @@ public class AutoshiftComponent {
 
   /**
    * Determine whether the robot should upshift.
-   *
    * @param forwardThrottle The forwards throttle, on [-1, 1].
-   * @param leftVel The velocity of the left side of the drive.
-   * @param rightVel The velocity of the right side of the drive.
+   * @param leftVel         The velocity of the left side of the drive.
+   * @param rightVel        The velocity of the right side of the drive.
    * @return True if the drive should upshift, false otherwise.
    */
   private boolean shouldUpshift(double forwardThrottle, double leftVel, double rightVel) {
@@ -123,7 +153,7 @@ public class AutoshiftComponent {
     okayToUpshift = okayToUpshift && Math.abs(forwardThrottle) > upshiftFwdThresh;
     // But we can only shift if we're out of the cooldown period.
     okayToUpshift =
-        okayToUpshift && Clock.currentTimeMillis() - timeLastDownshifted > cooldownAfterDownshift;
+            okayToUpshift && Clock.currentTimeMillis() - timeLastDownshifted > cooldownAfterDownshift;
 
     if (upshiftDebouncer != null) {
       // We use a Debouncer so we only shift if the conditions are met for a specific continuous
@@ -136,22 +166,5 @@ public class AutoshiftComponent {
       timeLastUpshifted = Clock.currentTimeMillis();
     }
     return okayToUpshift;
-  }
-
-  /**
-   * Determine if the subsystem should shift, and if yes, do the shifting.
-   *
-   * @param forwardThrottle The forwards throttle, on [-1, 1].
-   * @param leftVel The velocity of the left side of the drive.
-   * @param rightVel The velocity of the right side of the drive.
-   * @param shift The function to actually shift gears.
-   */
-  public void autoshift(
-      double forwardThrottle, double leftVel, double rightVel, IntConsumer shift) {
-    if (shouldDownshift(forwardThrottle, leftVel, rightVel)) {
-      shift.accept(Shiftable.Gear.LOW.getNumVal());
-    } else if (shouldUpshift(forwardThrottle, leftVel, rightVel)) {
-      shift.accept(Shiftable.Gear.HIGH.getNumVal());
-    }
   }
 }

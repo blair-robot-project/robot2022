@@ -10,20 +10,26 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
  * make sublasses of this.
  */
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.WRAPPER_OBJECT,
+        property = "@class")
 public abstract class SubsystemMixIn {
 
-  /** @see Subsystem#getDefaultCommand() */
-  @JsonIgnore
-  abstract Command getDefaultCommand();
+    /**
+     * @see Subsystem#getDefaultCommand()
+     */
+    @JsonIgnore
+    abstract Command getDefaultCommand();
 
-  /** @see Subsystem#setDefaultCommand(Command) */
-  @JsonIgnore
-  abstract void setDefaultCommand(Command command);
+    /**
+     * @see Subsystem#setDefaultCommand(Command)
+     */
+    @JsonIgnore
+    abstract void setDefaultCommand(Command command);
 
-  /** @see Subsystem#getCurrentCommand() */
-  @JsonIgnore
-  abstract Command getCurrentCommand();
+    /**
+     * @see Subsystem#getCurrentCommand()
+     */
+    @JsonIgnore
+    abstract Command getCurrentCommand();
 }

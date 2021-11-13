@@ -12,14 +12,14 @@ import frc.team449._2020.multiSubsystem.commands.TurnMotorOn;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class StartClimber extends SequentialCommandGroup {
 
-  SafeWinchingClimber climber;
+    SafeWinchingClimber climber;
 
-  @JsonCreator
-  public StartClimber(@JsonProperty(required = true) final SafeWinchingClimber climber) {
-    this.climber = climber;
-    addCommands(
-        new SetClimberWithArmState(climber, SetClimberWithArmState.ClimberState.LOWER),
-        new WaitCommand(2),
-        new TurnMotorOn(climber));
-  }
+    @JsonCreator
+    public StartClimber(@JsonProperty(required = true) final SafeWinchingClimber climber) {
+        this.climber = climber;
+        addCommands(
+                new SetClimberWithArmState(climber, SetClimberWithArmState.ClimberState.LOWER),
+                new WaitCommand(2),
+                new TurnMotorOn(climber));
+    }
 }

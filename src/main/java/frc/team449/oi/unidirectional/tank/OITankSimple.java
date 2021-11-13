@@ -8,79 +8,83 @@ import frc.team449.oi.throttles.Throttle;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-/** A simple tank drive, where each joystick controls a side of the robot. */
+/**
+ * A simple tank drive, where each joystick controls a side of the robot.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class OITankSimple extends OITank {
 
-  /** The left throttle */
-  @NotNull private final Throttle leftThrottle;
+    /**
+     * The left throttle
+     */
+    @NotNull
+    private final Throttle leftThrottle;
 
-  /** The right throttle */
-  @NotNull private final Throttle rightThrottle;
+    /**
+     * The right throttle
+     */
+    @NotNull
+    private final Throttle rightThrottle;
 
-  /**
-   * The difference between left and right input within which the driver is considered to be trying
-   * to drive straight.
-   */
-  private final double commandingStraightTolerance;
+    /**
+     * The difference between left and right input within which the driver is considered to be trying
+     * to drive straight.
+     */
+    private final double commandingStraightTolerance;
 
-  /**
-   * Default constructor
-   *
-   * @param leftThrottle The throttle for controlling the velocity of the left side of the drive.
-   * @param rightThrottle The throttle for controlling the velocity of the right side of the drive.
-   * @param commandingStraightTolerance The difference between left and right input within which the
-   *     driver is considered to be trying to drive straight. Defaults to 0.
-   */
-  @JsonCreator
-  public OITankSimple(
-      @NotNull @JsonProperty(required = true) final Throttle leftThrottle,
-      @NotNull @JsonProperty(required = true) final Throttle rightThrottle,
-      final double commandingStraightTolerance) {
-    this.leftThrottle = leftThrottle;
-    this.rightThrottle = rightThrottle;
-    this.commandingStraightTolerance = commandingStraightTolerance;
-  }
-
-  /**
-   * Get the throttle for the left side of the drive.
-   *
-   * @return percent of max speed for left motor cluster from [-1.0, 1.0]
-   */
-  @Override
-  @Log
-  public double getLeftThrottle() {
-    // If the driver is trying to drive straight, use the average of the two sticks.
-    if (commandingStraight()) {
-      return (leftThrottle.getValue() + rightThrottle.getValue()) / 2.;
+    /**
+     * Default constructor
+     * @param leftThrottle                The throttle for controlling the velocity of the left side of the drive.
+     * @param rightThrottle               The throttle for controlling the velocity of the right side of the drive.
+     * @param commandingStraightTolerance The difference between left and right input within which the
+     *                                    driver is considered to be trying to drive straight. Defaults to 0.
+     */
+    @JsonCreator
+    public OITankSimple(
+            @NotNull @JsonProperty(required = true) final Throttle leftThrottle,
+            @NotNull @JsonProperty(required = true) final Throttle rightThrottle,
+            final double commandingStraightTolerance) {
+        this.leftThrottle = leftThrottle;
+        this.rightThrottle = rightThrottle;
+        this.commandingStraightTolerance = commandingStraightTolerance;
     }
-    return leftThrottle.getValue();
-  }
 
-  /**
-   * Get the throttle for the right side of the drive.
-   *
-   * @return percent of max speed for right motor cluster from [-1.0, 1.0]
-   */
-  @Override
-  @Log
-  public double getRightThrottle() {
-    // If the driver is trying to drive straight, use the average of the two sticks.
-    if (commandingStraight()) {
-      return (leftThrottle.getValue() + rightThrottle.getValue()) / 2.;
+    /**
+     * Get the throttle for the left side of the drive.
+     * @return percent of max speed for left motor cluster from [-1.0, 1.0]
+     */
+    @Override
+    @Log
+    public double getLeftThrottle() {
+        // If the driver is trying to drive straight, use the average of the two sticks.
+        if (commandingStraight()) {
+            return (leftThrottle.getValue() + rightThrottle.getValue()) / 2.;
+        }
+        return leftThrottle.getValue();
     }
-    return rightThrottle.getValue();
-  }
 
-  /**
-   * Whether the driver is trying to drive straight.
-   *
-   * @return True if the driver is trying to drive straight, false otherwise.
-   */
-  @Override
-  @Log
-  public boolean commandingStraight() {
-    return Math.abs(getLeftRightOutputCached()[0] - getLeftRightOutputCached()[1])
-        <= commandingStraightTolerance;
-  }
+    /**
+     * Get the throttle for the right side of the drive.
+     * @return percent of max speed for right motor cluster from [-1.0, 1.0]
+     */
+    @Override
+    @Log
+    public double getRightThrottle() {
+        // If the driver is trying to drive straight, use the average of the two sticks.
+        if (commandingStraight()) {
+            return (leftThrottle.getValue() + rightThrottle.getValue()) / 2.;
+        }
+        return rightThrottle.getValue();
+    }
+
+    /**
+     * Whether the driver is trying to drive straight.
+     * @return True if the driver is trying to drive straight, false otherwise.
+     */
+    @Override
+    @Log
+    public boolean commandingStraight() {
+        return Math.abs(getLeftRightOutputCached()[0] - getLeftRightOutputCached()[1])
+                <= commandingStraightTolerance;
+    }
 }

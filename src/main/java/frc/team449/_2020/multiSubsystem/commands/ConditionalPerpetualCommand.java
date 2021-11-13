@@ -20,20 +20,19 @@ import java.util.function.BooleanSupplier;
 public class ConditionalPerpetualCommand extends ConditionalCommand {
   /**
    * Default constructor
-   *
-   * @param onTrue The Command to execute if BooleanSupplier returns true.
-   * @param onFalse The Command to execute if BooleanSupplier returns false.
+   * @param onTrue          The Command to execute if BooleanSupplier returns true.
+   * @param onFalse         The Command to execute if BooleanSupplier returns false.
    * @param booleanSupplier A method for determining which command to run.
    */
   @JsonCreator
   public ConditionalPerpetualCommand(
-      @Nullable final Command onTrue,
-      @Nullable final Command onFalse,
-      @NotNull @JsonProperty(required = true) final BooleanSupplier booleanSupplier) {
+          @Nullable final Command onTrue,
+          @Nullable final Command onFalse,
+          @NotNull @JsonProperty(required = true) final BooleanSupplier booleanSupplier) {
     super(
-        Objects.requireNonNullElse(onTrue, PlaceholderCommand.getInstance()),
-        Objects.requireNonNullElse(onFalse, PlaceholderCommand.getInstance()),
-        booleanSupplier);
+            Objects.requireNonNullElse(onTrue, PlaceholderCommand.getInstance()),
+            Objects.requireNonNullElse(onFalse, PlaceholderCommand.getInstance()),
+            booleanSupplier);
   }
 
   /**
@@ -52,7 +51,6 @@ public class ConditionalPerpetualCommand extends ConditionalCommand {
 
   /**
    * Returns {@code false}
-   *
    * @return {@code false}
    */
   @Override

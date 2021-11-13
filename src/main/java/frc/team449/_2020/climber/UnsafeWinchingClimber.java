@@ -14,81 +14,90 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-/** Like {@link SafeWinchingClimber} but without safety features. */
+/**
+ * Like {@link SafeWinchingClimber} but without safety features.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class UnsafeWinchingClimber extends SubsystemBase
-    implements SubsystemClimberWithArm,
+        implements SubsystemClimberWithArm,
         SubsystemBinaryMotor,
         SubsystemSolenoid,
         Updatable,
         Loggable {
-  private final SubsystemBinaryMotor motorSubsystem;
-  private final SubsystemSolenoid solenoidSubsystem;
+    private final SubsystemBinaryMotor motorSubsystem;
+    private final SubsystemSolenoid solenoidSubsystem;
 
-  @JsonCreator
-  public UnsafeWinchingClimber(
-      @NotNull @JsonProperty(required = true) final SubsystemBinaryMotor motorSubsystem,
-      @NotNull @JsonProperty(required = true) final SubsystemSolenoid solenoidSubsystem,
-      final long extensionTimeMillis) {
-    this.motorSubsystem = motorSubsystem;
-    this.solenoidSubsystem = solenoidSubsystem;
-  }
+    @JsonCreator
+    public UnsafeWinchingClimber(
+            @NotNull @JsonProperty(required = true) final SubsystemBinaryMotor motorSubsystem,
+            @NotNull @JsonProperty(required = true) final SubsystemSolenoid solenoidSubsystem,
+            final long extensionTimeMillis) {
+        this.motorSubsystem = motorSubsystem;
+        this.solenoidSubsystem = solenoidSubsystem;
+    }
 
-  /** Raise arm only if it is enabled */
-  @Override
-  public void raise() {
-    System.out.println(Util.getLogPrefix(this) + "raise");
+    /**
+     * Raise arm only if it is enabled
+     */
+    @Override
+    public void raise() {
+        System.out.println(Util.getLogPrefix(this) + "raise");
 
-    this.setSolenoid(DoubleSolenoid.Value.kForward);
-  }
+        this.setSolenoid(DoubleSolenoid.Value.kForward);
+    }
 
-  /** Lower arm, but only if it is enabled */
-  @Override
-  public void lower() {
-    System.out.println(Util.getLogPrefix(this) + "lower");
+    /**
+     * Lower arm, but only if it is enabled
+     */
+    @Override
+    public void lower() {
+        System.out.println(Util.getLogPrefix(this) + "lower");
 
-    this.setSolenoid(DoubleSolenoid.Value.kReverse);
-  }
+        this.setSolenoid(DoubleSolenoid.Value.kReverse);
+    }
 
-  @Override
-  public void off() {
-    System.out.println(Util.getLogPrefix(this) + "off");
+    @Override
+    public void off() {
+        System.out.println(Util.getLogPrefix(this) + "off");
 
-    this.setSolenoid(DoubleSolenoid.Value.kOff);
-    this.turnMotorOff();
-  }
+        this.setSolenoid(DoubleSolenoid.Value.kOff);
+        this.turnMotorOff();
+    }
 
-  @Override
-  public void setSolenoid(@NotNull final DoubleSolenoid.Value value) {
-    this.solenoidSubsystem.setSolenoid(value);
-  }
+    @Override
+    public void setSolenoid(@NotNull final DoubleSolenoid.Value value) {
+        this.solenoidSubsystem.setSolenoid(value);
+    }
 
-  @Override
-  public @NotNull DoubleSolenoid.Value getSolenoidPosition() {
-    return this.solenoidSubsystem.getSolenoidPosition();
-  }
+    @Override
+    public @NotNull DoubleSolenoid.Value getSolenoidPosition() {
+        return this.solenoidSubsystem.getSolenoidPosition();
+    }
 
-  /**
-   * Move the winch if the arm is up. Has to be called twice (double button press) for it to work (I
-   * think?)
-   */
-  @Override
-  public void turnMotorOn() {
-    this.motorSubsystem.turnMotorOn();
-  }
+    /**
+     * Move the winch if the arm is up. Has to be called twice (double button press) for it to work (I
+     * think?)
+     */
+    @Override
+    public void turnMotorOn() {
+        this.motorSubsystem.turnMotorOn();
+    }
 
-  /** Turn off the winch */
-  @Override
-  public void turnMotorOff() {
-    this.motorSubsystem.turnMotorOff();
-  }
+    /**
+     * Turn off the winch
+     */
+    @Override
+    public void turnMotorOff() {
+        this.motorSubsystem.turnMotorOff();
+    }
 
-  @Override
-  @Log
-  public boolean isMotorOn() {
-    return this.motorSubsystem.isMotorOn();
-  }
+    @Override
+    @Log
+    public boolean isMotorOn() {
+        return this.motorSubsystem.isMotorOn();
+    }
 
-  @Override
-  public void update() {}
+    @Override
+    public void update() {
+    }
 }

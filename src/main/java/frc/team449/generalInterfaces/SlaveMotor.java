@@ -1,3 +1,4 @@
 package frc.team449.generalInterfaces;
 
-public interface SlaveMotor {}
+public interface SlaveMotor {
+}

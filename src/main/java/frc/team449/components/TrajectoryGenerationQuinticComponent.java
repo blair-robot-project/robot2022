@@ -14,40 +14,40 @@ import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.WRAPPER_OBJECT,
+        property = "@class")
 public class TrajectoryGenerationQuinticComponent implements TrajectoryGenerationComponent {
 
-  TrajectoryConstraint constraint;
-  TrajectoryConfig configuration;
-  List<Pose2d> waypoints = new ArrayList<>();
-  Trajectory trajectory;
+    TrajectoryConstraint constraint;
+    TrajectoryConfig configuration;
+    List<Pose2d> waypoints = new ArrayList<>();
+    Trajectory trajectory;
 
-  @JsonCreator
-  public TrajectoryGenerationQuinticComponent(
-      @JsonProperty(required = true) final DriveUnidirectionalWithGyro drivetrain,
-      @JsonProperty(required = true) final double maxSpeedMeters,
-      @JsonProperty(required = true) final double maxAccelMeters,
-      @JsonProperty(required = true) final List<Pose2d> waypoints,
-      boolean reversed) {
-    this.constraint =
-        new DifferentialDriveVoltageConstraint(
-            drivetrain.getLeftFeedforwardCalculator(), drivetrain.getDriveKinematics(), 12);
+    @JsonCreator
+    public TrajectoryGenerationQuinticComponent(
+            @JsonProperty(required = true) final DriveUnidirectionalWithGyro drivetrain,
+            @JsonProperty(required = true) final double maxSpeedMeters,
+            @JsonProperty(required = true) final double maxAccelMeters,
+            @JsonProperty(required = true) final List<Pose2d> waypoints,
+            boolean reversed) {
+        this.constraint =
+                new DifferentialDriveVoltageConstraint(
+                        drivetrain.getLeftFeedforwardCalculator(), drivetrain.getDriveKinematics(), 12);
 
-    // Create config for trajectory
-    this.configuration =
-        new TrajectoryConfig(maxSpeedMeters, maxAccelMeters)
-            .setKinematics(drivetrain.getDriveKinematics())
-            .addConstraint(this.constraint)
-            .setReversed(reversed);
+        // Create config for trajectory
+        this.configuration =
+                new TrajectoryConfig(maxSpeedMeters, maxAccelMeters)
+                        .setKinematics(drivetrain.getDriveKinematics())
+                        .addConstraint(this.constraint)
+                        .setReversed(reversed);
 
-    this.waypoints.addAll(waypoints);
-  }
+        this.waypoints.addAll(waypoints);
+    }
 
-  @Override
-  public Trajectory getTrajectory() {
-    this.trajectory = TrajectoryGenerator.generateTrajectory(this.waypoints, this.configuration);
-    return this.trajectory;
-  }
+    @Override
+    public Trajectory getTrajectory() {
+        this.trajectory = TrajectoryGenerator.generateTrajectory(this.waypoints, this.configuration);
+        return this.trajectory;
+    }
 }

@@ -8,8 +8,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * constructor for use with Jackson. Don't make sublasses of this.
  */
 public abstract class WaitUntilCommandMixIn {
-  /** @see edu.wpi.first.wpilibj2.command.WaitUntilCommand#WaitUntilCommand(double) */
-  @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-  public WaitUntilCommandMixIn(
-      @JsonProperty(value = "time", required = true) final double seconds) {}
+    /**
+     * @see edu.wpi.first.wpilibj2.command.WaitUntilCommand#WaitUntilCommand(double)
+     */
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public WaitUntilCommandMixIn(
+            @JsonProperty(value = "time", required = true) final double seconds) {
+    }
 }

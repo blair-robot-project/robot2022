@@ -12,75 +12,89 @@ import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.oi.unidirectional.tank.OITank;
 import org.jetbrains.annotations.NotNull;
 
-/** Drives straight when using a tank drive. */
+/**
+ * Drives straight when using a tank drive.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends CommandBase {
 
-  /** The oi that this command gets input from. */
-  @NotNull private final OITank oi;
+    /**
+     * The oi that this command gets input from.
+     */
+    @NotNull
+    private final OITank oi;
 
-  /** Whether to use the left or right joystick for the forward velocity. */
-  private final boolean useLeft;
+    /**
+     * Whether to use the left or right joystick for the forward velocity.
+     */
+    private final boolean useLeft;
 
-  /** The drive subsystem to execute this command on. */
-  @NotNull private final T subsystem;
+    /**
+     * The drive subsystem to execute this command on.
+     */
+    @NotNull
+    private final T subsystem;
 
-  /**
-   * Drive straight without NavX stabilization.
-   *
-   * @param subsystem The drive subsystem to execute this command on.
-   * @param oi The oi to get input from.
-   * @param useLeft true to use the left stick to drive straight, false to use the right.
-   */
-  @JsonCreator
-  public DriveStraight(
-      @NotNull @JsonProperty(required = true) T subsystem,
-      @NotNull @JsonProperty(required = true) OITank oi,
-      @JsonProperty(required = true) boolean useLeft) {
-    this.subsystem = subsystem;
-    this.oi = oi;
-    this.useLeft = useLeft;
-    addRequirements(subsystem);
-    Shuffleboard.addEventMarker(
-        "Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
-    // Logger.addEvent("Drive Robot bueno", this.getClass());
-  }
-
-  /** Stop the drive for safety reasons. */
-  @Override
-  public void initialize() {
-    subsystem.fullStop();
-  }
-
-  /** Give output to the motors based on the joystick input. */
-  @Override
-  public void execute() {
-    if (useLeft) {
-      subsystem.setOutput(oi.getLeftRightOutputCached()[0], oi.getLeftRightOutputCached()[0]);
-    } else {
-      subsystem.setOutput(oi.getLeftRightOutputCached()[1], oi.getLeftRightOutputCached()[1]);
+    /**
+     * Drive straight without NavX stabilization.
+     * @param subsystem The drive subsystem to execute this command on.
+     * @param oi        The oi to get input from.
+     * @param useLeft   true to use the left stick to drive straight, false to use the right.
+     */
+    @JsonCreator
+    public DriveStraight(
+            @NotNull @JsonProperty(required = true) T subsystem,
+            @NotNull @JsonProperty(required = true) OITank oi,
+            @JsonProperty(required = true) boolean useLeft) {
+        this.subsystem = subsystem;
+        this.oi = oi;
+        this.useLeft = useLeft;
+        addRequirements(subsystem);
+        Shuffleboard.addEventMarker(
+                "Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
+        // Logger.addEvent("Drive Robot bueno", this.getClass());
     }
-  }
 
-  /**
-   * Runs constantly because this is a drive command.
-   *
-   * @return false
-   */
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
-
-  /** Log and brake when interrupted. */
-  @Override
-  public void end(boolean interrupted) {
-    if (interrupted) {
-      Shuffleboard.addEventMarker(
-          "DriveStraight Interrupted! Stopping the robot.",
-          this.getClass().getSimpleName(),
-          EventImportance.kNormal);
+    /**
+     * Stop the drive for safety reasons.
+     */
+    @Override
+    public void initialize() {
+        subsystem.fullStop();
     }
-    subsystem.fullStop();
-  }
+
+    /**
+     * Give output to the motors based on the joystick input.
+     */
+    @Override
+    public void execute() {
+        if (useLeft) {
+            subsystem.setOutput(oi.getLeftRightOutputCached()[0], oi.getLeftRightOutputCached()[0]);
+        } else {
+            subsystem.setOutput(oi.getLeftRightOutputCached()[1], oi.getLeftRightOutputCached()[1]);
+        }
+    }
+
+    /**
+     * Log and brake when interrupted.
+     */
+    @Override
+    public void end(boolean interrupted) {
+        if (interrupted) {
+            Shuffleboard.addEventMarker(
+                    "DriveStraight Interrupted! Stopping the robot.",
+                    this.getClass().getSimpleName(),
+                    EventImportance.kNormal);
+        }
+        subsystem.fullStop();
+    }
+
+    /**
+     * Runs constantly because this is a drive command.
+     * @return false
+     */
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }

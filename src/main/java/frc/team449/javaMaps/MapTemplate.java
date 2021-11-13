@@ -38,11 +38,11 @@ public class MapTemplate {
 
   // Drive system
   public static final int leftMasterPort = 1,
-      leftMasterSlave1Port = 3,
-      leftMasterSlave2Port = 5,
-      rightMasterPort = 2,
-      rightMasterSlave1Port = 4,
-      rightMasterSlave2Port = 6;
+          leftMasterSlave1Port = 3,
+          leftMasterSlave2Port = 5,
+          rightMasterPort = 2,
+          rightMasterSlave1Port = 4,
+          rightMasterSlave2Port = 6;
   // Intake system
   public static final int intakeMotorPort = 7;
 
@@ -54,12 +54,12 @@ public class MapTemplate {
   public static RobotMap createRobotMap() {
     // Motor ports
     int leftMasterPort = 1,
-        leftMasterSlave1Port = 3,
-        leftMasterSlave2Port = 5,
-        rightMasterPort = 2,
-        rightMasterSlave1Port = 4,
-        rightMasterSlave2Port = 6,
-        intakeMotorPort = 7;
+            leftMasterSlave1Port = 3,
+            leftMasterSlave2Port = 5,
+            rightMasterPort = 2,
+            rightMasterSlave1Port = 4,
+            rightMasterSlave2Port = 6,
+            intakeMotorPort = 7;
     // Solenoid ports
     int intakeSolenoidForward = 2, intakeSolenoidReverse = 3;
     // Drive input-output ports. Things like encoders go here
@@ -98,11 +98,11 @@ public class MapTemplate {
                     .maxSpeed(2.3)
                     .kP(0);
     var highGear =
-        new PerGearSettingsBuilder()
-            .gear(Shiftable.Gear.HIGH)
-            .postEncoderGearing(0.12936611)
-            .maxSpeed(5.2)
-            .kP(0.000001);
+            new PerGearSettingsBuilder()
+                    .gear(Shiftable.Gear.HIGH)
+                    .postEncoderGearing(0.12936611)
+                    .maxSpeed(5.2)
+                    .kP(0.000001);
 
     // TODO call .copy() to make it clearer this and rightMaster make different instances?
     var leftMaster = SmartMotor.create(
@@ -144,75 +144,75 @@ public class MapTemplate {
     var subsystems = List.<Subsystem>of(drive);
 
     var throttlePrototype =
-        new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
+            new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
     var rotThrottle =
-        throttlePrototype
-            .axis(0)
-            .deadband(0.08)
-            .inverted(false)
-            .polynomial(new Polynomial(Map.of(1., 0.5), null))
-            .build();
+            throttlePrototype
+                    .axis(0)
+                    .deadband(0.08)
+                    .inverted(false)
+                    .polynomial(new Polynomial(Map.of(1., 0.5), null))
+                    .build();
     var fwdThrottle =
-        new ThrottleSum(
-            new Throttle[] {
-              throttlePrototype
-                  .axis(3)
-                  .deadband(0.05)
-                  .inverted(false)
-                  .polynomial(
-                      new Polynomial(
-                          Map.of(
-                              1., 2.,
-                              2., 1.),
-                          null))
-                  .build(),
-              throttlePrototype.axis(2).inverted(true).build()
-            });
+            new ThrottleSum(
+                    new Throttle[] {
+                            throttlePrototype
+                                    .axis(3)
+                                    .deadband(0.05)
+                                    .inverted(false)
+                                    .polynomial(
+                                            new Polynomial(
+                                                    Map.of(
+                                                            1., 2.,
+                                                            2., 1.),
+                                                    null))
+                                    .build(),
+                            throttlePrototype.axis(2).inverted(true).build()
+                    });
     var oi =
-        new OIArcadeWithDPad(
-            rotThrottle,
-            fwdThrottle,
-            0.1,
-            false,
-            driveJoystick,
-            new Polynomial(
-                Map.of(
-                    0.5, 0.4,
-                    0., 0.2),
-                null),
-            1.0,
-            true);
+            new OIArcadeWithDPad(
+                    rotThrottle,
+                    fwdThrottle,
+                    0.1,
+                    false,
+                    driveJoystick,
+                    new Polynomial(
+                            Map.of(
+                                    0.5, 0.4,
+                                    0., 0.2),
+                            null),
+                    1.0,
+                    true);
 
     var intakeSolenoid =
-        new SolenoidSimple(new DoubleSolenoid(intakeSolenoidForward, intakeSolenoidReverse));
+            new SolenoidSimple(new DoubleSolenoid(intakeSolenoidForward, intakeSolenoidReverse));
 
     var updater = new Updater(List.of(pdp, drive, oi, navx));
 
     var defaultCommands = List.<DefaultCommand>of();
 
     var buttons =
-        List.of(
-            // Run bumper and transition wheel
-            new CommandButton(
-                new SimpleButton(driveJoystick, driverIntakeOutOn),
-                new ParallelCommandGroup(
-                    new SetSolenoidPose(intakeSolenoid, DoubleSolenoid.Value.kForward)
-                    // todo more commands in this parallel command
-                    ),
-                CommandButton.Action.WHEN_PRESSED));
+            List.of(
+                    // Run bumper and transition wheel
+                    new CommandButton(
+                            new SimpleButton(driveJoystick, driverIntakeOutOn),
+                            new ParallelCommandGroup(
+                                    new SetSolenoidPose(intakeSolenoid, DoubleSolenoid.Value.kForward)
+                                    // todo more commands in this parallel command
+                            ),
+                            CommandButton.Action.WHEN_PRESSED));
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();
     var teleopStartupCommands = List.<Command>of();
     var testStartupCommands = List.<Command>of();
     var allCommands =
-        new CommandContainer(
-            defaultCommands,
-            buttons,
-            robotStartupCommands,
-            autoStartupCommands,
-            teleopStartupCommands,
-            testStartupCommands);
+            new CommandContainer(
+                    defaultCommands,
+                    buttons,
+                    robotStartupCommands,
+                    autoStartupCommands,
+                    teleopStartupCommands,
+                    testStartupCommands);
 
     return new RobotMap(subsystems, pdp, updater, allCommands, joysticks, useCameraServer);
   }

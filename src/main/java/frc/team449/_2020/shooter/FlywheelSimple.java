@@ -18,21 +18,31 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-/** A flywheel multiSubsystem with a single flywheel and a single-motor feeder system. */
+/**
+ * A flywheel multiSubsystem with a single flywheel and a single-motor feeder system.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FlywheelSimple extends SubsystemBase
-    implements SubsystemFlywheel, SubsystemConditional, Loggable {
+        implements SubsystemFlywheel, SubsystemConditional, Loggable {
 
   private static final int SPEED_CONDITION_BUFFER_SIZE = 30;
 
-  /** The flywheel's motor */
-  @NotNull private final SmartMotor shooterMotor;
+  /**
+   * The flywheel's motor
+   */
+  @NotNull
+  private final SmartMotor shooterMotor;
 
-  @Nullable private final Double maxAbsSpeedError;
-  @Nullable private final Double maxRelSpeedError;
+  @Nullable
+  private final Double maxAbsSpeedError;
+  @Nullable
+  private final Double maxRelSpeedError;
   private final double spinUpTimeoutSecs;
-  @Nullable @Log.Exclude private final SimDevice simDevice;
-  @Nullable private final SimBoolean sim_manualStates, sim_isAtSpeed;
+  @Nullable
+  @Log.Exclude
+  private final SimDevice simDevice;
+  @Nullable
+  private final SimBoolean sim_manualStates, sim_isAtSpeed;
 
   @NotNull
   private final DebouncerEx speedConditionDebouncer = new DebouncerEx(SPEED_CONDITION_BUFFER_SIZE);
@@ -40,30 +50,32 @@ public class FlywheelSimple extends SubsystemBase
    * Throttle at which to run the multiSubsystem; also whether the flywheel is currently commanded
    * to spin
    */
-  @Log private double targetSpeed = Double.NaN;
-  /** Whether the condition was met last time caching was done. */
+  @Log
+  private double targetSpeed = Double.NaN;
+  /**
+   * Whether the condition was met last time caching was done.
+   */
   private boolean conditionMetCached;
 
   /**
    * Default constructor
-   *
-   * @param motor The motor controlling the flywheel.
+   * @param motor            The motor controlling the flywheel.
    * @param maxAbsSpeedError The maximum difference from the target speed at which the flywheel will
-   *     signal that it is ready to shoot. Null means that the flywheel will always behave according
-   *     to the timeout specified by {@code spinUpTimeoutSecs}.
+   *                         signal that it is ready to shoot. Null means that the flywheel will always behave according
+   *                         to the timeout specified by {@code spinUpTimeoutSecs}.
    * @param maxRelSpeedError Similar to {@code maxAbsSpeedDeviation}, but specified as a fraction of
-   *     the target speed. At most one of these two arguments can be non-null.
+   *                         the target speed. At most one of these two arguments can be non-null.
    */
   @JsonCreator
   public FlywheelSimple(
-      @NotNull @JsonProperty(required = true) final SmartMotor motor,
-      @JsonProperty(required = true) final double spinUpTimeoutSecs,
-      @Nullable final Double maxAbsSpeedError,
-      @Nullable final Double maxRelSpeedError) {
+          @NotNull @JsonProperty(required = true) final SmartMotor motor,
+          @JsonProperty(required = true) final double spinUpTimeoutSecs,
+          @Nullable final Double maxAbsSpeedError,
+          @Nullable final Double maxRelSpeedError) {
 
     if (maxAbsSpeedError != null && maxRelSpeedError != null)
       throw new IllegalArgumentException(
-          "Can't specify both absolute and relative max speed range");
+              "Can't specify both absolute and relative max speed range");
 
     this.shooterMotor = motor;
     this.spinUpTimeoutSecs = spinUpTimeoutSecs;
@@ -83,7 +95,9 @@ public class FlywheelSimple extends SubsystemBase
     }
   }
 
-  /** Turn the flywheel on to the specified speed. */
+  /**
+   * Turn the flywheel on to the specified speed.
+   */
   @Override
   public void turnFlywheelOn(final double speed) {
     this.targetSpeed = speed;
@@ -92,7 +106,9 @@ public class FlywheelSimple extends SubsystemBase
     this.shooterMotor.setVelocityUPS(this.targetSpeed);
   }
 
-  /** Turn the flywheel off. */
+  /**
+   * Turn the flywheel off.
+   */
   @Override
   public void turnFlywheelOff() {
     this.targetSpeed = Double.NaN;
@@ -115,7 +131,9 @@ public class FlywheelSimple extends SubsystemBase
   //    this.state = state;
   //  }
 
-  /** @return Expected time from setting a shooting state to being ready to fire, in seconds. */
+  /**
+   * @return Expected time from setting a shooting state to being ready to fire, in seconds.
+   */
   @Override
   @Log
   public double getSpinUpTimeSecs() {
@@ -129,32 +147,23 @@ public class FlywheelSimple extends SubsystemBase
     return this.speedConditionDebouncer.get();
   }
 
-  @Log
-  private boolean isAtShootingSpeed() {
-    return SimUtil.getWithSimHelper(
-        this.sim_manualStates != null && this.sim_manualStates.get(),
-        true,
-        this.sim_isAtSpeed,
-        () -> {
-          if (this.maxAbsSpeedError == null && this.maxRelSpeedError == null) return false;
-
-          final double actualVelocity = this.shooterMotor.getVelocity();
-          final double absSpeedDifference = Math.abs(Math.abs(actualVelocity) - this.targetSpeed);
-
-          // TODO: Should we be looking at velocity or speed?
-          if (this.maxAbsSpeedError != null) return absSpeedDifference <= this.maxAbsSpeedError;
-          else return absSpeedDifference / targetSpeed <= this.maxRelSpeedError;
-        });
+  @Override
+  public @NotNull Optional<Double> getSpeed() {
+    return Optional.of(Math.abs(this.shooterMotor.getVelocity()));
   }
 
-  /** @return true if the condition was met when cached, false otherwise */
+  /**
+   * @return true if the condition was met when cached, false otherwise
+   */
   @Override
   @Log
   public boolean isConditionTrueCached() {
     return this.conditionMetCached;
   }
 
-  /** Updates all cached values with current ones. */
+  /**
+   * Updates all cached values with current ones.
+   */
   @Override
   public void update() {
     this.speedConditionDebouncer.update(this.isAtShootingSpeed());
@@ -162,9 +171,22 @@ public class FlywheelSimple extends SubsystemBase
     this.conditionMetCached = this.isConditionTrue();
   }
 
-  @Override
-  public @NotNull Optional<Double> getSpeed() {
-    return Optional.of(Math.abs(this.shooterMotor.getVelocity()));
+  @Log
+  private boolean isAtShootingSpeed() {
+    return SimUtil.getWithSimHelper(
+            this.sim_manualStates != null && this.sim_manualStates.get(),
+            true,
+            this.sim_isAtSpeed,
+            () -> {
+              if (this.maxAbsSpeedError == null && this.maxRelSpeedError == null) return false;
+
+              final double actualVelocity = this.shooterMotor.getVelocity();
+              final double absSpeedDifference = Math.abs(Math.abs(actualVelocity) - this.targetSpeed);
+
+              // TODO: Should we be looking at velocity or speed?
+              if (this.maxAbsSpeedError != null) return absSpeedDifference <= this.maxAbsSpeedError;
+              else return absSpeedDifference / targetSpeed <= this.maxRelSpeedError;
+            });
   }
 
   @Override

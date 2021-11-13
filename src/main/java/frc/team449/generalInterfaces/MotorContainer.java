@@ -9,9 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MotorContainer implements Loggable {
-  @NotNull @Log.Exclude private static final MotorContainer instance = new MotorContainer();
+  @NotNull
+  @Log.Exclude
+  private static final MotorContainer instance = new MotorContainer();
 
-  @NotNull private final List<SmartMotor> motors = new ArrayList<>();
+  @NotNull
+  private final List<SmartMotor> motors = new ArrayList<>();
 
   private MotorContainer() {
     Logger.setCycleWarningsEnabled(false);
@@ -19,7 +22,6 @@ public class MotorContainer implements Loggable {
 
   /**
    * Registers a motor to be included in the container.
-   *
    * @param motor the motor to be registered
    */
   public static void register(@NotNull final SmartMotor motor) {
@@ -28,7 +30,6 @@ public class MotorContainer implements Loggable {
 
   /**
    * Gets the singleton instance.
-   *
    * @return the single instantiated instance of the class
    */
   @NotNull

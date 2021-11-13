@@ -9,39 +9,40 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.WRAPPER_OBJECT,
+        property = "@class")
 public class FeederSystem extends IntakeSimple {
 
-  /** Whether the default indexing system is being overridden by having moved backwards */
-  private boolean overriding = false;
+    /**
+     * Whether the default indexing system is being overridden by having moved backwards
+     */
+    private boolean overriding = false;
 
-  /**
-   * Default constructor
-   *
-   * @param motor The motor this subsystem controls.
-   * @param velocities The velocity for the motor to go at for each {@link IntakeMode}, on the
-   */
-  @JsonCreator
-  public FeederSystem(
-      @NotNull final SimpleMotor motor, @NotNull final Map<IntakeMode, Double> velocities) {
-    super(motor, velocities);
-  }
-
-  @Override
-  public void setMode(@NotNull final IntakeMode mode) {
-    if (mode.equals(IntakeMode.OUT_SLOW)) {
-      overriding = true;
+    /**
+     * Default constructor
+     * @param motor      The motor this subsystem controls.
+     * @param velocities The velocity for the motor to go at for each {@link IntakeMode}, on the
+     */
+    @JsonCreator
+    public FeederSystem(
+            @NotNull final SimpleMotor motor, @NotNull final Map<IntakeMode, Double> velocities) {
+        super(motor, velocities);
     }
-    super.setMode(mode);
-  }
 
-  public boolean isOverriding() {
-    return overriding;
-  }
+    @Override
+    public void setMode(@NotNull final IntakeMode mode) {
+        if (mode.equals(IntakeMode.OUT_SLOW)) {
+            overriding = true;
+        }
+        super.setMode(mode);
+    }
 
-  public void setOverriding(final boolean overriding) {
-    this.overriding = overriding;
-  }
+    public boolean isOverriding() {
+        return overriding;
+    }
+
+    public void setOverriding(final boolean overriding) {
+        this.overriding = overriding;
+    }
 }

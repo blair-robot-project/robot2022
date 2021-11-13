@@ -17,8 +17,10 @@ import java.util.List;
  * that they all appear under the same tab on the dashboard.
  */
 public class CommandContainer implements Loggable {
-  @Log.Include private final List<DefaultCommand> defaultCommands;
-  @Log.Include private final List<CommandButton> buttons;
+  @Log.Include
+  private final List<DefaultCommand> defaultCommands;
+  @Log.Include
+  private final List<CommandButton> buttons;
 
   private final List<Command> robotStartupCommand;
 
@@ -30,13 +32,13 @@ public class CommandContainer implements Loggable {
 
   @JsonCreator
   public CommandContainer(
-      // TODO Figure out why this doesn't work @JsonInclude(JsonInclude.Include.NON_NULL)
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<DefaultCommand> defaultCommands,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<CommandButton> buttons,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> robotStartupCommand,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> autoStartupCommand,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> teleopStartupCommand,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> testStartupCommand) {
+          // TODO Figure out why this doesn't work @JsonInclude(JsonInclude.Include.NON_NULL)
+          @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<DefaultCommand> defaultCommands,
+          @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<CommandButton> buttons,
+          @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> robotStartupCommand,
+          @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> autoStartupCommand,
+          @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> teleopStartupCommand,
+          @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> testStartupCommand) {
     this.defaultCommands = defaultCommands;
     this.buttons = buttons;
     this.robotStartupCommand = robotStartupCommand;

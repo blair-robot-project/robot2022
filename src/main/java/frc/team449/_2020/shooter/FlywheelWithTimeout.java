@@ -21,75 +21,76 @@ import java.util.Optional;
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FlywheelWithTimeout extends SubsystemBase implements SubsystemFlywheel, Loggable {
-  private final SubsystemFlywheel implementation;
+    private final SubsystemFlywheel implementation;
 
-  private final ConditionTimingComponentObserver speedConditionTimer;
+    private final ConditionTimingComponentObserver speedConditionTimer;
 
-  /** Time from giving the multiSubsystem voltage to being ready to fire, in seconds. */
-  private final double timeout;
+    /**
+     * Time from giving the multiSubsystem voltage to being ready to fire, in seconds.
+     */
+    private final double timeout;
 
-  private boolean isFlywheelOn;
+    private boolean isFlywheelOn;
 
-  /**
-   * @param implementation
-   * @param timeoutOverride The override for the timeout value shooting condition to be reached
-   *     before signalling that it is ready to shoot regardless.
-   */
-  @JsonCreator
-  public FlywheelWithTimeout(
-      @NotNull @JsonProperty(required = true) final SubsystemFlywheel implementation,
-      @Nullable final Double timeoutOverride) {
-    this.implementation = implementation;
-    this.timeout =
-        Objects.requireNonNullElse(timeoutOverride, this.implementation.getSpinUpTimeSecs());
+    /**
+     * @param timeoutOverride The override for the timeout value shooting condition to be reached
+     *                        before signalling that it is ready to shoot regardless.
+     */
+    @JsonCreator
+    public FlywheelWithTimeout(
+            @NotNull @JsonProperty(required = true) final SubsystemFlywheel implementation,
+            @Nullable final Double timeoutOverride) {
+        this.implementation = implementation;
+        this.timeout =
+                Objects.requireNonNullElse(timeoutOverride, this.implementation.getSpinUpTimeSecs());
 
-    this.speedConditionTimer = new ConditionTimingComponentObserver(false);
-  }
+        this.speedConditionTimer = new ConditionTimingComponentObserver(false);
+    }
 
-  @Override
-  public void turnFlywheelOn(final double speed) {
-    this.isFlywheelOn = true;
-    this.implementation.turnFlywheelOn(speed);
-  }
+    @Override
+    public void turnFlywheelOn(final double speed) {
+        this.isFlywheelOn = true;
+        this.implementation.turnFlywheelOn(speed);
+    }
 
-  @Override
-  public void turnFlywheelOff() {
-    this.isFlywheelOn = false;
-    this.implementation.turnFlywheelOff();
-  }
+    @Override
+    public void turnFlywheelOff() {
+        this.isFlywheelOn = false;
+        this.implementation.turnFlywheelOff();
+    }
 
-  public boolean isFlywheelOn() {
-    return this.isFlywheelOn;
-  }
+    @Override
+    public double getSpinUpTimeSecs() {
+        return this.implementation.getSpinUpTimeSecs();
+    }
 
-  @Override
-  public double getSpinUpTimeSecs() {
-    return this.implementation.getSpinUpTimeSecs();
-  }
+    @Log
+    @Override
+    public boolean isReadyToShoot() {
+        return this.implementation.isConditionTrue() || this.spinUpHasTimedOut();
+    }
 
-  @Override
-  public @NotNull Optional<Double> getSpeed() {
-    return this.implementation.getSpeed();
-  }
+    @Override
+    public @NotNull Optional<Double> getSpeed() {
+        return this.implementation.getSpeed();
+    }
 
-  @Log
-  @Override
-  public boolean isReadyToShoot() {
-    return this.implementation.isConditionTrue() || this.spinUpHasTimedOut();
-  }
+    @Log
+    private boolean spinUpHasTimedOut() {
+        return this.speedConditionTimer.hasBeenTrueForAtLeast(this.timeout);
+    }
 
-  @Override
-  public void update() {
-    this.implementation.update();
-    this.speedConditionTimer.update(
-        Clock.currentTimeSeconds(),
-        this.isFlywheelOn && !this.implementation.isConditionTrueCached());
+    public boolean isFlywheelOn() {
+        return this.isFlywheelOn;
+    }
 
-    SubsystemFlywheel.super.update();
-  }
+    @Override
+    public void update() {
+        this.implementation.update();
+        this.speedConditionTimer.update(
+                Clock.currentTimeSeconds(),
+                this.isFlywheelOn && ! this.implementation.isConditionTrueCached());
 
-  @Log
-  private boolean spinUpHasTimedOut() {
-    return this.speedConditionTimer.hasBeenTrueForAtLeast(this.timeout);
-  }
+        SubsystemFlywheel.super.update();
+    }
 }

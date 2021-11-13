@@ -11,45 +11,56 @@ import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-/** Toggle whether or not to override the AHRS. */
+/**
+ * Toggle whether or not to override the AHRS.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ToggleOverrideNavX extends InstantCommand {
 
-  /** The subsystem to execute this command on. */
-  @NotNull @Log.Exclude private final SubsystemAHRS subsystem;
+    /**
+     * The subsystem to execute this command on.
+     */
+    @NotNull
+    @Log.Exclude
+    private final SubsystemAHRS subsystem;
 
-  /**
-   * Default constructor.
-   *
-   * @param subsystem The subsystem to execute this command on
-   */
-  @JsonCreator
-  public ToggleOverrideNavX(@NotNull @JsonProperty(required = true) SubsystemAHRS subsystem) {
-    this.subsystem = subsystem;
-  }
-
-  /** Log when this command is initialized */
-  @Override
-  public void initialize() {
-    Shuffleboard.addEventMarker(
-        "OverrideNavX init", this.getClass().getSimpleName(), EventImportance.kNormal);
-    // Logger.addEvent("OverrideNavX init", this.getClass());
-  }
-
-  /** Toggle whether or not we're overriding the AHRS */
-  @Override
-  public void execute() {
-    subsystem.setOverrideGyro(!subsystem.getOverrideGyro());
-  }
-
-  /** Log when this command ends */
-  @Override
-  public void end(boolean interrupted) {
-    if (interrupted) {
-      Shuffleboard.addEventMarker(
-          "OverrideNavX Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+    /**
+     * Default constructor.
+     * @param subsystem The subsystem to execute this command on
+     */
+    @JsonCreator
+    public ToggleOverrideNavX(@NotNull @JsonProperty(required = true) SubsystemAHRS subsystem) {
+        this.subsystem = subsystem;
     }
-    Shuffleboard.addEventMarker(
-        "OverrideNavX end", this.getClass().getSimpleName(), EventImportance.kNormal);
-  }
+
+    /**
+     * Log when this command is initialized
+     */
+    @Override
+    public void initialize() {
+        Shuffleboard.addEventMarker(
+                "OverrideNavX init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        // Logger.addEvent("OverrideNavX init", this.getClass());
+    }
+
+    /**
+     * Toggle whether or not we're overriding the AHRS
+     */
+    @Override
+    public void execute() {
+        subsystem.setOverrideGyro(! subsystem.getOverrideGyro());
+    }
+
+    /**
+     * Log when this command ends
+     */
+    @Override
+    public void end(boolean interrupted) {
+        if (interrupted) {
+            Shuffleboard.addEventMarker(
+                    "OverrideNavX Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        Shuffleboard.addEventMarker(
+                "OverrideNavX end", this.getClass().getSimpleName(), EventImportance.kNormal);
+    }
 }

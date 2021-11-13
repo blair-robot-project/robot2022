@@ -20,70 +20,78 @@ import org.jetbrains.annotations.Nullable;
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends PIDAngleCommand {
+        extends PIDAngleCommand {
 
-  /** The drive subsystem to execute this command on and to get the gyro reading from. */
-  @NotNull protected final T subsystem;
+  /**
+   * The drive subsystem to execute this command on and to get the gyro reading from.
+   */
+  @NotNull
+  protected final T subsystem;
 
-  /** The angle to turn to. */
+  /**
+   * The angle to turn to.
+   */
   protected final double setpoint;
 
-  /** How long this command is allowed to run for (in milliseconds) */
+  /**
+   * How long this command is allowed to run for (in milliseconds)
+   */
   private final long timeout;
 
-  /** The time this command was initiated */
+  /**
+   * The time this command was initiated
+   */
   protected long startTime;
 
   /**
    * Default constructor.
-   *
-   * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
-   *     Can be null for no buffer.
+   * @param onTargetBuffer    A buffer timer for having the loop be on target before it stops running.
+   *                          Can be null for no buffer.
    * @param absoluteTolerance The maximum number of degrees off from the target at which we can be
-   *     considered within tolerance.
-   * @param minimumOutput The minimum output of the loop. Defaults to zero.
-   * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
-   *     output is used.
-   * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
-   *     ms.
-   * @param deadband The deadband around the setpoint, in degrees, within which no output is given
-   *     to the motors. Defaults to zero.
-   * @param inverted Whether the loop is inverted. Defaults to false.
-   * @param kP Proportional gain. Defaults to zero.
-   * @param kI Integral gain. Defaults to zero.
-   * @param kD Derivative gain. Defaults to zero.
-   * @param setpoint The setpoint, in degrees from 180 to -180.
-   * @param drive The drive subsystem to execute this command on.
-   * @param timeout How long this command is allowed to run for, in seconds. Needed because
-   *     sometimes floating-point errors prevent termination.
+   *                          considered within tolerance.
+   * @param minimumOutput     The minimum output of the loop. Defaults to zero.
+   * @param maximumOutput     The maximum output of the loop. Can be null, and if it is, no maximum
+   *                          output is used.
+   * @param loopTimeMillis    The time, in milliseconds, between each loop iteration. Defaults to 20
+   *                          ms.
+   * @param deadband          The deadband around the setpoint, in degrees, within which no output is given
+   *                          to the motors. Defaults to zero.
+   * @param inverted          Whether the loop is inverted. Defaults to false.
+   * @param kP                Proportional gain. Defaults to zero.
+   * @param kI                Integral gain. Defaults to zero.
+   * @param kD                Derivative gain. Defaults to zero.
+   * @param setpoint          The setpoint, in degrees from 180 to -180.
+   * @param drive             The drive subsystem to execute this command on.
+   * @param timeout           How long this command is allowed to run for, in seconds. Needed because
+   *                          sometimes floating-point errors prevent termination.
    */
   @JsonCreator
   public NavXTurnToAngle(
-      @JsonProperty(required = true) double absoluteTolerance,
-      @Nullable Debouncer onTargetBuffer,
-      double minimumOutput,
-      @Nullable Double maximumOutput,
-      @Nullable Integer loopTimeMillis,
-      double deadband,
-      boolean inverted,
-      double kP,
-      double kI,
-      double kD,
-      @JsonProperty(required = true) double setpoint,
-      @NotNull @JsonProperty(required = true) T drive,
-      @JsonProperty(required = true) double timeout) {
+          @JsonProperty(required = true) double absoluteTolerance,
+          @Nullable Debouncer onTargetBuffer,
+          double minimumOutput,
+          @Nullable Double maximumOutput,
+          @Nullable Integer loopTimeMillis,
+          double deadband,
+          boolean inverted,
+          double kP,
+          double kI,
+          double kD,
+          @JsonProperty(required = true) double setpoint,
+          @NotNull @JsonProperty(required = true) T drive,
+          @JsonProperty(required = true) double timeout) {
     super(
-        absoluteTolerance,
-        onTargetBuffer,
-        minimumOutput,
-        maximumOutput,
-        loopTimeMillis,
-        deadband,
-        inverted,
-        drive,
-        kP,
-        kI,
-        kD);
+            absoluteTolerance,
+            onTargetBuffer,
+            minimumOutput,
+            maximumOutput,
+            loopTimeMillis,
+            deadband,
+            inverted,
+            drive,
+            kP,
+            kI,
+            kD);
     this.subsystem = drive;
     this.setpoint = setpoint;
     // Convert from seconds to milliseconds
@@ -91,30 +99,47 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
     addRequirements(subsystem);
   }
 
-  /** Set up the start time and setpoint. */
+  /**
+   * Set up the start time and setpoint.
+   */
   @Override
   public void initialize() {
     Shuffleboard.addEventMarker(
-        "NavXTurnToAngle init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+            "NavXTurnToAngle init.", this.getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("NavXTurnToAngle init.", this.getClass());
     // Set up start time
     this.startTime = Clock.currentTimeMillis();
     this.setSetpoint(clipTo180(setpoint));
   }
 
-  /** Give output to the motors based on the output of the PID loop. */
+  /**
+   * Give output to the motors based on the output of the PID loop.
+   */
   @Override
   public void execute() {
     // Process the output with deadband, minimum output, etc.
     double output = this.getOutput();
 
     // spin to the right angle
-    subsystem.setOutput(-output, output);
+    subsystem.setOutput(- output, output);
+  }
+
+  /**
+   * Log when the command ends.
+   */
+  @Override
+  public void end(boolean interrupted) {
+    if (interrupted) {
+      Shuffleboard.addEventMarker(
+              "NavXTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+    }
+    subsystem.fullStop();
+    Shuffleboard.addEventMarker(
+            "NavXTurnToAngle end.", this.getClass().getSimpleName(), EventImportance.kNormal);
   }
 
   /**
    * Exit when the robot reaches the setpoint or enough time has passed.
-   *
    * @return True if timeout seconds have passed or the robot is on target, false otherwise.
    */
   @Override
@@ -123,17 +148,5 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
     // point errors, so
     // we need a timeout
     return onTarget() || Clock.currentTimeMillis() - startTime > timeout;
-  }
-
-  /** Log when the command ends. */
-  @Override
-  public void end(boolean interrupted) {
-    if (interrupted) {
-      Shuffleboard.addEventMarker(
-          "NavXTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-    }
-    subsystem.fullStop();
-    Shuffleboard.addEventMarker(
-        "NavXTurnToAngle end.", this.getClass().getSimpleName(), EventImportance.kNormal);
   }
 }

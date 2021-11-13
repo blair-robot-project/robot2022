@@ -8,57 +8,57 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.WRAPPER_OBJECT,
+        property = "@class")
 public class MappedPIDController extends PIDController implements Loggable {
 
-  private final String name;
+    private final String name;
 
-  private double measurement;
-  private double output;
+    private double measurement;
+    private double output;
 
-  @JsonCreator
-  public MappedPIDController(
-      final double Kp, final double Ki, final double Kd, @Nullable String name) {
-    super(Kp, Ki, Kd);
+    @JsonCreator
+    public MappedPIDController(
+            final double Kp, final double Ki, final double Kd, @Nullable String name) {
+        super(Kp, Ki, Kd);
 
-    if (name == null) {
-      name = "PIDController";
+        if (name == null) {
+            name = "PIDController";
+        }
+        this.name = name;
     }
-    this.name = name;
-  }
 
-  @Override
-  @Log
-  public double getVelocityError() {
-    return super.getVelocityError();
-  }
+    @Override
+    @Log
+    public double getSetpoint() {
+        return super.getSetpoint();
+    }
 
-  @Override
-  @Log
-  public double getSetpoint() {
-    return super.getSetpoint();
-  }
+    @Override
+    @Log
+    public double getVelocityError() {
+        return super.getVelocityError();
+    }
 
-  @Override
-  public double calculate(final double measurement) {
-    this.measurement = measurement;
-    return output = super.calculate(measurement);
-  }
+    @Override
+    public double calculate(final double measurement) {
+        this.measurement = measurement;
+        return output = super.calculate(measurement);
+    }
 
-  @Log
-  public double getMeasurement() {
-    return measurement;
-  }
+    @Log
+    public double getMeasurement() {
+        return measurement;
+    }
 
-  @Log
-  public double getOutput() {
-    return output;
-  }
+    @Log
+    public double getOutput() {
+        return output;
+    }
 
-  @Override
-  public String configureLogName() {
-    return name;
-  }
+    @Override
+    public String configureLogName() {
+        return name;
+    }
 }

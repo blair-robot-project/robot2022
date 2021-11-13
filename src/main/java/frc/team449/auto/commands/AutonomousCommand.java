@@ -7,18 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface AutonomousCommand extends Command {
 
-  default void setRunTimeSeconds() {}
-
-  @Nullable
-  default Double getRunTimeSeconds() {
-    return null;
-  }
-
-  // TODO Make this a normal boolean. Making it nullable could cause a
-  // NullPointerException below, with this::autoFinishedCondition
-  @Nullable
-  default Boolean autoFinishedCondition() {
-    return null;
+  default void setRunTimeSeconds() {
   }
 
   default Command getAutoCommand() {
@@ -36,6 +25,18 @@ public interface AutonomousCommand extends Command {
     }
     // run command until either the auto condition is met or the runtime
     return this.raceWith(
-        new WaitUntilCommand(this::autoFinishedCondition), new WaitCommand(getRunTimeSeconds()));
+            new WaitUntilCommand(this::autoFinishedCondition), new WaitCommand(getRunTimeSeconds()));
+  }
+
+  @Nullable
+  default Double getRunTimeSeconds() {
+    return null;
+  }
+
+  // TODO Make this a normal boolean. Making it nullable could cause a
+  // NullPointerException below, with this::autoFinishedCondition
+  @Nullable
+  default Boolean autoFinishedCondition() {
+    return null;
   }
 }
