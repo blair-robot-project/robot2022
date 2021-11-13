@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
+import frc.team449.other.Debouncer;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
-import frc.team449.other.Debouncer;
 
 /** A command that uses a AHRS to turn to a certain angle. */
 @JsonTypeInfo(
@@ -19,7 +19,7 @@ import frc.team449.other.Debouncer;
     property = "@class")
 public abstract class PIDAngleCommand
     extends CommandBase { // implements Loggable { TODO Logging causes the drive subsystem to be
-                          // logged twice according to Oblog.
+  // logged twice according to Oblog.
 
   /** The subsystem to execute this command on. */
   @NotNull @Log.Exclude protected final SubsystemAHRS subsystem;

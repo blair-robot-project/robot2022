@@ -1,9 +1,9 @@
 package frc.team449.drive.unidirectional;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import frc.team449.drive.DriveSubsystem;
 import frc.team449.generalInterfaces.updatable.Updatable;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.drive.DriveSubsystem;
 
 /**
  * A drive with a left side and a right side. "Unidirectional" because it can only move forwards or

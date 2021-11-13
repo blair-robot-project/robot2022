@@ -25,13 +25,13 @@ public class AHRSRumbleComponent implements Runnable {
   private final double minJerk;
 
   /**
-   * The jerk, in meters/second^3, that's scaled to maximum rumble. All jerks of greater magnitude are
-   * capped at 1.
+   * The jerk, in meters/second^3, that's scaled to maximum rumble. All jerks of greater magnitude
+   * are capped at 1.
    */
   private final double maxJerk;
 
   /** Whether the NavX Y-axis measures forwards-back jerk or left-right jerk. */
-  private final boolean yIsFrontBack; //TODO why is this never accessed
+  private final boolean yIsFrontBack; // TODO why is this never accessed
 
   /** Whether to invert the left-right jerk measurement. */
   private final boolean invertLeftRight;
@@ -51,8 +51,8 @@ public class AHRSRumbleComponent implements Runnable {
    * @param ahrs The NavX to get jerk measurements from.
    * @param rumbleables The things to rumble.
    * @param minJerk The minimum jerk that will trigger rumbling, in meters/(sec^3).
-   * @param maxJerk The jerk, in meters/(sec^3), that's scaled to maximum rumble. All jerks of greater
-   *     magnitude are capped at 1.
+   * @param maxJerk The jerk, in meters/(sec^3), that's scaled to maximum rumble. All jerks of
+   *     greater magnitude are capped at 1.
    * @param yIsFrontBack Whether the NavX Y-axis measures forwards-back jerk or left-right jerk.
    *     Defaults to false.
    * @param invertLeftRight Whether to invert the left-right jerk measurement. Defaults to false.
@@ -87,10 +87,12 @@ public class AHRSRumbleComponent implements Runnable {
     // Left is negative jerk, so we subtract it from left so that when we're going left, left is
     // bigger and vice
     // versa
-    double left = ((frontBack - this.lastFrontBackAccel) - (leftRight - this.lastLeftRightAccel))
-        / (Clock.currentTimeMillis() - this.timeLastCalled);
-    double right = ((frontBack - this.lastFrontBackAccel) + (leftRight - this.lastLeftRightAccel))
-        / (Clock.currentTimeMillis() - this.timeLastCalled);
+    double left =
+        ((frontBack - this.lastFrontBackAccel) - (leftRight - this.lastLeftRightAccel))
+            / (Clock.currentTimeMillis() - this.timeLastCalled);
+    double right =
+        ((frontBack - this.lastFrontBackAccel) + (leftRight - this.lastLeftRightAccel))
+            / (Clock.currentTimeMillis() - this.timeLastCalled);
 
     if (left > this.minJerk) {
       left = (left - this.minJerk) / this.maxJerk;

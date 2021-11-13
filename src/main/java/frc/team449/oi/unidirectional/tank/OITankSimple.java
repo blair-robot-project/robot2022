@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import frc.team449.oi.throttles.Throttle;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import frc.team449.oi.throttles.Throttle;
 
 /** A simple tank drive, where each joystick controls a side of the robot. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj.Notifier;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.simpleMotor.SimpleMotor;
 import frc.team449.jacksonWrappers.MappedDigitalInput;
+import frc.team449.other.Debouncer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.other.Debouncer;
 
 import java.util.List;
 

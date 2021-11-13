@@ -7,10 +7,10 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
 import frc.team449.generalInterfaces.AHRS.commands.PIDAngleCommand;
+import frc.team449.oi.fieldoriented.OIFieldOriented;
 import frc.team449.other.Debouncer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.oi.fieldoriented.OIFieldOriented;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,8 +130,7 @@ public class FieldOrientedUnidirectionalDriveCommand<
     double output = this.subsystem.getOverrideGyro() ? 0 : this.getOutput();
 
     // Adjust the heading according to the PID output, it'll be positive if we want to go right.
-    this.subsystem.setOutput(
-        this.oi.getVelCached() - output, this.oi.getVelCached() + output);
+    this.subsystem.setOutput(this.oi.getVelCached() - output, this.oi.getVelCached() + output);
   }
 
   /**

@@ -17,16 +17,15 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
+import frc.team449.components.RunningLinRegComponent;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.simpleMotor.SimpleMotor;
 import frc.team449.jacksonWrappers.*;
+import frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.components.RunningLinRegComponent;
-import frc.team449.jacksonWrappers.*;
-import frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated;
-import frc.team449.other.Updater;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,15 +68,15 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * @param remoteLimitSwitchID The CAN port that the limit switch to use for this controller is
    *     plugged into, or null to not use a limit switch or use the limit switch plugged directly
    *     into this controller (for some controllers).
-   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward software
-   *     limit is disabled. Ignored if there's no encoder.
-   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse software
-   *     limit is disabled. Ignored if there's no encoder.
+   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward
+   *     software limit is disabled. Ignored if there's no encoder.
+   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse
+   *     software limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
    *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
    *     final output. Defaults to 1.
-   * @param unitPerRotation The number of meters travelled per rotation of the motor this is attached
-   *     to. Defaults to 1.
+   * @param unitPerRotation The number of meters travelled per rotation of the motor this is
+   *     attached to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
    *     used.
    * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.

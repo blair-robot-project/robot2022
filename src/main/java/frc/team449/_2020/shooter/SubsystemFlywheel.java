@@ -1,8 +1,8 @@
 package frc.team449._2020.shooter;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.jetbrains.annotations.NotNull;
 import frc.team449._2020.multiSubsystem.SubsystemConditional;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 

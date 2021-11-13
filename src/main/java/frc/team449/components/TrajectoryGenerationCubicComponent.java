@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
+import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.jacksonWrappers.MappedTranslationSet;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,

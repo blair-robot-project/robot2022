@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import org.jetbrains.annotations.NotNull;
 import frc.team449._2020.multiSubsystem.SolenoidSimple;
+import org.jetbrains.annotations.NotNull;
 
 /** Sets the state of a provided solenoid to the correct state. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

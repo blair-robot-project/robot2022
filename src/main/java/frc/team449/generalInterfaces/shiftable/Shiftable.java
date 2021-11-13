@@ -3,9 +3,9 @@ package frc.team449.generalInterfaces.shiftable;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
 
 /** An interface for any object that different settings for different gears */
 @JsonTypeInfo(

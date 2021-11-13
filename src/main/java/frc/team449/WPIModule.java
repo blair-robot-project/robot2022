@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.team449.mixIn.*;
-import frc.team449.mixIn.*;
 
 /**
  * A Jackson {@link com.fasterxml.jackson.databind.Module} for adding mix-in annotations to classes.

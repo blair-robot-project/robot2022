@@ -14,8 +14,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-import static frc.team449.other.Util.getLogPrefix;
-
 /** A simple intake subsystem that relies on a single motor to rotate some part of it. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class IntakeSimple extends SubsystemBase

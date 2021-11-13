@@ -8,13 +8,15 @@ import org.jetbrains.annotations.NotNull;
 public class OneMotorPulleyElevator extends SubsystemBase {
 
   @NotNull private final MappedSparkMax pulleyMotor;
-  @NotNull private ElevatorPosition position;
   @NotNull private final double maxVelocity;
+  @NotNull private ElevatorPosition position;
 
   /** @param pulleyMotor single motor used for the pulley */
   @JsonCreator
   public OneMotorPulleyElevator(
-          @NotNull MappedSparkMax pulleyMotor, @NotNull ElevatorPosition position, @NotNull double maxVelocity) {
+      @NotNull MappedSparkMax pulleyMotor,
+      @NotNull ElevatorPosition position,
+      @NotNull double maxVelocity) {
     this.pulleyMotor = pulleyMotor;
     this.position = position;
     this.maxVelocity = maxVelocity;
@@ -41,12 +43,13 @@ public class OneMotorPulleyElevator extends SubsystemBase {
     position = pos;
   }
   /**
-  * Sets the velocity of the elevator.
-  * <p>
-  * This allows for fine adjustment via the joystick if the setpoints aren't enough.
-  * @param newVelocity the requested new velocity to be set (in m/s)
-  * @return true if velocity set successfully, false if newVelocity was higher than maxVelocity
-  */
+   * Sets the velocity of the elevator.
+   *
+   * <p>This allows for fine adjustment via the joystick if the setpoints aren't enough.
+   *
+   * @param newVelocity the requested new velocity to be set (in m/s)
+   * @return true if velocity set successfully, false if newVelocity was higher than maxVelocity
+   */
   public boolean setVelocity(double newVelocity) {
     if (Math.abs(newVelocity) <= Math.abs(this.maxVelocity)) {
       pulleyMotor.setVelocityUPS(newVelocity);
@@ -55,6 +58,7 @@ public class OneMotorPulleyElevator extends SubsystemBase {
       return false;
     }
   }
+
   public enum ElevatorPosition {
     // preset positions
     TOP(0.3),

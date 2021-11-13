@@ -12,5 +12,5 @@ public interface CommandBaseMixIn {
   /** @see edu.wpi.first.wpilibj2.command.CommandBase#addRequirements(Subsystem...) */
   @JsonSetter(value = "requiredSubsystems", nulls = Nulls.SKIP, contentNulls = Nulls.FAIL)
   @JsonAlias("requirements")
-  abstract void addRequirements(Subsystem... requirements);
+  void addRequirements(Subsystem... requirements);
 }

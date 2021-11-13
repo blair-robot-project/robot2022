@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import org.jetbrains.annotations.NotNull;
 import frc.team449.oi.throttles.Throttle;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A button that gets triggered by a specific throttle being held down at or over a certain amount.

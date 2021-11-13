@@ -9,13 +9,13 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import frc.team449.components.RunningLinRegComponent;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.components.RunningLinRegComponent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,8 +35,8 @@ public class MappedTalon implements SmartMotor {
   /** The counts per rotation of the encoder being used, or null if there is no encoder. */
   @Nullable private final Integer encoderCPR;
   /**
-   * The number of meters travelled per rotation of the motor this is attached to, or null if there is
-   * no encoder.
+   * The number of meters travelled per rotation of the motor this is attached to, or null if there
+   * is no encoder.
    */
   private final double unitPerRotation;
   /** A list of all the gears this robot has and their settings. */
@@ -78,15 +78,15 @@ public class MappedTalon implements SmartMotor {
    * @param remoteLimitSwitchID The CAN port of the Talon the limit switch to use for this talon is
    *     plugged into, or null to not use a limit switch or use the limit switch plugged into this
    *     talon.
-   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward software
-   *     limit is disabled. Ignored if there's no encoder.
-   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse software
-   *     limit is disabled. Ignored if there's no encoder.
+   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward
+   *     software limit is disabled. Ignored if there's no encoder.
+   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse
+   *     software limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
    *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
    *     final output. Defaults to 1.
-   * @param unitPerRotation The number of meters travelled per rotation of the motor this is attached
-   *     to. Defaults to 1.
+   * @param unitPerRotation The number of meters travelled per rotation of the motor this is
+   *     attached to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
    *     used.
    * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.

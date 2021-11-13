@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.jacksonWrappers.MappedJoystick;
+import frc.team449.oi.throttles.Throttle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.oi.throttles.Throttle;
 
 /** An arcade OI with an option to use the D-pad for turning. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

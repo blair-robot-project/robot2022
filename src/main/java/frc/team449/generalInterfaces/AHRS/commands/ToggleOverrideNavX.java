@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
 
 /** Toggle whether or not to override the AHRS. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

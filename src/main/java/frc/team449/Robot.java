@@ -11,9 +11,7 @@ import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * The main class of the robot, constructs all the subsystems and initializes default commands.
- */
+/** The main class of the robot, constructs all the subsystems and initializes default commands. */
 public class Robot extends TimedRobot {
   private static boolean isUnitTesting = false;
   private static boolean isTestingHasBeenCalled = false;

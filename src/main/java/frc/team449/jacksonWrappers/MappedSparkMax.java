@@ -40,15 +40,15 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
    *     If this is null, the reverse limit switch is disabled.
    * @param remoteLimitSwitchID The CAN ID the limit switch to use for this Spark is plugged into,
    *     or null to not use a limit switch.
-   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward software
-   *     limit is disabled. Ignored if there's no encoder.
-   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse software
-   *     limit is disabled. Ignored if there's no encoder.
+   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward
+   *     software limit is disabled. Ignored if there's no encoder.
+   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse
+   *     software limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
    *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
    *     final output. Defaults to 1.
-   * @param unitPerRotation The number of meters travelled per rotation of the motor this is attached
-   *     to. Defaults to 1.
+   * @param unitPerRotation The number of meters travelled per rotation of the motor this is
+   *     attached to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
    *     used.
    * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.

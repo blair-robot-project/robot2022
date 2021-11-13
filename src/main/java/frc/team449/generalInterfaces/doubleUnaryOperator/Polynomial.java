@@ -33,7 +33,7 @@ public class Polynomial implements DoubleUnaryOperator {
       this.powerToCoefficientMap = new HashMap<>(1);
       this.powerToCoefficientMap.put(1., 1.);
     } else {
-      //Make a copy in case the original Map is needed later or mutable
+      // Make a copy in case the original Map is needed later or mutable
       this.powerToCoefficientMap = new HashMap<>(powerToCoefficientMap);
     }
 

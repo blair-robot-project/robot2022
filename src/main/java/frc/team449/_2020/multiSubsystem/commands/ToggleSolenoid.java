@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.team449._2020.multiSubsystem.SubsystemSolenoid;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import frc.team449._2020.multiSubsystem.SubsystemSolenoid;
 
 /**
  * A command that toggles the position of a piston. DO NOT USE IN COMPETITIONS!! Toggles are too

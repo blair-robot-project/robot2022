@@ -21,13 +21,15 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
 
   /** The PDP this Spark is connected to. */
   @Nullable @Log.Exclude protected final PDP PDP;
-  /**
-   * The number of meters travelled per rotation of the motor this is attached to, or null if there is
-   * no encoder.
-   */
-  private final double unitPerRotation;
   /** A list of all the gears this robot has and their settings. */
   @NotNull protected final Map<Integer, PerGearSettings> perGearSettings;
+  /** REV brushless controller object */
+  protected final CANSparkMax spark;
+  /**
+   * The number of meters travelled per rotation of the motor this is attached to, or null if there
+   * is no encoder.
+   */
+  private final double unitPerRotation;
   /** Forward limit switch object */
   private final CANDigitalInput forwardLimitSwitch;
   /** Reverse limit switch object */
@@ -36,19 +38,17 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
   @NotNull private final String name;
   /** Whether the forwards or reverse limit switches are normally open or closed, respectively. */
   private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
-  /** REV brushless controller object */
-  protected final CANSparkMax spark;
   /** The settings currently being used by this Spark. */
   @NotNull protected PerGearSettings currentGearSettings;
+  /** The control mode of the motor */
+  protected ControlType currentControlMode;
+  /** The most recently set setpoint. */
+  protected double setpoint;
   /**
    * The coefficient the output changes by after being measured by the encoder, e.g. this would be
    * 1/70 if there was a 70:1 gearing between the encoder and the final output.
    */
   @Log private double postEncoderGearing;
-  /** The control mode of the motor */
-  protected ControlType currentControlMode;
-  /** The most recently set setpoint. */
-  protected double setpoint;
 
   /**
    * Create a new SPARK MAX Controller
@@ -64,15 +64,15 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
    *     If this is null, the reverse limit switch is disabled.
    * @param remoteLimitSwitchID The CAN ID the limit switch to use for this Spark is plugged into,
    *     or null to not use a limit switch.
-   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward software
-   *     limit is disabled. Ignored if there's no encoder.
-   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse software
-   *     limit is disabled. Ignored if there's no encoder.
+   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward
+   *     software limit is disabled. Ignored if there's no encoder.
+   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse
+   *     software limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
    *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
    *     final output. Defaults to 1.
-   * @param unitPerRotation The number of meters travelled per rotation of the motor this is attached
-   *     to. Defaults to 1.
+   * @param unitPerRotation The number of meters travelled per rotation of the motor this is
+   *     attached to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
    *     used.
    * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.
@@ -115,8 +115,8 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
     // Set brake mode
     this.spark.setIdleMode(
         enableBrakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
-//    Reset the position
-//    this.resetPosition(); //causes null pointer exception
+    //    Reset the position
+    //    this.resetPosition(); //causes null pointer exception
 
     // Set frame rates
     if (controlFrameRateMillis != null) {
@@ -164,8 +164,8 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
       currentGear = startingGear.getNumVal();
     }
     this.currentGearSettings = this.perGearSettings.get(currentGear);
-//    Set up gear-based settings.
-//    this.setGear(currentGear);  // causes null pointer exception
+    //    Set up gear-based settings.
+    //    this.setGear(currentGear);  // causes null pointer exception
 
     // postEncoderGearing defaults to 1
     this.postEncoderGearing = postEncoderGearing != null ? postEncoderGearing : 1.;
@@ -240,30 +240,6 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
   protected abstract void setPID(double kP, double kI, double kD);
 
   @Override
-  public void setGear(final int gear) {
-    // Set the current gear
-    this.currentGearSettings = this.perGearSettings.get(gear);
-
-    // note, no current limiting
-
-    if (this.currentGearSettings.rampRate != null) {
-      // Set ramp rate, converting from volts/sec to seconds until 12 volts.
-      this.spark.setClosedLoopRampRate(1 / (this.currentGearSettings.rampRate / 12.));
-      this.spark.setOpenLoopRampRate(1 / (this.currentGearSettings.rampRate / 12.));
-    } else {
-      this.spark.setClosedLoopRampRate(0);
-      this.spark.setOpenLoopRampRate(0);
-    }
-
-    if (this.currentGearSettings.postEncoderGearing != null) {
-      this.postEncoderGearing = currentGearSettings.postEncoderGearing;
-    }
-
-    this.setPID(
-        this.currentGearSettings.kP, this.currentGearSettings.kI, this.currentGearSettings.kD);
-  }
-
-  @Override
   public void disable() {
     this.spark.disable();
   }
@@ -291,6 +267,30 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
   @Log
   public int getGear() {
     return this.currentGearSettings.gear;
+  }
+
+  @Override
+  public void setGear(final int gear) {
+    // Set the current gear
+    this.currentGearSettings = this.perGearSettings.get(gear);
+
+    // note, no current limiting
+
+    if (this.currentGearSettings.rampRate != null) {
+      // Set ramp rate, converting from volts/sec to seconds until 12 volts.
+      this.spark.setClosedLoopRampRate(1 / (this.currentGearSettings.rampRate / 12.));
+      this.spark.setOpenLoopRampRate(1 / (this.currentGearSettings.rampRate / 12.));
+    } else {
+      this.spark.setClosedLoopRampRate(0);
+      this.spark.setOpenLoopRampRate(0);
+    }
+
+    if (this.currentGearSettings.postEncoderGearing != null) {
+      this.postEncoderGearing = currentGearSettings.postEncoderGearing;
+    }
+
+    this.setPID(
+        this.currentGearSettings.kP, this.currentGearSettings.kI, this.currentGearSettings.kD);
   }
 
   /**

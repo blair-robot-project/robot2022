@@ -1,8 +1,8 @@
 package frc.team449.jacksonWrappers.simulated;
 
+import frc.team449.Robot;
 import frc.team449.jacksonWrappers.MappedJoystick;
 import org.jetbrains.annotations.NotNull;
-import frc.team449.Robot;
 
 import javax.swing.*;
 import java.awt.*;

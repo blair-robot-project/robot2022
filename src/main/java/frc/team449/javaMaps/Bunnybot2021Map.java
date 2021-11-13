@@ -38,9 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Bunnybot2021Map {
-  private Bunnybot2021Map() {
-    throw new IllegalStateException("This is a utility class!");
-  }
   // Drive system
   public static final int LEFT_MASTER_PORT = 1,
       LEFT_MASTER_SLAVE_1_PORT = 3,
@@ -50,10 +47,12 @@ public class Bunnybot2021Map {
       RIGHT_MASTER_SLAVE_2_PORT = 6;
   // Intake system
   public static final int INTAKE_MOTOR_PORT = 7;
-
   // Solenoid ports
   public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
+  private Bunnybot2021Map() {
+    throw new IllegalStateException("This is a utility class!");
+  }
 
   @NotNull
   public static RobotMap createRobotMap() {
@@ -64,7 +63,7 @@ public class Bunnybot2021Map {
         rightMasterPort = 2,
         rightMasterSlave1Port = 4,
         rightMasterSlave2Port = 6,
-        intakeMotorPort = 7, //TODO This is never used
+        intakeMotorPort = 7, // TODO This is never used
         elevatorMotorPort = 8;
 
     // Solenoid ports
@@ -77,16 +76,16 @@ public class Bunnybot2021Map {
 
     // Driver button numbers
     int driverIntakeOutOn = 1,
-        driverIntakeOff = 2, //TODO This is never used
-        driverIntakeRev = 3, //TODO This is never used
-        driverIntakeInOff = 4, //TODO This is never used
+        driverIntakeOff = 2, // TODO This is never used
+        driverIntakeRev = 3, // TODO This is never used
+        driverIntakeInOff = 4, // TODO This is never used
         shiftUp = 5;
 
     // Mechs button numbers
-    int elevatorLift = 2, //TODO This is never used
-        elevatorLower = 3; //TODO This is never used
+    int elevatorLift = 2, // TODO This is never used
+        elevatorLower = 3; // TODO This is never used
     // Motor speeds
-    double elevatorMotorSpeed = 0.5; //TODO This is never used
+    double elevatorMotorSpeed = 0.5; // TODO This is never used
 
     var useCameraServer = false;
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
@@ -168,8 +167,9 @@ public class Bunnybot2021Map {
                 List.of(leftMaster, rightMaster), new DoubleSolenoid(0, 0, 1), Shiftable.Gear.LOW),
             false);
 
-    //Elevator
-    var elevatorPulleyMotor = new MappedSparkMax(
+    // Elevator
+    var elevatorPulleyMotor =
+        new MappedSparkMax(
             elevatorMotorPort,
             "elevator",
             false,
@@ -191,14 +191,13 @@ public class Bunnybot2021Map {
             null,
             null);
     // PID constants for elevator
-    elevatorPulleyMotor.setPID(
-            0,
-            0,
-            0);
+    elevatorPulleyMotor.setPID(0, 0, 0);
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
     // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
-    double elevatorMaxVelocity = 1; //TODO this is a placeholder
-    var elevator = new OneMotorPulleyElevator(elevatorPulleyMotor, ElevatorPosition.BOTTOM, elevatorMaxVelocity);
+    double elevatorMaxVelocity = 1; // TODO this is a placeholder
+    var elevator =
+        new OneMotorPulleyElevator(
+            elevatorPulleyMotor, ElevatorPosition.BOTTOM, elevatorMaxVelocity);
     var setVelocityCommand = new SetVelocity(elevator, mechanismsJoystick, elevatorMaxVelocity);
     var subsystems = List.<Subsystem>of(drive, elevator);
 
@@ -267,28 +266,24 @@ public class Bunnybot2021Map {
                 CommandButton.Action.WHEN_PRESSED),
             // elevator move to TOP position
             new CommandButton(
-                    new SimpleButton(mechanismsJoystick, 1),
-                    new MoveToPosition(ElevatorPosition.TOP, elevator),
-                    CommandButton.Action.WHEN_PRESSED
-            ),
+                new SimpleButton(mechanismsJoystick, 1),
+                new MoveToPosition(ElevatorPosition.TOP, elevator),
+                CommandButton.Action.WHEN_PRESSED),
             // elevator move to UPPER position
             new CommandButton(
-                    new SimpleButton(mechanismsJoystick, 2),
-                    new MoveToPosition(ElevatorPosition.UPPER, elevator),
-                    CommandButton.Action.WHEN_PRESSED
-            ),
+                new SimpleButton(mechanismsJoystick, 2),
+                new MoveToPosition(ElevatorPosition.UPPER, elevator),
+                CommandButton.Action.WHEN_PRESSED),
             // elevator move to LOWER position
             new CommandButton(
-                    new SimpleButton(mechanismsJoystick, 3),
-                    new MoveToPosition(ElevatorPosition.LOWER, elevator),
-                    CommandButton.Action.WHEN_PRESSED
-            ),
+                new SimpleButton(mechanismsJoystick, 3),
+                new MoveToPosition(ElevatorPosition.LOWER, elevator),
+                CommandButton.Action.WHEN_PRESSED),
             // elevator move to BOTTOM position
             new CommandButton(
-                    new SimpleButton(mechanismsJoystick, 4),
-                    new MoveToPosition(ElevatorPosition.BOTTOM, elevator),
-                    CommandButton.Action.WHEN_PRESSED
-            ));
+                new SimpleButton(mechanismsJoystick, 4),
+                new MoveToPosition(ElevatorPosition.BOTTOM, elevator),
+                CommandButton.Action.WHEN_PRESSED));
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();

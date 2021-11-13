@@ -16,8 +16,6 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-import static frc.team449.other.Util.getLogPrefix;
-
 /**
  * Like {@link ClimberWinchingWithArm} with safety features (stuff needs to be enabled to move)
  *
@@ -26,9 +24,9 @@ import static frc.team449.other.Util.getLogPrefix;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SafeWinchingClimber extends SubsystemBase
     implements SubsystemClimberWithArm,
-    SubsystemBinaryMotor,
-    SubsystemSolenoid,
-    Updatable,
+        SubsystemBinaryMotor,
+        SubsystemSolenoid,
+        Updatable,
         Loggable {
   private final ClimberCurrentLimited motorSubsystem;
   private final SubsystemSolenoid solenoidSubsystem;

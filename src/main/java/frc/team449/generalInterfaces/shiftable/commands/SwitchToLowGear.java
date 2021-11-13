@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import org.jetbrains.annotations.NotNull;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
+import org.jetbrains.annotations.NotNull;
 
 /** A command that switches to low gear. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

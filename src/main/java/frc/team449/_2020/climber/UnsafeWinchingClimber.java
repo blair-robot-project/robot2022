@@ -14,15 +14,13 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-import static frc.team449.other.Util.getLogPrefix;
-
 /** Like {@link SafeWinchingClimber} but without safety features. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class UnsafeWinchingClimber extends SubsystemBase
     implements SubsystemClimberWithArm,
-    SubsystemBinaryMotor,
-    SubsystemSolenoid,
-    Updatable,
+        SubsystemBinaryMotor,
+        SubsystemSolenoid,
+        Updatable,
         Loggable {
   private final SubsystemBinaryMotor motorSubsystem;
   private final SubsystemSolenoid solenoidSubsystem;

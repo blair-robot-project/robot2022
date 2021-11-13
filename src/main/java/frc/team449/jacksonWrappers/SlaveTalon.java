@@ -4,12 +4,12 @@ import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import frc.team449.components.RunningLinRegComponent;
 import frc.team449.generalInterfaces.SlaveMotor;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.components.RunningLinRegComponent;
 
 /**
  * A {@link TalonSRX} that will be slaved to another TalonSRX or a {@link

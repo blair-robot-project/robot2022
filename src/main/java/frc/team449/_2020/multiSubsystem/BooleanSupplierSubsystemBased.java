@@ -19,7 +19,7 @@ public class BooleanSupplierSubsystemBased extends BooleanSupplierBooleanSupplie
   @JsonCreator
   public BooleanSupplierSubsystemBased(
       @NotNull @JsonProperty(required = true) final SubsystemConditional subsystem,
-      final @Nullable Boolean useCached) { //TODO useCached probably shouldn't be nullable
+      final @Nullable Boolean useCached) { // TODO useCached probably shouldn't be nullable
     super(
         Objects.requireNonNullElse(useCached, true)
             ? subsystem::isConditionTrueCached

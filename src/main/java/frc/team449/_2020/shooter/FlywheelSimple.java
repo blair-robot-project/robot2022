@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.hal.SimBoolean;
 import edu.wpi.first.hal.SimDevice;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.team449._2020.multiSubsystem.SubsystemConditional;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.other.DebouncerEx;
 import frc.team449.other.SimUtil;
@@ -14,7 +15,6 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import frc.team449._2020.multiSubsystem.SubsystemConditional;
 
 import java.util.Optional;
 

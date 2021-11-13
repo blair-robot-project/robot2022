@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import frc.team449._2020.multiSubsystem.BooleanSupplierUpdatable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import frc.team449._2020.multiSubsystem.BooleanSupplierUpdatable;
 
 import java.util.Objects;
 import java.util.function.BooleanSupplier;

@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
-import org.jetbrains.annotations.NotNull;
 import frc.team449.oi.unidirectional.tank.OITank;
+import org.jetbrains.annotations.NotNull;
 
 /** Drives straight when using a tank drive. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

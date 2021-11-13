@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import org.jetbrains.annotations.NotNull;
 import frc.team449.drive.DriveSubsystem;
+import org.jetbrains.annotations.NotNull;
 
 /** Stops the motors of the given drive subsystem. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

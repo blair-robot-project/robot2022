@@ -5,16 +5,16 @@ import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.components.AutoshiftComponent;
+import frc.team449.drive.shifting.DriveShiftable;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
+import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.other.Debouncer;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.drive.shifting.DriveShiftable;
-import frc.team449.oi.unidirectional.OIUnidirectional;
 
 import java.util.Objects;
 

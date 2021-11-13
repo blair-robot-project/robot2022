@@ -1,9 +1,9 @@
 package frc.team449.oi.fieldoriented;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import frc.team449.oi.OI;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.oi.OI;
 
 /** An OI that gives an absolute heading, relative to the field, and a velocity. */
 @JsonTypeInfo(

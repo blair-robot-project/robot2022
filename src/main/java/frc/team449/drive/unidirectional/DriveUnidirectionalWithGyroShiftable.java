@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.components.ShiftComponent;
+import frc.team449.drive.shifting.DriveShiftable;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.jacksonWrappers.MappedAHRS;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import frc.team449.drive.shifting.DriveShiftable;
 
 /**
  * A drive with a cluster of any number of CANTalonSRX controlled motors on each side and a high and

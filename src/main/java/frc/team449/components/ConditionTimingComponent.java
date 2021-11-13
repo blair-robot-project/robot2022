@@ -1,9 +1,9 @@
 package frc.team449.components;
 
+import frc.team449.other.RegistrationOrderIDUtil;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
-import frc.team449.other.RegistrationOrderIDUtil;
 
 /**
  * Utility class that records and provides methods for examining the times at which a condition

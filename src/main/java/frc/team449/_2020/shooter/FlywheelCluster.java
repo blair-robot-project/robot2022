@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.team449._2020.multiSubsystem.SubsystemConditional;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import frc.team449._2020.multiSubsystem.SubsystemConditional;
 
 import java.util.List;
 import java.util.Optional;

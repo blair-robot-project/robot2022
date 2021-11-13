@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.team449._2020.shooter.SubsystemFlywheel;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import frc.team449._2020.shooter.SubsystemFlywheel;
 
 /** Turn off the flywheel and feeder. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

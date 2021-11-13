@@ -8,12 +8,12 @@ import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
 import frc.team449.generalInterfaces.AHRS.commands.PIDAngleCommand;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
+import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.other.Debouncer;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import frc.team449.oi.unidirectional.OIUnidirectional;
 
 import java.util.function.DoubleUnaryOperator;
 
@@ -189,8 +189,7 @@ public class UnidirectionalNavXDefaultDrive<
       }
 
       // Adjust the heading according to the PID output, it'll be positive if we want to go right.
-      this.subsystem.setOutput(
-          leftOutput - finalOutput, rightOutput + finalOutput);
+      this.subsystem.setOutput(leftOutput - finalOutput, rightOutput + finalOutput);
     }
     // If we're free driving...
     else {
