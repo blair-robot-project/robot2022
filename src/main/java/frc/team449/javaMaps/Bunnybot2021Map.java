@@ -13,6 +13,8 @@ import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator;
 import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator.ElevatorPosition;
 import frc.team449._2021BunnyBot.elevator.commands.MoveToPosition;
 import frc.team449._2021BunnyBot.elevator.commands.SetVelocity;
+import frc.team449._2021BunnyBot.intake.IntakeActuated;
+import frc.team449._2021BunnyBot.intake.commands.SetIntake;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.components.ShiftComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyroShiftable;
@@ -45,8 +47,6 @@ public class Bunnybot2021Map {
       RIGHT_MASTER_PORT = 2,
       RIGHT_MASTER_SLAVE_1_PORT = 4,
       RIGHT_MASTER_SLAVE_2_PORT = 6;
-  // Intake system
-  public static final int INTAKE_MOTOR_PORT = 7;
   // Solenoid ports
   public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
@@ -56,6 +56,8 @@ public class Bunnybot2021Map {
 
   @NotNull
   public static RobotMap createRobotMap() {
+    // TODO Declare these constants outside this method and remove unused variables
+
     // Motor ports
     int leftMasterPort = 1,
         leftMasterSlave1Port = 3,
@@ -63,7 +65,6 @@ public class Bunnybot2021Map {
         rightMasterPort = 2,
         rightMasterSlave1Port = 4,
         rightMasterSlave2Port = 6,
-        intakeMotorPort = 7, // TODO This is never used
         elevatorMotorPort = 8;
 
     // Solenoid ports
@@ -82,10 +83,14 @@ public class Bunnybot2021Map {
         shiftUp = 5;
 
     // Mechs button numbers
-    int elevatorLift = 2, // TODO This is never used
-        elevatorLower = 3; // TODO This is never used
+    int elevatorMoveToTop = 1,
+        elevatorMoveToUpper = 2,
+        elevatorMoveToLower = 3,
+        elevatorMoveToBottom = 4,
+        intakeClose = 7,
+        intakeOpen = 8;
     // Motor speeds
-    double elevatorMotorSpeed = 0.5; // TODO This is never used
+    double elevatorMaxVelocity = 1; // TODO this is a placeholder
 
     var useCameraServer = false;
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
@@ -188,12 +193,16 @@ public class Bunnybot2021Map {
     elevatorPulleyMotor.setPID(0, 0, 0);
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
     // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
-    double elevatorMaxVelocity = 1; // TODO this is a placeholder
+
     var elevator =
         new OneMotorPulleyElevator(
             elevatorPulleyMotor, ElevatorPosition.BOTTOM, elevatorMaxVelocity);
     var setVelocityCommand = new SetVelocity(elevator, mechanismsJoystick, elevatorMaxVelocity);
-    var subsystems = List.<Subsystem>of(drive, elevator);
+
+    //intake
+    var intake = new IntakeActuated(new SolenoidSimple(new DoubleSolenoid(intakeSolenoidForward, intakeSolenoidReverse)));
+
+    var subsystems = List.<Subsystem>of(drive, elevator, intake);
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
@@ -260,24 +269,36 @@ public class Bunnybot2021Map {
                 CommandButton.Action.WHEN_PRESSED),
             // elevator move to TOP position
             new CommandButton(
-                new SimpleButton(mechanismsJoystick, 1),
+                new SimpleButton(mechanismsJoystick, elevatorMoveToTop),
                 new MoveToPosition(ElevatorPosition.TOP, elevator),
                 CommandButton.Action.WHEN_PRESSED),
             // elevator move to UPPER position
             new CommandButton(
-                new SimpleButton(mechanismsJoystick, 2),
+                new SimpleButton(mechanismsJoystick, elevatorMoveToUpper),
                 new MoveToPosition(ElevatorPosition.UPPER, elevator),
                 CommandButton.Action.WHEN_PRESSED),
             // elevator move to LOWER position
             new CommandButton(
-                new SimpleButton(mechanismsJoystick, 3),
+                new SimpleButton(mechanismsJoystick, elevatorMoveToLower),
                 new MoveToPosition(ElevatorPosition.LOWER, elevator),
                 CommandButton.Action.WHEN_PRESSED),
             // elevator move to BOTTOM position
             new CommandButton(
-                new SimpleButton(mechanismsJoystick, 4),
+                new SimpleButton(mechanismsJoystick, elevatorMoveToBottom),
                 new MoveToPosition(ElevatorPosition.BOTTOM, elevator),
-                CommandButton.Action.WHEN_PRESSED));
+                CommandButton.Action.WHEN_PRESSED),
+            // Close the intake
+            new CommandButton(
+                    new SimpleButton(mechanismsJoystick, intakeClose),
+                    new SetIntake(IntakeActuated.IntakePosition.CLOSED, intake),
+                    CommandButton.Action.WHEN_PRESSED
+            ),
+            // Open the intake
+            new CommandButton(
+                    new SimpleButton(mechanismsJoystick, intakeOpen),
+                    new SetIntake(IntakeActuated.IntakePosition.OPEN, intake),
+                    CommandButton.Action.WHEN_PRESSED
+            ));
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();
