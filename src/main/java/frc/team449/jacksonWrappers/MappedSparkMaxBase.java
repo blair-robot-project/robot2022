@@ -340,8 +340,8 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
    *     given.
    */
   @Override
-  public double UPSToEncoder(final double MPS) {
-    return RPSToNative((MPS / postEncoderGearing) / unitPerRotation);
+  public double upsToEncoder(final double MPS) {
+    return rpsToNative((MPS / postEncoderGearing) / unitPerRotation);
   }
 
   @Override

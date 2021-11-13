@@ -475,8 +475,8 @@ public class MappedTalon implements SmartMotor {
    *     given.
    */
   @Override
-  public double UPSToEncoder(final double UPS) {
-    return RPSToNative((UPS / postEncoderGearing) / unitPerRotation);
+  public double upsToEncoder(final double UPS) {
+    return rpsToNative((UPS / postEncoderGearing) / unitPerRotation);
   }
 
   /**
@@ -500,16 +500,16 @@ public class MappedTalon implements SmartMotor {
    * Convert from output RPS to the CANTalon native velocity units. Note this DOES NOT account for
    * post-encoder gearing.
    *
-   * @param RPS The RPS velocity you want to convert.
+   * @param rps The RPS velocity you want to convert.
    * @return That velocity in CANTalon native units, or null if no encoder CPR was given.
    */
   @Contract(pure = true)
   @Override
-  public double RPSToNative(final double RPS) {
+  public double rpsToNative(final double rps) {
     if (this.encoderCPR == null) {
       return Double.NaN;
     }
-    return (RPS / 10) * (this.encoderCPR * 4); // 4 edges per count, and 10 100ms per second.
+    return (rps / 10) * (this.encoderCPR * 4); // 4 edges per count, and 10 100ms per second.
   }
 
   /** @return Total ticks travelled for debug purposes */
@@ -581,7 +581,7 @@ public class MappedTalon implements SmartMotor {
    */
   @Override
   public void setVelocityUPS(final double velocity) {
-    double nativeSetpoint = UPSToEncoder(velocity);
+    double nativeSetpoint = upsToEncoder(velocity);
     setpoint = velocity;
     canTalon.config_kF(0, 0, 0);
     canTalon.set(

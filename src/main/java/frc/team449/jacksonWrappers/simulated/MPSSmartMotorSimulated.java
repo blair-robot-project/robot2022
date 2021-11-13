@@ -20,10 +20,7 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.DoubleSupplier;
 
 import static frc.team449.other.Util.clamp;
@@ -90,10 +87,10 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
       @Nullable final Shiftable.Gear startingGear,
       @Nullable final Integer startingGearNum,
       // Spark-specific
-      @Nullable final HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
+      @Nullable final EnumMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
       @Nullable final Integer controlFrameRateMillis,
       // Talon-specific
-      @Nullable final HashMap<StatusFrameEnhanced, Integer> talonStatusFramesMap,
+      @Nullable final EnumMap<StatusFrameEnhanced, Integer> talonStatusFramesMap,
       @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
       @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
       @Nullable final Integer voltageCompSamples,
@@ -300,7 +297,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
    *     given.
    */
   @Override
-  public double UPSToEncoder(final double MPS) {
+  public double upsToEncoder(final double MPS) {
     return MPS / this.unitPerRotation;
   }
 
@@ -320,12 +317,12 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
    * Convert from output RPS to the native velocity. Note this DOES NOT account for post-encoder
    * gearing.
    *
-   * @param RPS The RPS velocity you want to convert.
+   * @param rps The RPS velocity you want to convert.
    * @return That velocity in native units, or null if no encoder CPR was given.
    */
   @Override
-  public double RPSToNative(final double RPS) {
-    return RPS;
+  public double rpsToNative(final double rps) {
+    return rps;
   }
 
   /** @return Raw position units for debugging purposes */
@@ -402,7 +399,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
    */
   @Override
   public void setVelocityUPS(final double velocity) {
-    this.setControlModeAndSetpoint(ControlMode.Velocity, this.UPSToEncoder(velocity));
+    this.setControlModeAndSetpoint(ControlMode.Velocity, this.upsToEncoder(velocity));
   }
 
   /**

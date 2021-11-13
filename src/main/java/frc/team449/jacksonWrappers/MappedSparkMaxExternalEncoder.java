@@ -155,13 +155,13 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
    * Convert from output RPS to native velocity units. Note this DOES NOT account for post-encoder
    * gearing.
    *
-   * @param RPS The RPS velocity you want to convert.
+   * @param rps The RPS velocity you want to convert.
    * @return That velocity in RPM
    */
   @Contract(pure = true)
   @Override
-  public double RPSToNative(final double RPS) {
-    return RPS;
+  public double rpsToNative(final double rps) {
+    return rps;
   }
 
   @Override
@@ -193,7 +193,7 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
   @Override
   public void setVelocityUPS(final double velocity) {
     this.currentControlMode = ControlType.kVelocity;
-    double nativeSetpoint = UPSToEncoder(velocity);
+    double nativeSetpoint = upsToEncoder(velocity);
     this.setpoint = velocity;
     setVoltage(
         currentGearSettings.feedForwardCalculator.calculate(velocity)

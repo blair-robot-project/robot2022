@@ -11,10 +11,10 @@ import frc.team449.jacksonWrappers.SlaveTalon;
 import frc.team449.jacksonWrappers.SlaveVictor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-
+@Deprecated(since="SmartMotorConfigObject added", forRemoval=true)
 public final class SmartMotorBuilder {
   private SmartMotor.Type type;
   private int port;
@@ -34,10 +34,8 @@ public final class SmartMotorBuilder {
   private List<Shiftable.PerGearSettings> perGearSettings = new ArrayList<>();
   private Shiftable.Gear startingGear;
   private Integer startingGearNum;
-  // Spark-specific
   private Integer controlFrameRateMillis;
-  // Talon-specific
-  private Map<ControlFrame, Integer> controlFrameRatesMillis = new HashMap<>();
+  private Map<ControlFrame, Integer> controlFrameRatesMillis = new EnumMap<>(ControlFrame.class);
   private RunningLinRegComponent voltagePerCurrentLinReg;
   private Integer voltageCompSamples;
   private FeedbackDevice feedbackDevice;
@@ -47,17 +45,9 @@ public final class SmartMotorBuilder {
   private List<SlaveTalon> slaveTalons = new ArrayList<>();
   private List<SlaveVictor> slaveVictors = new ArrayList<>();
   private List<SlaveSparkMax> slaveSparks = new ArrayList<>();
-  // Handled specially.;
   private Map<?, Integer> statusFrameRatesMillis;
-
-  private boolean portSet = false;
-  private boolean enableBrakeModeSet = false;
-
   public SmartMotor build() {
     assert type != null : "SmartMotor type was not given";
-    assert portSet : "SmartMotor port was not set";
-    assert enableBrakeModeSet : "SmartMotor property enableBrakeMode was not given";
-
     return SmartMotor.create(
         type,
         port,
@@ -95,8 +85,8 @@ public final class SmartMotorBuilder {
     var builder = new SmartMotorBuilder();
 
     if (type != null) builder.type(this.type);
-    if (portSet) builder.port(this.port);
-    if (enableBrakeModeSet) builder.enableBrakeMode(this.enableBrakeMode);
+    builder.port(this.port);
+    builder.enableBrakeMode(this.enableBrakeMode);
 
     return builder
         .name(this.name)
@@ -135,13 +125,11 @@ public final class SmartMotorBuilder {
 
   public SmartMotorBuilder port(int port) {
     this.port = port;
-    this.portSet = true;
     return this;
   }
 
   public SmartMotorBuilder enableBrakeMode(boolean enableBrakeMode) {
     this.enableBrakeMode = enableBrakeMode;
-    this.enableBrakeModeSet = true;
     return this;
   }
 
@@ -281,3 +269,4 @@ public final class SmartMotorBuilder {
     return this;
   }
 }
+

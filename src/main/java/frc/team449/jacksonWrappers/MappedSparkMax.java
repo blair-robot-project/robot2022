@@ -134,13 +134,13 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
    * Convert from output RPS to native velocity units. Note this DOES NOT account for post-encoder
    * gearing.
    *
-   * @param RPS The RPS velocity you want to convert.
+   * @param rps The RPS velocity you want to convert.
    * @return That velocity in RPM
    */
   @Contract(pure = true)
   @Override
-  public double RPSToNative(final double RPS) {
-    return RPS * 60.;
+  public double rpsToNative(final double rps) {
+    return rps * 60.;
   }
 
   /** @return Total revolutions for debug purposes */
@@ -193,7 +193,7 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
   @Override
   public void setVelocityUPS(final double velocity) {
     this.currentControlMode = ControlType.kVelocity;
-    double nativeSetpoint = UPSToEncoder(velocity);
+    double nativeSetpoint = upsToEncoder(velocity);
     this.setpoint = velocity;
     this.pidController.setFF(0);
     this.pidController.setReference(
