@@ -48,14 +48,14 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
    *     If this is null, the reverse limit switch is disabled.
    * @param remoteLimitSwitchID The CAN ID the limit switch to use for this Spark is plugged into,
    *     or null to not use a limit switch.
-   * @param fwdSoftLimit The forward software limit, in feet. If this is null, the forward software
+   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward software
    *     limit is disabled. Ignored if there's no encoder.
-   * @param revSoftLimit The reverse software limit, in feet. If this is null, the reverse software
+   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse software
    *     limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
    *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
    *     final output. Defaults to 1.
-   * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
+   * @param unitPerRotation The number of meters travelled per rotation of the motor this is attached
    *     to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
    *     used.
@@ -174,21 +174,21 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
   /**
    * Set a position setpoint for the Spark.
    *
-   * @param feet An absolute position setpoint, in feet.
+   * @param meters An absolute position setpoint, in meters.
    */
   @Override
-  public void setPositionSetpoint(final double feet) {
-    this.setpoint = feet;
-    double nativeSetpoint = this.unitToEncoder(feet);
+  public void setPositionSetpoint(final double meters) {
+    this.setpoint = meters;
+    double nativeSetpoint = this.unitToEncoder(meters);
     setVoltage(
         currentGearSettings.feedForwardCalculator.ks
             + pidController.calculate(encoderPosition(), nativeSetpoint));
   }
 
   /**
-   * Give a velocity closed loop setpoint in FPS.
+   * Give a velocity closed loop setpoint in MPS.
    *
-   * @param velocity velocity setpoint in FPS.
+   * @param velocity velocity setpoint in MPS.
    */
   @Override
   public void setVelocityUPS(final double velocity) {

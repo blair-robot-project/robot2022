@@ -26,7 +26,7 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
   /**
    * Get the velocity of the left side of the drive.
    *
-   * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
   @Nullable
   Double getLeftVel();
@@ -34,7 +34,7 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
   /**
    * Get the velocity of the right side of the drive.
    *
-   * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
   @Nullable
   Double getRightVel();
@@ -42,7 +42,7 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
   /**
    * Get the position of the left side of the drive.
    *
-   * @return The signed position in feet, or null if the drive doesn't have encoders.
+   * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
   @Nullable
   Double getLeftPos();
@@ -50,7 +50,7 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
   /**
    * Get the position of the right side of the drive.
    *
-   * @return The signed position in feet, or null if the drive doesn't have encoders.
+   * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
   @Nullable
   Double getRightPos();
@@ -58,7 +58,7 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
   /**
    * Get the cached velocity of the left side of the drive.
    *
-   * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
   @Nullable
   Double getLeftVelCached();
@@ -66,7 +66,7 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
   /**
    * Get the cached velocity of the right side of the drive.
    *
-   * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
   @Nullable
   Double getRightVelCached();
@@ -74,7 +74,7 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
   /**
    * Get the cached position of the left side of the drive.
    *
-   * @return The signed position in feet, or null if the drive doesn't have encoders.
+   * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
   @Nullable
   Double getLeftPosCached();
@@ -82,7 +82,7 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
   /**
    * Get the cached position of the right side of the drive.
    *
-   * @return The signed position in feet, or null if the drive doesn't have encoders.
+   * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
   @Nullable
   Double getRightPosCached();

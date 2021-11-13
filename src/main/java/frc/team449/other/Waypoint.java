@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /** A waypoint to hit during a motion profile. */
 public class Waypoint {
 
-  /** The X position to hit, in feet. */
+  /** The X position to hit, in meters. */
   private double x;
 
-  /** The Y position to hit, in feet. */
+  /** The Y position to hit, in meters. */
   private double y;
 
   /** The angle, in degrees, for the robot to be at when it arrives at (x, y). */
@@ -18,8 +18,8 @@ public class Waypoint {
   /**
    * Default constructor.
    *
-   * @param x The X position to hit, in feet.
-   * @param y The Y position to hit, in feet.
+   * @param x The X position to hit, in meters.
+   * @param y The Y position to hit, in meters.
    * @param theta The angle, in degrees, for the robot to be at when it arrives at (x, y).
    */
   @JsonCreator
@@ -32,22 +32,22 @@ public class Waypoint {
     this.theta = theta;
   }
 
-  /** @return The X position to hit, in feet. */
+  /** @return The X position to hit, in meters. */
   public double getX() {
     return x;
   }
 
-  /** @param x The X position to hit, in feet. */
+  /** @param x The X position to hit, in meters. */
   public void setX(double x) {
     this.x = x;
   }
 
-  /** @return The Y position to hit, in feet. */
+  /** @return The Y position to hit, in meters. */
   public double getY() {
     return y;
   }
 
-  /** @param y The X position to hit, in feet. */
+  /** @param y The X position to hit, in meters. */
   public void setY(double y) {
     this.y = y;
   }

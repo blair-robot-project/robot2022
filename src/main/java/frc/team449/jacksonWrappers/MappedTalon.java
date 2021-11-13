@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Component wrapper on the CTRE {@link TalonSRX}, with unit conversions to/from FPS built in. Every
- * non-unit-conversion in this class takes arguments in post-gearing FPS.
+ * Component wrapper on the CTRE {@link TalonSRX}, with unit conversions to/from MPS built in. Every
+ * non-unit-conversion in this class takes arguments in post-gearing MPS.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedTalon implements SmartMotor {
@@ -35,7 +35,7 @@ public class MappedTalon implements SmartMotor {
   /** The counts per rotation of the encoder being used, or null if there is no encoder. */
   @Nullable private final Integer encoderCPR;
   /**
-   * The number of feet travelled per rotation of the motor this is attached to, or null if there is
+   * The number of meters travelled per rotation of the motor this is attached to, or null if there is
    * no encoder.
    */
   private final double unitPerRotation;
@@ -78,14 +78,14 @@ public class MappedTalon implements SmartMotor {
    * @param remoteLimitSwitchID The CAN port of the Talon the limit switch to use for this talon is
    *     plugged into, or null to not use a limit switch or use the limit switch plugged into this
    *     talon.
-   * @param fwdSoftLimit The forward software limit, in feet. If this is null, the forward software
+   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward software
    *     limit is disabled. Ignored if there's no encoder.
-   * @param revSoftLimit The reverse software limit, in feet. If this is null, the reverse software
+   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse software
    *     limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
    *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
    *     final output. Defaults to 1.
-   * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
+   * @param unitPerRotation The number of meters travelled per rotation of the motor this is attached
    *     to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
    *     used.
@@ -419,11 +419,11 @@ public class MappedTalon implements SmartMotor {
   }
 
   /**
-   * Convert from native units read by an encoder to feet moved. Note this DOES account for
+   * Convert from native units read by an encoder to meters moved. Note this DOES account for
    * post-encoder gearing.
    *
    * @param nativeUnits A distance native units as measured by the encoder.
-   * @return That distance in feet, or null if no encoder CPR was given.
+   * @return That distance in meters, or null if no encoder CPR was given.
    */
   @Override
   public double encoderToUnit(final double nativeUnits) {
@@ -434,27 +434,27 @@ public class MappedTalon implements SmartMotor {
   }
 
   /**
-   * Convert a distance from feet to encoder reading in native units. Note this DOES account for
+   * Convert a distance from meters to encoder reading in native units. Note this DOES account for
    * post-encoder gearing.
    *
-   * @param feet A distance in feet.
+   * @param meters A distance in meters.
    * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
    *     given.
    */
   @Override
-  public double unitToEncoder(final double feet) {
+  public double unitToEncoder(final double meters) {
     if (encoderCPR == null) {
       return Double.NaN;
     }
-    return feet / this.unitPerRotation * (this.encoderCPR * 4) / this.postEncoderGearing;
+    return meters / this.unitPerRotation * (this.encoderCPR * 4) / this.postEncoderGearing;
   }
 
   /**
-   * Converts the velocity read by the talon's getVelocity() method to the FPS of the output shaft.
+   * Converts the velocity read by the talon's getVelocity() method to the MPS of the output shaft.
    * Note this DOES account for post-encoder gearing.
    *
    * @param encoderReading The velocity read from the encoder with no conversions.
-   * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if
+   * @return The velocity of the output shaft, in MPS, when the encoder has that reading, or null if
    *     no encoder CPR was given.
    */
   @Override
@@ -470,7 +470,7 @@ public class MappedTalon implements SmartMotor {
    * Converts from the velocity of the output shaft to what the talon's getVelocity() method would
    * read at that velocity. Note this DOES account for post-encoder gearing.
    *
-   * @param UPS The velocity of the output shaft, in FPS.
+   * @param UPS The velocity of the output shaft, in MPS.
    * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
    *     given.
    */
@@ -530,12 +530,12 @@ public class MappedTalon implements SmartMotor {
   /**
    * Set a position setpoint for the Talon.
    *
-   * @param feet An absolute position setpoint, in feet.
+   * @param meters An absolute position setpoint, in meters.
    */
   @Override
-  public void setPositionSetpoint(final double feet) {
-    this.setpoint = feet;
-    double nativeSetpoint = this.unitToEncoder(feet);
+  public void setPositionSetpoint(final double meters) {
+    this.setpoint = meters;
+    double nativeSetpoint = this.unitToEncoder(meters);
     this.canTalon.config_kF(0, 0);
     this.canTalon.set(
         ControlMode.Position,
@@ -551,9 +551,9 @@ public class MappedTalon implements SmartMotor {
   }
 
   /**
-   * Get the velocity of the CANTalon in FPS.
+   * Get the velocity of the CANTalon in MPS.
    *
-   * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
+   * @return The CANTalon's velocity in MPS, or null if no encoder CPR was given.
    */
   @Override
   public double getVelocity() {
@@ -575,9 +575,9 @@ public class MappedTalon implements SmartMotor {
   }
 
   /**
-   * Give a velocity closed loop setpoint in FPS.
+   * Give a velocity closed loop setpoint in MPS.
    *
-   * @param velocity velocity setpoint in FPS.
+   * @param velocity velocity setpoint in MPS.
    */
   @Override
   public void setVelocityUPS(final double velocity) {
@@ -592,10 +592,10 @@ public class MappedTalon implements SmartMotor {
   }
 
   /**
-   * Get the current closed-loop velocity error in FPS. WARNING: will give garbage if not in
+   * Get the current closed-loop velocity error in MPS. WARNING: will give garbage if not in
    * velocity mode.
    *
-   * @return The closed-loop error in FPS, or null if no encoder CPR was given.
+   * @return The closed-loop error in MPS, or null if no encoder CPR was given.
    */
   @Log
   @Override
@@ -608,7 +608,7 @@ public class MappedTalon implements SmartMotor {
   }
 
   /**
-   * Get the current velocity setpoint of the Talon in FPS, the position setpoint in feet
+   * Get the current velocity setpoint of the Talon in MPS, the position setpoint in meters
    *
    * @return The setpoint in sensible units for the current control mode.
    */
@@ -696,7 +696,7 @@ public class MappedTalon implements SmartMotor {
     return this.currentGearSettings.feedForwardCalculator;
   }
 
-  /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
+  /** @return the position of the talon in meters, or null of inches per rotation wasn't given. */
   @Override
   @Log
   public double getPositionUnits() {

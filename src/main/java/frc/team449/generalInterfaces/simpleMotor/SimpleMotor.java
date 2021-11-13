@@ -37,7 +37,7 @@ public interface SimpleMotor extends SubsystemAnalogMotor {
 
   /** Unused. */
   enum Type {
-    FPSTalon,
+    MPSTalon,
     Victor,
     VictorSPX,
   }

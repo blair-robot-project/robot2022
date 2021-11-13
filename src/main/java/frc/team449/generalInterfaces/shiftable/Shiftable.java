@@ -55,7 +55,7 @@ public interface Shiftable {
     /** The ramp rate, in volts/sec. null means no ramp rate. */
     @Nullable public final Double rampRate;
 
-    /** The maximum speed of the motor in this gear, in FPS. Used for throttle scaling. */
+    /** The maximum speed of the motor in this gear, in MPS. Used for throttle scaling. */
     @Nullable public final Double maxSpeed;
 
     /**
@@ -94,7 +94,7 @@ public interface Shiftable {
      * @param feedForwardCalculator The component for calculating feedforwards in closed-loop
      *     control modes.
      * @param rampRate The ramp rate, in volts/sec. Can be null, and if it is, no ramp rate is used.
-     * @param maxSpeed The maximum speed of the motor in this gear, in FPS. Used for throttle
+     * @param maxSpeed The maximum speed of the motor in this gear, in MPS. Used for throttle
      *     scaling. Ignored if kVFwd is null. Calculated from the drive characterization terms if
      *     null.
      * @param kP The proportional PID constant for the motor in this gear. Ignored if kVFwd is null.
