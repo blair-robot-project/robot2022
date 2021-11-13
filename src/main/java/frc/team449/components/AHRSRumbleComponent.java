@@ -21,11 +21,11 @@ public class AHRSRumbleComponent implements Runnable {
   /** The things to rumble. */
   @NotNull private final List<Rumbleable> rumbleables;
 
-  /** The minimum jerk that will trigger rumbling, in feet/second^3. */
+  /** The minimum jerk that will trigger rumbling, in meters/second^3. */
   private final double minJerk;
 
   /**
-   * The jerk, in feet/second^3, that's scaled to maximum rumble. All jerks of greater magnitude are
+   * The jerk, in meters/second^3, that's scaled to maximum rumble. All jerks of greater magnitude are
    * capped at 1.
    */
   private final double maxJerk;
@@ -50,8 +50,8 @@ public class AHRSRumbleComponent implements Runnable {
    *
    * @param ahrs The NavX to get jerk measurements from.
    * @param rumbleables The things to rumble.
-   * @param minJerk The minimum jerk that will trigger rumbling, in feet/(sec^3).
-   * @param maxJerk The jerk, in feet/(sec^3), that's scaled to maximum rumble. All jerks of greater
+   * @param minJerk The minimum jerk that will trigger rumbling, in meters/(sec^3).
+   * @param maxJerk The jerk, in meters/(sec^3), that's scaled to maximum rumble. All jerks of greater
    *     magnitude are capped at 1.
    * @param yIsFrontBack Whether the NavX Y-axis measures forwards-back jerk or left-right jerk.
    *     Defaults to false.

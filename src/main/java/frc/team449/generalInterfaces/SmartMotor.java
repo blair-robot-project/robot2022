@@ -25,7 +25,7 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.jacksonWrappers.*;
-import frc.team449.jacksonWrappers.simulated.FPSSmartMotorSimulated;
+import frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated;
 import frc.team449.other.Updater;
 
 import java.util.HashMap;
@@ -36,12 +36,12 @@ import static frc.team449.other.Util.getLogPrefix;
 
 /**
  * A motor with built in advanced capability featuring encoder, current limiting, and gear shifting
- * support. Also features built in FPS conversions.
+ * support. Also features built in MPS conversions.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   /**
-   * Whether to construct instances of {@link FPSSmartMotorSimulated} instead of the specified
+   * Whether to construct instances of {@link MPSSmartMotorSimulated} instead of the specified
    * controllers when the robot is running in a simulation.
    */
   boolean SIMULATE = true;
@@ -69,14 +69,14 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * @param remoteLimitSwitchID The CAN port that the limit switch to use for this controller is
    *     plugged into, or null to not use a limit switch or use the limit switch plugged directly
    *     into this controller (for some controllers).
-   * @param fwdSoftLimit The forward software limit, in feet. If this is null, the forward software
+   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward software
    *     limit is disabled. Ignored if there's no encoder.
-   * @param revSoftLimit The reverse software limit, in feet. If this is null, the reverse software
+   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse software
    *     limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
    *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
    *     final output. Defaults to 1.
-   * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
+   * @param unitPerRotation The number of meters travelled per rotation of the motor this is attached
    *     to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
    *     used.
@@ -225,14 +225,14 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
         } else if (frame instanceof CANSparkMaxLowLevel.PeriodicFrame) {
           if (type == Type.TALON)
             throw new IllegalArgumentException(
-                "statusFrameRatesMillis contains key of type CANSparkMaxLowLevel.PeriodicFrame that will not work for FPSTalon");
+                "statusFrameRatesMillis contains key of type CANSparkMaxLowLevel.PeriodicFrame that will not work for MPSTalon");
           sparkStatusFramesMap.put(
               (CANSparkMaxLowLevel.PeriodicFrame) frame, statusFrameRatesMillis.get(frame));
 
         } else if (frame instanceof StatusFrameEnhanced) {
           if (actualType == Type.SPARK)
             throw new IllegalArgumentException(
-                "statusFrameRatesMillis contains key of type StatusFrameEnhanced that will not work for FPSSparkMax");
+                "statusFrameRatesMillis contains key of type StatusFrameEnhanced that will not work for MPSSparkMax");
           talonStatusFramesMap.put((StatusFrameEnhanced) frame, statusFrameRatesMillis.get(frame));
 
         } else {
@@ -319,7 +319,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
       case SIMULATED:
         logHelper.log("SIM:  " + motorLogName);
         final var simulated =
-            new FPSSmartMotorSimulated(
+            new MPSSmartMotorSimulated(
                 actualType,
                 port,
                 enableBrakeMode,
@@ -373,30 +373,30 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   void setPercentVoltage(double percentVoltage);
 
   /**
-   * Convert from native units read by an encoder to feet moved. Note this DOES account for
+   * Convert from native units read by an encoder to meters moved. Note this DOES account for
    * post-encoder gearing.
    *
    * @param nativeUnits A distance native units as measured by the encoder.
-   * @return That distance in feet, or null if no encoder CPR was given.
+   * @return That distance in meters, or null if no encoder CPR was given.
    */
   double encoderToUnit(double nativeUnits);
 
   /**
-   * Convert a distance from feet to encoder reading in native units. Note this DOES account for
+   * Convert a distance from meters to encoder reading in native units. Note this DOES account for
    * post-encoder gearing.
    *
-   * @param feet A distance in feet.
+   * @param meters A distance in meters.
    * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
    *     given.
    */
-  double unitToEncoder(double feet);
+  double unitToEncoder(double meters);
 
   /**
-   * Converts the velocity read by the controllers's getVelocity() method to the FPS of the output
+   * Converts the velocity read by the controllers's getVelocity() method to the MPS of the output
    * shaft. Note this DOES account for post-encoder gearing.
    *
    * @param encoderReading The velocity read from the encoder with no conversions.
-   * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if
+   * @return The velocity of the output shaft, in MPS, when the encoder has that reading, or null if
    *     no encoder CPR was given.
    */
   double encoderToUPS(double encoderReading);
@@ -405,11 +405,11 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * Converts from the velocity of the output shaft to what the controllers's getVelocity() method
    * would read at that velocity. Note this DOES account for post-encoder gearing.
    *
-   * @param FPS The velocity of the output shaft, in FPS.
+   * @param MPS The velocity of the output shaft, in MPS.
    * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
    *     given.
    */
-  double UPSToEncoder(double FPS);
+  double UPSToEncoder(double MPS);
 
   /**
    * Convert from native velocity units to output rotations per second. Note this DOES NOT account
@@ -433,7 +433,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   double encoderPosition();
 
   /** Set a position setpoint for the controller. */
-  void setPositionSetpoint(double feet);
+  void setPositionSetpoint(double meters);
 
   /** @return Raw velocity units for debugging purposes */
   double encoderVelocity();
@@ -442,9 +442,9 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   void setVoltage(double volts);
 
   /**
-   * Get the velocity of the controller in FPS.
+   * Get the velocity of the controller in MPS.
    *
-   * @return The controller's velocity in FPS, or null if no encoder CPR was given.
+   * @return The controller's velocity in MPS, or null if no encoder CPR was given.
    */
   double getVelocity();
 
@@ -457,22 +457,22 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   void setVelocity(double velocity);
 
   /**
-   * Give a velocity closed loop setpoint in FPS.
+   * Give a velocity closed loop setpoint in MPS.
    *
-   * @param velocity velocity setpoint in FPS.
+   * @param velocity velocity setpoint in MPS.
    */
   void setVelocityUPS(double velocity);
 
   /**
-   * Get the current closed-loop velocity error in FPS. WARNING: will give garbage if not in
+   * Get the current closed-loop velocity error in MPS. WARNING: will give garbage if not in
    * velocity mode.
    *
-   * @return The closed-loop error in FPS, or null if no encoder CPR was given.
+   * @return The closed-loop error in MPS, or null if no encoder CPR was given.
    */
   double getError();
 
   /**
-   * Get the current velocity setpoint of the motor in FPS, the position setpoint in feet
+   * Get the current velocity setpoint of the motor in MPS, the position setpoint in meters
    *
    * @return The setpoint in sensible units for the current control mode.
    */
@@ -528,7 +528,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   /** @return Feedforward calculator for this gear */
   SimpleMotorFeedforward getCurrentGearFeedForward();
 
-  /** @return the position of the motor in feet, or null of inches per rotation wasn't given. */
+  /** @return the position of the motor in meters, or null of inches per rotation wasn't given. */
   double getPositionUnits();
 
   /** Resets the position of the motor to 0. */
@@ -606,7 +606,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
     /**
      * Simulated motor
      *
-     * @see FPSSmartMotorSimulated
+     * @see MPSSmartMotorSimulated
      */
     SIMULATED("SIMULATED");
 

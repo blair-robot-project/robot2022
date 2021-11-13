@@ -56,14 +56,14 @@ public class MappedAHRS implements Updatable, Loggable {
   }
 
   /**
-   * Convert from gs (acceleration due to gravity) to feet/(second^2).
+   * Convert from gs (acceleration due to gravity) to meters/(second^2).
    *
    * @param accelGs An acceleration in gs.
-   * @return That acceleration in feet/(sec^2)
+   * @return That acceleration in meters/(sec^2)
    */
   @Contract(pure = true)
-  protected static double gsToFeetPerSecondSquared(final double accelGs) {
-    return accelGs * 32.17; // Wolfram alpha said so
+  protected static double gsToMetersPerSecondSquared(final double accelGs) {
+    return accelGs * 9.80665; // Google said so
   }
 
   /**
@@ -106,19 +106,19 @@ public class MappedAHRS implements Updatable, Loggable {
   /**
    * Get the absolute X acceleration of the robot, relative to the field.
    *
-   * @return Linear X acceleration, in feet/(sec^2)
+   * @return Linear X acceleration, in meters/(sec^2)
    */
   public double getXAccel() {
-    return gsToFeetPerSecondSquared(ahrs.getWorldLinearAccelX());
+    return gsToMetersPerSecondSquared(ahrs.getWorldLinearAccelX());
   }
 
   /**
    * Get the absolute Y acceleration of the robot, relative to the field.
    *
-   * @return Linear Y acceleration, in feet/(sec^2)
+   * @return Linear Y acceleration, in meters/(sec^2)
    */
   public double getYAccel() {
-    return gsToFeetPerSecondSquared(ahrs.getWorldLinearAccelY());
+    return gsToMetersPerSecondSquared(ahrs.getWorldLinearAccelY());
   }
 
   /**
@@ -164,7 +164,7 @@ public class MappedAHRS implements Updatable, Loggable {
   /**
    * Get the cached absolute X acceleration of the robot, relative to the field.
    *
-   * @return Linear X acceleration, in feet/(sec^2)
+   * @return Linear X acceleration, in meters/(sec^2)
    */
   @Log
   public double getCachedXAccel() {
@@ -174,7 +174,7 @@ public class MappedAHRS implements Updatable, Loggable {
   /**
    * Get the cached absolute Y acceleration of the robot, relative to the field.
    *
-   * @return Linear Y acceleration, in feet/(sec^2)
+   * @return Linear Y acceleration, in meters/(sec^2)
    */
   @Log
   public double getCachedYAccel() {

@@ -104,7 +104,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /**
    * Get the velocity of the left side of the drive.
    *
-   * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
   @Override
   @NotNull
@@ -115,7 +115,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /**
    * Get the velocity of the right side of the drive.
    *
-   * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
   @Override
   @NotNull
@@ -126,7 +126,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /**
    * Get the position of the left side of the drive.
    *
-   * @return The signed position in feet, or null if the drive doesn't have encoders.
+   * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
   @NotNull
   @Override
@@ -137,7 +137,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /**
    * Get the position of the right side of the drive.
    *
-   * @return The signed position in feet, or null if the drive doesn't have encoders.
+   * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
   @NotNull
   @Override
@@ -148,7 +148,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /**
    * Get the cached velocity of the left side of the drive.
    *
-   * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
   @NotNull
   @Override
@@ -159,7 +159,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /**
    * Get the cached velocity of the right side of the drive.
    *
-   * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
   @NotNull
   @Override
@@ -170,7 +170,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /**
    * Get the cached position of the left side of the drive.
    *
-   * @return The signed position in feet, or null if the drive doesn't have encoders.
+   * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
   @NotNull
   @Override
@@ -181,7 +181,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /**
    * Get the cached position of the right side of the drive.
    *
-   * @return The signed position in feet, or null if the drive doesn't have encoders.
+   * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
   @NotNull
   @Override

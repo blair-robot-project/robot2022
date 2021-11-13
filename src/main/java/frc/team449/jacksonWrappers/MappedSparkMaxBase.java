@@ -22,7 +22,7 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
   /** The PDP this Spark is connected to. */
   @Nullable @Log.Exclude protected final PDP PDP;
   /**
-   * The number of feet travelled per rotation of the motor this is attached to, or null if there is
+   * The number of meters travelled per rotation of the motor this is attached to, or null if there is
    * no encoder.
    */
   private final double unitPerRotation;
@@ -64,14 +64,14 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
    *     If this is null, the reverse limit switch is disabled.
    * @param remoteLimitSwitchID The CAN ID the limit switch to use for this Spark is plugged into,
    *     or null to not use a limit switch.
-   * @param fwdSoftLimit The forward software limit, in feet. If this is null, the forward software
+   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward software
    *     limit is disabled. Ignored if there's no encoder.
-   * @param revSoftLimit The reverse software limit, in feet. If this is null, the reverse software
+   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse software
    *     limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
    *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
    *     final output. Defaults to 1.
-   * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
+   * @param unitPerRotation The number of meters travelled per rotation of the motor this is attached
    *     to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
    *     used.
@@ -294,11 +294,11 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
   }
 
   /**
-   * Convert from native units read by an encoder to feet moved. Note this DOES account for
+   * Convert from native units read by an encoder to meters moved. Note this DOES account for
    * post-encoder gearing.
    *
    * @param revs revolutions measured by the encoder
-   * @return That distance in feet, or null if no encoder CPR was given.
+   * @return That distance in meters, or null if no encoder CPR was given.
    */
   @Override
   public double encoderToUnit(final double revs) {
@@ -306,24 +306,24 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
   }
 
   /**
-   * Convert a distance from feet to encoder reading in native units. Note this DOES account for
+   * Convert a distance from meters to encoder reading in native units. Note this DOES account for
    * post-encoder gearing.
    *
-   * @param feet A distance in feet.
+   * @param meters A distance in meters.
    * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
    *     given.
    */
   @Override
-  public double unitToEncoder(final double feet) {
-    return feet / unitPerRotation / postEncoderGearing;
+  public double unitToEncoder(final double meters) {
+    return meters / unitPerRotation / postEncoderGearing;
   }
 
   /**
-   * Converts the velocity read by the getVelocity() method to the FPS of the output shaft. Note
+   * Converts the velocity read by the getVelocity() method to the MPS of the output shaft. Note
    * this DOES account for post-encoder gearing.
    *
    * @param encoderReading The velocity read from the encoder with no conversions.
-   * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if
+   * @return The velocity of the output shaft, in MPS, when the encoder has that reading, or null if
    *     no encoder CPR was given.
    */
   @Override
@@ -335,13 +335,13 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
    * Converts from the velocity of the output shaft to what the getVelocity() method would read at
    * that velocity. Note this DOES account for post-encoder gearing.
    *
-   * @param FPS The velocity of the output shaft, in FPS.
+   * @param MPS The velocity of the output shaft, in MPS.
    * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
    *     given.
    */
   @Override
-  public double UPSToEncoder(final double FPS) {
-    return RPSToNative((FPS / postEncoderGearing) / unitPerRotation);
+  public double UPSToEncoder(final double MPS) {
+    return RPSToNative((MPS / postEncoderGearing) / unitPerRotation);
   }
 
   @Override

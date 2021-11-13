@@ -34,12 +34,12 @@ import static frc.team449.other.Util.getLogPrefix;
  * This class simulates a smart motor controller. Motor physics are simulated by {@link
  * SimulatedMotor}.
  *
- * <p>This class is automatically instantiated by the FPSSmartMotor factory method when the robot is
+ * <p>This class is automatically instantiated by the MPSSmartMotor factory method when the robot is
  * running in a simulation and should not be otherwise referenced in code.
  *
  * <p>The current implementation relies on fictional physics and does not involve
  */
-public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
+public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   /** Maximum PID integral for anti-windup. */
   private static final double MAX_INTEGRAL = Double.POSITIVE_INFINITY;
 
@@ -56,7 +56,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   @Log private double setpoint;
 
   @NotNull
-  private final FPSSmartMotorSimulated.PID pid =
+  private final MPSSmartMotorSimulated.PID pid =
       new PID(MAX_INTEGRAL, () -> this.setpoint, 0, 0, 0);
 
   @Log.ToString @NotNull private ControlMode controlMode = ControlMode.Disabled;
@@ -70,7 +70,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
 
   @Log private double lastStateUpdateTime = Clock.currentTimeMillis();
 
-  public FPSSmartMotorSimulated(
+  public MPSSmartMotorSimulated(
       final Type type,
       final int port,
       final boolean enableBrakeMode,
@@ -119,7 +119,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
                     : type == Type.TALON ? "talon" : "MotorControllerUnknownType",
                 port);
 
-    // Most of the constructor is stolen from FPSSparkMax.
+    // Most of the constructor is stolen from MPSSparkMax.
 
     this.perGearSettings = new HashMap<>();
 
@@ -254,11 +254,11 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Convert from native units read by an encoder to feet moved. Note this DOES account for
+   * Convert from native units read by an encoder to meters moved. Note this DOES account for
    * post-encoder gearing.
    *
    * @param nativeUnits A distance native units as measured by the encoder.
-   * @return That distance in feet, or null if no encoder CPR was given.
+   * @return That distance in meters, or null if no encoder CPR was given.
    */
   @Override
   public double encoderToUnit(final double nativeUnits) {
@@ -266,24 +266,24 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Convert a distance from feet to encoder reading in native units. Note this DOES account for
+   * Convert a distance from meters to encoder reading in native units. Note this DOES account for
    * post-encoder gearing.
    *
-   * @param feet A distance in feet.
+   * @param meters A distance in meters.
    * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
    *     given.
    */
   @Override
-  public double unitToEncoder(final double feet) {
-    return feet / this.unitPerRotation;
+  public double unitToEncoder(final double meters) {
+    return meters / this.unitPerRotation;
   }
 
   /**
-   * Converts the velocity read by the controllers's getVelocity() method to the FPS of the output
+   * Converts the velocity read by the controllers's getVelocity() method to the MPS of the output
    * shaft. Note this DOES account for post-encoder gearing.
    *
    * @param encoderReading The velocity read from the encoder with no conversions.
-   * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if
+   * @return The velocity of the output shaft, in MPS, when the encoder has that reading, or null if
    *     no encoder CPR was given.
    */
   @Override
@@ -295,13 +295,13 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    * Converts from the velocity of the output shaft to what the controllers's getVelocity() method
    * would read at that velocity. Note this DOES account for post-encoder gearing.
    *
-   * @param FPS The velocity of the output shaft, in FPS.
+   * @param MPS The velocity of the output shaft, in MPS.
    * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
    *     given.
    */
   @Override
-  public double UPSToEncoder(final double FPS) {
-    return FPS / this.unitPerRotation;
+  public double UPSToEncoder(final double MPS) {
+    return MPS / this.unitPerRotation;
   }
 
   /**
@@ -337,8 +337,8 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
 
   /** Set a position setpoint for the controller. */
   @Override
-  public void setPositionSetpoint(final double feet) {
-    this.setControlModeAndSetpoint(ControlMode.Position, this.unitToEncoder(feet));
+  public void setPositionSetpoint(final double meters) {
+    this.setControlModeAndSetpoint(ControlMode.Position, this.unitToEncoder(meters));
   }
 
   /** @return Raw velocity units for debugging purposes */
@@ -358,9 +358,9 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Get the velocity of the controller in FPS.
+   * Get the velocity of the controller in MPS.
    *
-   * @return The controller's velocity in FPS, or null if no encoder CPR was given.
+   * @return The controller's velocity in MPS, or null if no encoder CPR was given.
    */
   @Log
   @Override
@@ -396,9 +396,9 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Give a velocity closed loop setpoint in FPS.
+   * Give a velocity closed loop setpoint in MPS.
    *
-   * @param velocity velocity setpoint in FPS.
+   * @param velocity velocity setpoint in MPS.
    */
   @Override
   public void setVelocityUPS(final double velocity) {
@@ -406,10 +406,10 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Get the current closed-loop velocity error in FPS. WARNING: will give garbage if not in
+   * Get the current closed-loop velocity error in MPS. WARNING: will give garbage if not in
    * velocity mode.
    *
-   * @return The closed-loop error in FPS, or null if no encoder CPR was given.
+   * @return The closed-loop error in MPS, or null if no encoder CPR was given.
    */
   @Override
   public double getError() {
@@ -417,7 +417,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Get the current velocity setpoint of the Talon in FPS, the position setpoint in feet
+   * Get the current velocity setpoint of the Talon in MPS, the position setpoint in meters
    *
    * @return The setpoint in sensible units for the current control mode.
    */
@@ -511,7 +511,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
     return currentGearSettings.feedForwardCalculator;
   }
 
-  /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
+  /** @return the position of the talon in meters, or null of inches per rotation wasn't given. */
   @Override
   public double getPositionUnits() {
     return this.encoderToUnit(this.encoderPosition());
