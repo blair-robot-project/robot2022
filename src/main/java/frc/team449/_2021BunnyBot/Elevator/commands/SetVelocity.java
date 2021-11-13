@@ -6,12 +6,10 @@ import frc.team449.jacksonWrappers.MappedJoystick;
 
 public class SetVelocity extends CommandBase {
     private final OneMotorPulleyElevator elevator;
-    private final double velocity;
     private final MappedJoystick joystick;
-    public SetVelocity(double velocity, OneMotorPulleyElevator elevator, MappedJoystick joystick) {
+    public SetVelocity(OneMotorPulleyElevator elevator, MappedJoystick joystick) {
         addRequirements(elevator);
         this.elevator = elevator;
-        this.velocity = velocity;
         this.joystick = joystick;
     }
 
