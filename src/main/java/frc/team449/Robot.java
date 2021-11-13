@@ -11,14 +11,16 @@ import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
 
-/** The main class of the robot, constructs all the subsystems and initializes default commands. */
+/**
+ * The main class of the robot, constructs all the subsystems and initializes default commands.
+ */
 public class Robot extends TimedRobot {
   private static boolean isUnitTesting = false;
   private static boolean isTestingHasBeenCalled = false;
   @NotNull RobotMap robotMap = loadMap();
 
   /** The method that runs when the robot is turned on. Initializes all subsystems from the map. */
-  public static @Nullable RobotMap loadMap() {
+  public static @NotNull RobotMap loadMap() {
     return Bunnybot2021Map.createRobotMap();
   }
 
