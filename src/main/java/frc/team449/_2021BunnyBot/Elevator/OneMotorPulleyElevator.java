@@ -38,8 +38,10 @@ public class OneMotorPulleyElevator extends SubsystemBase {
     // update position
     position = pos;
   }
+  //TODO Velocity control method
 
   public enum ElevatorPosition {
+    // preset positions
     TOP(0.3),
     UPPER(0.2),
     LOWER(0.1),
