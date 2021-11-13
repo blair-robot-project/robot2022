@@ -1,7 +1,6 @@
 package frc.team449;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -11,19 +10,12 @@ import frc.team449.javaMaps.Bunnybot2021Map;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.*;
 
 /** The main class of the robot, constructs all the subsystems and initializes default commands. */
 public class Robot extends TimedRobot {
   private static boolean isUnitTesting = false;
   private static boolean isTestingHasBeenCalled = false;
-  /** The object constructed directly from the yaml map. */
-  @NotNull protected final RobotMap robotMap = Objects.requireNonNull(loadMap());
+  @NotNull RobotMap robotMap = loadMap();
 
   /** The method that runs when the robot is turned on. Initializes all subsystems from the map. */
   public static @Nullable RobotMap loadMap() {
@@ -130,20 +122,5 @@ public class Robot extends TimedRobot {
     if (this.robotMap.getTestStartupCommands() != null) {
       this.robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
     }
-  }
-
-  /** Formatting for map reference chain of exception caused by map error. */
-  private enum MapErrorFormat {
-    /** The chain is printed as-is on one line. */
-    NONE,
-    /** The chain is split up into one frame per line and left-justified. */
-    LEFT_ALIGN,
-    /** The chain is split up into one frame per line and right-justified. */
-    RIGHT_ALIGN,
-    /**
-     * The chain is split up into one frame per line and formatted as a table with locations to the
-     * left of class names.
-     */
-    TABLE
   }
 }
