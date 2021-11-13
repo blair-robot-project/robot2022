@@ -1,21 +1,33 @@
 package frc.team449._2021BunnyBot.Elevator.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.team449.Converter.Converter;
 import frc.team449._2021BunnyBot.Elevator.OneMotorPulleyElevator;
 import frc.team449.jacksonWrappers.MappedJoystick;
 
 public class SetVelocity extends CommandBase {
-    private final OneMotorPulleyElevator elevator;
-    private final MappedJoystick joystick;
-    public SetVelocity(OneMotorPulleyElevator elevator, MappedJoystick joystick) {
+    private final OneMotorPulleyElevator elevator; //The elevator to control
+    private final MappedJoystick joystick; //The joystick to read
+    private final double maxVelocity; //The elevator's max allowed velocity
+
+    public SetVelocity(OneMotorPulleyElevator elevator, MappedJoystick joystick, double maxVelocity) {
         addRequirements(elevator);
         this.elevator = elevator;
         this.joystick = joystick;
+        this.maxVelocity = maxVelocity;
     }
 
+    /**
+     * Set the velocity of the elevator to the result of passing the joystick's {@link MappedJoystick#getY() getY} through
+     * {@link frc.team449.Converter.Converter#joystickInputToVelocity(double, double) joystickInputToVelocity}, unless the value is <0.01
+     */
     @Override
-    public void execute(){
-        elevator.setVelocity(joystick.getY());
+    public void execute() {
+        double joystickValue = joystick.getY();
+        if (joystickValue >= 0.01) { //Ignore anything <1% of the max value (assuming joystick is mapped to -1 to 1)
+            //Set the elevator velocity to the joystick value run through the converter
+            elevator.setVelocity(Converter.joystickInputToVelocity(joystickValue, maxVelocity));
+        }
     }
 
     @Override
