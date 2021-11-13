@@ -1,9 +1,9 @@
-package frc.team449._2021BunnyBot.Elevator.commands;
+package frc.team449._2021BunnyBot.elevator.commands;
 
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.team449._2021BunnyBot.Elevator.OneMotorPulleyElevator;
-import frc.team449._2021BunnyBot.Elevator.OneMotorPulleyElevator.ElevatorPosition;
+import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator;
+import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator.ElevatorPosition;
 
 public class LowerElevator extends CommandBase {
     private final OneMotorPulleyElevator elevator;

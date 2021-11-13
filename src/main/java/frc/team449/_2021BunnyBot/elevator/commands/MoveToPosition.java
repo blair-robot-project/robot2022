@@ -1,8 +1,7 @@
-package frc.team449._2021BunnyBot.Elevator.commands;
+package frc.team449._2021BunnyBot.elevator.commands;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.team449._2021BunnyBot.Elevator.OneMotorPulleyElevator;
+import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator;
 import org.jetbrains.annotations.NotNull;
 
 public class MoveToPosition extends CommandBase {
