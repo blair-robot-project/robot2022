@@ -16,15 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* The constructor for {@link SmartMotor} was hell so this will help resolve that.
-* <p>
-* You can set config options in this and then pass this to the {@link SmartMotor} constructor.
-* <p>
-* It's very similar to {@link SmartMotorBuilder} but has getters.
-*
- * @see SmartMotor
+ * The constructor for {@link SmartMotor} was hell so this will help resolve that.
+ * <p>
+ * You can set config options in this and then pass this to the {@link SmartMotor} constructor.
+ * <p>
+ * It's very similar to {@link SmartMotorBuilder} but has getters.
  * @author Katie Del Toro
-*/
+ * @see SmartMotor
+ */
 public class SmartMotorConfigObject {
     private SmartMotor.Type type;
     private int port;

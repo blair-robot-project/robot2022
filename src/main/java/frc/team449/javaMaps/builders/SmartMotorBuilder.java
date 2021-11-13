@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 /**
  * Old way of creating a {@link SmartMotor}.
- * @deprecated use {@link SmartMotorConfigObject} instead
+ * @deprecated use a {@link SmartMotorConfigObject} instead
  */
 @Deprecated(since="SmartMotorConfigObject added", forRemoval=true)
 public final class SmartMotorBuilder {
