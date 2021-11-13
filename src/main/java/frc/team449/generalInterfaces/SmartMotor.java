@@ -472,35 +472,35 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   double getError();
 
   /**
-   * Get the current velocity setpoint of the Talon in FPS, the position setpoint in feet
+   * Get the current velocity setpoint of the motor in FPS, the position setpoint in feet
    *
    * @return The setpoint in sensible units for the current control mode.
    */
   double getSetpoint();
 
   /**
-   * Get the voltage the Talon is currently drawing from the PDP.
+   * Get the voltage the motor is currently drawing from the PDP.
    *
    * @return Voltage in volts.
    */
   double getOutputVoltage();
 
   /**
-   * Get the voltage available for the Talon.
+   * Get the voltage available for the motor.
    *
    * @return Voltage in volts.
    */
   double getBatteryVoltage();
 
   /**
-   * Get the current the Talon is currently drawing from the PDP.
+   * Get the current the motor is currently drawing from the PDP.
    *
    * @return Current in amps.
    */
   double getOutputCurrent();
 
   /**
-   * Get the current control mode of the Talon. Please don't use this for anything other than
+   * Get the current control mode of the motor. Please don't use this for anything other than
    * logging.
    *
    * @return Control mode as a string.
@@ -528,10 +528,10 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   /** @return Feedforward calculator for this gear */
   SimpleMotorFeedforward getCurrentGearFeedForward();
 
-  /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
+  /** @return the position of the motor in feet, or null of inches per rotation wasn't given. */
   double getPositionUnits();
 
-  /** Resets the position of the Talon to 0. */
+  /** Resets the position of the motor to 0. */
   void resetPosition();
 
   /**

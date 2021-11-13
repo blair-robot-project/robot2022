@@ -98,7 +98,8 @@ public final class SmartMotorBuilder {
     if (portSet) builder.port(this.port);
     if (enableBrakeModeSet) builder.enableBrakeMode(this.enableBrakeMode);
 
-    return builder.name(this.name)
+    return builder
+        .name(this.name)
         .reverseOutput(this.reverseOutput)
         .pdp(this.pdp)
         .fwdLimitSwitchNormallyOpen(this.fwdLimitSwitchNormallyOpen)
