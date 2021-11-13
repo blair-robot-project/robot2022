@@ -9,28 +9,25 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS,
-        include = JsonTypeInfo.As.WRAPPER_OBJECT,
-        property = "@class")
+    use = JsonTypeInfo.Id.CLASS,
+    include = JsonTypeInfo.As.WRAPPER_OBJECT,
+    property = "@class")
 public class SetIntakeModeAndOverriding<T extends Subsystem & SubsystemIntake>
-        extends SetIntakeMode<T> {
+    extends SetIntakeMode<T> {
 
-    /**
-     * The subsystem to execute this command on.
-     */
-    @NotNull
-    @Log.Exclude
-    private final T subsystem;
+  /** The subsystem to execute this command on. */
+  @NotNull @Log.Exclude private final T subsystem;
 
-    /**
-     * Default constructor
-     * @param subsystem The subsystem to execute this command on.
-     * @param mode      The mode to set the intake to.
-     */
-    @JsonCreator
-    public SetIntakeModeAndOverriding(
-            @NotNull final T subsystem, final SubsystemIntake.@NotNull IntakeMode mode) {
-        super(subsystem, mode);
-        this.subsystem = subsystem;
-    }
+  /**
+   * Default constructor
+   *
+   * @param subsystem The subsystem to execute this command on.
+   * @param mode The mode to set the intake to.
+   */
+  @JsonCreator
+  public SetIntakeModeAndOverriding(
+      @NotNull final T subsystem, final SubsystemIntake.@NotNull IntakeMode mode) {
+    super(subsystem, mode);
+    this.subsystem = subsystem;
+  }
 }

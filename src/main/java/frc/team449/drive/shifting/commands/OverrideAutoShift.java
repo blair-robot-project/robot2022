@@ -17,62 +17,52 @@ import org.jetbrains.annotations.NotNull;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class OverrideAutoShift extends InstantCommand {
 
-    /**
-     * Whether or not to override.
-     */
-    private final boolean override;
+  /** Whether or not to override. */
+  private final boolean override;
 
-    /**
-     * The drive subsystem to execute this command on.
-     */
-    @NotNull
-    private final DriveShiftable subsystem;
+  /** The drive subsystem to execute this command on. */
+  @NotNull private final DriveShiftable subsystem;
 
-    /**
-     * Default constructor
-     * @param drive    The drive subsystem to execute this command on.
-     * @param override Whether or not to override autoshifting.
-     */
-    @JsonCreator
-    public OverrideAutoShift(
-            @NotNull @JsonProperty(required = true) DriveShiftable drive,
-            @JsonProperty(required = true) boolean override) {
-        subsystem = drive;
-        this.override = override;
+  /**
+   * Default constructor
+   *
+   * @param drive The drive subsystem to execute this command on.
+   * @param override Whether or not to override autoshifting.
+   */
+  @JsonCreator
+  public OverrideAutoShift(
+      @NotNull @JsonProperty(required = true) DriveShiftable drive,
+      @JsonProperty(required = true) boolean override) {
+    subsystem = drive;
+    this.override = override;
+  }
+
+  /** Log on initialization */
+  @Override
+  public void initialize() {
+    Shuffleboard.addEventMarker(
+        "OverrideAutoShift init", this.getClass().getSimpleName(), EventImportance.kNormal);
+    // Logger.addEvent("OverrideAutoShift init", this.getClass());
+  }
+
+  /** Override autoshifting. */
+  @Override
+  public void execute() {
+    // Set whether or not we're overriding
+    subsystem.setOverrideAutoshift(override);
+  }
+
+  /** Log when this command ends. */
+  @Override
+  public void end(boolean interrupted) {
+    if (interrupted) {
+      Shuffleboard.addEventMarker(
+          "OverrideAutoShift Interrupted!",
+          this.getClass().getSimpleName(),
+          EventImportance.kNormal);
     }
-
-    /**
-     * Log on initialization
-     */
-    @Override
-    public void initialize() {
-        Shuffleboard.addEventMarker(
-                "OverrideAutoShift init", this.getClass().getSimpleName(), EventImportance.kNormal);
-        // Logger.addEvent("OverrideAutoShift init", this.getClass());
-    }
-
-    /**
-     * Override autoshifting.
-     */
-    @Override
-    public void execute() {
-        // Set whether or not we're overriding
-        subsystem.setOverrideAutoshift(override);
-    }
-
-    /**
-     * Log when this command ends.
-     */
-    @Override
-    public void end(boolean interrupted) {
-        if (interrupted) {
-            Shuffleboard.addEventMarker(
-                    "OverrideAutoShift Interrupted!",
-                    this.getClass().getSimpleName(),
-                    EventImportance.kNormal);
-        }
-        Shuffleboard.addEventMarker(
-                "OverrideAutoShift end", this.getClass().getSimpleName(), EventImportance.kNormal);
-        // Logger.addEvent("OverrideAutoShift end", this.getClass());
-    }
+    Shuffleboard.addEventMarker(
+        "OverrideAutoShift end", this.getClass().getSimpleName(), EventImportance.kNormal);
+    // Logger.addEvent("OverrideAutoShift end", this.getClass());
+  }
 }

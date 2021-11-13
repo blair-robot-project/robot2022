@@ -7,5 +7,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * include=JsonTypeInfo.As.WRAPPER_OBJECT)}. Don't make sublasses of this.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT)
-public interface UseCLASSIncludeWRAPPER_OBJECTMixIn {
-}
+public interface UseCLASSIncludeWRAPPER_OBJECTMixIn {}

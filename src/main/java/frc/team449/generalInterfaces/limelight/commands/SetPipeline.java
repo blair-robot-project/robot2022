@@ -16,8 +16,9 @@ public class SetPipeline extends InstantCommand {
 
   /**
    * Default constructor
+   *
    * @param limelight The limelight to set.
-   * @param index     The index to set the pipeline to when this command is run.
+   * @param index The index to set the pipeline to when this command is run.
    */
   @JsonCreator
   public SetPipeline(@NotNull @JsonProperty(required = true) Limelight limelight, int index) {

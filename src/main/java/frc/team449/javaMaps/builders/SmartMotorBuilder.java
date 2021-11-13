@@ -14,12 +14,11 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-
 /**
  * Old way of creating a {@link SmartMotor}.
  * @deprecated use a {@link SmartMotorConfigObject} instead
  */
-@Deprecated(since = "SmartMotorConfigObject added", forRemoval = true)
+@Deprecated(since="SmartMotorConfigObject added", forRemoval=true)
 public final class SmartMotorBuilder {
   private SmartMotor.Type type;
   private int port;
@@ -139,53 +138,83 @@ public final class SmartMotorBuilder {
     return this;
   }
 
-  public SmartMotorBuilder statusFrameRatesMillis(Map<?, Integer> statusFrameRatesMillis) {
-    this.statusFrameRatesMillis = statusFrameRatesMillis;
+  public SmartMotorBuilder name(String name) {
+    this.name = name;
     return this;
   }
 
-  public SmartMotorBuilder slaveSparks(List<SlaveSparkMax> slaveSparks) {
-    this.slaveSparks = slaveSparks;
+  public SmartMotorBuilder reverseOutput(boolean reverseOutput) {
+    this.reverseOutput = reverseOutput;
     return this;
   }
 
-  public SmartMotorBuilder slaveVictors(List<SlaveVictor> slaveVictors) {
-    this.slaveVictors = slaveVictors;
+  public SmartMotorBuilder pdp(PDP pdp) {
+    this.pdp = pdp;
     return this;
   }
 
-  public SmartMotorBuilder slaveTalons(List<SlaveTalon> slaveTalons) {
-    this.slaveTalons = slaveTalons;
+  public SmartMotorBuilder fwdLimitSwitchNormallyOpen(Boolean fwdLimitSwitchNormallyOpen) {
+    this.fwdLimitSwitchNormallyOpen = fwdLimitSwitchNormallyOpen;
     return this;
   }
 
-  public SmartMotorBuilder updaterProcessPeriodSecs(Double updaterProcessPeriodSecs) {
-    this.updaterProcessPeriodSecs = updaterProcessPeriodSecs;
+  public SmartMotorBuilder revLimitSwitchNormallyOpen(Boolean revLimitSwitchNormallyOpen) {
+    this.revLimitSwitchNormallyOpen = revLimitSwitchNormallyOpen;
     return this;
   }
 
-  public SmartMotorBuilder reverseSensor(Boolean reverseSensor) {
-    this.reverseSensor = reverseSensor;
+  public SmartMotorBuilder remoteLimitSwitchID(Integer remoteLimitSwitchID) {
+    this.remoteLimitSwitchID = remoteLimitSwitchID;
     return this;
   }
 
-  public SmartMotorBuilder encoderCPR(Integer encoderCPR) {
-    this.encoderCPR = encoderCPR;
+  public SmartMotorBuilder fwdSoftLimit(Double fwdSoftLimit) {
+    this.fwdSoftLimit = fwdSoftLimit;
     return this;
   }
 
-  public SmartMotorBuilder feedbackDevice(FeedbackDevice feedbackDevice) {
-    this.feedbackDevice = feedbackDevice;
+  public SmartMotorBuilder revSoftLimit(Double revSoftLimit) {
+    this.revSoftLimit = revSoftLimit;
     return this;
   }
 
-  public SmartMotorBuilder voltageCompSamples(Integer voltageCompSamples) {
-    this.voltageCompSamples = voltageCompSamples;
+  public SmartMotorBuilder postEncoderGearing(Double postEncoderGearing) {
+    this.postEncoderGearing = postEncoderGearing;
     return this;
   }
 
-  public SmartMotorBuilder voltagePerCurrentLinReg(RunningLinRegComponent voltagePerCurrentLinReg) {
-    this.voltagePerCurrentLinReg = voltagePerCurrentLinReg;
+  public SmartMotorBuilder unitPerRotation(Double unitPerRotation) {
+    this.unitPerRotation = unitPerRotation;
+    return this;
+  }
+
+  public SmartMotorBuilder currentLimit(Integer currentLimit) {
+    this.currentLimit = currentLimit;
+    return this;
+  }
+
+  public SmartMotorBuilder enableVoltageComp(boolean enableVoltageComp) {
+    this.enableVoltageComp = enableVoltageComp;
+    return this;
+  }
+
+  public SmartMotorBuilder perGearSettings(List<Shiftable.PerGearSettings> perGearSettings) {
+    this.perGearSettings = perGearSettings;
+    return this;
+  }
+
+  public SmartMotorBuilder startingGear(Shiftable.Gear startingGear) {
+    this.startingGear = startingGear;
+    return this;
+  }
+
+  public SmartMotorBuilder startingGearNum(Integer startingGearNum) {
+    this.startingGearNum = startingGearNum;
+    return this;
+  }
+
+  public SmartMotorBuilder controlFrameRateMillis(Integer controlFrameRateMillis) {
+    this.controlFrameRateMillis = controlFrameRateMillis;
     return this;
   }
 
@@ -195,83 +224,53 @@ public final class SmartMotorBuilder {
     return this;
   }
 
-  public SmartMotorBuilder controlFrameRateMillis(Integer controlFrameRateMillis) {
-    this.controlFrameRateMillis = controlFrameRateMillis;
+  public SmartMotorBuilder voltagePerCurrentLinReg(RunningLinRegComponent voltagePerCurrentLinReg) {
+    this.voltagePerCurrentLinReg = voltagePerCurrentLinReg;
     return this;
   }
 
-  public SmartMotorBuilder startingGearNum(Integer startingGearNum) {
-    this.startingGearNum = startingGearNum;
+  public SmartMotorBuilder voltageCompSamples(Integer voltageCompSamples) {
+    this.voltageCompSamples = voltageCompSamples;
     return this;
   }
 
-  public SmartMotorBuilder startingGear(Shiftable.Gear startingGear) {
-    this.startingGear = startingGear;
+  public SmartMotorBuilder feedbackDevice(FeedbackDevice feedbackDevice) {
+    this.feedbackDevice = feedbackDevice;
     return this;
   }
 
-  public SmartMotorBuilder perGearSettings(List<Shiftable.PerGearSettings> perGearSettings) {
-    this.perGearSettings = perGearSettings;
+  public SmartMotorBuilder encoderCPR(Integer encoderCPR) {
+    this.encoderCPR = encoderCPR;
     return this;
   }
 
-  public SmartMotorBuilder enableVoltageComp(boolean enableVoltageComp) {
-    this.enableVoltageComp = enableVoltageComp;
+  public SmartMotorBuilder reverseSensor(Boolean reverseSensor) {
+    this.reverseSensor = reverseSensor;
     return this;
   }
 
-  public SmartMotorBuilder currentLimit(Integer currentLimit) {
-    this.currentLimit = currentLimit;
+  public SmartMotorBuilder updaterProcessPeriodSecs(Double updaterProcessPeriodSecs) {
+    this.updaterProcessPeriodSecs = updaterProcessPeriodSecs;
     return this;
   }
 
-  public SmartMotorBuilder unitPerRotation(Double unitPerRotation) {
-    this.unitPerRotation = unitPerRotation;
+  public SmartMotorBuilder slaveTalons(List<SlaveTalon> slaveTalons) {
+    this.slaveTalons = slaveTalons;
     return this;
   }
 
-  public SmartMotorBuilder postEncoderGearing(Double postEncoderGearing) {
-    this.postEncoderGearing = postEncoderGearing;
+  public SmartMotorBuilder slaveVictors(List<SlaveVictor> slaveVictors) {
+    this.slaveVictors = slaveVictors;
     return this;
   }
 
-  public SmartMotorBuilder revSoftLimit(Double revSoftLimit) {
-    this.revSoftLimit = revSoftLimit;
+  public SmartMotorBuilder slaveSparks(List<SlaveSparkMax> slaveSparks) {
+    this.slaveSparks = slaveSparks;
     return this;
   }
 
-  public SmartMotorBuilder fwdSoftLimit(Double fwdSoftLimit) {
-    this.fwdSoftLimit = fwdSoftLimit;
-    return this;
-  }
-
-  public SmartMotorBuilder remoteLimitSwitchID(Integer remoteLimitSwitchID) {
-    this.remoteLimitSwitchID = remoteLimitSwitchID;
-    return this;
-  }
-
-  public SmartMotorBuilder revLimitSwitchNormallyOpen(Boolean revLimitSwitchNormallyOpen) {
-    this.revLimitSwitchNormallyOpen = revLimitSwitchNormallyOpen;
-    return this;
-  }
-
-  public SmartMotorBuilder fwdLimitSwitchNormallyOpen(Boolean fwdLimitSwitchNormallyOpen) {
-    this.fwdLimitSwitchNormallyOpen = fwdLimitSwitchNormallyOpen;
-    return this;
-  }
-
-  public SmartMotorBuilder pdp(PDP pdp) {
-    this.pdp = pdp;
-    return this;
-  }
-
-  public SmartMotorBuilder reverseOutput(boolean reverseOutput) {
-    this.reverseOutput = reverseOutput;
-    return this;
-  }
-
-  public SmartMotorBuilder name(String name) {
-    this.name = name;
+  public SmartMotorBuilder statusFrameRatesMillis(Map<?, Integer> statusFrameRatesMillis) {
+    this.statusFrameRatesMillis = statusFrameRatesMillis;
     return this;
   }
 }

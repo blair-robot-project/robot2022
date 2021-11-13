@@ -16,32 +16,35 @@ import java.util.function.BooleanSupplier;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedDigitalInput extends DigitalInput implements Loggable, BooleanSupplier {
 
-    /**
-     * Create an instance of a Digital Input class. Creates a digital input given a channel.
-     * @param channel the DIO channel for the digital input 0-9 are on-board, 10-25 are on the MXP
-     */
-    @JsonCreator
-    public MappedDigitalInput(@JsonProperty(required = true) final int channel) {
-        super(channel);
-    }
+  /**
+   * Create an instance of a Digital Input class. Creates a digital input given a channel.
+   *
+   * @param channel the DIO channel for the digital input 0-9 are on-board, 10-25 are on the MXP
+   */
+  @JsonCreator
+  public MappedDigitalInput(@JsonProperty(required = true) final int channel) {
+    super(channel);
+  }
 
-    /**
-     * Returns the result of {@link MappedDigitalInput#get()}.
-     * @return the return value of {@link MappedDigitalInput#get()}
-     */
-    @Override
-    public boolean getAsBoolean() {
-        return this.get();
-    }
+  /**
+   * Get the value from a digital input channel. Retrieve the value of a single digital input
+   * channel from the FPGA.
+   *
+   * @return the status of the digital input
+   */
+  @Override
+  //  @Log
+  public boolean get() {
+    return !super.get(); // true is off by default in WPILib, and that's dumb
+  }
 
-    /**
-     * Get the value from a digital input channel. Retrieve the value of a single digital input
-     * channel from the FPGA.
-     * @return the status of the digital input
-     */
-    @Override
-    //  @Log
-    public boolean get() {
-        return ! super.get(); // true is off by default in WPILib, and that's dumb
-    }
+  /**
+   * Returns the result of {@link MappedDigitalInput#get()}.
+   *
+   * @return the return value of {@link MappedDigitalInput#get()}
+   */
+  @Override
+  public boolean getAsBoolean() {
+    return this.get();
+  }
 }

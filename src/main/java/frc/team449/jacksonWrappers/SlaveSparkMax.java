@@ -20,20 +20,20 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
 
   @JsonCreator
   public SlaveSparkMax(
-          @JsonProperty(required = true) final int port,
-          @Nullable final Boolean inverted,
-          @Nullable final PDP PDP) {
+      @JsonProperty(required = true) final int port,
+      @Nullable final Boolean inverted,
+      @Nullable final PDP PDP) {
 
     this.slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     this.inverted = inverted != null && inverted;
 
     this.slaveSpark
-            .getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
-            .enableLimitSwitch(false);
+        .getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
+        .enableLimitSwitch(false);
     this.slaveSpark
-            .getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
-            .enableLimitSwitch(false);
+        .getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
+        .enableLimitSwitch(false);
 
     this.slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100);
     this.slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 100);
@@ -45,13 +45,13 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
   public void setMasterSpark(final CANSparkMax masterController, final boolean brakeMode) {
     this.slaveSpark.follow(masterController, this.inverted);
     this.slaveSpark.setIdleMode(
-            brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
+        brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
   }
 
   public void setMasterPhoenix(final int masterPort, final boolean brakeMode) {
     this.slaveSpark.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, masterPort);
     this.slaveSpark.setIdleMode(
-            brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
+        brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
     this.slaveSpark.setInverted(this.inverted);
   }
 

@@ -12,95 +12,80 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * A command that uses a AHRS to turn to a certain angle.
- */
+/** A command that uses a AHRS to turn to a certain angle. */
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS,
-        include = JsonTypeInfo.As.WRAPPER_OBJECT,
-        property = "@class")
+    use = JsonTypeInfo.Id.CLASS,
+    include = JsonTypeInfo.As.WRAPPER_OBJECT,
+    property = "@class")
 public abstract class PIDAngleCommand
-        extends CommandBase { // implements Loggable { TODO Logging causes the drive subsystem to be
+    extends CommandBase { // implements Loggable { TODO Logging causes the drive subsystem to be
   // logged twice according to Oblog.
 
-  /**
-   * The subsystem to execute this command on.
-   */
-  @NotNull
-  @Log.Exclude
-  protected final SubsystemAHRS subsystem;
+  /** The subsystem to execute this command on. */
+  @NotNull @Log.Exclude protected final SubsystemAHRS subsystem;
 
-  /**
-   * On-board PID controller
-   */
-  @Log
-  protected final PIDController pidController;
+  /** On-board PID controller */
+  @Log protected final PIDController pidController;
 
-  /**
-   * The minimum the robot should be able to output, to overcome friction.
-   */
+  /** The minimum the robot should be able to output, to overcome friction. */
   private final double minimumOutput;
 
-  /**
-   * The range in which output is turned off to prevent "dancing" around the setpoint.
-   */
+  /** The range in which output is turned off to prevent "dancing" around the setpoint. */
   private final double deadband;
 
-  /**
-   * Whether or not the loop is inverted.
-   */
+  /** Whether or not the loop is inverted. */
   private final boolean inverted;
 
   /**
    * A buffer timer for having the loop be on target before it stops running. Can be null for no
    * buffer.
    */
-  @Nullable
-  private final Debouncer onTargetBuffer;
+  @Nullable private final Debouncer onTargetBuffer;
 
   /**
    * Default constructor.
+   *
    * @param absoluteTolerance The maximum number of degrees off from the target at which we can be
-   *                          considered within tolerance.
-   * @param onTargetBuffer    A buffer timer for having the loop be on target before it stops running.
-   *                          Can be null for no buffer.
-   * @param minimumOutput     The minimum output of the loop. Defaults to zero.
-   * @param maximumOutput     The maximum output of the loop. Can be null, and if it is, no maximum
-   *                          output is used.
-   * @param loopTimeMillis    The time, in milliseconds, between each loop iteration. Defaults to 20
-   *                          ms.
-   * @param deadband          The deadband around the setpoint, in degrees, within which no output is given
-   *                          to the motors. Defaults to zero.
-   * @param inverted          Whether the loop is inverted. Defaults to false.
-   * @param kP                Proportional gain. Defaults to zero.
-   * @param kI                Integral gain. Defaults to zero.
-   * @param kD                Derivative gain. Defaults to zero.
-   * @param subsystem         The subsystem to execute this command on.
+   *     considered within tolerance.
+   * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
+   *     Can be null for no buffer.
+   * @param minimumOutput The minimum output of the loop. Defaults to zero.
+   * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
+   *     output is used.
+   * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
+   *     ms.
+   * @param deadband The deadband around the setpoint, in degrees, within which no output is given
+   *     to the motors. Defaults to zero.
+   * @param inverted Whether the loop is inverted. Defaults to false.
+   * @param kP Proportional gain. Defaults to zero.
+   * @param kI Integral gain. Defaults to zero.
+   * @param kD Derivative gain. Defaults to zero.
+   * @param subsystem The subsystem to execute this command on.
    */
   @JsonCreator
   public PIDAngleCommand(
-          @JsonProperty(required = true) final double absoluteTolerance,
-          @Nullable final Debouncer onTargetBuffer,
-          final double minimumOutput,
-          @Nullable final Double maximumOutput,
-          @Nullable final Integer loopTimeMillis,
-          final double deadband,
-          final boolean inverted,
-          @NotNull @JsonProperty(required = true) final SubsystemAHRS subsystem,
-          final double kP,
-          final double kI,
-          final double kD) {
+      @JsonProperty(required = true) final double absoluteTolerance,
+      @Nullable final Debouncer onTargetBuffer,
+      final double minimumOutput,
+      @Nullable final Double maximumOutput,
+      @Nullable final Integer loopTimeMillis,
+      final double deadband,
+      final boolean inverted,
+      @NotNull @JsonProperty(required = true) final SubsystemAHRS subsystem,
+      final double kP,
+      final double kI,
+      final double kD) {
 
     // Set P, I and D. I and D will normally be 0 if you're using cascading control, like you should
     // be.
     this.pidController =
-            new PIDController(
-                    kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
+        new PIDController(
+            kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
 
     this.subsystem = subsystem;
 
     // It's a circle, so it's continuous
-    pidController.enableContinuousInput(- 180, 180);
+    pidController.enableContinuousInput(-180, 180);
 
     // Set the absolute tolerance to be considered on target within.
     pidController.setTolerance(absoluteTolerance);
@@ -123,6 +108,7 @@ public abstract class PIDAngleCommand
 
   /**
    * Clip a degree number to the NavX's -180 to 180 system.
+   *
    * @param theta The angle to clip, in degrees.
    * @return The equivalent of that number, clipped to be between -180 and 180.
    */
@@ -136,11 +122,19 @@ public abstract class PIDAngleCommand
     return pidController.getSetpoint();
   }
 
-  /**
-   * Set setpoint for PID loop to use
-   */
+  /** Set setpoint for PID loop to use */
   protected void setSetpoint(final double setpoint) {
     pidController.setSetpoint(setpoint);
+  }
+
+  /**
+   * Raw output of the PID loop for later processing
+   *
+   * @return standard output
+   */
+  @Log
+  protected double getRawOutput() {
+    return pidController.calculate(subsystem.getHeadingCached());
   }
 
   @Log
@@ -150,8 +144,9 @@ public abstract class PIDAngleCommand
 
   /**
    * Process the output of the PID loop to account for minimum output and inversion.
+   *
    * @return The processed output, ready to be subtracted from the left side of the drive output and
-   * added to the right side.
+   *     added to the right side.
    */
   @Log
   protected double getOutput() {
@@ -159,23 +154,14 @@ public abstract class PIDAngleCommand
     // Set the output to the minimum if it's too small.
     if (controllerOutput > 0 && controllerOutput < minimumOutput) {
       controllerOutput = minimumOutput;
-    } else if (controllerOutput < 0 && controllerOutput > - minimumOutput) {
-      controllerOutput = - minimumOutput;
+    } else if (controllerOutput < 0 && controllerOutput > -minimumOutput) {
+      controllerOutput = -minimumOutput;
     }
     if (inverted) {
-      controllerOutput *= - 1;
+      controllerOutput *= -1;
     }
 
     return controllerOutput;
-  }
-
-  /**
-   * Raw output of the PID loop for later processing
-   * @return standard output
-   */
-  @Log
-  protected double getRawOutput() {
-    return pidController.calculate(subsystem.getHeadingCached());
   }
 
   protected double getOutputHardcoded(final double setpoint) {
@@ -183,11 +169,11 @@ public abstract class PIDAngleCommand
     // Set the output to the minimum if it's too small.
     if (controllerOutput > 0 && controllerOutput < minimumOutput) {
       controllerOutput = minimumOutput;
-    } else if (controllerOutput < 0 && controllerOutput > - minimumOutput) {
-      controllerOutput = - minimumOutput;
+    } else if (controllerOutput < 0 && controllerOutput > -minimumOutput) {
+      controllerOutput = -minimumOutput;
     }
     if (inverted) {
-      controllerOutput *= - 1;
+      controllerOutput *= -1;
     }
 
     return controllerOutput;
@@ -195,6 +181,7 @@ public abstract class PIDAngleCommand
 
   /**
    * Deadband the output of the PID loop.
+   *
    * @param output The output from the WPILib angular PID loop.
    * @return That output after being deadbanded with the map-given deadband.
    */
@@ -204,6 +191,7 @@ public abstract class PIDAngleCommand
 
   /**
    * Whether or not the loop is on target. Use this instead of {@link PIDController}'s onTarget.
+   *
    * @return True if on target, false otherwise.
    */
   @Log
@@ -217,6 +205,7 @@ public abstract class PIDAngleCommand
 
   /**
    * Returns the PIDController used by the command.
+   *
    * @return The PIDController
    */
   public PIDController getController() {

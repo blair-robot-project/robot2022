@@ -9,33 +9,26 @@ import frc.team449._2020.shooter.SubsystemFlywheel;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Turn off the flywheel and feeder.
- */
+/** Turn off the flywheel and feeder. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class TurnAllOff extends InstantCommand {
 
-    /**
-     * The subsystem to execute this command on.
-     */
-    @NotNull
-    @Log.Exclude
-    private final SubsystemFlywheel subsystem;
+  /** The subsystem to execute this command on. */
+  @NotNull @Log.Exclude private final SubsystemFlywheel subsystem;
 
-    /**
-     * Default constructor
-     * @param subsystem The subsystem to execute this command on.
-     */
-    @JsonCreator
-    public TurnAllOff(@NotNull @JsonProperty(required = true) final SubsystemFlywheel subsystem) {
-        this.subsystem = subsystem;
-    }
+  /**
+   * Default constructor
+   *
+   * @param subsystem The subsystem to execute this command on.
+   */
+  @JsonCreator
+  public TurnAllOff(@NotNull @JsonProperty(required = true) final SubsystemFlywheel subsystem) {
+    this.subsystem = subsystem;
+  }
 
-    /**
-     * Turn off the flywheel and feeder.
-     */
-    @Override
-    public void execute() {
-        subsystem.turnFlywheelOff();
-    }
+  /** Turn off the flywheel and feeder. */
+  @Override
+  public void execute() {
+    subsystem.turnFlywheelOff();
+  }
 }

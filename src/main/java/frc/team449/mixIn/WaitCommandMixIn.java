@@ -9,10 +9,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
  * sublasses of this.
  */
 public abstract class WaitCommandMixIn {
-    /**
-     * @see WaitCommand#WaitCommand(double)
-     */
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public WaitCommandMixIn(@JsonProperty(value = "seconds", required = true) final double seconds) {
-    }
+  /** @see WaitCommand#WaitCommand(double) */
+  @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+  public WaitCommandMixIn(@JsonProperty(value = "seconds", required = true) final double seconds) {}
 }

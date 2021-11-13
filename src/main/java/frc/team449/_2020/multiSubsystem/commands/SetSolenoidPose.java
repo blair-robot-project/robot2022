@@ -9,21 +9,20 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team449._2020.multiSubsystem.SolenoidSimple;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Sets the state of a provided solenoid to the correct state.
- */
+/** Sets the state of a provided solenoid to the correct state. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SetSolenoidPose extends InstantCommand {
 
   /**
    * Default constructor
+   *
    * @param subsystem The subsystem subsystem to run this command on.
-   * @param value     The value to set the subsystem to.
+   * @param value The value to set the subsystem to.
    */
   @JsonCreator
   public SetSolenoidPose(
-          @NotNull @JsonProperty(required = true) final SolenoidSimple subsystem,
-          @NotNull @JsonProperty(required = true) final DoubleSolenoid.Value value) {
+      @NotNull @JsonProperty(required = true) final SolenoidSimple subsystem,
+      @NotNull @JsonProperty(required = true) final DoubleSolenoid.Value value) {
     super(() -> subsystem.setSolenoid(value), subsystem);
   }
 }

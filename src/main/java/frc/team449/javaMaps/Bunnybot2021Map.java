@@ -40,17 +40,16 @@ import java.util.Map;
 public class Bunnybot2021Map {
   // Drive system
   public static final int LEFT_MASTER_PORT = 1,
-          LEFT_MASTER_SLAVE_1_PORT = 3,
-          LEFT_MASTER_SLAVE_2_PORT = 5,
-          RIGHT_MASTER_PORT = 2,
-          RIGHT_MASTER_SLAVE_1_PORT = 4,
-          RIGHT_MASTER_SLAVE_2_PORT = 6;
+      LEFT_MASTER_SLAVE_1_PORT = 3,
+      LEFT_MASTER_SLAVE_2_PORT = 5,
+      RIGHT_MASTER_PORT = 2,
+      RIGHT_MASTER_SLAVE_1_PORT = 4,
+      RIGHT_MASTER_SLAVE_2_PORT = 6;
   // Intake system
   public static final int INTAKE_MOTOR_PORT = 7;
   // Solenoid ports
   public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
-
   private Bunnybot2021Map() {
     throw new IllegalStateException("This is a utility class!");
   }
@@ -59,13 +58,13 @@ public class Bunnybot2021Map {
   public static RobotMap createRobotMap() {
     // Motor ports
     int leftMasterPort = 1,
-            leftMasterSlave1Port = 3,
-            leftMasterSlave2Port = 5,
-            rightMasterPort = 2,
-            rightMasterSlave1Port = 4,
-            rightMasterSlave2Port = 6,
-            intakeMotorPort = 7, // TODO This is never used
-            elevatorMotorPort = 8;
+        leftMasterSlave1Port = 3,
+        leftMasterSlave2Port = 5,
+        rightMasterPort = 2,
+        rightMasterSlave1Port = 4,
+        rightMasterSlave2Port = 6,
+        intakeMotorPort = 7, // TODO This is never used
+        elevatorMotorPort = 8;
 
     // Solenoid ports
     int intakeSolenoidForward = 2, intakeSolenoidReverse = 3;
@@ -77,14 +76,14 @@ public class Bunnybot2021Map {
 
     // Driver button numbers
     int driverIntakeOutOn = 1,
-            driverIntakeOff = 2, // TODO This is never used
-            driverIntakeRev = 3, // TODO This is never used
-            driverIntakeInOff = 4, // TODO This is never used
-            shiftUp = 5;
+        driverIntakeOff = 2, // TODO This is never used
+        driverIntakeRev = 3, // TODO This is never used
+        driverIntakeInOff = 4, // TODO This is never used
+        shiftUp = 5;
 
     // Mechs button numbers
     int elevatorLift = 2, // TODO This is never used
-            elevatorLower = 3; // TODO This is never used
+        elevatorLower = 3; // TODO This is never used
     // Motor speeds
     double elevatorMotorSpeed = 0.5; // TODO This is never used
 
@@ -115,8 +114,8 @@ public class Bunnybot2021Map {
             new PerGearSettingsBuilder()
                     .gear(Shiftable.Gear.HIGH)
                     .postEncoderGearing(0.12936611)
-                    .maxSpeed(5.2)
-                    .kP(0.000001);
+            .maxSpeed(5.2)
+            .kP(0.000001);
 
     var leftMaster =
             SmartMotor.create(driveMasterPrototype
@@ -164,134 +163,134 @@ public class Bunnybot2021Map {
 
     // Elevator
     var elevatorPulleyMotor =
-            new MappedSparkMax(
-                    elevatorMotorPort,
-                    "elevator",
-                    false,
-                    true,
-                    pdp,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    1.0,
-                    1.0,
-                    40,
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
+        new MappedSparkMax(
+            elevatorMotorPort,
+            "elevator",
+            false,
+            true,
+            pdp,
+            null,
+            null,
+            null,
+            null,
+            null,
+            1.0,
+            1.0,
+            40,
+            false,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
     // PID constants for elevator
     elevatorPulleyMotor.setPID(0, 0, 0);
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
     // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
     double elevatorMaxVelocity = 1; // TODO this is a placeholder
     var elevator =
-            new OneMotorPulleyElevator(
-                    elevatorPulleyMotor, ElevatorPosition.BOTTOM, elevatorMaxVelocity);
+        new OneMotorPulleyElevator(
+            elevatorPulleyMotor, ElevatorPosition.BOTTOM, elevatorMaxVelocity);
     var setVelocityCommand = new SetVelocity(elevator, mechanismsJoystick, elevatorMaxVelocity);
     var subsystems = List.<Subsystem>of(drive, elevator);
 
     var throttlePrototype =
-            new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
+        new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
     var rotThrottle =
-            throttlePrototype
-                    .axis(0)
-                    .deadband(0.08)
-                    .inverted(false)
-                    .polynomial(new Polynomial(Map.of(1., 0.5), null))
-                    .build();
+        throttlePrototype
+            .axis(0)
+            .deadband(0.08)
+            .inverted(false)
+            .polynomial(new Polynomial(Map.of(1., 0.5), null))
+            .build();
     var fwdThrottle =
-            new ThrottleSum(
-                    new Throttle[] {
-                            throttlePrototype
-                                    .axis(3)
-                                    .deadband(0.05)
-                                    .inverted(false)
-                                    .polynomial(
-                                            new Polynomial(
-                                                    Map.of(
-                                                            1., 2.,
-                                                            2., 1.),
-                                                    null))
-                                    .build(),
-                            throttlePrototype.axis(2).inverted(true).build()
-                    });
+        new ThrottleSum(
+            new Throttle[] {
+              throttlePrototype
+                  .axis(3)
+                  .deadband(0.05)
+                  .inverted(false)
+                  .polynomial(
+                      new Polynomial(
+                          Map.of(
+                              1., 2.,
+                              2., 1.),
+                          null))
+                  .build(),
+              throttlePrototype.axis(2).inverted(true).build()
+            });
     var oi =
-            new OIArcadeWithDPad(
-                    rotThrottle,
-                    fwdThrottle,
-                    0.1,
-                    false,
-                    driveJoystick,
-                    new Polynomial(
-                            Map.of(
-                                    0.5, 0.4,
-                                    0., 0.2),
-                            null),
-                    1.0,
-                    true);
+        new OIArcadeWithDPad(
+            rotThrottle,
+            fwdThrottle,
+            0.1,
+            false,
+            driveJoystick,
+            new Polynomial(
+                Map.of(
+                    0.5, 0.4,
+                    0., 0.2),
+                null),
+            1.0,
+            true);
 
     var intakeSolenoid =
-            new SolenoidSimple(new DoubleSolenoid(intakeSolenoidForward, intakeSolenoidReverse));
+        new SolenoidSimple(new DoubleSolenoid(intakeSolenoidForward, intakeSolenoidReverse));
 
     var updater = new Updater(List.of(pdp, drive, oi, navx));
 
     var defaultCommands = List.<DefaultCommand>of();
 
     var buttons =
-            List.of(
-                    // Run bumper and transition wheel
-                    new CommandButton(
-                            new SimpleButton(driveJoystick, driverIntakeOutOn),
-                            new ParallelCommandGroup(
-                                    new SetSolenoidPose(intakeSolenoid, DoubleSolenoid.Value.kForward)
-                                    // todo more commands in this parallel command
-                            ),
-                            CommandButton.Action.WHEN_PRESSED),
-                    // Shift drive up *or* down
-                    // todo Should there be 2 separate commands instead?
-                    new CommandButton(
-                            new SimpleButton(driveJoystick, shiftUp),
-                            new ShiftGears(drive),
-                            CommandButton.Action.WHEN_PRESSED),
-                    // elevator move to TOP position
-                    new CommandButton(
-                            new SimpleButton(mechanismsJoystick, 1),
-                            new MoveToPosition(ElevatorPosition.TOP, elevator),
-                            CommandButton.Action.WHEN_PRESSED),
-                    // elevator move to UPPER position
-                    new CommandButton(
-                            new SimpleButton(mechanismsJoystick, 2),
-                            new MoveToPosition(ElevatorPosition.UPPER, elevator),
-                            CommandButton.Action.WHEN_PRESSED),
-                    // elevator move to LOWER position
-                    new CommandButton(
-                            new SimpleButton(mechanismsJoystick, 3),
-                            new MoveToPosition(ElevatorPosition.LOWER, elevator),
-                            CommandButton.Action.WHEN_PRESSED),
-                    // elevator move to BOTTOM position
-                    new CommandButton(
-                            new SimpleButton(mechanismsJoystick, 4),
-                            new MoveToPosition(ElevatorPosition.BOTTOM, elevator),
-                            CommandButton.Action.WHEN_PRESSED));
+        List.of(
+            // Run bumper and transition wheel
+            new CommandButton(
+                new SimpleButton(driveJoystick, driverIntakeOutOn),
+                new ParallelCommandGroup(
+                    new SetSolenoidPose(intakeSolenoid, DoubleSolenoid.Value.kForward)
+                    // todo more commands in this parallel command
+                    ),
+                CommandButton.Action.WHEN_PRESSED),
+            // Shift drive up *or* down
+            // todo Should there be 2 separate commands instead?
+            new CommandButton(
+                new SimpleButton(driveJoystick, shiftUp),
+                new ShiftGears(drive),
+                CommandButton.Action.WHEN_PRESSED),
+            // elevator move to TOP position
+            new CommandButton(
+                new SimpleButton(mechanismsJoystick, 1),
+                new MoveToPosition(ElevatorPosition.TOP, elevator),
+                CommandButton.Action.WHEN_PRESSED),
+            // elevator move to UPPER position
+            new CommandButton(
+                new SimpleButton(mechanismsJoystick, 2),
+                new MoveToPosition(ElevatorPosition.UPPER, elevator),
+                CommandButton.Action.WHEN_PRESSED),
+            // elevator move to LOWER position
+            new CommandButton(
+                new SimpleButton(mechanismsJoystick, 3),
+                new MoveToPosition(ElevatorPosition.LOWER, elevator),
+                CommandButton.Action.WHEN_PRESSED),
+            // elevator move to BOTTOM position
+            new CommandButton(
+                new SimpleButton(mechanismsJoystick, 4),
+                new MoveToPosition(ElevatorPosition.BOTTOM, elevator),
+                CommandButton.Action.WHEN_PRESSED));
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();
     var teleopStartupCommands = List.<Command>of(setVelocityCommand);
     var testStartupCommands = List.<Command>of();
     var allCommands =
-            new CommandContainer(
-                    defaultCommands,
-                    buttons,
-                    robotStartupCommands,
-                    autoStartupCommands,
-                    teleopStartupCommands,
-                    testStartupCommands);
+        new CommandContainer(
+            defaultCommands,
+            buttons,
+            robotStartupCommands,
+            autoStartupCommands,
+            teleopStartupCommands,
+            testStartupCommands);
 
     return new RobotMap(subsystems, pdp, updater, allCommands, joysticks, useCameraServer);
   }

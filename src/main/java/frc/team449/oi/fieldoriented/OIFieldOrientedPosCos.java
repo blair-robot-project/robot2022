@@ -16,99 +16,89 @@ import org.jetbrains.annotations.Nullable;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class OIFieldOrientedPosCos extends OIFieldOriented {
 
-    /**
-     * The throttle for the X-axis, which points towards the opposing driver station.
-     */
-    @NotNull
-    private final Throttle xThrottle;
+  /** The throttle for the X-axis, which points towards the opposing driver station. */
+  @NotNull private final Throttle xThrottle;
 
-    /**
-     * The throttle for the Y-axis, which points towards the driver's left.
-     */
-    @NotNull
-    private final Throttle yThrottle;
+  /** The throttle for the Y-axis, which points towards the driver's left. */
+  @NotNull private final Throttle yThrottle;
 
-    /**
-     * The radius, from [0,1], within which the joystick is considered to be "at rest."
-     */
-    private final double rDeadband;
-    /**
-     * The theta value calculated the last time calcValues was called.
-     */
-    @Nullable
-    private Double theta;
-    /**
-     * The velocity value calculated the last time calcValues was called.
-     */
-    private double vel;
+  /** The radius, from [0,1], within which the joystick is considered to be "at rest." */
+  private final double rDeadband;
+  /** The theta value calculated the last time calcValues was called. */
+  @Nullable private Double theta;
+  /** The velocity value calculated the last time calcValues was called. */
+  private double vel;
 
-    private double x, y;
+  private double x, y;
 
-    /**
-     * Default constructor
-     * @param xThrottle The throttle for the X-axis, which points towards the opposing driver station.
-     * @param yThrottle The throttle for the Y-axis, which points towards the driver's left.
-     * @param rDeadband The radius, from [0,1], within which the joystick is considered to be "at
-     *                  rest." Defaults to 0.
-     */
-    @JsonCreator
-    public OIFieldOrientedPosCos(
-            @NotNull @JsonProperty(required = true) final Throttle xThrottle,
-            @NotNull @JsonProperty(required = true) final Throttle yThrottle,
-            final double rDeadband) {
-        this.xThrottle = xThrottle;
-        this.yThrottle = yThrottle;
-        this.rDeadband = rDeadband;
+  /**
+   * Default constructor
+   *
+   * @param xThrottle The throttle for the X-axis, which points towards the opposing driver station.
+   * @param yThrottle The throttle for the Y-axis, which points towards the driver's left.
+   * @param rDeadband The radius, from [0,1], within which the joystick is considered to be "at
+   *     rest." Defaults to 0.
+   */
+  @JsonCreator
+  public OIFieldOrientedPosCos(
+      @NotNull @JsonProperty(required = true) final Throttle xThrottle,
+      @NotNull @JsonProperty(required = true) final Throttle yThrottle,
+      final double rDeadband) {
+    this.xThrottle = xThrottle;
+    this.yThrottle = yThrottle;
+    this.rDeadband = rDeadband;
+  }
+
+  /**
+   * Calculate the theta and vel values, can be called multiple times per tic but will only execute
+   * logic once.
+   */
+  private void calcValues() {
+    x = xThrottle.getValue();
+    y = yThrottle.getValue();
+    vel = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+
+    // 0,0ish has no angle so null
+    if (vel < rDeadband) {
+      theta = null;
+      vel = 0;
+    } else {
+      // Use atan2 to get angle from -180 to 180
+      theta = Math.toDegrees(Math.atan2(y, x));
+      if (theta > 90) {
+        vel *= -1;
+        theta -= 180;
+      } else if (theta < -90) {
+        vel *= -1;
+        theta += 180;
+      }
     }
+  }
 
-    /**
-     * Get the velocity for the robot to go at.
-     * @return A velocity from [-1, 1].
-     */
-    @Override
-    @Log
-    public double getVel() {
-        calcValues();
-        return vel;
-    }
+  /**
+   * Get the absolute angle for the robot to move towards.
+   *
+   * @return An angular setpoint for the robot in degrees, where 0 is pointing at the other
+   *     alliance's driver station and 90 is pointing at the left wall when looking out from the
+   *     driver station.
+   */
+  @Override
+  @Nullable
+  @Log
+  public Double getTheta() {
+    calcValues();
+    return theta;
+  }
 
-    /**
-     * Get the absolute angle for the robot to move towards.
-     * @return An angular setpoint for the robot in degrees, where 0 is pointing at the other
-     * alliance's driver station and 90 is pointing at the left wall when looking out from the
-     * driver station.
-     */
-    @Override
-    @Nullable
-    @Log
-    public Double getTheta() {
-        calcValues();
-        return theta;
-    }
-
-    /**
-     * Calculate the theta and vel values, can be called multiple times per tic but will only execute
-     * logic once.
-     */
-    private void calcValues() {
-        x = xThrottle.getValue();
-        y = yThrottle.getValue();
-        vel = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-
-        // 0,0ish has no angle so null
-        if (vel < rDeadband) {
-            theta = null;
-            vel = 0;
-        } else {
-            // Use atan2 to get angle from -180 to 180
-            theta = Math.toDegrees(Math.atan2(y, x));
-            if (theta > 90) {
-                vel *= - 1;
-                theta -= 180;
-            } else if (theta < - 90) {
-                vel *= - 1;
-                theta += 180;
-            }
-        }
-    }
+  /**
+   * Get the velocity for the robot to go at.
+   *
+   * @return A velocity from [-1, 1].
+   */
+  @Override
+  @Log
+  public double getVel() {
+    calcValues();
+    return vel;
+  }
 }

@@ -26,7 +26,7 @@ public class SetVelocity extends CommandBase {
   public void execute() {
     double joystickValue = joystick.getY();
     if (joystickValue
-            >= 0.01) { // Ignore anything <1% of the max value (assuming joystick is mapped to -1 to 1)
+        >= 0.01) { // Ignore anything <1% of the max value (assuming joystick is mapped to -1 to 1)
       // Set the elevator velocity to the joystick value run through the converter
       elevator.setVelocity(Converter.joystickInputToVelocity(joystickValue, maxVelocity));
     }

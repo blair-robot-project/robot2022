@@ -10,55 +10,45 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * A command that switches to low gear.
- */
+/** A command that switches to low gear. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SwitchToLowGear extends InstantCommand {
 
-    /**
-     * The drive subsystem to execute this command on.
-     */
-    @NotNull
-    private final Shiftable subsystem;
+  /** The drive subsystem to execute this command on. */
+  @NotNull private final Shiftable subsystem;
 
-    /**
-     * Default constructor
-     * @param subsystem The drive subsystem to execute this command on
-     */
-    @JsonCreator
-    public SwitchToLowGear(@NotNull @JsonProperty(required = true) Shiftable subsystem) {
-        this.subsystem = subsystem;
-    }
+  /**
+   * Default constructor
+   *
+   * @param subsystem The drive subsystem to execute this command on
+   */
+  @JsonCreator
+  public SwitchToLowGear(@NotNull @JsonProperty(required = true) Shiftable subsystem) {
+    this.subsystem = subsystem;
+  }
 
-    /**
-     * Log when this command is initialized
-     */
-    @Override
-    public void initialize() {
-        Shuffleboard.addEventMarker(
-                "SwitchToLowGear init.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        // Logger.addEvent("SwitchToLowGear init.", this.getClass());
-    }
+  /** Log when this command is initialized */
+  @Override
+  public void initialize() {
+    Shuffleboard.addEventMarker(
+        "SwitchToLowGear init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+    // Logger.addEvent("SwitchToLowGear init.", this.getClass());
+  }
 
-    /**
-     * Switch to low gear
-     */
-    @Override
-    public void execute() {
-        subsystem.setGear(Shiftable.Gear.LOW.getNumVal());
-    }
+  /** Switch to low gear */
+  @Override
+  public void execute() {
+    subsystem.setGear(Shiftable.Gear.LOW.getNumVal());
+  }
 
-    /**
-     * Log when this command ends
-     */
-    @Override
-    public void end(boolean interrupted) {
-        if (interrupted) {
-            Shuffleboard.addEventMarker(
-                    "SwitchToLowGear Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        }
-        Shuffleboard.addEventMarker(
-                "SwitchToLowGear end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+  /** Log when this command ends */
+  @Override
+  public void end(boolean interrupted) {
+    if (interrupted) {
+      Shuffleboard.addEventMarker(
+          "SwitchToLowGear Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
+    Shuffleboard.addEventMarker(
+        "SwitchToLowGear end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+  }
 }

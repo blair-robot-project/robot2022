@@ -15,69 +15,58 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/**
- * A simple wrapper on the {@link VictorSPX}.
- */
+/** A simple wrapper on the {@link VictorSPX}. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedVictorSPX implements SimpleMotor, Loggable {
 
-  /**
-   * The Victor SPX this object is a wrapper on.
-   */
-  @NotNull
-  private final VictorSPX victorSPX;
+  /** The Victor SPX this object is a wrapper on. */
+  @NotNull private final VictorSPX victorSPX;
 
   /**
    * Default constructor.
-   * @param port               The CAN ID of this Victor SPX.
-   * @param brakeMode          Whether to have the Victor brake or coast when no voltage is applied.
-   * @param inverted           Whether or not to invert this Victor. Defaults to false.
-   * @param enableVoltageComp  Whether or not to enable voltage compensation. Defaults to false.
+   *
+   * @param port The CAN ID of this Victor SPX.
+   * @param brakeMode Whether to have the Victor brake or coast when no voltage is applied.
+   * @param inverted Whether or not to invert this Victor. Defaults to false.
+   * @param enableVoltageComp Whether or not to enable voltage compensation. Defaults to false.
    * @param voltageCompSamples The number of 1-millisecond samples to use for voltage compensation.
-   *                           Defaults to 32.
-   * @param slaveVictors       Any other Victor SPXs slaved to this one.
+   *     Defaults to 32.
+   * @param slaveVictors Any other Victor SPXs slaved to this one.
    */
   @JsonCreator
   public MappedVictorSPX(
-          @JsonProperty(required = true) final int port,
-          @JsonProperty(required = true) final boolean brakeMode,
-          final boolean inverted,
-          final boolean enableVoltageComp,
-          final Double peakVoltageForward,
-          final Double peakVoltageRev,
-          @Nullable final Integer voltageCompSamples,
-          @Nullable final List<SlaveVictor> slaveVictors) {
+      @JsonProperty(required = true) final int port,
+      @JsonProperty(required = true) final boolean brakeMode,
+      final boolean inverted,
+      final boolean enableVoltageComp,
+      final Double peakVoltageForward,
+      final Double peakVoltageRev,
+      @Nullable final Integer voltageCompSamples,
+      @Nullable final List<SlaveVictor> slaveVictors) {
     victorSPX = new VictorSPX(port);
     victorSPX.setInverted(inverted);
     victorSPX.setNeutralMode(brakeMode ? NeutralMode.Brake : NeutralMode.Coast);
     victorSPX.enableVoltageCompensation(enableVoltageComp);
     victorSPX.configVoltageCompSaturation(12, 0);
     victorSPX.configVoltageMeasurementFilter(
-            voltageCompSamples != null ? voltageCompSamples : 32, 0);
+        voltageCompSamples != null ? voltageCompSamples : 32, 0);
     victorSPX.configPeakOutputForward(peakVoltageForward != null ? peakVoltageForward / 12. : 1, 0);
-    victorSPX.configPeakOutputReverse(peakVoltageRev != null ? peakVoltageRev / 12. : - 1, 0);
+    victorSPX.configPeakOutputReverse(peakVoltageRev != null ? peakVoltageRev / 12. : -1, 0);
 
     if (slaveVictors != null) {
       // Set up slaves.
       for (final SlaveVictor slave : slaveVictors) {
         slave.setMaster(
-                victorSPX,
-                brakeMode,
-                enableVoltageComp ? (voltageCompSamples != null ? voltageCompSamples : 32) : null);
+            victorSPX,
+            brakeMode,
+            enableVoltageComp ? (voltageCompSamples != null ? voltageCompSamples : 32) : null);
       }
     }
   }
 
   /**
-   * Enables the motor, if applicable.
-   */
-  @Override
-  public void enable() {
-    // Do nothing
-  }
-
-  /**
    * Set the velocity for the motor to go at.
+   *
    * @param velocity the desired velocity, on [-1, 1].
    */
   @Override
@@ -85,9 +74,13 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
     victorSPX.set(ControlMode.PercentOutput, velocity);
   }
 
-  /**
-   * Disables the motor, if applicable.
-   */
+  /** Enables the motor, if applicable. */
+  @Override
+  public void enable() {
+    // Do nothing
+  }
+
+  /** Disables the motor, if applicable. */
   @Override
   public void disable() {
     victorSPX.set(ControlMode.Disabled, 0);

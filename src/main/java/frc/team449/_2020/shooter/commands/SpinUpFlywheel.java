@@ -16,30 +16,27 @@ import org.jetbrains.annotations.NotNull;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SpinUpFlywheel extends InstantCommand {
 
-    @NotNull
-    @Log.Exclude
-    private final SubsystemFlywheel flywheel;
+  @NotNull @Log.Exclude private final SubsystemFlywheel flywheel;
 
-    private final double targetSpeed;
+  private final double targetSpeed;
 
-    /**
-     * Default constructor
-     * @param flywheel    The subsystem to execute this command on.
-     * @param targetSpeed The target speed in arbitrary units at which to run the flywheel.
-     */
-    @JsonCreator
-    public SpinUpFlywheel(
-            @NotNull @JsonProperty(required = true) final SubsystemFlywheel flywheel,
-            @JsonProperty(required = true) final double targetSpeed) {
-        this.flywheel = flywheel;
-        this.targetSpeed = targetSpeed;
-    }
+  /**
+   * Default constructor
+   *
+   * @param flywheel The subsystem to execute this command on.
+   * @param targetSpeed The target speed in arbitrary units at which to run the flywheel.
+   */
+  @JsonCreator
+  public SpinUpFlywheel(
+      @NotNull @JsonProperty(required = true) final SubsystemFlywheel flywheel,
+      @JsonProperty(required = true) final double targetSpeed) {
+    this.flywheel = flywheel;
+    this.targetSpeed = targetSpeed;
+  }
 
-    /**
-     * Turn the feeder off and the flywheel on.
-     */
-    @Override
-    public void execute() {
-        flywheel.turnFlywheelOn(targetSpeed);
-    }
+  /** Turn the feeder off and the flywheel on. */
+  @Override
+  public void execute() {
+    flywheel.turnFlywheelOn(targetSpeed);
+  }
 }

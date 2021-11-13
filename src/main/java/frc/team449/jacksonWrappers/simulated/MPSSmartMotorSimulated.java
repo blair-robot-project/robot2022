@@ -30,102 +30,91 @@ import static frc.team449.other.Util.getLogPrefix;
  * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
  * This class simulates a smart motor controller. Motor physics are simulated by {@link
  * SimulatedMotor}.
+ *
  * <p>This class is automatically instantiated by the MPSSmartMotor factory method when the robot is
  * running in a simulation and should not be otherwise referenced in code.
+ *
  * <p>The current implementation relies on fictional physics and does not involve
  */
 public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
-  /**
-   * Maximum PID integral for anti-windup.
-   */
+  /** Maximum PID integral for anti-windup. */
   private static final double MAX_INTEGRAL = Double.POSITIVE_INFINITY;
 
-  @NotNull
-  private final String name;
+  @NotNull private final String name;
   private final Type controllerType;
   private final int port;
   private final boolean reverseOutput;
   private final double unitPerRotation;
   private final boolean enableVoltageComp;
-  @NotNull
-  private final Map<Integer, Shiftable.PerGearSettings> perGearSettings;
-  /**
-   * (V)
-   */
+  @NotNull private final Map<Integer, Shiftable.PerGearSettings> perGearSettings;
+  /** (V) */
   private final double busVoltage = SimulatedMotor.NOMINAL_VOLTAGE;
-  /**
-   * (Depends on mode)
-   */
-  @Log
-  private double setpoint;
+  /** (Depends on mode) */
+  @Log private double setpoint;
 
   @NotNull
   private final MPSSmartMotorSimulated.PID pid =
-          new PID(MAX_INTEGRAL, () -> this.setpoint, 0, 0, 0);
+      new PID(MAX_INTEGRAL, () -> this.setpoint, 0, 0, 0);
 
-  @Log.ToString
-  @NotNull
-  private ControlMode controlMode = ControlMode.Disabled;
-  @NotNull
-  private Shiftable.PerGearSettings currentGearSettings;
+  @Log.ToString @NotNull private ControlMode controlMode = ControlMode.Disabled;
+  @NotNull private Shiftable.PerGearSettings currentGearSettings;
   // Log the getters instead because logging the fields doesn't cause physics updates.
   private double percentOutput;
 
   @NotNull
   private final SimulatedMotor motor =
-          new SimulatedMotor(() -> this.busVoltage * this.percentOutput);
+      new SimulatedMotor(() -> this.busVoltage * this.percentOutput);
 
-  @Log
-  private double lastStateUpdateTime = Clock.currentTimeMillis();
+  @Log private double lastStateUpdateTime = Clock.currentTimeMillis();
 
   public MPSSmartMotorSimulated(
-          final Type type,
-          final int port,
-          final boolean enableBrakeMode,
-          @Nullable final String name,
-          final boolean reverseOutput,
-          @Nullable final PDP PDP,
-          @Nullable final Boolean fwdLimitSwitchNormallyOpen,
-          @Nullable final Boolean revLimitSwitchNormallyOpen,
-          @Nullable final Integer remoteLimitSwitchID,
-          @Nullable final Double fwdSoftLimit,
-          @Nullable final Double revSoftLimit,
-          @Nullable final Double postEncoderGearing,
-          @Nullable final Double unitPerRotation,
-          @Nullable final Integer currentLimit,
-          final boolean enableVoltageComp,
-          @Nullable final List<Shiftable.PerGearSettings> perGearSettings,
-          @Nullable final Shiftable.Gear startingGear,
-          @Nullable final Integer startingGearNum,
-          // Spark-specific
-          @Nullable final EnumMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
-          @Nullable final Integer controlFrameRateMillis,
-          // Talon-specific
-          @Nullable final EnumMap<StatusFrameEnhanced, Integer> talonStatusFramesMap,
-          @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
-          @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
-          @Nullable final Integer voltageCompSamples,
-          @Nullable final FeedbackDevice feedbackDevice,
-          @Nullable final Integer encoderCPR,
-          @Nullable final Boolean reverseSensor,
-          @Nullable final Double updaterProcessPeriodSecs,
-          @Nullable final List<SlaveTalon> slaveTalons,
-          @Nullable final List<SlaveVictor> slaveVictors,
-          @Nullable final List<SlaveSparkMax> slaveSparks) {
+      final Type type,
+      final int port,
+      final boolean enableBrakeMode,
+      @Nullable final String name,
+      final boolean reverseOutput,
+      @Nullable final PDP PDP,
+      @Nullable final Boolean fwdLimitSwitchNormallyOpen,
+      @Nullable final Boolean revLimitSwitchNormallyOpen,
+      @Nullable final Integer remoteLimitSwitchID,
+      @Nullable final Double fwdSoftLimit,
+      @Nullable final Double revSoftLimit,
+      @Nullable final Double postEncoderGearing,
+      @Nullable final Double unitPerRotation,
+      @Nullable final Integer currentLimit,
+      final boolean enableVoltageComp,
+      @Nullable final List<Shiftable.PerGearSettings> perGearSettings,
+      @Nullable final Shiftable.Gear startingGear,
+      @Nullable final Integer startingGearNum,
+      // Spark-specific
+      @Nullable final EnumMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
+      @Nullable final Integer controlFrameRateMillis,
+      // Talon-specific
+      @Nullable final EnumMap<StatusFrameEnhanced, Integer> talonStatusFramesMap,
+      @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
+      @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
+      @Nullable final Integer voltageCompSamples,
+      @Nullable final FeedbackDevice feedbackDevice,
+      @Nullable final Integer encoderCPR,
+      @Nullable final Boolean reverseSensor,
+      @Nullable final Double updaterProcessPeriodSecs,
+      @Nullable final List<SlaveTalon> slaveTalons,
+      @Nullable final List<SlaveVictor> slaveVictors,
+      @Nullable final List<SlaveSparkMax> slaveSparks) {
     this.controllerType = type;
     this.port = port;
     this.reverseOutput = reverseOutput;
     this.unitPerRotation = Objects.requireNonNullElse(unitPerRotation, 1.0);
     this.enableVoltageComp = enableVoltageComp;
     this.name =
-            name != null
-                    ? name
-                    : String.format(
-                    "%s_%d",
-                    type == Type.SPARK
-                            ? "spark"
-                            : type == Type.TALON ? "talon" : "MotorControllerUnknownType",
-                    port);
+        name != null
+            ? name
+            : String.format(
+                "%s_%d",
+                type == Type.SPARK
+                    ? "spark"
+                    : type == Type.TALON ? "talon" : "MotorControllerUnknownType",
+                port);
 
     // Most of the constructor is stolen from MPSSparkMax.
 
@@ -163,23 +152,6 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
     this.setGear(currentGear);
   }
 
-  /**
-   * Enables the motor, if applicable.
-   */
-  @Override
-  public void enable() {
-    // Do nothing.
-  }
-
-  /**
-   * Disables the motor, if applicable.
-   */
-  @Override
-  public void disable() {
-    this.percentOutput = 0;
-    this.setControlModeAndSetpoint(ControlMode.Disabled, 0);
-  }
-
   public void setControlModeAndSetpoint(final ControlMode controlMode, final double setpoint) {
     this.controlMode = controlMode;
     this.setpoint = setpoint;
@@ -187,13 +159,13 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
     switch (controlMode) {
       case Velocity:
         this.pid.reconfigure(
-                this.currentGearSettings.kP, this.currentGearSettings.kI, this.currentGearSettings.kD);
+            this.currentGearSettings.kP, this.currentGearSettings.kI, this.currentGearSettings.kD);
         break;
       case Position:
         this.pid.reconfigure(
-                this.currentGearSettings.posKP,
-                this.currentGearSettings.posKI,
-                this.currentGearSettings.posKD);
+            this.currentGearSettings.posKP,
+            this.currentGearSettings.posKI,
+            this.currentGearSettings.posKD);
         break;
 
       case Current:
@@ -214,44 +186,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
     }
   }
 
-  /**
-   * @return The gear this subsystem is currently in.
-   */
-  @Override
-  public int getGear() {
-    return 0;
-  }
-
-  /**
-   * Shift to a specific gear.
-   * @param gear Which gear to shift to.
-   */
-  @Override
-  public void setGear(final int gear) {
-    // Set the current gear
-    this.currentGearSettings = this.perGearSettings.get(gear);
-  }
-
-  /**
-   * Updates all cached values with current ones.
-   */
-  @Override
-  public void update() {
-    this.updateSimulation();
-  }
-
-  /**
-   * Set the motor output voltage to a given percent of available voltage.
-   * @param percentVoltage percent of total voltage from [-1, 1]
-   */
-  @Override
-  public void setPercentVoltage(final double percentVoltage) {
-    this.setControlModeAndSetpoint(ControlMode.PercentOutput, percentVoltage);
-  }
-
-  /**
-   * Performs simulated PID logic and simulates physical state changes since last call.
-   */
+  /** Performs simulated PID logic and simulates physical state changes since last call. */
   private void updateSimulation() {
     final double now = Clock.currentTimeMillis();
 
@@ -274,11 +209,11 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
       case Velocity:
       case Position:
         final double newActualValue =
-                (this.controlMode == ControlMode.Velocity
-                        ? this.motor.getVelocity()
-                        : this.motor.getPosition());
+            (this.controlMode == ControlMode.Velocity
+                ? this.motor.getVelocity()
+                : this.motor.getPosition());
         final double newError = this.setpoint - newActualValue;
-        this.pid.update(this.reverseOutput ? - newError : newError, deltaSecs);
+        this.pid.update(this.reverseOutput ? -newError : newError, deltaSecs);
         targetPercentOutput = this.pid.getOutput();
         break;
 
@@ -291,23 +226,34 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
     }
 
     final double actualTargetPercentOutput =
-            this.reverseOutput ? - targetPercentOutput : targetPercentOutput;
+        this.reverseOutput ? -targetPercentOutput : targetPercentOutput;
 
     final double targetPercentOutputDelta = clamp(actualTargetPercentOutput - this.percentOutput);
     final double targetVoltageDelta = targetPercentOutputDelta * this.busVoltage;
 
     final double voltageDelta =
-            this.currentGearSettings.rampRate == null
-                    ? targetVoltageDelta
-                    : clamp(targetVoltageDelta, this.currentGearSettings.rampRate * deltaSecs);
+        this.currentGearSettings.rampRate == null
+            ? targetVoltageDelta
+            : clamp(targetVoltageDelta, this.currentGearSettings.rampRate * deltaSecs);
     final double percentOutputDelta = voltageDelta / this.busVoltage;
 
     this.percentOutput = clamp(this.percentOutput + percentOutputDelta);
   }
 
   /**
+   * Set the motor output voltage to a given percent of available voltage.
+   *
+   * @param percentVoltage percent of total voltage from [-1, 1]
+   */
+  @Override
+  public void setPercentVoltage(final double percentVoltage) {
+    this.setControlModeAndSetpoint(ControlMode.PercentOutput, percentVoltage);
+  }
+
+  /**
    * Convert from native units read by an encoder to meters moved. Note this DOES account for
    * post-encoder gearing.
+   *
    * @param nativeUnits A distance native units as measured by the encoder.
    * @return That distance in meters, or null if no encoder CPR was given.
    */
@@ -316,21 +262,347 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
     return nativeUnits * this.unitPerRotation;
   }
 
+  /**
+   * Convert a distance from meters to encoder reading in native units. Note this DOES account for
+   * post-encoder gearing.
+   *
+   * @param meters A distance in meters.
+   * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
+   *     given.
+   */
+  @Override
+  public double unitToEncoder(final double meters) {
+    return meters / this.unitPerRotation;
+  }
+
+  /**
+   * Converts the velocity read by the controllers's getVelocity() method to the MPS of the output
+   * shaft. Note this DOES account for post-encoder gearing.
+   *
+   * @param encoderReading The velocity read from the encoder with no conversions.
+   * @return The velocity of the output shaft, in MPS, when the encoder has that reading, or null if
+   *     no encoder CPR was given.
+   */
+  @Override
+  public double encoderToUPS(final double encoderReading) {
+    return encoderReading * this.unitPerRotation;
+  }
+
+  /**
+   * Converts from the velocity of the output shaft to what the controllers's getVelocity() method
+   * would read at that velocity. Note this DOES account for post-encoder gearing.
+   *
+   * @param MPS The velocity of the output shaft, in MPS.
+   * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
+   *     given.
+   */
+  @Override
+  public double upsToEncoder(final double MPS) {
+    return MPS / this.unitPerRotation;
+  }
+
+  /**
+   * Convert from native velocity units to output rotations per second. Note this DOES NOT account
+   * for post-encoder gearing.
+   *
+   * @param nat A velocity in native units.
+   * @return That velocity in RPS, or null if no encoder CPR was given.
+   */
+  @Override
+  public Double nativeToRPS(final double nat) {
+    return nat;
+  }
+
+  /**
+   * Convert from output RPS to the native velocity. Note this DOES NOT account for post-encoder
+   * gearing.
+   *
+   * @param rps The RPS velocity you want to convert.
+   * @return That velocity in native units, or null if no encoder CPR was given.
+   */
+  @Override
+  public double rpsToNative(final double rps) {
+    return rps;
+  }
+
+  /** @return Raw position units for debugging purposes */
+  @Override
+  @Log
+  public double encoderPosition() {
+    return this.motor.getPosition();
+  }
+
+  /** Set a position setpoint for the controller. */
+  @Override
+  public void setPositionSetpoint(final double meters) {
+    this.setControlModeAndSetpoint(ControlMode.Position, this.unitToEncoder(meters));
+  }
+
+  /** @return Raw velocity units for debugging purposes */
+  @Log
+  @Override
+  public double encoderVelocity() {
+    return this.motor.getVelocity();
+  }
+
+  @Override
+  public void setVoltage(final double volts) {
+    this.setControlModeAndSetpoint(
+        ControlMode.PercentOutput,
+        this.enableVoltageComp
+            ? volts / this.getBatteryVoltage()
+            : volts / SimulatedMotor.NOMINAL_VOLTAGE);
+  }
+
+  /**
+   * Get the velocity of the controller in MPS.
+   *
+   * @return The controller's velocity in MPS, or null if no encoder CPR was given.
+   */
+  @Log
+  @Override
+  public double getVelocity() {
+    return this.encoderToUPS(this.encoderVelocity());
+  }
+
+  /**
+   * Set the velocity for the motor to go at.
+   *
+   * @param velocity the desired velocity, on [-1, 1].
+   */
+  @Override
+  public void setVelocity(final double velocity) {
+    if (this.currentGearSettings.maxSpeed != null) {
+      this.setVelocityUPS(velocity * this.currentGearSettings.maxSpeed);
+    } else {
+      this.setPercentVoltage(velocity);
+    }
+  }
+
+  /** Enables the motor, if applicable. */
+  @Override
+  public void enable() {
+    // Do nothing.
+  }
+
+  /** Disables the motor, if applicable. */
+  @Override
+  public void disable() {
+    this.percentOutput = 0;
+    this.setControlModeAndSetpoint(ControlMode.Disabled, 0);
+  }
+
+  /**
+   * Give a velocity closed loop setpoint in MPS.
+   *
+   * @param velocity velocity setpoint in MPS.
+   */
+  @Override
+  public void setVelocityUPS(final double velocity) {
+    this.setControlModeAndSetpoint(ControlMode.Velocity, this.upsToEncoder(velocity));
+  }
+
+  /**
+   * Get the current closed-loop velocity error in MPS. WARNING: will give garbage if not in
+   * velocity mode.
+   *
+   * @return The closed-loop error in MPS, or null if no encoder CPR was given.
+   */
+  @Override
+  public double getError() {
+    return this.encoderToUPS(this.setpoint - this.motor.getVelocity());
+  }
+
+  /**
+   * Get the current velocity setpoint of the Talon in MPS, the position setpoint in meters
+   *
+   * @return The setpoint in sensible units for the current control mode.
+   */
+  @Override
+  public double getSetpoint() {
+    switch (this.controlMode) {
+      case Velocity:
+        return this.encoderToUPS(this.setpoint);
+      case Position:
+        return this.encoderToUnit(this.setpoint);
+      default:
+        return Double.NaN;
+    }
+  }
+
+  /**
+   * Get the voltage the Talon is currently drawing from the PDP.
+   *
+   * @return Voltage in volts.
+   */
+  @Override
+  @Log
+  public double getOutputVoltage() {
+    return this.getBatteryVoltage() * this.percentOutput;
+  }
+
+  /**
+   * Get the voltage available for the Talon.
+   *
+   * @return Voltage in volts.
+   */
+  @Override
+  @Log
+  public double getBatteryVoltage() {
+    return this.busVoltage;
+  }
+
+  /**
+   * Get the current the Talon is currently drawing from the PDP.
+   *
+   * @return Current in amps.
+   */
+  @Override
+  @Log
+  public double getOutputCurrent() {
+    return this.motor.getCurrent();
+  }
+
+  /**
+   * Get the current control mode of the Talon. Please don't use this for anything other than
+   * logging.
+   *
+   * @return Control mode as a string.
+   */
+  @Override
+  public String getControlMode() {
+    return this.controlMode.name();
+  }
+
+  /**
+   * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
+   *
+   * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
+   *     gear.
+   * @param gear The number of the gear to use the max speed from to scale the velocity.
+   */
+  @Override
+  public void setGearScaledVelocity(final double velocity, final int gear) {
+    if (this.currentGearSettings.maxSpeed != null) {
+      this.setVelocityUPS(this.currentGearSettings.maxSpeed * velocity);
+    } else {
+      this.setPercentVoltage(velocity);
+    }
+  }
+
+  /**
+   * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
+   *
+   * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
+   *     gear.
+   * @param gear The gear to use the max speed from to scale the velocity.
+   */
+  @Override
+  public void setGearScaledVelocity(final double velocity, final Shiftable.Gear gear) {
+    this.setGearScaledVelocity(velocity, gear.getNumVal());
+  }
+
+  /** @return Feedforward calculator for this gear */
+  @Override
+  public SimpleMotorFeedforward getCurrentGearFeedForward() {
+    return currentGearSettings.feedForwardCalculator;
+  }
+
+  /** @return the position of the talon in meters, or null of inches per rotation wasn't given. */
+  @Override
+  public double getPositionUnits() {
+    return this.encoderToUnit(this.encoderPosition());
+  }
+
+  /** Resets the position of the Talon to 0. */
+  @Override
+  public void resetPosition() {
+    this.motor.resetPosition();
+    this.pid.resetState();
+  }
+
+  /**
+   * Get the status of the forwards limit switch.
+   *
+   * @return True if the forwards limit switch is closed, false if it's open or doesn't exist.
+   */
+  @Override
+  public boolean getFwdLimitSwitch() {
+    return false;
+  }
+
+  /**
+   * Get the status of the reverse limit switch.
+   *
+   * @return True if the reverse limit switch is closed, false if it's open or doesn't exist.
+   */
+  @Override
+  public boolean getRevLimitSwitch() {
+    return false;
+  }
+
+  @Override
+  public boolean isInhibitedForward() {
+    return false;
+  }
+
+  @Override
+  public boolean isInhibitedReverse() {
+    return false;
+  }
+
+  @Override
+  public int getPort() {
+    return this.port;
+  }
+
+  /** @return The gear this subsystem is currently in. */
+  @Override
+  public int getGear() {
+    return 0;
+  }
+
+  /**
+   * Shift to a specific gear.
+   *
+   * @param gear Which gear to shift to.
+   */
+  @Override
+  public void setGear(final int gear) {
+    // Set the current gear
+    this.currentGearSettings = this.perGearSettings.get(gear);
+  }
+
+  @Override
+  public String configureLogName() {
+    return this.name;
+  }
+
+  @Override
+  public boolean isSimulated() {
+    return true;
+  }
+
+  /** Updates all cached values with current ones. */
+  @Override
+  public void update() {
+    this.updateSimulation();
+  }
+
   private static class PID implements Loggable {
     private final DoubleSupplier getSetPoint;
     private final double maxIntegral;
-    @Log
-    private double error, integral, derivative;
+    @Log private double error, integral, derivative;
     private double kP;
     private double kI;
     private double kD;
 
     public PID(
-            final double maxIntegral,
-            final DoubleSupplier getSetPoint,
-            final double kP,
-            final double kI,
-            final double kD) {
+        final double maxIntegral,
+        final DoubleSupplier getSetPoint,
+        final double kP,
+        final double kI,
+        final double kD) {
       this.maxIntegral = maxIntegral;
       this.getSetPoint = getSetPoint;
       this.kP = kP;
@@ -361,293 +633,4 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
       this.error = this.derivative = this.integral = 0;
     }
   }
-
-  /**
-   * Convert a distance from meters to encoder reading in native units. Note this DOES account for
-   * post-encoder gearing.
-   * @param meters A distance in meters.
-   * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
-   * given.
-   */
-  @Override
-  public double unitToEncoder(final double meters) {
-    return meters / this.unitPerRotation;
-  }
-
-  /**
-   * Converts the velocity read by the controllers's getVelocity() method to the MPS of the output
-   * shaft. Note this DOES account for post-encoder gearing.
-   * @param encoderReading The velocity read from the encoder with no conversions.
-   * @return The velocity of the output shaft, in MPS, when the encoder has that reading, or null if
-   * no encoder CPR was given.
-   */
-  @Override
-  public double encoderToUPS(final double encoderReading) {
-    return encoderReading * this.unitPerRotation;
-  }
-
-  /**
-   * Converts from the velocity of the output shaft to what the controllers's getVelocity() method
-   * would read at that velocity. Note this DOES account for post-encoder gearing.
-   * @param MPS The velocity of the output shaft, in MPS.
-   * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
-   * given.
-   */
-  @Override
-  public double upsToEncoder(final double MPS) {
-    return MPS / this.unitPerRotation;
-  }
-
-  /**
-   * Convert from native velocity units to output rotations per second. Note this DOES NOT account
-   * for post-encoder gearing.
-   * @param nat A velocity in native units.
-   * @return That velocity in RPS, or null if no encoder CPR was given.
-   */
-  @Override
-  public Double nativeToRPS(final double nat) {
-    return nat;
-  }
-
-  /**
-   * Convert from output RPS to the native velocity. Note this DOES NOT account for post-encoder
-   * gearing.
-   * @param rps The RPS velocity you want to convert.
-   * @return That velocity in native units, or null if no encoder CPR was given.
-   */
-  @Override
-  public double rpsToNative(final double rps) {
-    return rps;
-  }
-
-  /**
-   * @return Raw position units for debugging purposes
-   */
-  @Override
-  @Log
-  public double encoderPosition() {
-    return this.motor.getPosition();
-  }
-
-  /**
-   * Set a position setpoint for the controller.
-   */
-  @Override
-  public void setPositionSetpoint(final double meters) {
-    this.setControlModeAndSetpoint(ControlMode.Position, this.unitToEncoder(meters));
-  }
-
-  /**
-   * @return Raw velocity units for debugging purposes
-   */
-  @Log
-  @Override
-  public double encoderVelocity() {
-    return this.motor.getVelocity();
-  }
-
-  @Override
-  public void setVoltage(final double volts) {
-    this.setControlModeAndSetpoint(
-            ControlMode.PercentOutput,
-            this.enableVoltageComp
-                    ? volts / this.getBatteryVoltage()
-                    : volts / SimulatedMotor.NOMINAL_VOLTAGE);
-  }
-
-  /**
-   * Get the velocity of the controller in MPS.
-   * @return The controller's velocity in MPS, or null if no encoder CPR was given.
-   */
-  @Log
-  @Override
-  public double getVelocity() {
-    return this.encoderToUPS(this.encoderVelocity());
-  }
-
-  /**
-   * Set the velocity for the motor to go at.
-   * @param velocity the desired velocity, on [-1, 1].
-   */
-  @Override
-  public void setVelocity(final double velocity) {
-    if (this.currentGearSettings.maxSpeed != null) {
-      this.setVelocityUPS(velocity * this.currentGearSettings.maxSpeed);
-    } else {
-      this.setPercentVoltage(velocity);
-    }
-  }
-
-
-  /**
-   * Give a velocity closed loop setpoint in MPS.
-   * @param velocity velocity setpoint in MPS.
-   */
-  @Override
-  public void setVelocityUPS(final double velocity) {
-    this.setControlModeAndSetpoint(ControlMode.Velocity, this.upsToEncoder(velocity));
-  }
-
-  /**
-   * Get the current closed-loop velocity error in MPS. WARNING: will give garbage if not in
-   * velocity mode.
-   * @return The closed-loop error in MPS, or null if no encoder CPR was given.
-   */
-  @Override
-  public double getError() {
-    return this.encoderToUPS(this.setpoint - this.motor.getVelocity());
-  }
-
-  /**
-   * Get the current velocity setpoint of the Talon in MPS, the position setpoint in meters
-   * @return The setpoint in sensible units for the current control mode.
-   */
-  @Override
-  public double getSetpoint() {
-    switch (this.controlMode) {
-      case Velocity:
-        return this.encoderToUPS(this.setpoint);
-      case Position:
-        return this.encoderToUnit(this.setpoint);
-      default:
-        return Double.NaN;
-    }
-  }
-
-  /**
-   * Get the voltage the Talon is currently drawing from the PDP.
-   * @return Voltage in volts.
-   */
-  @Override
-  @Log
-  public double getOutputVoltage() {
-    return this.getBatteryVoltage() * this.percentOutput;
-  }
-
-  /**
-   * Get the voltage available for the Talon.
-   * @return Voltage in volts.
-   */
-  @Override
-  @Log
-  public double getBatteryVoltage() {
-    return this.busVoltage;
-  }
-
-  /**
-   * Get the current the Talon is currently drawing from the PDP.
-   * @return Current in amps.
-   */
-  @Override
-  @Log
-  public double getOutputCurrent() {
-    return this.motor.getCurrent();
-  }
-
-  /**
-   * Get the current control mode of the Talon. Please don't use this for anything other than
-   * logging.
-   * @return Control mode as a string.
-   */
-  @Override
-  public String getControlMode() {
-    return this.controlMode.name();
-  }
-
-  /**
-   * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
-   * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *                 gear.
-   * @param gear     The number of the gear to use the max speed from to scale the velocity.
-   */
-  @Override
-  public void setGearScaledVelocity(final double velocity, final int gear) {
-    if (this.currentGearSettings.maxSpeed != null) {
-      this.setVelocityUPS(this.currentGearSettings.maxSpeed * velocity);
-    } else {
-      this.setPercentVoltage(velocity);
-    }
-  }
-
-  /**
-   * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
-   * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *                 gear.
-   * @param gear     The gear to use the max speed from to scale the velocity.
-   */
-  @Override
-  public void setGearScaledVelocity(final double velocity, final Shiftable.Gear gear) {
-    this.setGearScaledVelocity(velocity, gear.getNumVal());
-  }
-
-  /**
-   * @return Feedforward calculator for this gear
-   */
-  @Override
-  public SimpleMotorFeedforward getCurrentGearFeedForward() {
-    return currentGearSettings.feedForwardCalculator;
-  }
-
-  /**
-   * @return the position of the talon in meters, or null of inches per rotation wasn't given.
-   */
-  @Override
-  public double getPositionUnits() {
-    return this.encoderToUnit(this.encoderPosition());
-  }
-
-  /**
-   * Resets the position of the Talon to 0.
-   */
-  @Override
-  public void resetPosition() {
-    this.motor.resetPosition();
-    this.pid.resetState();
-  }
-
-  /**
-   * Get the status of the forwards limit switch.
-   * @return True if the forwards limit switch is closed, false if it's open or doesn't exist.
-   */
-  @Override
-  public boolean getFwdLimitSwitch() {
-    return false;
-  }
-
-  /**
-   * Get the status of the reverse limit switch.
-   * @return True if the reverse limit switch is closed, false if it's open or doesn't exist.
-   */
-  @Override
-  public boolean getRevLimitSwitch() {
-    return false;
-  }
-
-  @Override
-  public boolean isInhibitedForward() {
-    return false;
-  }
-
-  @Override
-  public boolean isInhibitedReverse() {
-    return false;
-  }
-
-  @Override
-  public int getPort() {
-    return this.port;
-  }
-
-
-  @Override
-  public String configureLogName() {
-    return this.name;
-  }
-
-  @Override
-  public boolean isSimulated() {
-    return true;
-  }
-
-
 }

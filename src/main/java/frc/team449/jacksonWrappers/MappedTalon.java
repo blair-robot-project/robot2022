@@ -28,51 +28,27 @@ import java.util.Map;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedTalon implements SmartMotor {
 
-  /**
-   * The CTRE CAN Talon SRX that this class is a wrapper on
-   */
-  @NotNull
-  protected final TalonSRX canTalon;
-  /**
-   * The PDP this Talon is connected to.
-   */
-  @Nullable
-  @Log.Exclude
-  protected final PDP PDP;
-  /**
-   * The counts per rotation of the encoder being used, or null if there is no encoder.
-   */
-  @Nullable
-  private final Integer encoderCPR;
+  /** The CTRE CAN Talon SRX that this class is a wrapper on */
+  @NotNull protected final TalonSRX canTalon;
+  /** The PDP this Talon is connected to. */
+  @Nullable @Log.Exclude protected final PDP PDP;
+  /** The counts per rotation of the encoder being used, or null if there is no encoder. */
+  @Nullable private final Integer encoderCPR;
   /**
    * The number of meters travelled per rotation of the motor this is attached to, or null if there
    * is no encoder.
    */
   private final double unitPerRotation;
-  /**
-   * A list of all the gears this robot has and their settings.
-   */
-  @NotNull
-  private final Map<Integer, PerGearSettings> perGearSettings;
-  /**
-   * The talon's name, used for logging purposes.
-   */
-  @NotNull
-  private final String name;
-  /**
-   * The component for doing linear regression to find the resistance.
-   */
-  @Nullable
-  private final RunningLinRegComponent voltagePerCurrentLinReg;
-  /**
-   * Whether the forwards or reverse limit switches are normally open or closed, respectively.
-   */
+  /** A list of all the gears this robot has and their settings. */
+  @NotNull private final Map<Integer, PerGearSettings> perGearSettings;
+  /** The talon's name, used for logging purposes. */
+  @NotNull private final String name;
+  /** The component for doing linear regression to find the resistance. */
+  @Nullable private final RunningLinRegComponent voltagePerCurrentLinReg;
+  /** Whether the forwards or reverse limit switches are normally open or closed, respectively. */
   private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
-  /**
-   * The settings currently being used by this Talon.
-   */
-  @NotNull
-  protected PerGearSettings currentGearSettings;
+  /** The settings currently being used by this Talon. */
+  @NotNull protected PerGearSettings currentGearSettings;
 
   Faults faults = new Faults();
   /**
@@ -80,90 +56,89 @@ public class MappedTalon implements SmartMotor {
    * 1/70 if there was a 70:1 gearing between the encoder and the final output.
    */
   private double postEncoderGearing;
-  /**
-   * The most recently set setpoint.
-   */
+  /** The most recently set setpoint. */
   private double setpoint;
 
   private boolean voltageCompEnabled;
 
   /**
    * Default constructor.
-   * @param port                       CAN port of this Talon.
-   * @param name                       The talon's name, used for logging purposes. Defaults to talon_portnum
-   * @param reverseOutput              Whether to reverse the output.
-   * @param enableBrakeMode            Whether to brake or coast when stopped.
-   * @param voltagePerCurrentLinReg    The component for doing linear regression to find the
-   *                                   resistance.
-   * @param PDP                        The PDP this Talon is connected to.
+   *
+   * @param port CAN port of this Talon.
+   * @param name The talon's name, used for logging purposes. Defaults to talon_portnum
+   * @param reverseOutput Whether to reverse the output.
+   * @param enableBrakeMode Whether to brake or coast when stopped.
+   * @param voltagePerCurrentLinReg The component for doing linear regression to find the
+   *     resistance.
+   * @param PDP The PDP this Talon is connected to.
    * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed.
-   *                                   If this is null, the forward limit switch is disabled.
+   *     If this is null, the forward limit switch is disabled.
    * @param revLimitSwitchNormallyOpen Whether the reverse limit switch is normally open or closed.
-   *                                   If this is null, the reverse limit switch is disabled.
-   * @param remoteLimitSwitchID        The CAN port of the Talon the limit switch to use for this talon is
-   *                                   plugged into, or null to not use a limit switch or use the limit switch plugged into this
-   *                                   talon.
-   * @param fwdSoftLimit               The forward software limit, in meters. If this is null, the forward
-   *                                   software limit is disabled. Ignored if there's no encoder.
-   * @param revSoftLimit               The reverse software limit, in meters. If this is null, the reverse
-   *                                   software limit is disabled. Ignored if there's no encoder.
-   * @param postEncoderGearing         The coefficient the output changes by after being measured by the
-   *                                   encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
-   *                                   final output. Defaults to 1.
-   * @param unitPerRotation            The number of meters travelled per rotation of the motor this is
-   *                                   attached to. Defaults to 1.
-   * @param currentLimit               The max amps this device can draw. If this is null, no current limit is
-   *                                   used.
-   * @param enableVoltageComp          Whether or not to use voltage compensation. Defaults to false.
-   * @param voltageCompSamples         The number of 1-millisecond samples to use for voltage compensation.
-   *                                   Defaults to 32.
-   * @param feedbackDevice             The type of encoder used to measure the output velocity of this motor.
-   *                                   Can be null if there is no encoder attached to this Talon.
-   * @param encoderCPR                 The counts per rotation of the encoder on this Talon. Can be null if
-   *                                   feedbackDevice is, but otherwise must have a value.
-   * @param reverseSensor              Whether or not to reverse the reading from the encoder on this Talon.
-   *                                   Ignored if feedbackDevice is null. Defaults to false.
-   * @param perGearSettings            The settings for each gear this motor has. Can be null to use default
-   *                                   values and gear # of zero. Gear numbers can't be repeated.
-   * @param startingGear               The gear to start in. Can be null to use startingGearNum instead.
-   * @param startingGearNum            The number of the gear to start in. Ignored if startingGear isn't null.
-   *                                   Defaults to the lowest gear.
-   * @param statusFrameRatesMillis     The update rates, in millis, for each of the Talon status frames.
-   * @param controlFrameRatesMillis    The update rate, in milliseconds, for each of the control frame.
-   * @param slaveTalons                The other {@link TalonSRX}s that are slaved to this one.
-   * @param slaveVictors               The {@link com.ctre.phoenix.motorcontrol.can.VictorSPX}s that are slaved to
-   *                                   this Talon.
-   * @param slaveSparks                The Spark/Neo combinations slaved to this Talon.
+   *     If this is null, the reverse limit switch is disabled.
+   * @param remoteLimitSwitchID The CAN port of the Talon the limit switch to use for this talon is
+   *     plugged into, or null to not use a limit switch or use the limit switch plugged into this
+   *     talon.
+   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward
+   *     software limit is disabled. Ignored if there's no encoder.
+   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse
+   *     software limit is disabled. Ignored if there's no encoder.
+   * @param postEncoderGearing The coefficient the output changes by after being measured by the
+   *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
+   *     final output. Defaults to 1.
+   * @param unitPerRotation The number of meters travelled per rotation of the motor this is
+   *     attached to. Defaults to 1.
+   * @param currentLimit The max amps this device can draw. If this is null, no current limit is
+   *     used.
+   * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.
+   * @param voltageCompSamples The number of 1-millisecond samples to use for voltage compensation.
+   *     Defaults to 32.
+   * @param feedbackDevice The type of encoder used to measure the output velocity of this motor.
+   *     Can be null if there is no encoder attached to this Talon.
+   * @param encoderCPR The counts per rotation of the encoder on this Talon. Can be null if
+   *     feedbackDevice is, but otherwise must have a value.
+   * @param reverseSensor Whether or not to reverse the reading from the encoder on this Talon.
+   *     Ignored if feedbackDevice is null. Defaults to false.
+   * @param perGearSettings The settings for each gear this motor has. Can be null to use default
+   *     values and gear # of zero. Gear numbers can't be repeated.
+   * @param startingGear The gear to start in. Can be null to use startingGearNum instead.
+   * @param startingGearNum The number of the gear to start in. Ignored if startingGear isn't null.
+   *     Defaults to the lowest gear.
+   * @param statusFrameRatesMillis The update rates, in millis, for each of the Talon status frames.
+   * @param controlFrameRatesMillis The update rate, in milliseconds, for each of the control frame.
+   * @param slaveTalons The other {@link TalonSRX}s that are slaved to this one.
+   * @param slaveVictors The {@link com.ctre.phoenix.motorcontrol.can.VictorSPX}s that are slaved to
+   *     this Talon.
+   * @param slaveSparks The Spark/Neo combinations slaved to this Talon.
    */
   @JsonCreator
   public MappedTalon(
-          @JsonProperty(required = true) final int port,
-          @Nullable final String name,
-          final boolean reverseOutput,
-          @JsonProperty(required = true) final boolean enableBrakeMode,
-          @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
-          @Nullable final PDP PDP,
-          @Nullable final Boolean fwdLimitSwitchNormallyOpen,
-          @Nullable final Boolean revLimitSwitchNormallyOpen,
-          @Nullable final Integer remoteLimitSwitchID,
-          @Nullable final Double fwdSoftLimit,
-          @Nullable final Double revSoftLimit,
-          @Nullable final Double postEncoderGearing,
-          @Nullable final Double unitPerRotation,
-          @Nullable final Integer currentLimit,
-          final boolean enableVoltageComp,
-          @Nullable final Integer voltageCompSamples,
-          @Nullable final FeedbackDevice feedbackDevice,
-          @Nullable final Integer encoderCPR,
-          final boolean reverseSensor,
-          @Nullable final List<PerGearSettings> perGearSettings,
-          @Nullable final Shiftable.Gear startingGear,
-          @Nullable final Integer startingGearNum,
-          @Nullable final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
-          @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
-          @Nullable final List<SlaveTalon> slaveTalons,
-          @Nullable final List<SlaveVictor> slaveVictors,
-          @Nullable final List<SlaveSparkMax> slaveSparks) {
+      @JsonProperty(required = true) final int port,
+      @Nullable final String name,
+      final boolean reverseOutput,
+      @JsonProperty(required = true) final boolean enableBrakeMode,
+      @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
+      @Nullable final PDP PDP,
+      @Nullable final Boolean fwdLimitSwitchNormallyOpen,
+      @Nullable final Boolean revLimitSwitchNormallyOpen,
+      @Nullable final Integer remoteLimitSwitchID,
+      @Nullable final Double fwdSoftLimit,
+      @Nullable final Double revSoftLimit,
+      @Nullable final Double postEncoderGearing,
+      @Nullable final Double unitPerRotation,
+      @Nullable final Integer currentLimit,
+      final boolean enableVoltageComp,
+      @Nullable final Integer voltageCompSamples,
+      @Nullable final FeedbackDevice feedbackDevice,
+      @Nullable final Integer encoderCPR,
+      final boolean reverseSensor,
+      @Nullable final List<PerGearSettings> perGearSettings,
+      @Nullable final Shiftable.Gear startingGear,
+      @Nullable final Integer startingGearNum,
+      @Nullable final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
+      @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
+      @Nullable final List<SlaveTalon> slaveTalons,
+      @Nullable final List<SlaveVictor> slaveVictors,
+      @Nullable final List<SlaveSparkMax> slaveSparks) {
     // Instantiate the base CANTalon this is a wrapper on.
     this.canTalon = new TalonSRX(port);
     // Set the name to the given one or to talon_portnum
@@ -182,7 +157,7 @@ public class MappedTalon implements SmartMotor {
     if (controlFrameRatesMillis != null) {
       for (final ControlFrame controlFrame : controlFrameRatesMillis.keySet()) {
         this.canTalon.setControlFramePeriod(
-                controlFrame, controlFrameRatesMillis.get(controlFrame));
+            controlFrame, controlFrameRatesMillis.get(controlFrame));
       }
     }
     if (statusFrameRatesMillis != null) {
@@ -230,47 +205,47 @@ public class MappedTalon implements SmartMotor {
     if (fwdLimitSwitchNormallyOpen != null) {
       if (remoteLimitSwitchID != null) {
         this.canTalon.configForwardLimitSwitchSource(
-                RemoteLimitSwitchSource.RemoteTalonSRX,
-                fwdLimitSwitchNormallyOpen
-                        ? LimitSwitchNormal.NormallyOpen
-                        : LimitSwitchNormal.NormallyClosed,
-                remoteLimitSwitchID,
-                0);
+            RemoteLimitSwitchSource.RemoteTalonSRX,
+            fwdLimitSwitchNormallyOpen
+                ? LimitSwitchNormal.NormallyOpen
+                : LimitSwitchNormal.NormallyClosed,
+            remoteLimitSwitchID,
+            0);
       } else {
         this.canTalon.configForwardLimitSwitchSource(
-                LimitSwitchSource.FeedbackConnector,
-                fwdLimitSwitchNormallyOpen
-                        ? LimitSwitchNormal.NormallyOpen
-                        : LimitSwitchNormal.NormallyClosed,
-                0);
+            LimitSwitchSource.FeedbackConnector,
+            fwdLimitSwitchNormallyOpen
+                ? LimitSwitchNormal.NormallyOpen
+                : LimitSwitchNormal.NormallyClosed,
+            0);
       }
       this.fwdLimitSwitchNormallyOpen = fwdLimitSwitchNormallyOpen;
     } else {
       this.canTalon.configForwardLimitSwitchSource(
-              LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+          LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
       this.fwdLimitSwitchNormallyOpen = true;
     }
     if (revLimitSwitchNormallyOpen != null) {
       if (remoteLimitSwitchID != null) {
         this.canTalon.configReverseLimitSwitchSource(
-                RemoteLimitSwitchSource.RemoteTalonSRX,
-                revLimitSwitchNormallyOpen
-                        ? LimitSwitchNormal.NormallyOpen
-                        : LimitSwitchNormal.NormallyClosed,
-                remoteLimitSwitchID,
-                0);
+            RemoteLimitSwitchSource.RemoteTalonSRX,
+            revLimitSwitchNormallyOpen
+                ? LimitSwitchNormal.NormallyOpen
+                : LimitSwitchNormal.NormallyClosed,
+            remoteLimitSwitchID,
+            0);
       } else {
         this.canTalon.configReverseLimitSwitchSource(
-                LimitSwitchSource.FeedbackConnector,
-                revLimitSwitchNormallyOpen
-                        ? LimitSwitchNormal.NormallyOpen
-                        : LimitSwitchNormal.NormallyClosed,
-                0);
+            LimitSwitchSource.FeedbackConnector,
+            revLimitSwitchNormallyOpen
+                ? LimitSwitchNormal.NormallyOpen
+                : LimitSwitchNormal.NormallyClosed,
+            0);
       }
       this.revLimitSwitchNormallyOpen = revLimitSwitchNormallyOpen;
     } else {
       this.canTalon.configReverseLimitSwitchSource(
-              LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+          LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
       this.revLimitSwitchNormallyOpen = true;
     }
 
@@ -280,7 +255,7 @@ public class MappedTalon implements SmartMotor {
       // them to avoid
       // having to support RPM.
       if (feedbackDevice.equals(FeedbackDevice.CTRE_MagEncoder_Absolute)
-              || feedbackDevice.equals(FeedbackDevice.CTRE_MagEncoder_Relative)) {
+          || feedbackDevice.equals(FeedbackDevice.CTRE_MagEncoder_Relative)) {
         this.canTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
       } else {
         this.canTalon.configSelectedFeedbackSensor(feedbackDevice, 0, 0);
@@ -340,12 +315,12 @@ public class MappedTalon implements SmartMotor {
       // Set up slaves.
       for (final SlaveTalon slave : slaveTalons) {
         slave.setMaster(
-                port,
-                enableBrakeMode,
-                currentLimit,
-                enableVoltageComp ? notNullVoltageCompSamples : null,
-                PDP,
-                voltagePerCurrentLinReg);
+            port,
+            enableBrakeMode,
+            currentLimit,
+            enableVoltageComp ? notNullVoltageCompSamples : null,
+            PDP,
+            voltagePerCurrentLinReg);
       }
     }
 
@@ -353,7 +328,7 @@ public class MappedTalon implements SmartMotor {
       // Set up slaves.
       for (final SlaveVictor slave : slaveVictors) {
         slave.setMaster(
-                this.canTalon, enableBrakeMode, enableVoltageComp ? notNullVoltageCompSamples : null);
+            this.canTalon, enableBrakeMode, enableVoltageComp ? notNullVoltageCompSamples : null);
       }
     }
 
@@ -367,17 +342,36 @@ public class MappedTalon implements SmartMotor {
     canTalon.configVelocityMeasurementWindow(10);
   }
 
-  /**
-   * Disables the motor, if applicable.
-   */
+  /** Disables the motor, if applicable. */
   @Override
   public void disable() {
     this.canTalon.set(ControlMode.Disabled, 0);
   }
 
   /**
-   * @return The gear this subsystem is currently in.
+   * Set the motor output voltage to a given percent of available voltage.
+   *
+   * @param percentVoltage percent of total voltage from [-1, 1]
    */
+  @Override
+  public void setPercentVoltage(double percentVoltage) {
+    // Warn the user if they're setting Vbus to a number that's outside the range of values.
+    if (Math.abs(percentVoltage) > 1.0) {
+      Shuffleboard.addEventMarker(
+          "WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage,
+          this.getClass().getSimpleName(),
+          EventImportance.kNormal);
+      // Logger.addEvent("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage,
+      // this.getClass());
+      percentVoltage = Math.signum(percentVoltage);
+    }
+
+    this.setpoint = percentVoltage;
+
+    this.canTalon.set(ControlMode.PercentOutput, percentVoltage);
+  }
+
+  /** @return The gear this subsystem is currently in. */
   @Override
   @Log
   public int getGear() {
@@ -386,6 +380,7 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Shift to a specific gear.
+   *
    * @param gear Which gear to shift to.
    */
   @Override
@@ -403,9 +398,9 @@ public class MappedTalon implements SmartMotor {
 
     // Set min voltage
     this.canTalon.configNominalOutputForward(
-            this.currentGearSettings.fwdNominalOutputVoltage / 12., 0);
+        this.currentGearSettings.fwdNominalOutputVoltage / 12., 0);
     this.canTalon.configNominalOutputReverse(
-            this.currentGearSettings.revNominalOutputVoltage / 12., 0);
+        this.currentGearSettings.revNominalOutputVoltage / 12., 0);
 
     if (this.currentGearSettings.rampRate != null) {
       // Set ramp rate, converting from volts/sec to seconds until 12 volts.
@@ -424,31 +419,9 @@ public class MappedTalon implements SmartMotor {
   }
 
   /**
-   * Set the motor output voltage to a given percent of available voltage.
-   * @param percentVoltage percent of total voltage from [-1, 1]
-   */
-  @Override
-  public void setPercentVoltage(double percentVoltage) {
-    // Warn the user if they're setting Vbus to a number that's outside the range of values.
-    if (Math.abs(percentVoltage) > 1.0) {
-      Shuffleboard.addEventMarker(
-              "WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage,
-              this.getClass().getSimpleName(),
-              EventImportance.kNormal);
-      // Logger.addEvent("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage,
-      // this.getClass());
-      percentVoltage = Math.signum(percentVoltage);
-    }
-
-    this.setpoint = percentVoltage;
-
-    this.canTalon.set(ControlMode.PercentOutput, percentVoltage);
-  }
-
-
-  /**
    * Convert from native units read by an encoder to meters moved. Note this DOES account for
    * post-encoder gearing.
+   *
    * @param nativeUnits A distance native units as measured by the encoder.
    * @return That distance in meters, or null if no encoder CPR was given.
    */
@@ -463,9 +436,10 @@ public class MappedTalon implements SmartMotor {
   /**
    * Convert a distance from meters to encoder reading in native units. Note this DOES account for
    * post-encoder gearing.
+   *
    * @param meters A distance in meters.
    * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
-   * given.
+   *     given.
    */
   @Override
   public double unitToEncoder(final double meters) {
@@ -478,9 +452,10 @@ public class MappedTalon implements SmartMotor {
   /**
    * Converts the velocity read by the talon's getVelocity() method to the MPS of the output shaft.
    * Note this DOES account for post-encoder gearing.
+   *
    * @param encoderReading The velocity read from the encoder with no conversions.
    * @return The velocity of the output shaft, in MPS, when the encoder has that reading, or null if
-   * no encoder CPR was given.
+   *     no encoder CPR was given.
    */
   @Override
   public double encoderToUPS(final double encoderReading) {
@@ -494,9 +469,10 @@ public class MappedTalon implements SmartMotor {
   /**
    * Converts from the velocity of the output shaft to what the talon's getVelocity() method would
    * read at that velocity. Note this DOES account for post-encoder gearing.
+   *
    * @param UPS The velocity of the output shaft, in MPS.
    * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
-   * given.
+   *     given.
    */
   @Override
   public double upsToEncoder(final double UPS) {
@@ -506,6 +482,7 @@ public class MappedTalon implements SmartMotor {
   /**
    * Convert from CANTalon native velocity units to output rotations per second. Note this DOES NOT
    * account for post-encoder gearing.
+   *
    * @param nat A velocity in CANTalon native units.
    * @return That velocity in RPS, or null if no encoder CPR was given.
    */
@@ -522,6 +499,7 @@ public class MappedTalon implements SmartMotor {
   /**
    * Convert from output RPS to the CANTalon native velocity units. Note this DOES NOT account for
    * post-encoder gearing.
+   *
    * @param rps The RPS velocity you want to convert.
    * @return That velocity in CANTalon native units, or null if no encoder CPR was given.
    */
@@ -534,9 +512,7 @@ public class MappedTalon implements SmartMotor {
     return (rps / 10) * (this.encoderCPR * 4); // 4 edges per count, and 10 100ms per second.
   }
 
-  /**
-   * @return Total ticks travelled for debug purposes
-   */
+  /** @return Total ticks travelled for debug purposes */
   @Override
   public double encoderPosition() {
     return this.canTalon.getSelectedSensorPosition();
@@ -553,6 +529,7 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Set a position setpoint for the Talon.
+   *
    * @param meters An absolute position setpoint, in meters.
    */
   @Override
@@ -561,15 +538,13 @@ public class MappedTalon implements SmartMotor {
     double nativeSetpoint = this.unitToEncoder(meters);
     this.canTalon.config_kF(0, 0);
     this.canTalon.set(
-            ControlMode.Position,
-            nativeSetpoint,
-            DemandType.ArbitraryFeedForward,
-            this.currentGearSettings.feedForwardCalculator.ks / 12.);
+        ControlMode.Position,
+        nativeSetpoint,
+        DemandType.ArbitraryFeedForward,
+        this.currentGearSettings.feedForwardCalculator.ks / 12.);
   }
 
-  /**
-   * @return Ticks per 100ms for debug purposes
-   */
+  /** @return Ticks per 100ms for debug purposes */
   @Override
   public double encoderVelocity() {
     return this.canTalon.getSelectedSensorVelocity();
@@ -577,6 +552,7 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Get the velocity of the CANTalon in MPS.
+   *
    * @return The CANTalon's velocity in MPS, or null if no encoder CPR was given.
    */
   @Override
@@ -586,6 +562,7 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Set the velocity for the motor to go at.
+   *
    * @param velocity the desired velocity, on [-1, 1].
    */
   @Override
@@ -599,6 +576,7 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Give a velocity closed loop setpoint in MPS.
+   *
    * @param velocity velocity setpoint in MPS.
    */
   @Override
@@ -607,15 +585,16 @@ public class MappedTalon implements SmartMotor {
     setpoint = velocity;
     canTalon.config_kF(0, 0, 0);
     canTalon.set(
-            ControlMode.Velocity,
-            nativeSetpoint,
-            DemandType.ArbitraryFeedForward,
-            currentGearSettings.feedForwardCalculator.calculate(velocity) / 12.);
+        ControlMode.Velocity,
+        nativeSetpoint,
+        DemandType.ArbitraryFeedForward,
+        currentGearSettings.feedForwardCalculator.calculate(velocity) / 12.);
   }
 
   /**
    * Get the current closed-loop velocity error in MPS. WARNING: will give garbage if not in
    * velocity mode.
+   *
    * @return The closed-loop error in MPS, or null if no encoder CPR was given.
    */
   @Log
@@ -630,6 +609,7 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Get the current velocity setpoint of the Talon in MPS, the position setpoint in meters
+   *
    * @return The setpoint in sensible units for the current control mode.
    */
   @Log
@@ -640,6 +620,7 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Get the voltage the Talon is currently drawing from the PDP.
+   *
    * @return Voltage in volts.
    */
   @Log
@@ -650,6 +631,7 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Get the voltage available for the Talon.
+   *
    * @return Voltage in volts.
    */
   @Log
@@ -660,6 +642,7 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Get the current the Talon is currently drawing from the PDP.
+   *
    * @return Current in amps.
    */
   @Log
@@ -671,6 +654,7 @@ public class MappedTalon implements SmartMotor {
   /**
    * Get the current control mode of the Talon. Please don't use this for anything other than
    * logging.
+   *
    * @return Control mode as a string.
    */
   @Override
@@ -680,9 +664,10 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
+   *
    * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *                 gear.
-   * @param gear     The number of the gear to use the max speed from to scale the velocity.
+   *     gear.
+   * @param gear The number of the gear to use the max speed from to scale the velocity.
    */
   @Override
   public void setGearScaledVelocity(final double velocity, final int gear) {
@@ -695,35 +680,30 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
+   *
    * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *                 gear.
-   * @param gear     The gear to use the max speed from to scale the velocity.
+   *     gear.
+   * @param gear The gear to use the max speed from to scale the velocity.
    */
   @Override
   public void setGearScaledVelocity(final double velocity, final Gear gear) {
     this.setGearScaledVelocity(velocity, gear.getNumVal());
   }
 
-  /**
-   * @return Feedforward calculator for this gear
-   */
+  /** @return Feedforward calculator for this gear */
   @Override
   public SimpleMotorFeedforward getCurrentGearFeedForward() {
     return this.currentGearSettings.feedForwardCalculator;
   }
 
-  /**
-   * @return the position of the talon in meters, or null of inches per rotation wasn't given.
-   */
+  /** @return the position of the talon in meters, or null of inches per rotation wasn't given. */
   @Override
   @Log
   public double getPositionUnits() {
     return encoderToUnit(canTalon.getSelectedSensorPosition(0));
   }
 
-  /**
-   * Resets the position of the Talon to 0.
-   */
+  /** Resets the position of the Talon to 0. */
   @Override
   public void resetPosition() {
     canTalon.setSelectedSensorPosition(0, 0, 0);
@@ -731,6 +711,7 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Get the status of the forwards limit switch.
+   *
    * @return True if the forwards limit switch is closed, false if it's open or doesn't exist.
    */
   @Override
@@ -740,12 +721,13 @@ public class MappedTalon implements SmartMotor {
 
   /**
    * Get the status of the reverse limit switch.
+   *
    * @return True if the reverse limit switch is closed, false if it's open or doesn't exist.
    */
   @Override
   public boolean getRevLimitSwitch() {
     return this.revLimitSwitchNormallyOpen
-            == this.canTalon.getSensorCollection().isRevLimitSwitchClosed();
+        == this.canTalon.getSensorCollection().isRevLimitSwitchClosed();
   }
 
   @Override

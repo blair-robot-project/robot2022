@@ -15,33 +15,21 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BooleanSupplier;
 
-/**
- * Runs feeder when shooting and feeder (along with index wheel) when indexing sensor tripped.
- */
+/** Runs feeder when shooting and feeder (along with index wheel) when indexing sensor tripped. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class DefaultFeederCommand extends CommandBase implements Loggable {
-  @NotNull
-  private final SubsystemIntake.IntakeMode transitionWheelIndexingMode;
-  @NotNull
-  private final SubsystemIntake.IntakeMode transitionWheelShootingMode;
-  @NotNull
-  private final SubsystemIntake.IntakeMode feederIndexingMode;
-  @NotNull
-  private final SubsystemIntake.IntakeMode feederShootingMode;
-  @NotNull
-  private final SubsystemIntake.IntakeMode feederCoughingMode;
+  @NotNull private final SubsystemIntake.IntakeMode transitionWheelIndexingMode;
+  @NotNull private final SubsystemIntake.IntakeMode transitionWheelShootingMode;
+  @NotNull private final SubsystemIntake.IntakeMode feederIndexingMode;
+  @NotNull private final SubsystemIntake.IntakeMode feederShootingMode;
+  @NotNull private final SubsystemIntake.IntakeMode feederCoughingMode;
 
-  @Nullable
-  private final Double indexingTimeout;
+  @Nullable private final Double indexingTimeout;
 
-  @NotNull
-  private final SubsystemIntake feeder;
-  @NotNull
-  private final SubsystemIntake bumper;
-  @NotNull
-  private final SubsystemIntake transitionWheel;
-  @NotNull
-  private final FlywheelWithTimeout shooter;
+  @NotNull private final SubsystemIntake feeder;
+  @NotNull private final SubsystemIntake bumper;
+  @NotNull private final SubsystemIntake transitionWheel;
+  @NotNull private final FlywheelWithTimeout shooter;
 
   @NotNull
   private final ConditionTimingComponentDecorator sensor1, sensor2, indexing, shooting, flywheelOn;
@@ -54,38 +42,41 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
 
   /**
    * Default constructor
+   *
    * @param transitionWheelIndexingMode the {@link SubsystemIntake.IntakeMode} to run the transition
-   *                                    wheel at when indexing
+   *     wheel at when indexing
    * @param transitionWheelShootingMode the {@link SubsystemIntake.IntakeMode} to run the transition
-   *                                    wheel at when shooting
-   * @param feederIndexingMode          the {@link SubsystemIntake.IntakeMode} to run the feeder at when
-   *                                    indexing
-   * @param feederCoughingMode          the {@link SubsystemIntake.IntakeMode} that the feeder will be in
-   *                                    when it is coughing. Used so the command will cease action while coughing takes place
-   * @param feederShootingMode          the {@link SubsystemIntake.IntakeMode} to run the feeder at when
-   *                                    indexing
-   * @param sensor                      the first sensor of the transition from intake to feeder
-   * @param sensor2                     the second sensor of the transition
-   * @param transitionWheel             the transition wheel of the intake
-   * @param feeder                      the feeder
-   * @param shooter                     the shooter
-   * @param indexingTimeout             maximum duration for which to keep running the feeder if the sensors
-   *                                    remain continuously activated
+   *     wheel at when shooting
+   * @param feederIndexingMode the {@link SubsystemIntake.IntakeMode} to run the feeder at when
+   *     indexing
+   * @param feederCoughingMode the {@link SubsystemIntake.IntakeMode} that the feeder will be in
+   *     when it is coughing. Used so the command will cease action while coughing takes place
+   * @param feederShootingMode the {@link SubsystemIntake.IntakeMode} to run the feeder at when
+   *     indexing
+   * @param sensor the first sensor of the transition from intake to feeder
+   * @param sensor2 the second sensor of the transition
+   * @param transitionWheel the transition wheel of the intake
+   * @param feeder the feeder
+   * @param shooter the shooter
+   * @param indexingTimeout maximum duration for which to keep running the feeder if the sensors
+   *     remain continuously activated
    */
   @JsonCreator
   public DefaultFeederCommand(
-          @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode transitionWheelIndexingMode,
-          @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode transitionWheelShootingMode,
-          @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode feederIndexingMode,
-          @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode feederCoughingMode,
-          @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode feederShootingMode,
-          @NotNull @JsonProperty(required = true) final BooleanSupplier sensor,
-          @Nullable final BooleanSupplier sensor2,
-          @NotNull @JsonProperty(required = true) final SubsystemIntake bumper,
-          @NotNull @JsonProperty(required = true) final SubsystemIntake transitionWheel,
-          @NotNull @JsonProperty(required = true) final SubsystemIntake feeder,
-          @NotNull @JsonProperty(required = true) final FlywheelWithTimeout shooter,
-          @Nullable final Double indexingTimeout) {
+      @NotNull @JsonProperty(required = true)
+          final SubsystemIntake.IntakeMode transitionWheelIndexingMode,
+      @NotNull @JsonProperty(required = true)
+          final SubsystemIntake.IntakeMode transitionWheelShootingMode,
+      @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode feederIndexingMode,
+      @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode feederCoughingMode,
+      @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode feederShootingMode,
+      @NotNull @JsonProperty(required = true) final BooleanSupplier sensor,
+      @Nullable final BooleanSupplier sensor2,
+      @NotNull @JsonProperty(required = true) final SubsystemIntake bumper,
+      @NotNull @JsonProperty(required = true) final SubsystemIntake transitionWheel,
+      @NotNull @JsonProperty(required = true) final SubsystemIntake feeder,
+      @NotNull @JsonProperty(required = true) final FlywheelWithTimeout shooter,
+      @Nullable final Double indexingTimeout) {
     this.transitionWheelIndexingMode = transitionWheelIndexingMode;
     this.transitionWheelShootingMode = transitionWheelShootingMode;
     this.feederIndexingMode = feederIndexingMode;
@@ -110,27 +101,27 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
     }
 
     this.indexing =
-            new ConditionTimingComponentDecorator(
-                    () -> {
-                      // Give up if it's been long enough after either sensor last activated and there's
-                      // still something
-                      // activating one of them. This specifically will continue giving up even if one of
-                      // the sensors
-                      // deactivates but the other still surpasses the timeout.
-                      if (this.indexingTimeout != null
-                              && (this.sensor1.timeSinceLastBecameTrue() > this.indexingTimeout
-                              || (this.sensor2 != null
-                              && this.sensor2.timeSinceLastBecameTrue() > this.indexingTimeout))) {
-                        return false;
-                      }
+        new ConditionTimingComponentDecorator(
+            () -> {
+              // Give up if it's been long enough after either sensor last activated and there's
+              // still something
+              // activating one of them. This specifically will continue giving up even if one of
+              // the sensors
+              // deactivates but the other still surpasses the timeout.
+              if (this.indexingTimeout != null
+                  && (this.sensor1.timeSinceLastBecameTrue() > this.indexingTimeout
+                      || (this.sensor2 != null
+                          && this.sensor2.timeSinceLastBecameTrue() > this.indexingTimeout))) {
+                return false;
+              }
 
-                      // Run when either sensor is being actively tripped.
-                      if (sensor2 != null) {
-                        return this.sensor1.isTrue() || this.sensor2.isTrue();
-                      }
-                      return this.sensor1.isTrue();
-                    },
-                    false);
+              // Run when either sensor is being actively tripped.
+              if (sensor2 != null) {
+                return this.sensor1.isTrue() || this.sensor2.isTrue();
+              }
+              return this.sensor1.isTrue();
+            },
+            false);
 
     this.gotBall = false;
   }
@@ -197,6 +188,7 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   /**
    * 2021 code for the Galactic Search sub-challenge. Checks if a ball has been picked up to
    * determine which of 4 possible paths need to run Then resets to prepare for the next checkpoint
+   *
    * @return true if a ball has been picked up since the most recent checkpoint, false otherwise
    */
   public boolean hasGotBall() {
