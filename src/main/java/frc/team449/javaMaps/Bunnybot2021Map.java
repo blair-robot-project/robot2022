@@ -11,9 +11,8 @@ import frc.team449._2020.multiSubsystem.SolenoidSimple;
 import frc.team449._2020.multiSubsystem.commands.SetSolenoidPose;
 import frc.team449._2021BunnyBot.Elevator.OneMotorPulleyElevator;
 import frc.team449._2021BunnyBot.Elevator.OneMotorPulleyElevator.ElevatorPosition;
-import frc.team449._2021BunnyBot.Elevator.commands.LowerElevator;
 import frc.team449._2021BunnyBot.Elevator.commands.MoveToPosition;
-import frc.team449._2021BunnyBot.Elevator.commands.RaiseElevator;
+import frc.team449._2021BunnyBot.Elevator.commands.SetVelocity;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.components.ShiftComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyroShiftable;
@@ -21,8 +20,8 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.shiftable.commands.ShiftGears;
-import frc.team449.jacksonWrappers.*;
 import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
+import frc.team449.jacksonWrappers.*;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
 import frc.team449.javaMaps.builders.SmartMotorBuilder;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
@@ -37,7 +36,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Bunnybot2021Map {
 
@@ -199,7 +197,7 @@ public class Bunnybot2021Map {
     // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
     double elevatorMaxVelocity = 1; //TODO this is a placeholder
     var elevator = new OneMotorPulleyElevator(elevatorPulleyMotor, ElevatorPosition.BOTTOM, elevatorMaxVelocity);
-
+    var setVelocityCommand = new SetVelocity(elevator, mechanismsJoystick, elevatorMaxVelocity);
     var subsystems = List.<Subsystem>of(drive, elevator);
 
     var throttlePrototype =
@@ -292,7 +290,7 @@ public class Bunnybot2021Map {
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();
-    var teleopStartupCommands = List.<Command>of();
+    var teleopStartupCommands = List.<Command>of(setVelocityCommand);
     var testStartupCommands = List.<Command>of();
     var allCommands =
         new CommandContainer(
