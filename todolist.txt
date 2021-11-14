@@ -1,7 +1,7 @@
 src/main/java/frc/team449/components/ConditionTimingComponentObserver.java: 4: // TODO Why does this exist??
 src/main/java/frc/team449/components/LEDComponent.java: 21: // todo array to hold HSV values of each LED
 src/main/java/frc/team449/components/LEDComponent.java: 97: // todo this
-src/main/java/frc/team449/componentehshfhauhss/TrajectoryGenerationComponent.java: 6: /** TODO add some actual javadocs here */
+src/main/java/frc/team449/components/TrajectoryGenerationComponent.java: 6: /** TODO add some actual javadocs here */
 src/main/java/frc/team449/components/ShiftWithSensorComponent.java: 116: // TODO set up a lock system so no other part of the code can re-enable the motors.
 src/main/java/frc/team449/components/AHRSRumbleComponent.java: 33: private final boolean yIsFrontBack; // TODO why is this never accessed
 src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 46: int LOG_WIDTH = 4, LOG_HEIGHT = 3; // TODO Unused
@@ -31,7 +31,7 @@ src/main/java/frc/team449/_2020/feeder/commands/BallCountingFeederCommand.java: 
 src/main/java/frc/team449/_2020/feeder/commands/BallCountingFeederCommand.java: 85: // todo check if sensor2 should also be checked
 src/main/java/frc/team449/_2020/multiSubsystem/commands/ConditionalPerpetualCommand.java: 44: // TODO This might be janky.
 src/main/java/frc/team449/_2020/multiSubsystem/commands/PerpetualCommandReinitializing.java: 28: // TODO: We should requireNonNull all @Nullable parameters because map errors can cause them to
-src/main/java/frc/team449/_2020/multiSubsysahshabhatem/commands/PerpetualCommandReinitializing.java: 35: // TODO: How much less jank is this compared to ConditionalCommandDynamic?
+src/main/java/frc/team449/_2020/multiSubsystem/commands/PerpetualCommandReinitializing.java: 35: // TODO: How much less jank is this compared to ConditionalCommandDynamic?
 src/main/java/frc/team449/_2020/multiSubsystem/BooleanSupplierSubsystemBased.java: 21: final @Nullable Boolean useCached) { // TODO useCached probably shouldn't be nullable
 src/main/java/frc/team449/_2020/shooter/FlywheelSimple.java: 75: // TODO figure out why using SimDevice.Direction.kInput instead of false
 src/main/java/frc/team449/_2020/shooter/FlywheelSimple.java: 143: // TODO: Should we be looking at velocity or speed?
