@@ -6,7 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Generate List
-        run: egrep -nri 'todo' src/main/ | sed -e 's/: */: /g' > todolist.txt
+        run: egrep -nri 'todo' src/main/ > todolist.txt
       - name: Git Config
         run: |
           git config user.name "ToDo List Generator"
