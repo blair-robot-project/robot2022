@@ -7,6 +7,7 @@ import com.revrobotics.ControlType;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import io.github.oblarg.oblog.annotations.Log;
@@ -51,14 +52,14 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
   /**
    * Create a new SPARK MAX Controller
    *
-   * @param cfg The configuration for this Spark
-   * @param statusFrameRatesMillis The update rates, in millis, for each of the status frames.
    * @param controlFrameRateMillis The update rate, in milliseconds, for each control frame.
+   * @param statusFrameRatesMillis The update rates, in millis, for each of the status frames.
+   * @param cfg The configuration for this Spark
    */
   public MappedSparkMaxBase(
-      @NotNull SmartMotorConfig cfg,
+      @Nullable Integer controlFrameRateMillis,
       @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
-      @Nullable Integer controlFrameRateMillis) {
+      @NotNull SmartMotorConfig cfg) {
     this.spark = new CANSparkMax(cfg.port, CANSparkMaxLowLevel.MotorType.kBrushless);
     this.spark.restoreFactoryDefaults();
 
@@ -151,21 +152,14 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
       this.spark.disableVoltageCompensation();
     }
 
-    if (cfg.slaveSparks != null) {
-      // Set up slaves.
-      for (final SlaveSparkMax slave : cfg.slaveSparks) {
-        slave.setMasterSpark(this.spark, cfg.enableBrakeMode);
-      }
+    for (final SlaveSparkMax slave : cfg.slaveSparks) {
+      slave.setMasterSpark(this.spark, cfg.enableBrakeMode);
     }
 
     this.spark.burnFlash();
-  }
 
-  /**
-   * Since the PID controller isn't accessible to this abstract class, this method must be
-   * overwritten to set values for P, I, and D in {@link MappedSparkMaxBase#setGear(int gear)}
-   */
-  protected abstract void setPID(double kP, double kI, double kD);
+    MotorContainer.register(this);
+  }
 
   @Override
   public void disable() {

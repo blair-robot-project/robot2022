@@ -7,10 +7,10 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import frc.team449.components.RunningLinRegComponent;
+import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.updatable.Updatable;
-import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.jacksonWrappers.SlaveTalon;
 import frc.team449.jacksonWrappers.SlaveVictor;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
@@ -72,7 +72,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   public MPSSmartMotorSimulated(
       @NotNull final SmartMotorConfig cfg,
       // Spark-specific
-      @Nullable final EnumMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
+      @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
       @Nullable final Integer controlFrameRateMillis,
       // Talon-specific
       @Nullable final EnumMap<StatusFrameEnhanced, Integer> talonStatusFramesMap,
@@ -84,8 +84,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
       @Nullable final Boolean reverseSensor,
       @Nullable final Double updaterProcessPeriodSecs,
       @Nullable final List<SlaveTalon> slaveTalons,
-      @Nullable final List<SlaveVictor> slaveVictors,
-      @Nullable final List<SlaveSparkMax> slaveSparks) {
+      @Nullable final List<SlaveVictor> slaveVictors) {
     this.controllerType = cfg.type;
     this.port = cfg.port;
     this.reverseOutput = cfg.reverseOutput;
@@ -107,6 +106,17 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
     this.currentGearSettings = cfg.initialGearSettings;
     // Set up gear-based settings.
     this.setGear(currentGearSettings.gear);
+
+    MotorContainer.register(this);
+  }
+
+  /**
+   * Construct a simulated controller but without any Spark- or Talon-specific settings
+   *
+   * @param cfg The general configurations for the controller
+   */
+  public MPSSmartMotorSimulated(@NotNull final SmartMotorConfig cfg) {
+    this(cfg, null, null, null, null, null, null, null, null, null, null, null, null);
   }
 
   public void setControlModeAndSetpoint(final ControlMode controlMode, final double setpoint) {
@@ -287,6 +297,11 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   @Log
   public double encoderPosition() {
     return this.motor.getPosition();
+  }
+
+  @Override
+  public void setPID(double kP, double kI, double kD) {
+    // Nothing to do here
   }
 
   /** Set a position setpoint for the controller. */

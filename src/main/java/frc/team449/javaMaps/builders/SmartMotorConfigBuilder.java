@@ -1,21 +1,14 @@
 package frc.team449.javaMaps.builders;
 
-import com.ctre.phoenix.motorcontrol.ControlFrame;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import frc.team449.components.RunningLinRegComponent;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.jacksonWrappers.PDP;
 import frc.team449.jacksonWrappers.SlaveSparkMax;
-import frc.team449.jacksonWrappers.SlaveTalon;
-import frc.team449.jacksonWrappers.SlaveVictor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The constructor for {@link SmartMotor} was hell so this will help resolve that.

@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import frc.team449.generalInterfaces.SmartMotorExternalEncoder;
-import frc.team449.javaMaps.builders.SmartMotorConfigBuilder;
+import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
@@ -22,8 +22,6 @@ import java.util.Map;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
     implements SmartMotorExternalEncoder {
-  /** The counts per rotation of the encoder being used, or null if there is no encoder. */
-  @Nullable private final Integer encoderCPR;
   /** WPI provided encoder object */
   private final Encoder encoder;
   /** WPI provided PID Controller */
@@ -36,22 +34,22 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
   /**
    * Create a new SPARK MAX Controller
    *
-   * @param cfg The configuration for this Spark
    * @param encoderDIO1 The first encoder
    * @param encoderDIO2 The second encoder
    * @param statusFrameRatesMillis The update rates, in millis, for each of the status frames.
    * @param controlFrameRateMillis The update rate, in milliseconds, for each control frame.
+   * @param cfg The configuration for this Spark
    */
   @JsonCreator
   public MappedSparkMaxExternalEncoder(
-      @NotNull final SmartMotorConfigBuilder cfg,
       @Nullable final MappedDigitalInput encoderDIO1,
       @Nullable final MappedDigitalInput encoderDIO2,
       @Nullable Integer encoderCPR,
       final boolean reverseSensor,
       @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
-      @Nullable final Integer controlFrameRateMillis) {
-    super(cfg, statusFrameRatesMillis, controlFrameRateMillis);
+      @Nullable final Integer controlFrameRateMillis,
+      @NotNull final SmartMotorConfig cfg) {
+    super(controlFrameRateMillis, statusFrameRatesMillis, cfg);
 
     if (encoderDIO1 != null && encoderDIO2 != null) {
       encoder = new Encoder(encoderDIO1, encoderDIO2, reverseSensor, CounterBase.EncodingType.k4X);
@@ -60,11 +58,7 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
     }
     this.pidController = new PIDController(0, 0, 0);
 
-    // todo determine if encoderCPR will ever be needed
-    encoderCPR = encoderCPR != null ? encoderCPR : 1;
-    this.encoderCPR = encoderCPR;
-
-    encoder.setDistancePerPulse(1. / encoderCPR);
+    encoder.setDistancePerPulse(encoderCPR != null ? 1. / encoderCPR : 1.);
     encoder.setSamplesToAverage(5);
   }
 

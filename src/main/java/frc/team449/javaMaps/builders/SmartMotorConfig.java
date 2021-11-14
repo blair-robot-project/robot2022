@@ -11,27 +11,80 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class holds settings that are common to both Talons and Sparks. To create an instance of
+ * this class, use {@link SmartMotorConfigBuilder} instead of the constructor itself.
+ */
 public class SmartMotorConfig {
+  /** The type of controller to create. */
   public final SmartMotor.Type type;
+  /** The controller's CAN port */
   public final int port;
+  /** Whether to brake or coast when stopped */
   public final boolean enableBrakeMode;
+  /** This controller's name */
   public final @Nullable String name;
+  /** Whether or not to reverse the motor */
   public final boolean reverseOutput;
+  /** The PDP this controller is connected to. */
   public final @NotNull PDP pdp;
+  /**
+   * Whether the forward limit switch is normally open or closed. If this is null, the forward limit
+   * switch is disabled.
+   */
   public final @Nullable Boolean fwdLimitSwitchNormallyOpen;
+  /**
+   * Whether the reverse limit switch is normally open or closed. If this is null, the reverse limit
+   * switch is disabled.
+   */
   public final @Nullable Boolean revLimitSwitchNormallyOpen;
+  /**
+   * The CAN port that the limit switch to use for this controller is plugged into, or null to not
+   * use a limit switch or use the limit switch plugged directly into this controller (for some
+   * controllers).
+   */
   public final @Nullable Integer remoteLimitSwitchID;
+  /**
+   * The forward software limit, in meters. If this is null, the forward software limit is disabled.
+   * Ignored if there's no encoder.
+   */
   public final @Nullable Double fwdSoftLimit;
+  /**
+   * The reverse software limit, in meters. If this is null, the reverse software limit is disabled.
+   * Ignored if there's no encoder.
+   */
   public final @Nullable Double revSoftLimit;
+  /**
+   * The coefficient the output changes by after being measured by the encoder, e.g. this would be
+   * 1/70 if there was a 70:1 gearing between the encoder and the final output. Defaults to 1.
+   */
   public final double postEncoderGearing;
+  /**
+   * The number of meters travelled per rotation of the motor this is attached to. Defaults to 1.
+   */
   public final double unitPerRotation;
+  /** The max amps this device can draw. If this is null, no current limit is used. */
   public final @Nullable Integer currentLimit;
+  /** Whether or not to use voltage compensation. Defaults to false. */
   public final boolean enableVoltageComp;
+  /**
+   * The settings for each gear this motor has. Can be null to use default values and gear # of
+   * zero. Gear numbers can't be repeated.
+   */
   public final @NotNull Map<Integer, Shiftable.PerGearSettings> perGearSettings;
+  /** The gear to start in. Can be null to use startingGearNum instead. */
   public final Shiftable.Gear startingGear;
+  /**
+   * The number of the gear to start in. Ignored if startingGear isn't null. Defaults to the lowest
+   * gear.
+   */
   public final Integer startingGearNum;
+  /** The {@link com.revrobotics.CANSparkMax}s that are slaved to this controller. */
   public final @NotNull List<SlaveSparkMax> slaveSparks;
-
+  /**
+   * The gear settings at the start, based on {@link SmartMotorConfig#startingGear} or {@link
+   * SmartMotorConfig#startingGearNum}
+   */
   public final Shiftable.PerGearSettings initialGearSettings;
 
   public SmartMotorConfig(

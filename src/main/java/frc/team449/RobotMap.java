@@ -9,10 +9,11 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.jacksonWrappers.MappedJoystick;
 import frc.team449.jacksonWrappers.PDP;
-import java.util.Iterator;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Iterator;
+import java.util.List;
 
 /** The Jackson-compatible object representing the entire robot. */
 @JsonIgnoreProperties({"CONSTANTS", "NAVIGATION"})

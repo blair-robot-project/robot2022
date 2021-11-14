@@ -40,17 +40,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Bunnybot2021Map {
-  // Drive system
-  public static final int LEFT_MASTER_PORT = 1,
-      LEFT_MASTER_SLAVE_1_PORT = 3,
-      LEFT_MASTER_SLAVE_2_PORT = 5,
-      RIGHT_MASTER_PORT = 2,
-      RIGHT_MASTER_SLAVE_1_PORT = 4,
-      RIGHT_MASTER_SLAVE_2_PORT = 6;
-  // Solenoid ports
-  public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
-  public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
-
   private Bunnybot2021Map() {
     throw new IllegalStateException("This is a utility class!");
   }
@@ -94,6 +83,7 @@ public class Bunnybot2021Map {
     double elevatorMaxVelocity = 1; // TODO this is a placeholder
 
     var useCameraServer = false;
+
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
 
     var mechanismsJoystick = new MappedJoystick(mechanismsJoystickPort);
@@ -125,8 +115,11 @@ public class Bunnybot2021Map {
             .kP(0.000001);
 
     var leftMaster =
-        SmartMotor.create(
+        MappedSparkMax.create(
+            null,
+            null,
             driveMasterPrototype
+                .copy()
                 .setPort(leftMasterPort)
                 .setName("left")
                 .setReverseOutput(true)
@@ -143,10 +136,14 @@ public class Bunnybot2021Map {
                         highGear
                             .feedForwardCalculator(
                                 new MappedFeedForwardCalculator(0.156, 2.01, 0.154))
-                            .build())));
+                            .build()))
+                .build());
     var rightMaster =
-        SmartMotor.create(
+        MappedSparkMax.create(
+            null,
+            null,
             driveMasterPrototype
+                .copy()
                 .setName("right")
                 .setPort(rightMasterPort)
                 .setReverseOutput(false)
@@ -163,7 +160,8 @@ public class Bunnybot2021Map {
                         highGear
                             .feedForwardCalculator(
                                 new MappedFeedForwardCalculator(0.165, 2.01, 0.155))
-                            .build())));
+                            .build()))
+                .build());
     var drive =
         new DriveUnidirectionalWithGyroShiftable(
             leftMaster,
@@ -175,17 +173,19 @@ public class Bunnybot2021Map {
             false);
 
     // Elevator
-    var elevatorCfg =
-        new SmartMotorConfigBuilder()
-            .setName("elevator")
-            .setPort(elevatorMotorPort)
-            .setReverseOutput(false)
-            .setEnableBrakeMode(true)
-            .setPdp(pdp)
-            .setCurrentLimit(40)
-            .setEnableVoltageComp(false)
-            .build();
-    var elevatorPulleyMotor = new MappedSparkMax(elevatorCfg, null, null);
+    var elevatorPulleyMotor =
+        MappedSparkMax.create(
+            null,
+            null,
+            new SmartMotorConfigBuilder()
+                .setName("elevator")
+                .setPort(elevatorMotorPort)
+                .setReverseOutput(false)
+                .setEnableBrakeMode(true)
+                .setPdp(pdp)
+                .setCurrentLimit(40)
+                .setEnableVoltageComp(false)
+                .build());
     // PID constants for elevator
     elevatorPulleyMotor.setPID(0, 0, 0);
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM

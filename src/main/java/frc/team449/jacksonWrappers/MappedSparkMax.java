@@ -3,11 +3,9 @@ package frc.team449.jacksonWrappers;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
+import com.revrobotics.*;
 import frc.team449.generalInterfaces.SmartMotor;
+import frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
@@ -18,8 +16,6 @@ import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
-  /** The counts per rotation of the encoder being used, or null if there is no encoder. */
-  @Nullable private final Integer encoderCPR;
   /** REV provided encoder object */
   private final CANEncoder canEncoder;
   /** REV provided PID Controller */
@@ -28,21 +24,43 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
   /**
    * Create a new SPARK MAX Controller
    *
-   * @param cfg The configuration for this Spark
-   * @param statusFrameRatesMillis The update rates, in millis, for each of the status frames.
    * @param controlFrameRateMillis The update rate, in milliseconds, for each control frame.
+   * @param statusFrameRatesMillis The update rates, in millis, for each of the status frames.
+   * @param cfg The configuration for this Spark
    */
   @JsonCreator
   public MappedSparkMax(
-      @NotNull final SmartMotorConfig cfg,
+      @Nullable final Integer controlFrameRateMillis,
       @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
-      @Nullable final Integer controlFrameRateMillis) {
-    super(cfg, statusFrameRatesMillis, controlFrameRateMillis);
+      @NotNull final SmartMotorConfig cfg) {
+    super(controlFrameRateMillis, statusFrameRatesMillis, cfg);
     this.canEncoder = this.spark.getEncoder();
     this.pidController = this.spark.getPIDController();
-    // todo determine if encoderCPR will ever be needed
-    this.encoderCPR = this.canEncoder.getCountsPerRevolution();
     this.resetPosition();
+  }
+
+  /**
+   * Tries to create a MappedSparkMax, but if there's a HAL error, it creates a {@link
+   * frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated} instead
+   *
+   * @see MappedSparkMax#MappedSparkMax(Integer, Map, SmartMotorConfig)
+   */
+  public static SmartMotor create(
+      @Nullable final Integer controlFrameRateMillis,
+      @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+      @NotNull final SmartMotorConfig cfg) {
+    try (final var spark = new CANSparkMax(cfg.port, CANSparkMaxLowLevel.MotorType.kBrushless)) {
+      spark.restoreFactoryDefaults();
+      if (spark.getLastError() == CANError.kHALError) {
+        System.out.println(
+            "HAL error for spark on port "
+                + cfg.port
+                + "; assuming nonexistent and replacing with simulated controller");
+        return new MPSSmartMotorSimulated(cfg);
+      } else {
+        return new MappedSparkMax(controlFrameRateMillis, statusFrameRatesMillis, cfg);
+      }
+    }
   }
 
   @Override

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.team449.components.RunningLinRegComponent;
+import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import io.github.oblarg.oblog.annotations.Log;
@@ -264,6 +265,8 @@ public class MappedTalon implements SmartMotor {
 
     canTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms);
     canTalon.configVelocityMeasurementWindow(10);
+
+    MotorContainer.register(this);
   }
 
   /** Disables the motor, if applicable. */
@@ -449,6 +452,13 @@ public class MappedTalon implements SmartMotor {
     } else {
       setPercentVoltage(volts / getBatteryVoltage());
     }
+  }
+
+  @Override
+  public void setPID(double kP, double kI, double kD) {
+    this.canTalon.config_kP(0, kP, 0);
+    this.canTalon.config_kI(0, kI, 0);
+    this.canTalon.config_kD(0, kD, 0);
   }
 
   /**

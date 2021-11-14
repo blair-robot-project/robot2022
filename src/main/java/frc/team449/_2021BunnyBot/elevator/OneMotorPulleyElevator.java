@@ -2,21 +2,19 @@ package frc.team449._2021BunnyBot.elevator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.jacksonWrappers.MappedSparkMax;
+import frc.team449.generalInterfaces.SmartMotor;
 import org.jetbrains.annotations.NotNull;
 
 public class OneMotorPulleyElevator extends SubsystemBase {
 
-  @NotNull private final MappedSparkMax pulleyMotor;
-  @NotNull private final double maxVelocity;
+  @NotNull private final SmartMotor pulleyMotor;
+  private final double maxVelocity;
   @NotNull private ElevatorPosition position;
 
   /** @param pulleyMotor single motor used for the pulley */
   @JsonCreator
   public OneMotorPulleyElevator(
-      @NotNull MappedSparkMax pulleyMotor,
-      @NotNull ElevatorPosition position,
-      @NotNull double maxVelocity) {
+      @NotNull SmartMotor pulleyMotor, @NotNull ElevatorPosition position, double maxVelocity) {
     this.pulleyMotor = pulleyMotor;
     this.position = position;
     this.maxVelocity = maxVelocity;
