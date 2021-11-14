@@ -4,12 +4,11 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.jacksonWrappers.PDP;
 import frc.team449.jacksonWrappers.SlaveSparkMax;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class holds settings that are common to both Talons and Sparks. To create an instance of

@@ -3,7 +3,6 @@ package frc.team449._2020.multiSubsystem;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.generalInterfaces.updatable.Updatable;
 import io.github.oblarg.oblog.Loggable;
-
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 

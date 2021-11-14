@@ -6,9 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449._2020.multiSubsystem.SubsystemIntake;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A cluster of intakes that acts as a single intake. Use for complex intakes with multiple motors.

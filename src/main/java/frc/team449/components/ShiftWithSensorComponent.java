@@ -7,10 +7,9 @@ import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.simpleMotor.SimpleMotor;
 import frc.team449.jacksonWrappers.MappedDigitalInput;
 import frc.team449.other.Debouncer;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * A component that a subsystem can use for shifting when the pistons have sensor to detect

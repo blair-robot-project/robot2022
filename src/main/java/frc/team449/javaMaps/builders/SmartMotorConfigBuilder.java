@@ -4,11 +4,10 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.jacksonWrappers.PDP;
 import frc.team449.jacksonWrappers.SlaveSparkMax;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The constructor for {@link SmartMotor} was hell so this will help resolve that.
