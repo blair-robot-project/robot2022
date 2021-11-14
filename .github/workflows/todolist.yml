@@ -14,6 +14,5 @@ jobs:
           git config user.email "<>"
       - name: Commit List
         run: |
-          git add todolist.txt
           git commit -m "Update ToDo List"
           git push origin main
