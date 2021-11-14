@@ -7,12 +7,13 @@ jobs:
       - uses: actions/checkout@v2
       - name: Generate List
         run: |
-          egrep -nri '\/*\**\ *todo' src/main/ | sed -e 's/: */: /g' >  todolist.txt
+          egrep -nri '\/+\**\ *todo' src/main/ | sed -e 's/: */: /g' >  todolist.txt
       - name: Git Config
         run: |
           git config user.name "ToDo List Generator"
           git config user.email "<>"
       - name: Commit List
         run: |
+          git add todolist.txt
           git commit -m "Update ToDo List"
           git push origin main
