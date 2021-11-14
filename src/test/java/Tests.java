@@ -1,6 +1,6 @@
+import frc.team449.Robot;
 import org.junit.Assert;
 import org.junit.Test;
-import frc.team449.Robot;
 
 public final class Tests {
   @org.junit.Before
@@ -11,6 +11,9 @@ public final class Tests {
   @Test
   public void deserializeMap() {
     Assert.assertNotNull(Robot.loadMap());
-    System.out.println("*******************************************\nMAP DESERIALIZATION SUCCESSFUL\n*******************************************");
+    System.out.println(
+        "*******************************************\n"
+            + "MAP DESERIALIZATION SUCCESSFUL\n"
+            + "*******************************************");
   }
 }

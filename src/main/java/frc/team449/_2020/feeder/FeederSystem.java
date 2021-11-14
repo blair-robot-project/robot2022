@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449._2020.multiSubsystem.IntakeSimple;
 import frc.team449.generalInterfaces.simpleMotor.SimpleMotor;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,

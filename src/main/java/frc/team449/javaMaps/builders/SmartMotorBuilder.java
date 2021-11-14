@@ -9,16 +9,17 @@ import frc.team449.jacksonWrappers.PDP;
 import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.jacksonWrappers.SlaveTalon;
 import frc.team449.jacksonWrappers.SlaveVictor;
-
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+
 /**
  * Old way of creating a {@link SmartMotor}.
+ *
  * @deprecated use a {@link SmartMotorConfigObject} instead
  */
-@Deprecated(since="SmartMotorConfigObject added", forRemoval=true)
+@Deprecated(since = "SmartMotorConfigObject added", forRemoval = true)
 public final class SmartMotorBuilder {
   private SmartMotor.Type type;
   private int port;
@@ -54,36 +55,36 @@ public final class SmartMotorBuilder {
   public SmartMotor build() {
     assert type != null : "SmartMotor type was not given";
     return SmartMotor.create(
-            type,
-            port,
-            enableBrakeMode,
-            name,
-            reverseOutput,
-            pdp,
-            fwdLimitSwitchNormallyOpen,
-            revLimitSwitchNormallyOpen,
-            remoteLimitSwitchID,
-            fwdSoftLimit,
-            revSoftLimit,
-            postEncoderGearing,
-            unitPerRotation,
-            currentLimit,
-            enableVoltageComp,
-            perGearSettings,
-            startingGear,
-            startingGearNum,
-            controlFrameRateMillis,
-            controlFrameRatesMillis,
-            voltagePerCurrentLinReg,
-            voltageCompSamples,
-            feedbackDevice,
-            encoderCPR,
-            reverseSensor,
-            updaterProcessPeriodSecs,
-            slaveTalons,
-            slaveVictors,
-            slaveSparks,
-            statusFrameRatesMillis);
+        type,
+        port,
+        enableBrakeMode,
+        name,
+        reverseOutput,
+        pdp,
+        fwdLimitSwitchNormallyOpen,
+        revLimitSwitchNormallyOpen,
+        remoteLimitSwitchID,
+        fwdSoftLimit,
+        revSoftLimit,
+        postEncoderGearing,
+        unitPerRotation,
+        currentLimit,
+        enableVoltageComp,
+        perGearSettings,
+        startingGear,
+        startingGearNum,
+        controlFrameRateMillis,
+        controlFrameRatesMillis,
+        voltagePerCurrentLinReg,
+        voltageCompSamples,
+        feedbackDevice,
+        encoderCPR,
+        reverseSensor,
+        updaterProcessPeriodSecs,
+        slaveTalons,
+        slaveVictors,
+        slaveSparks,
+        statusFrameRatesMillis);
   }
 
   public SmartMotorBuilder copy() {
@@ -94,33 +95,33 @@ public final class SmartMotorBuilder {
     builder.enableBrakeMode(this.enableBrakeMode);
 
     return builder
-            .name(this.name)
-            .reverseOutput(this.reverseOutput)
-            .pdp(this.pdp)
-            .fwdLimitSwitchNormallyOpen(this.fwdLimitSwitchNormallyOpen)
-            .revLimitSwitchNormallyOpen(this.revLimitSwitchNormallyOpen)
-            .remoteLimitSwitchID(this.remoteLimitSwitchID)
-            .fwdSoftLimit(this.fwdSoftLimit)
-            .revSoftLimit(this.revSoftLimit)
-            .postEncoderGearing(this.postEncoderGearing)
-            .unitPerRotation(this.unitPerRotation)
-            .currentLimit(this.currentLimit)
-            .enableVoltageComp(this.enableVoltageComp)
-            .perGearSettings(this.perGearSettings)
-            .startingGear(this.startingGear)
-            .startingGearNum(this.startingGearNum)
-            .controlFrameRateMillis(this.controlFrameRateMillis)
-            .controlFrameRatesMillis(this.controlFrameRatesMillis)
-            .voltagePerCurrentLinReg(this.voltagePerCurrentLinReg)
-            .voltageCompSamples(this.voltageCompSamples)
-            .feedbackDevice(this.feedbackDevice)
-            .encoderCPR(this.encoderCPR)
-            .reverseSensor(this.reverseSensor)
-            .updaterProcessPeriodSecs(this.updaterProcessPeriodSecs)
-            .slaveTalons(this.slaveTalons)
-            .slaveVictors(this.slaveVictors)
-            .slaveSparks(this.slaveSparks)
-            .statusFrameRatesMillis(this.statusFrameRatesMillis);
+        .name(this.name)
+        .reverseOutput(this.reverseOutput)
+        .pdp(this.pdp)
+        .fwdLimitSwitchNormallyOpen(this.fwdLimitSwitchNormallyOpen)
+        .revLimitSwitchNormallyOpen(this.revLimitSwitchNormallyOpen)
+        .remoteLimitSwitchID(this.remoteLimitSwitchID)
+        .fwdSoftLimit(this.fwdSoftLimit)
+        .revSoftLimit(this.revSoftLimit)
+        .postEncoderGearing(this.postEncoderGearing)
+        .unitPerRotation(this.unitPerRotation)
+        .currentLimit(this.currentLimit)
+        .enableVoltageComp(this.enableVoltageComp)
+        .perGearSettings(this.perGearSettings)
+        .startingGear(this.startingGear)
+        .startingGearNum(this.startingGearNum)
+        .controlFrameRateMillis(this.controlFrameRateMillis)
+        .controlFrameRatesMillis(this.controlFrameRatesMillis)
+        .voltagePerCurrentLinReg(this.voltagePerCurrentLinReg)
+        .voltageCompSamples(this.voltageCompSamples)
+        .feedbackDevice(this.feedbackDevice)
+        .encoderCPR(this.encoderCPR)
+        .reverseSensor(this.reverseSensor)
+        .updaterProcessPeriodSecs(this.updaterProcessPeriodSecs)
+        .slaveTalons(this.slaveTalons)
+        .slaveVictors(this.slaveVictors)
+        .slaveSparks(this.slaveSparks)
+        .statusFrameRatesMillis(this.statusFrameRatesMillis);
   }
 
   public SmartMotorBuilder type(SmartMotor.Type type) {
@@ -219,7 +220,7 @@ public final class SmartMotorBuilder {
   }
 
   public SmartMotorBuilder controlFrameRatesMillis(
-          Map<ControlFrame, Integer> controlFrameRatesMillis) {
+      Map<ControlFrame, Integer> controlFrameRatesMillis) {
     this.controlFrameRatesMillis = controlFrameRatesMillis;
     return this;
   }
@@ -274,4 +275,3 @@ public final class SmartMotorBuilder {
     return this;
   }
 }
-

@@ -22,8 +22,8 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.shiftable.commands.ShiftGears;
-import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.jacksonWrappers.*;
+import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
 import frc.team449.javaMaps.builders.SmartMotorConfigObject;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
@@ -34,10 +34,9 @@ import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public class Bunnybot2021Map {
   // Drive system
@@ -50,6 +49,7 @@ public class Bunnybot2021Map {
   // Solenoid ports
   public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
+
   private Bunnybot2021Map() {
     throw new IllegalStateException("This is a utility class!");
   }
@@ -100,7 +100,8 @@ public class Bunnybot2021Map {
     var joysticks = List.of(mechanismsJoystick, driveJoystick);
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
-    var driveMasterPrototype = new SmartMotorConfigObject()
+    var driveMasterPrototype =
+        new SmartMotorConfigObject()
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
             .setPdp(pdp)
@@ -110,61 +111,67 @@ public class Bunnybot2021Map {
             .setStartingGear(Shiftable.Gear.LOW)
             .setEncoderCPR(256);
     var lowGear =
-            new PerGearSettingsBuilder()
-                    .gear(Shiftable.Gear.LOW)
-                    .postEncoderGearing(0.0488998)
-                    .maxSpeed(2.3)
-                    .kP(0);
+        new PerGearSettingsBuilder()
+            .gear(Shiftable.Gear.LOW)
+            .postEncoderGearing(0.0488998)
+            .maxSpeed(2.3)
+            .kP(0);
     var highGear =
-            new PerGearSettingsBuilder()
-                    .gear(Shiftable.Gear.HIGH)
-                    .postEncoderGearing(0.12936611)
+        new PerGearSettingsBuilder()
+            .gear(Shiftable.Gear.HIGH)
+            .postEncoderGearing(0.12936611)
             .maxSpeed(5.2)
             .kP(0.000001);
 
     var leftMaster =
-            SmartMotor.create(driveMasterPrototype
-                    .setPort(leftMasterPort)
-                    .setName("left")
-                    .setReverseOutput(true)
-                    .setSlaveSparks(
-                            List.of(
-                                    new SlaveSparkMax(leftMasterSlave1Port, false, pdp),
-                                    new SlaveSparkMax(leftMasterSlave2Port, false, pdp)))
-                    .setPerGearSettings(
-                            List.of(
-                                    lowGear
-                                            .feedForwardCalculator(new MappedFeedForwardCalculator(0.128, 5.23, 0.0698))
-                                            .build(),
-                                    highGear
-                                            .feedForwardCalculator(new MappedFeedForwardCalculator(0.156, 2.01, 0.154))
-                                            .build())));
+        SmartMotor.create(
+            driveMasterPrototype
+                .setPort(leftMasterPort)
+                .setName("left")
+                .setReverseOutput(true)
+                .setSlaveSparks(
+                    List.of(
+                        new SlaveSparkMax(leftMasterSlave1Port, false, pdp),
+                        new SlaveSparkMax(leftMasterSlave2Port, false, pdp)))
+                .setPerGearSettings(
+                    List.of(
+                        lowGear
+                            .feedForwardCalculator(
+                                new MappedFeedForwardCalculator(0.128, 5.23, 0.0698))
+                            .build(),
+                        highGear
+                            .feedForwardCalculator(
+                                new MappedFeedForwardCalculator(0.156, 2.01, 0.154))
+                            .build())));
     var rightMaster =
-            SmartMotor.create(driveMasterPrototype
-                    .setName("right")
-                    .setPort(rightMasterPort)
-                    .setReverseOutput(false)
-                    .setSlaveSparks(
-                            List.of(
-                                    new SlaveSparkMax(rightMasterSlave1Port, false, pdp),
-                                    new SlaveSparkMax(rightMasterSlave2Port, false, pdp)))
-                    .setPerGearSettings(
-                            List.of(
-                                    lowGear
-                                            .feedForwardCalculator(new MappedFeedForwardCalculator(0.139, 5.17, 0.0554))
-                                            .build(),
-                                    highGear
-                                            .feedForwardCalculator(new MappedFeedForwardCalculator(0.165, 2.01, 0.155))
-                                            .build())));
+        SmartMotor.create(
+            driveMasterPrototype
+                .setName("right")
+                .setPort(rightMasterPort)
+                .setReverseOutput(false)
+                .setSlaveSparks(
+                    List.of(
+                        new SlaveSparkMax(rightMasterSlave1Port, false, pdp),
+                        new SlaveSparkMax(rightMasterSlave2Port, false, pdp)))
+                .setPerGearSettings(
+                    List.of(
+                        lowGear
+                            .feedForwardCalculator(
+                                new MappedFeedForwardCalculator(0.139, 5.17, 0.0554))
+                            .build(),
+                        highGear
+                            .feedForwardCalculator(
+                                new MappedFeedForwardCalculator(0.165, 2.01, 0.155))
+                            .build())));
     var drive =
-            new DriveUnidirectionalWithGyroShiftable(
-                    leftMaster,
-                    rightMaster,
-                    navx,
-                    0.61755,
-                    new ShiftComponent(
-                            List.of(leftMaster, rightMaster), new DoubleSolenoid(0, 0, 1), Shiftable.Gear.LOW),
-                    false);
+        new DriveUnidirectionalWithGyroShiftable(
+            leftMaster,
+            rightMaster,
+            navx,
+            0.61755,
+            new ShiftComponent(
+                List.of(leftMaster, rightMaster), new DoubleSolenoid(0, 0, 1), Shiftable.Gear.LOW),
+            false);
 
     // Elevator
     var elevatorPulleyMotor =
@@ -199,8 +206,10 @@ public class Bunnybot2021Map {
             elevatorPulleyMotor, ElevatorPosition.BOTTOM, elevatorMaxVelocity);
     var setVelocityCommand = new SetVelocity(elevator, mechanismsJoystick, elevatorMaxVelocity);
 
-    //intake
-    var intake = new IntakeActuated(new SolenoidSimple(new DoubleSolenoid(intakeSolenoidForward, intakeSolenoidReverse)));
+    // intake
+    var intake =
+        new IntakeActuated(
+            new SolenoidSimple(new DoubleSolenoid(intakeSolenoidForward, intakeSolenoidReverse)));
 
     var subsystems = List.<Subsystem>of(drive, elevator, intake);
 
@@ -289,16 +298,14 @@ public class Bunnybot2021Map {
                 CommandButton.Action.WHEN_PRESSED),
             // Close the intake
             new CommandButton(
-                    new SimpleButton(mechanismsJoystick, intakeClose),
-                    new SetIntake(IntakeActuated.IntakePosition.CLOSED, intake),
-                    CommandButton.Action.WHEN_PRESSED
-            ),
+                new SimpleButton(mechanismsJoystick, intakeClose),
+                new SetIntake(IntakeActuated.IntakePosition.CLOSED, intake),
+                CommandButton.Action.WHEN_PRESSED),
             // Open the intake
             new CommandButton(
-                    new SimpleButton(mechanismsJoystick, intakeOpen),
-                    new SetIntake(IntakeActuated.IntakePosition.OPEN, intake),
-                    CommandButton.Action.WHEN_PRESSED
-            ));
+                new SimpleButton(mechanismsJoystick, intakeOpen),
+                new SetIntake(IntakeActuated.IntakePosition.OPEN, intake),
+                CommandButton.Action.WHEN_PRESSED));
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();

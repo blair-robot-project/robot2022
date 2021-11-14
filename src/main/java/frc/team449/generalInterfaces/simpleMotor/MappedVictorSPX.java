@@ -10,10 +10,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.jacksonWrappers.SlaveVictor;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /** A simple wrapper on the {@link VictorSPX}. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

@@ -8,9 +8,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team449._2020.shooter.SubsystemFlywheel;
 import frc.team449.components.MapInterpolationComponent;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.function.DoubleSupplier;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Signals the flywheel to turn on and optionally forces the specified subsystem that feeds the
