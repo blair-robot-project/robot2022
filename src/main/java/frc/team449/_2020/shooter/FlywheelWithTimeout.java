@@ -9,10 +9,11 @@ import frc.team449.components.ConditionTimingComponentObserver;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.Objects;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Flywheel that reports readiness to shoot based on both readiness of underlying implementation and

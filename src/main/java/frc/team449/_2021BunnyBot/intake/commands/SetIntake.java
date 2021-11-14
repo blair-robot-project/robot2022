@@ -1,9 +1,8 @@
 package frc.team449._2021BunnyBot.intake.commands;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid.*;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449._2021BunnyBot.intake.IntakeActuated;
-import frc.team449._2021BunnyBot.intake.IntakeActuated.*;
+import frc.team449._2021BunnyBot.intake.IntakeActuated.IntakePosition;
 import org.jetbrains.annotations.NotNull;
 
 public class SetIntake extends CommandBase {

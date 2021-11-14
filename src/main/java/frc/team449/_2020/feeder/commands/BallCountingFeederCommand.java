@@ -10,8 +10,9 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449._2020.multiSubsystem.SubsystemIntake;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.BooleanSupplier;
 
 /** A feeder that counts balls */
 @JsonIdentityInfo(generator = StringIdGenerator.class)

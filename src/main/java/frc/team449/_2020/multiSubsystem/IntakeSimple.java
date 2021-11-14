@@ -10,8 +10,9 @@ import frc.team449.generalInterfaces.simpleMotor.SimpleMotor;
 import frc.team449.other.InjectiveDependencyHelper;
 import frc.team449.other.Util;
 import io.github.oblarg.oblog.Loggable;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 /** A simple intake subsystem that relies on a single motor to rotate some part of it. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

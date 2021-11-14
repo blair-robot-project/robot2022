@@ -12,8 +12,9 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.other.Util;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 /**
  * a An intake that consists of rollers that are regulated to a consistent velocity relative to the

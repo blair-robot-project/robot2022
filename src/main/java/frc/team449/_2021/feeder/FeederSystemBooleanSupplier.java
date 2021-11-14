@@ -2,8 +2,9 @@ package frc.team449._2021.feeder;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import frc.team449._2020.feeder.commands.DefaultFeederCommand;
-import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * Supplies whether a BallCountingFeederCommand holds balls Needed b/c the counting system was done

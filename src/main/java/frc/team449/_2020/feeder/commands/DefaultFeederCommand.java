@@ -10,9 +10,10 @@ import frc.team449._2020.shooter.FlywheelWithTimeout;
 import frc.team449.components.ConditionTimingComponentDecorator;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
-import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BooleanSupplier;
 
 /** Runs feeder when shooting and feeder (along with index wheel) when indexing sensor tripped. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

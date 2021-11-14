@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.generalInterfaces.rumbleable.Rumbleable;
 import frc.team449.jacksonWrappers.MappedTalon;
+
 import javax.annotation.Nullable;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
