@@ -22,10 +22,10 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.shiftable.commands.ShiftGears;
-import frc.team449.jacksonWrappers.*;
 import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
+import frc.team449.jacksonWrappers.*;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
-import frc.team449.javaMaps.builders.SmartMotorConfigObject;
+import frc.team449.javaMaps.builders.SmartMotorConfigBuilder;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.buttons.SimpleButton;
@@ -34,9 +34,10 @@ import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public class Bunnybot2021Map {
   // Drive system
@@ -101,15 +102,15 @@ public class Bunnybot2021Map {
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
-        new SmartMotorConfigObject()
+        new SmartMotorConfigBuilder()
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
             .setPdp(pdp)
             .setUnitPerRotation(0.47877872)
             .setCurrentLimit(50)
             .setEnableVoltageComp(true)
-            .setStartingGear(Shiftable.Gear.LOW)
-            .setEncoderCPR(256);
+            .setStartingGear(Shiftable.Gear.LOW);
+    //            .setEncoderCPR(256);
     var lowGear =
         new PerGearSettingsBuilder()
             .gear(Shiftable.Gear.LOW)
@@ -174,28 +175,17 @@ public class Bunnybot2021Map {
             false);
 
     // Elevator
-    var elevatorPulleyMotor =
-        new MappedSparkMax(
-            elevatorMotorPort,
-            "elevator",
-            false,
-            true,
-            pdp,
-            null,
-            null,
-            null,
-            null,
-            null,
-            1.0,
-            1.0,
-            40,
-            false,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null);
+    var elevatorCfg =
+        new SmartMotorConfigBuilder()
+            .setName("elevator")
+            .setPort(elevatorMotorPort)
+            .setReverseOutput(false)
+            .setEnableBrakeMode(true)
+            .setPdp(pdp)
+            .setCurrentLimit(40)
+            .setEnableVoltageComp(false)
+            .build();
+    var elevatorPulleyMotor = new MappedSparkMax(elevatorCfg, null, null);
     // PID constants for elevator
     elevatorPulleyMotor.setPID(0, 0, 0);
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
