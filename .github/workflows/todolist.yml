@@ -7,25 +7,25 @@ jobs:
       - uses: actions/checkout@v2
       - name: Generate List
         run: |
-          readarray -t todos < <(egrep -nri '\/+\**\ *todo' src/main/ | sed -e 's/: */: /g')
+          readarray -t todos < <(grep -Enri '\/+\**\ *todo' src/main/ | sed -e 's/: */: /g')
           important=()
           nonimportant=()
-          for todo in "${todos[@]"
+          for todo in "${todos[@]}"
           do
-            if ("$todo" = *"[IMPORTANT]"*)
+            if [[ "$todo" = *"[IMPORTANT]"* ]]
             then
-              important+="$todo"
+              important+=("$todo")
             else
-              nonimportant+="$todo"
+              nonimportant+=("$todo")
             fi
           done
-          echo "Important TODOs:" > todolist.txt
+          echo Important TODOs: > todolist.txt
           for todo in "${important[@]}"
           do
             echo "$todo" >> todolist.txt
           done
-          echo "---------------------------------------------------------------------------------------------------------" >> todolist.txt
-          echo "Non-important TODOs:" >> todolist.txt
+          echo --------------------------------------------------------------------------------------------------------- >> todolist.txt
+          echo Non-important TODOs: >> todolist.txt
           for todo in "${nonimportant[@]}"
           do
             echo "$todo" >> todolist.txt
