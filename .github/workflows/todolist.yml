@@ -7,7 +7,29 @@ jobs:
       - uses: actions/checkout@v2
       - name: Generate List
         run: |
-          egrep -nri '\/+\**\ *todo' src/main/ | sed -e 's/: */: /g' >  todolist.txt
+          readarray -t todos < <(egrep -nri '\/+\**\ *todo' src/main/ | sed -e 's/: */: /g')
+          important=()
+          nonimportant=()
+          for todo in "${todos[@]"
+          do
+            if ("$todo" = *"[IMPORTANT]"*)
+            then
+              important+="$todo"
+            else
+              nonimportant+="$todo"
+            fi
+          done
+          echo "Important TODOs:" > todolist.txt
+          for todo in "${important[@]}"
+          do
+            echo "$todo" >> todolist.txt
+          done
+          echo "---------------------------------------------------------------------------------------------------------" >> todolist.txt
+          echo "Non-important TODOs:" >> todolist.txt
+          for todo in "${nonimportant[@]}"
+          do
+            echo "$todo" >> todolist.txt
+          done
       - name: Git Config
         run: |
           git config user.name "ToDo List Generator"
