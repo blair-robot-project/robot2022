@@ -38,4 +38,4 @@ jobs:
         run: |
           git add todolist.txt
           git commit -m "Update ToDo List"
-          git push origin main
+          git push origin dev
