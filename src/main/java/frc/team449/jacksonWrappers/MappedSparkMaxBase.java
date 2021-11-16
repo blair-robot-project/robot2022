@@ -10,12 +10,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class MappedSparkMaxBase implements SmartMotor {
 
@@ -125,7 +124,8 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
     }
 
     if (statusFrameRatesMillis != null) {
-      for (final Map.Entry<CANSparkMaxLowLevel.PeriodicFrame, Integer> frame : statusFrameRatesMillis.entrySet()) {
+      for (final Map.Entry<CANSparkMaxLowLevel.PeriodicFrame, Integer> frame :
+          statusFrameRatesMillis.entrySet()) {
         this.spark.setPeriodicFramePeriod(frame.getKey(), frame.getValue());
       }
     }

@@ -13,13 +13,12 @@ import frc.team449.components.RunningLinRegComponent;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Component wrapper on the CTRE {@link TalonSRX}, with unit conversions to/from MPS built in. Every
@@ -155,12 +154,14 @@ public class MappedTalon implements SmartMotor {
 
     // Set frame rates
     if (controlFrameRatesMillis != null) {
-      for (final Map.Entry<ControlFrame, Integer> controlFrame : controlFrameRatesMillis.entrySet()) {
+      for (final Map.Entry<ControlFrame, Integer> controlFrame :
+          controlFrameRatesMillis.entrySet()) {
         this.canTalon.setControlFramePeriod(controlFrame.getKey(), controlFrame.getValue());
       }
     }
     if (statusFrameRatesMillis != null) {
-      for (final Map.Entry<StatusFrameEnhanced, Integer> statusFrame : statusFrameRatesMillis.entrySet()) {
+      for (final Map.Entry<StatusFrameEnhanced, Integer> statusFrame :
+          statusFrameRatesMillis.entrySet()) {
         this.canTalon.setStatusFramePeriod(statusFrame.getKey(), statusFrame.getValue(), 0);
       }
     }

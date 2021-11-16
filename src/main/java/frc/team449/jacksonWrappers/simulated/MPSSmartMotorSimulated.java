@@ -1,5 +1,8 @@
 package frc.team449.jacksonWrappers.simulated;
 
+import static frc.team449.other.Util.clamp;
+import static frc.team449.other.Util.getLogPrefix;
+
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -17,14 +20,10 @@ import frc.team449.jacksonWrappers.SlaveVictor;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.*;
 import java.util.function.DoubleSupplier;
-
-import static frc.team449.other.Util.clamp;
-import static frc.team449.other.Util.getLogPrefix;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.

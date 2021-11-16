@@ -1,8 +1,7 @@
 package frc.team449.other;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.IdentityHashMap;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Associates object instances ID based on order of registration.
@@ -29,7 +28,7 @@ public final class RegistrationOrderIDUtil {
     final Integer oldID;
     if ((oldID = IDs.get(instance)) != null) return oldID;
 
-    IDs.put(instance, ++ currentId);
+    IDs.put(instance, ++currentId);
     return currentId;
   }
 

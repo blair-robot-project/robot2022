@@ -1,5 +1,7 @@
 package frc.team449.generalInterfaces;
 
+import static frc.team449.other.Util.getLogPrefix;
+
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -23,12 +25,9 @@ import frc.team449.javaMaps.builders.SmartMotorConfigObject;
 import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-
-import static frc.team449.other.Util.getLogPrefix;
 
 /**
  * A motor with built-in advanced capability featuring encoder, current limiting, and gear shifting

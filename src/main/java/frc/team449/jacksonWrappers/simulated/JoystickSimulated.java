@@ -2,14 +2,13 @@ package frc.team449.jacksonWrappers.simulated;
 
 import frc.team449.Robot;
 import frc.team449.jacksonWrappers.MappedJoystick;
-import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.swing.*;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Class that extends {@link MappedJoystick} that does not rely on the existence of actual hardware.
@@ -458,7 +457,8 @@ public class JoystickSimulated extends MappedJoystick {
           return;
       }
 
-      if (Boolean.TRUE.equals(JoystickSimulated.this.keyStates.getOrDefault(keyName, false)) != newState) {
+      if (Boolean.TRUE.equals(JoystickSimulated.this.keyStates.getOrDefault(keyName, false))
+          != newState) {
         System.out.println(
             JoystickSimulated.this.logPrefix + keyName + (newState ? " [#]" : " [ ]"));
         if (this.buttonStateLabels.containsKey(keyName))
