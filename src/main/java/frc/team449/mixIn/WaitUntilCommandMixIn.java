@@ -10,6 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public abstract class WaitUntilCommandMixIn {
   /** @see edu.wpi.first.wpilibj2.command.WaitUntilCommand#WaitUntilCommand(double) */
   @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-  public WaitUntilCommandMixIn(
+  protected WaitUntilCommandMixIn(
       @JsonProperty(value = "time", required = true) final double seconds) {}
 }

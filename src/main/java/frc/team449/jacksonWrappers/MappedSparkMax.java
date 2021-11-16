@@ -6,15 +6,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
@@ -78,7 +79,7 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
       @Nullable final List<PerGearSettings> perGearSettings,
       @Nullable final Shiftable.Gear startingGear,
       @Nullable final Integer startingGearNum,
-      @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+      @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> statusFrameRatesMillis,
       @Nullable final Integer controlFrameRateMillis,
       @Nullable final List<SlaveSparkMax> slaveSparks) {
     super(

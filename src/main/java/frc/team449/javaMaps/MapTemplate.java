@@ -29,25 +29,26 @@ import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public class MapTemplate {
 
   // Drive system
-  public static final int leftMasterPort = 1,
-      leftMasterSlave1Port = 3,
-      leftMasterSlave2Port = 5,
-      rightMasterPort = 2,
-      rightMasterSlave1Port = 4,
-      rightMasterSlave2Port = 6;
+  public static final int LEFT_MASTER_PORT = 1,
+      LEFT_MASTER_SLAVE_1_PORT = 3,
+      LEFT_MASTER_SLAVE_2_PORT = 5,
+      RIGHT_MASTER_PORT = 2,
+      RIGHT_MASTER_SLAVE_1_PORT = 4,
+      RIGHT_MASTER_SLAVE_2_PORT = 6;
   // Intake system
-  public static final int intakeMotorPort = 7;
+  public static final int INTAKE_MOTOR_PORT = 7;
 
   // Solenoid ports
-  public static final int intakeSolenoidForwardPort = 2, intakeSolenoidReversePort = 3;
-  public static final int mechanismsJoystickPort = 0, driveJoystickPort = 1;
+  public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
+  public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
 
   @NotNull
   public static RobotMap createRobotMap() {

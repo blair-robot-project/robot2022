@@ -13,12 +13,13 @@ import frc.team449.components.RunningLinRegComponent;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Component wrapper on the CTRE {@link TalonSRX}, with unit conversions to/from MPS built in. Every
@@ -154,14 +155,13 @@ public class MappedTalon implements SmartMotor {
 
     // Set frame rates
     if (controlFrameRatesMillis != null) {
-      for (final ControlFrame controlFrame : controlFrameRatesMillis.keySet()) {
-        this.canTalon.setControlFramePeriod(
-            controlFrame, controlFrameRatesMillis.get(controlFrame));
+      for (final Map.Entry<ControlFrame, Integer> controlFrame : controlFrameRatesMillis.entrySet()) {
+        this.canTalon.setControlFramePeriod(controlFrame.getKey(), controlFrame.getValue());
       }
     }
     if (statusFrameRatesMillis != null) {
-      for (final StatusFrameEnhanced statusFrame : statusFrameRatesMillis.keySet()) {
-        this.canTalon.setStatusFramePeriod(statusFrame, statusFrameRatesMillis.get(statusFrame), 0);
+      for (final Map.Entry<StatusFrameEnhanced, Integer> statusFrame : statusFrameRatesMillis.entrySet()) {
+        this.canTalon.setStatusFramePeriod(statusFrame.getKey(), statusFrame.getValue(), 0);
       }
     }
 
@@ -172,7 +172,7 @@ public class MappedTalon implements SmartMotor {
     this.perGearSettings = new HashMap<>();
 
     // If given no gear settings, use the default values.
-    if (perGearSettings == null || perGearSettings.size() == 0) {
+    if (perGearSettings == null || perGearSettings.isEmpty()) {
       this.perGearSettings.put(0, new PerGearSettings());
     }
     // Otherwise, map the settings to the gear they are.

@@ -10,9 +10,10 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.jacksonWrappers.SlaveVictor;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /** A simple wrapper on the {@link VictorSPX}. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -55,10 +56,11 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
     if (slaveVictors != null) {
       // Set up slaves.
       for (final SlaveVictor slave : slaveVictors) {
+        int i = voltageCompSamples != null ? voltageCompSamples : 32
         slave.setMaster(
             victorSPX,
             brakeMode,
-            enableVoltageComp ? (voltageCompSamples != null ? voltageCompSamples : 32) : null);
+            enableVoltageComp ? i : null);
       }
     }
   }

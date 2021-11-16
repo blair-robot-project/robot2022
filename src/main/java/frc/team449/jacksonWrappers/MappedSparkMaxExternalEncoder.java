@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
@@ -13,10 +13,11 @@ import frc.team449.generalInterfaces.SmartMotorExternalEncoder;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
 
 /** Represents a spark max with an external encoder */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -90,7 +91,7 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
       @Nullable final List<PerGearSettings> perGearSettings,
       @Nullable final Shiftable.Gear startingGear,
       @Nullable final Integer startingGearNum,
-      @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+      @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> statusFrameRatesMillis,
       @Nullable final Integer controlFrameRateMillis,
       @Nullable final List<SlaveSparkMax> slaveSparks) {
     super(

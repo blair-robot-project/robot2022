@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class MappedSparkMaxBase implements SmartMotor {
 
@@ -83,7 +84,7 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
    * @param statusFrameRatesMillis The update rates, in millis, for each of the status frames.
    * @param controlFrameRateMillis The update rate, in milliseconds, for each control frame.
    */
-  public MappedSparkMaxBase(
+  protected MappedSparkMaxBase(
       final int port,
       @Nullable final String name,
       final boolean reverseOutput,
@@ -101,7 +102,7 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
       @Nullable final List<PerGearSettings> perGearSettings,
       @Nullable final Shiftable.Gear startingGear,
       @Nullable final Integer startingGearNum,
-      @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+      @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> statusFrameRatesMillis,
       @Nullable final Integer controlFrameRateMillis,
       @Nullable final List<SlaveSparkMax> slaveSparks) {
     this.spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -124,8 +125,8 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
     }
 
     if (statusFrameRatesMillis != null) {
-      for (final CANSparkMaxLowLevel.PeriodicFrame frame : statusFrameRatesMillis.keySet()) {
-        this.spark.setPeriodicFramePeriod(frame, statusFrameRatesMillis.get(frame));
+      for (final Map.Entry<CANSparkMaxLowLevel.PeriodicFrame, Integer> frame : statusFrameRatesMillis.entrySet()) {
+        this.spark.setPeriodicFramePeriod(frame.getKey(), frame.getValue());
       }
     }
 
@@ -137,7 +138,7 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
     this.perGearSettings = new HashMap<>();
 
     // If given no gear settings, use the default values.
-    if (perGearSettings == null || perGearSettings.size() == 0) {
+    if (perGearSettings == null || perGearSettings.isEmpty()) {
       this.perGearSettings.put(0, new PerGearSettings());
     }
     // Otherwise, map the settings to the gear they are.

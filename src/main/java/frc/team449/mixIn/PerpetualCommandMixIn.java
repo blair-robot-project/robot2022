@@ -15,6 +15,6 @@ import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 public abstract class PerpetualCommandMixIn {
   /** @see PerpetualCommand#PerpetualCommand(Command) */
   @JsonCreator
-  public PerpetualCommandMixIn(
+  protected PerpetualCommandMixIn(
       @JsonProperty(value = "command", required = true) final Command command) {}
 }

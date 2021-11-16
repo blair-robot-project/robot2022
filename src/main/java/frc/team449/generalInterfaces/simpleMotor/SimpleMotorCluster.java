@@ -2,8 +2,9 @@ package frc.team449.generalInterfaces.simpleMotor;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * A cluster of simple motors that act as a single simple motor. Don't use this for talons, use
@@ -21,7 +22,7 @@ public class SimpleMotorCluster implements SimpleMotor {
    */
   @JsonCreator
   public SimpleMotorCluster(@JsonProperty(required = true) @NotNull List<SimpleMotor> motors) {
-    if (motors.size() == 0) {
+    if (motors.isEmpty()) {
       throw new IllegalArgumentException("motors must have at least 1 element!");
     }
     this.motors = motors;

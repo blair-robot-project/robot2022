@@ -3,9 +3,10 @@ package frc.team449.components;
 import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /** A component that a subsystem can use to handle shifting gears. */
 @JsonTypeInfo(
@@ -63,7 +64,7 @@ public class ShiftComponent {
    */
   public void shiftToGear(final int gear) {
     // Do nothing if we try to switch to the current gear.
-    if (!(gear == this.currentGear)) {
+    if (gear != this.currentGear) {
       for (final Shiftable shiftable : this.otherShiftables) {
         shiftable.setGear(gear);
       }

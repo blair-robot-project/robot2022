@@ -2,6 +2,7 @@ package frc.team449.other;
 
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+
 import java.util.LinkedList;
 
 /** Debouncer that takes the average of the samples in a limited-length buffer. */
@@ -33,7 +34,7 @@ public class DebouncerEx implements Loggable {
     this.bufferSum += currentState ? 1 : -1;
 
     if (this.buffer.size() > this.bufferSize) {
-      this.bufferSum -= buffer.removeLast() ? 1 : -1;
+      this.bufferSum -= Boolean.TRUE.equals(buffer.removeLast()) ? 1 : -1;
     }
   }
 

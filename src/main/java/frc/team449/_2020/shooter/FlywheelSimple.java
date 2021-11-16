@@ -13,9 +13,10 @@ import frc.team449.other.DebouncerEx;
 import frc.team449.other.SimUtil;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 /** A flywheel multiSubsystem with a single flywheel and a single-motor feeder system. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -31,7 +32,7 @@ public class FlywheelSimple extends SubsystemBase
   @Nullable private final Double maxRelSpeedError;
   private final double spinUpTimeoutSecs;
   @Nullable @Log.Exclude private final SimDevice simDevice;
-  @Nullable private final SimBoolean sim_manualStates, sim_isAtSpeed;
+  @Nullable private final SimBoolean simManualStates, simIsAtSpeed;
 
   @NotNull
   private final DebouncerEx speedConditionDebouncer = new DebouncerEx(SPEED_CONDITION_BUFFER_SIZE);
@@ -74,11 +75,11 @@ public class FlywheelSimple extends SubsystemBase
     if (simDevice != null) {
       // TODO figure out why using SimDevice.Direction.kInput instead of false
       // for the parameter readonly gives a NoSuchMethodError
-      sim_manualStates = simDevice.createBoolean("ManualStates", false, false);
-      sim_isAtSpeed = simDevice.createBoolean("IsAtSpeed", false, false);
+      simManualStates = simDevice.createBoolean("ManualStates", false, false);
+      simIsAtSpeed = simDevice.createBoolean("IsAtSpeed", false, false);
     } else {
       // Nothing to see here.
-      this.sim_manualStates = this.sim_isAtSpeed = null;
+      this.simManualStates = this.simIsAtSpeed = null;
     }
   }
 
@@ -131,9 +132,9 @@ public class FlywheelSimple extends SubsystemBase
   @Log
   private boolean isAtShootingSpeed() {
     return SimUtil.getWithSimHelper(
-        this.sim_manualStates != null && this.sim_manualStates.get(),
+        this.simManualStates != null && this.simManualStates.get(),
         true,
-        this.sim_isAtSpeed,
+        this.simIsAtSpeed,
         () -> {
           if (this.maxAbsSpeedError == null && this.maxRelSpeedError == null) return false;
 

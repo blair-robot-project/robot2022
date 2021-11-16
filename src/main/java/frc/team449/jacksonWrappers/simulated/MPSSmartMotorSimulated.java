@@ -1,8 +1,5 @@
 package frc.team449.jacksonWrappers.simulated;
 
-import static frc.team449.other.Util.clamp;
-import static frc.team449.other.Util.getLogPrefix;
-
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -20,10 +17,14 @@ import frc.team449.jacksonWrappers.SlaveVictor;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.*;
-import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.DoubleSupplier;
+
+import static frc.team449.other.Util.clamp;
+import static frc.team449.other.Util.getLogPrefix;
 
 /**
  * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
@@ -120,7 +121,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
     this.perGearSettings = new HashMap<>();
 
     // If given no gear settings, use the default values.
-    if (perGearSettings == null || perGearSettings.size() == 0) {
+    if (perGearSettings == null || perGearSettings.isEmpty()) {
       this.perGearSettings.put(0, new Shiftable.PerGearSettings());
     }
     // Otherwise, map the settings to the gear they are.
