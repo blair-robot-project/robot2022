@@ -1,24 +1,27 @@
 Important TODOs:
-src/main/java/frc/team449/Constants.java: 3: public class Constants {} //TODO [IMPORTANT] This is definitely an issue, why do we have an empty class?
 ---------------------------------------------------------------------------------------------------------
 Non-important TODOs:
-src/main/java/frc/team449/auto/commands/AutonomousCommand.java: 17: // TODO Make this a normal boolean. Making it nullable could cause a
-src/main/java/frc/team449/CommandContainer.java: 32: // TODO Figure out why this doesn't work @JsonInclude(JsonInclude.Include.NON_NULL)
-src/main/java/frc/team449/components/AHRSRumbleComponent.java: 33: private final boolean yIsFrontBack; // TODO why is this never accessed
 src/main/java/frc/team449/components/ConditionTimingComponentObserver.java: 4: // TODO Why does this exist??
 src/main/java/frc/team449/components/LEDComponent.java: 21: // todo array to hold HSV values of each LED
 src/main/java/frc/team449/components/LEDComponent.java: 97: // todo this
-src/main/java/frc/team449/components/ShiftWithSensorComponent.java: 116: // TODO set up a lock system so no other part of the code can re-enable the motors.
 src/main/java/frc/team449/components/TrajectoryGenerationComponent.java: 6: /** TODO add some actual javadocs here */
-src/main/java/frc/team449/drive/unidirectional/commands/AHRS/NavXDriveStraight.java: 103: // TODO Both branches of this if statement are the exact same!
+src/main/java/frc/team449/components/ShiftWithSensorComponent.java: 116: // TODO set up a lock system so no other part of the code can re-enable the motors.
+src/main/java/frc/team449/components/AHRSRumbleComponent.java: 33: private final boolean yIsFrontBack; // TODO why is this never accessed
+src/main/java/frc/team449/oi/unidirectional/arcade/OIArcade.java: 93: : (leftRightOutputCached = getLeftRightOutput()); // TODO assignment inside expression?
+src/main/java/frc/team449/oi/unidirectional/arcade/OIArcade.java: 106: : (fwdRotOutputCached = getFwdRotOutput()); // TODO assignment inside expression?
 src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 46: int LOG_WIDTH = 4, LOG_HEIGHT = 3; // TODO Unused
 src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 677: double getError(); // TODO Unused
 src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 713: String getControlMode(); // TODO Unused
 src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 747: boolean getFwdLimitSwitch(); // TODO Unused
 src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 754: boolean getRevLimitSwitch(); // TODO Unused
 src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 802: default boolean isSimulated() { // TODO Unused
-src/main/java/frc/team449/jacksonWrappers/MappedSparkMax.java: 107: // todo determine if encoderCPR will ever be needed
+src/main/java/frc/team449/auto/commands/AutonomousCommand.java: 17: // TODO Make this a normal boolean. Making it nullable could cause a
 src/main/java/frc/team449/jacksonWrappers/MappedSparkMaxExternalEncoder.java: 125: // todo determine if encoderCPR will ever be needed
+src/main/java/frc/team449/jacksonWrappers/MappedSparkMax.java: 107: // todo determine if encoderCPR will ever be needed
+src/main/java/frc/team449/CommandContainer.java: 32: // TODO Figure out why this doesn't work @JsonInclude(JsonInclude.Include.NON_NULL)
+src/main/java/frc/team449/WPIModule.java: 35: // TODO Verify how this actually works (probably it's because Jackson ignores the constructor's
+src/main/java/frc/team449/javaMaps/MapTemplate.java: 106: // TODO call .copy() to make it clearer this and rightMaster make different instances?
+src/main/java/frc/team449/javaMaps/MapTemplate.java: 205: // todo more commands in this parallel command
 src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 59: // TODO Declare these constants outside this method and remove unused variables
 src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 80: driverIntakeOff = 2, // TODO This is never used
 src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 81: driverIntakeRev = 3, // TODO This is never used
@@ -26,17 +29,14 @@ src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 82: driverIntakeInOff =
 src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 93: double elevatorMaxVelocity = 1; // TODO this is a placeholder
 src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 270: // todo more commands in this parallel command
 src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 274: // todo Should there be 2 separate commands instead?
-src/main/java/frc/team449/javaMaps/MapTemplate.java: 106: // TODO call .copy() to make it clearer this and rightMaster make different instances?
-src/main/java/frc/team449/javaMaps/MapTemplate.java: 205: // todo more commands in this parallel command
-src/main/java/frc/team449/WPIModule.java: 35: // TODO Verify how this actually works (probably it's because Jackson ignores the constructor's
+src/main/java/frc/team449/_2020/intake/IntakeGroundSpeedRegulating.java: 76: // TODO Currently one drive master's output is always reversed, so we subtract the velocities.
+src/main/java/frc/team449/_2020/intake/IntakeGroundSpeedRegulating.java: 84: // TODO Fix the units
 src/main/java/frc/team449/_2020/feeder/commands/BallCountingFeederCommand.java: 29: flywheelStoppedCached; // TODO sensor2Cached is never accessed
 src/main/java/frc/team449/_2020/feeder/commands/BallCountingFeederCommand.java: 53: // todo consider using generics
 src/main/java/frc/team449/_2020/feeder/commands/BallCountingFeederCommand.java: 85: // todo check if sensor2 should also be checked
-src/main/java/frc/team449/_2020/intake/IntakeGroundSpeedRegulating.java: 76: // TODO Currently one drive master's output is always reversed, so we subtract the velocities.
-src/main/java/frc/team449/_2020/intake/IntakeGroundSpeedRegulating.java: 84: // TODO Fix the units
-src/main/java/frc/team449/_2020/multiSubsystem/BooleanSupplierSubsystemBased.java: 21: final @Nullable Boolean useCached) { // TODO useCached probably shouldn't be nullable
 src/main/java/frc/team449/_2020/multiSubsystem/commands/ConditionalPerpetualCommand.java: 44: // TODO This might be janky.
 src/main/java/frc/team449/_2020/multiSubsystem/commands/PerpetualCommandReinitializing.java: 28: // TODO: We should requireNonNull all @Nullable parameters because map errors can cause them to
 src/main/java/frc/team449/_2020/multiSubsystem/commands/PerpetualCommandReinitializing.java: 35: // TODO: How much less jank is this compared to ConditionalCommandDynamic?
+src/main/java/frc/team449/_2020/multiSubsystem/BooleanSupplierSubsystemBased.java: 21: final @Nullable Boolean useCached) { // TODO useCached probably shouldn't be nullable
 src/main/java/frc/team449/_2020/shooter/FlywheelSimple.java: 75: // TODO figure out why using SimDevice.Direction.kInput instead of false
 src/main/java/frc/team449/_2020/shooter/FlywheelSimple.java: 143: // TODO: Should we be looking at velocity or speed?
