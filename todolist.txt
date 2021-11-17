@@ -1,9 +1,14 @@
+Important TODOs:
+---------------------------------------------------------------------------------------------------------
+Non-important TODOs:
 src/main/java/frc/team449/components/ConditionTimingComponentObserver.java: 4: // TODO Why does this exist??
 src/main/java/frc/team449/components/LEDComponent.java: 21: // todo array to hold HSV values of each LED
 src/main/java/frc/team449/components/LEDComponent.java: 97: // todo this
 src/main/java/frc/team449/components/TrajectoryGenerationComponent.java: 6: /** TODO add some actual javadocs here */
 src/main/java/frc/team449/components/ShiftWithSensorComponent.java: 116: // TODO set up a lock system so no other part of the code can re-enable the motors.
 src/main/java/frc/team449/components/AHRSRumbleComponent.java: 33: private final boolean yIsFrontBack; // TODO why is this never accessed
+src/main/java/frc/team449/oi/unidirectional/arcade/OIArcade.java: 93: : (leftRightOutputCached = getLeftRightOutput()); // TODO assignment inside expression?
+src/main/java/frc/team449/oi/unidirectional/arcade/OIArcade.java: 106: : (fwdRotOutputCached = getFwdRotOutput()); // TODO assignment inside expression?
 src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 46: int LOG_WIDTH = 4, LOG_HEIGHT = 3; // TODO Unused
 src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 677: double getError(); // TODO Unused
 src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 713: String getControlMode(); // TODO Unused
@@ -35,4 +40,3 @@ src/main/java/frc/team449/_2020/multiSubsystem/commands/PerpetualCommandReinitia
 src/main/java/frc/team449/_2020/multiSubsystem/BooleanSupplierSubsystemBased.java: 21: final @Nullable Boolean useCached) { // TODO useCached probably shouldn't be nullable
 src/main/java/frc/team449/_2020/shooter/FlywheelSimple.java: 75: // TODO figure out why using SimDevice.Direction.kInput instead of false
 src/main/java/frc/team449/_2020/shooter/FlywheelSimple.java: 143: // TODO: Should we be looking at velocity or speed?
-src/main/java/frc/team449/drive/unidirectional/commands/AHRS/NavXDriveStraight.java: 103: // TODO Both branches of this if statement are the exact same!

@@ -11,5 +11,5 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 public abstract class PrintCommandMixIn {
   /** @see PrintCommand#PrintCommand(String) */
   @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-  public PrintCommandMixIn(@JsonProperty(required = true) final String message) {}
+  protected PrintCommandMixIn(@JsonProperty(required = true) final String message) {}
 }

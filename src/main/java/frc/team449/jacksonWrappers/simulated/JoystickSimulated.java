@@ -79,7 +79,7 @@ public class JoystickSimulated extends MappedJoystick {
    */
   @Override
   public double getRawAxis(final int axis) {
-    return this.keyStates.getOrDefault("0", false) ? 10 : 0;
+    return Boolean.TRUE.equals(this.keyStates.getOrDefault("0", false)) ? 10 : 0;
   }
 
   /**
@@ -414,7 +414,8 @@ public class JoystickSimulated extends MappedJoystick {
           final var label = new JLabel();
           label.setOpaque(true);
           label.setHorizontalAlignment(SwingConstants.CENTER);
-          this.add(String.format("r%dc%d", r, c), this.buttonStateLayout[r][c] = label);
+          this.buttonStateLayout[r][c] = label;
+          this.add(String.format("r%dc%d", r, c), this.buttonStateLayout[r][c]);
         }
       }
 
@@ -456,7 +457,8 @@ public class JoystickSimulated extends MappedJoystick {
           return;
       }
 
-      if (JoystickSimulated.this.keyStates.getOrDefault(keyName, false) != newState) {
+      if (Boolean.TRUE.equals(JoystickSimulated.this.keyStates.getOrDefault(keyName, false))
+          != newState) {
         System.out.println(
             JoystickSimulated.this.logPrefix + keyName + (newState ? " [#]" : " [ ]"));
         if (this.buttonStateLabels.containsKey(keyName))

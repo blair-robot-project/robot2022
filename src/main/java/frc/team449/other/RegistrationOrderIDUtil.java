@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class RegistrationOrderIDUtil {
   @NotNull private static final IdentityHashMap<Object, Integer> IDs = new IdentityHashMap<>();
-  private static int CURRENT_ID = 0;
+  private static int currentId = 0;
 
   private RegistrationOrderIDUtil() {
     throw new AssertionError("Utility class.");
@@ -28,8 +28,8 @@ public final class RegistrationOrderIDUtil {
     final Integer oldID;
     if ((oldID = IDs.get(instance)) != null) return oldID;
 
-    IDs.put(instance, ++CURRENT_ID);
-    return CURRENT_ID;
+    IDs.put(instance, ++currentId);
+    return currentId;
   }
 
   /**

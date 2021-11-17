@@ -53,8 +53,8 @@ public class Polynomial implements DoubleUnaryOperator {
     double sign = Math.signum(x);
     double abs = Math.abs(x);
     double toRet = 0;
-    for (double power : powerToCoefficientMap.keySet()) {
-      toRet += Math.pow(abs, power) * powerToCoefficientMap.get(power);
+    for (Map.Entry<Double, Double> power : powerToCoefficientMap.entrySet()) {
+      toRet += Math.pow(abs, power.getKey()) * power.getValue();
     }
     return toRet * sign;
   }
@@ -66,12 +66,12 @@ public class Polynomial implements DoubleUnaryOperator {
    */
   public void scaleCoefficientSum(double scaleTo) {
     double coefficientSum = 0;
-    for (double power : powerToCoefficientMap.keySet()) {
-      coefficientSum += powerToCoefficientMap.get(power);
+    for (Map.Entry<Double, Double> power : powerToCoefficientMap.entrySet()) {
+      coefficientSum += power.getValue();
     }
     double scaleFactor = scaleTo / coefficientSum;
-    for (double power : powerToCoefficientMap.keySet()) {
-      powerToCoefficientMap.replace(power, powerToCoefficientMap.get(power) * scaleFactor);
+    for (Map.Entry<Double, Double> power : powerToCoefficientMap.entrySet()) {
+      powerToCoefficientMap.replace(power.getKey(), power.getValue() * scaleFactor);
     }
   }
 

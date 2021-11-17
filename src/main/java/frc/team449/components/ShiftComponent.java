@@ -63,7 +63,7 @@ public class ShiftComponent {
    */
   public void shiftToGear(final int gear) {
     // Do nothing if we try to switch to the current gear.
-    if (!(gear == this.currentGear)) {
+    if (gear != this.currentGear) {
       for (final Shiftable shiftable : this.otherShiftables) {
         shiftable.setGear(gear);
       }

@@ -48,7 +48,7 @@ public class Debouncer extends ConditionTimingComponent {
 
   @Log
   @Contract(pure = true)
-  private boolean log_get() {
+  private boolean logGet() {
     return this.get(this.isTrue());
   }
 }

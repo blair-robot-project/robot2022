@@ -63,7 +63,7 @@ public abstract class PIDAngleCommand
    * @param subsystem The subsystem to execute this command on.
    */
   @JsonCreator
-  public PIDAngleCommand(
+  protected PIDAngleCommand(
       @JsonProperty(required = true) final double absoluteTolerance,
       @Nullable final Debouncer onTargetBuffer,
       final double minimumOutput,

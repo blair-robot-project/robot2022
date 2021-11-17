@@ -28,7 +28,7 @@ public abstract class OIArcade implements OIUnidirectional {
    *     1. Defaults to false.
    */
   @JsonCreator
-  public OIArcade(final boolean rescaleOutputs) {
+  protected OIArcade(final boolean rescaleOutputs) {
     this.rescaleOutputs = rescaleOutputs;
   }
 
@@ -90,7 +90,7 @@ public abstract class OIArcade implements OIUnidirectional {
   public double @NotNull [] getLeftRightOutputCached() {
     return leftRightOutputCached != null
         ? leftRightOutputCached
-        : (leftRightOutputCached = getLeftRightOutput());
+        : (leftRightOutputCached = getLeftRightOutput()); // TODO assignment inside expression?
   }
 
   /**
@@ -103,7 +103,7 @@ public abstract class OIArcade implements OIUnidirectional {
   public double @NotNull [] getFwdRotOutputCached() {
     return fwdRotOutputCached != null
         ? fwdRotOutputCached
-        : (fwdRotOutputCached = getFwdRotOutput());
+        : (fwdRotOutputCached = getFwdRotOutput()); // TODO assignment inside expression?
   }
 
   /** Updates all cached values with current ones. */

@@ -55,10 +55,8 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
     if (slaveVictors != null) {
       // Set up slaves.
       for (final SlaveVictor slave : slaveVictors) {
-        slave.setMaster(
-            victorSPX,
-            brakeMode,
-            enableVoltageComp ? (voltageCompSamples != null ? voltageCompSamples : 32) : null);
+        int i = voltageCompSamples != null ? voltageCompSamples : 32;
+        slave.setMaster(victorSPX, brakeMode, enableVoltageComp ? i : null);
       }
     }
   }

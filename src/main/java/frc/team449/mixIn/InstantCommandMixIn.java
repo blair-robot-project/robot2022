@@ -12,6 +12,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 public abstract class InstantCommandMixIn {
   /** @see InstantCommand#InstantCommand(Runnable, Subsystem...) */
   @JsonCreator()
-  public InstantCommandMixIn(
+  protected InstantCommandMixIn(
       @JsonProperty(required = true) final Runnable toRun, final Subsystem... requirements) {}
 }

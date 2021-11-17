@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 public abstract class DoubleSolenoidMixIn {
   /** @see DoubleSolenoid#DoubleSolenoid(int, int, int) */
   @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-  public DoubleSolenoidMixIn(
+  protected DoubleSolenoidMixIn(
       @JsonProperty(value = "moduleNumber") @JsonAlias("module") final int moduleNumber,
       @JsonProperty(value = "forwardChannel", required = true) @JsonAlias("forward")
           final int forwardChannel,

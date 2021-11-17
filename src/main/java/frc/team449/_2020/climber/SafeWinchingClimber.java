@@ -32,7 +32,7 @@ public class SafeWinchingClimber extends SubsystemBase
   private final SubsystemSolenoid solenoidSubsystem;
 
   private final long extensionTimeMillis;
-  @Log private final boolean enableArm = true;
+  @Log private static final boolean enableArm = true;
   @Log private boolean armIsExtending = false;
   @Log private long extensionStartTime = 0L;
   @Log private boolean reallySure = false;
@@ -52,7 +52,7 @@ public class SafeWinchingClimber extends SubsystemBase
   public void raise() {
     System.out.println(Util.getLogPrefix(this) + "raise");
 
-    if (this.enableArm) {
+    if (enableArm) {
       this.setSolenoid(DoubleSolenoid.Value.kForward);
       this.extensionStartTime = Clock.currentTimeMillis();
     }
@@ -63,7 +63,7 @@ public class SafeWinchingClimber extends SubsystemBase
   public void lower() {
     System.out.println(Util.getLogPrefix(this) + "lower");
 
-    if (this.enableArm) {
+    if (enableArm) {
       this.setSolenoid(DoubleSolenoid.Value.kReverse);
     }
   }

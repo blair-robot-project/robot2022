@@ -44,7 +44,7 @@ public class MappedPIDController extends PIDController implements Loggable {
   @Override
   public double calculate(final double measurement) {
     this.measurement = measurement;
-    return output = super.calculate(measurement);
+    return super.calculate(measurement);
   }
 
   @Log

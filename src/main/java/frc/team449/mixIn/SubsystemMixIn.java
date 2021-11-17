@@ -13,17 +13,17 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
     use = JsonTypeInfo.Id.CLASS,
     include = JsonTypeInfo.As.WRAPPER_OBJECT,
     property = "@class")
-public abstract class SubsystemMixIn {
+public interface SubsystemMixIn {
 
   /** @see Subsystem#getDefaultCommand() */
   @JsonIgnore
-  abstract Command getDefaultCommand();
+  Command getDefaultCommand();
 
   /** @see Subsystem#setDefaultCommand(Command) */
   @JsonIgnore
-  abstract void setDefaultCommand(Command command);
+  void setDefaultCommand(Command command);
 
   /** @see Subsystem#getCurrentCommand() */
   @JsonIgnore
-  abstract Command getCurrentCommand();
+  Command getCurrentCommand();
 }

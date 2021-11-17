@@ -21,7 +21,7 @@ public class SimpleMotorCluster implements SimpleMotor {
    */
   @JsonCreator
   public SimpleMotorCluster(@JsonProperty(required = true) @NotNull List<SimpleMotor> motors) {
-    if (motors.size() == 0) {
+    if (motors.isEmpty()) {
       throw new IllegalArgumentException("motors must have at least 1 element!");
     }
     this.motors = motors;
