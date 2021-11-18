@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.team449.javaMaps.Bunnybot2021Map;
+import frc.team449.javaMaps.TestBed;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ public class Robot extends TimedRobot {
 
   /** The method that runs when the robot is turned on. Initializes all subsystems from the map. */
   public static @NotNull RobotMap loadMap() {
-    return Bunnybot2021Map.createRobotMap();
+    return TestBed.createRobotMap();
   }
 
   /**

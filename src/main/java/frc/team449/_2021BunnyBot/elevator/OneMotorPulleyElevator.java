@@ -1,20 +1,28 @@
 package frc.team449._2021BunnyBot.elevator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.team449.generalInterfaces.SmartMotor;
+import frc.team449.generalInterfaces.updatable.Updatable;
 import frc.team449.jacksonWrappers.MappedSparkMax;
 import org.jetbrains.annotations.NotNull;
 
-public class OneMotorPulleyElevator extends SubsystemBase {
+import java.util.ArrayList;
 
-  @NotNull private final MappedSparkMax pulleyMotor;
+public class OneMotorPulleyElevator extends SubsystemBase implements Updatable {
+
+  @NotNull private final SmartMotor pulleyMotor;
   @NotNull private ElevatorPosition position;
   @NotNull private final double maxVelocity;
 
   /** @param pulleyMotor single motor used for the pulley */
   @JsonCreator
   public OneMotorPulleyElevator(
-          @NotNull MappedSparkMax pulleyMotor, @NotNull ElevatorPosition position, @NotNull double maxVelocity) {
+          @NotNull SmartMotor pulleyMotor, @NotNull ElevatorPosition position, @NotNull double maxVelocity) {
     this.pulleyMotor = pulleyMotor;
     this.position = position;
     this.maxVelocity = maxVelocity;
@@ -55,6 +63,12 @@ public class OneMotorPulleyElevator extends SubsystemBase {
       return false;
     }
   }
+
+  @Override
+  public void update() {
+
+  }
+
   public enum ElevatorPosition {
     // preset positions
     TOP(0.3),

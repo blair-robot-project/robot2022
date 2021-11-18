@@ -8,6 +8,7 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -108,6 +109,8 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
     // todo determine if encoderCPR will ever be needed
     this.encoderCPR = this.canEncoder.getCountsPerRevolution();
     this.resetPosition();
+
+    MotorContainer.register(this);
   }
 
   @Override
