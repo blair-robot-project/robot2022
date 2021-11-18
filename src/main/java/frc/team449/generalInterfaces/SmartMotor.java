@@ -1,7 +1,5 @@
 package frc.team449.generalInterfaces;
 
-import static frc.team449.other.Util.getLogPrefix;
-
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -25,9 +23,12 @@ import frc.team449.javaMaps.builders.SmartMotorConfigObject;
 import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+
+import static frc.team449.other.Util.getLogPrefix;
 
 /**
  * A motor with built-in advanced capability featuring encoder, current limiting, and gear shifting
@@ -82,236 +83,16 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
     List<SlaveVictor> slaveVictors = config.getSlaveVictors();
     List<SlaveSparkMax> slaveSparks = config.getSlaveSparks();
     Map<?, Integer> statusFrameRatesMillis = config.getStatusFrameRatesMillis();
-    final var logHelper =
-        new Object() {
-          public void warning(final String message) {
-            this.log("Warning: " + message);
-          }
-
-          public void log(final String message) {
-            this.direct("       " + message);
-          }
-
-          public void direct(final String message) {
-            System.out.print(getLogPrefix(SmartMotor.class));
-            System.out.println(message);
-          }
-
-          public void error(final String message) {
-            this.log("ERROR: " + message);
-          }
-        };
-
-    final String motorLogName = String.format("%s \"%s\" on port %d", type, name, port);
-
-    logHelper.direct("Constructing " + motorLogName);
-    final Type actualType;
-
-    if (SIMULATE && RobotBase.isSimulation()) {
-      actualType = Type.SIMULATED;
-    } else if (SIMULATE_SPARKS_IF_ERR && type == Type.SPARK) {
-      try (final var spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless)) {
-        spark.restoreFactoryDefaults();
-        if (spark.getLastError() == CANError.kHALError) {
-          actualType = Type.SIMULATED;
-          logHelper.warning(
-              "error for spark on port "
-                  + port
-                  + "; assuming nonexistent and replacing with simulated controller");
-        } else {
-          actualType = type;
-        }
-      }
-    } else {
-      actualType = type;
-    }
-
-    final var unsupportedHelper =
-        new Object() {
-          public void log(final String property) {
-            logHelper.warning("Property " + property + " is not supported for " + actualType);
-          }
-        };
-
-    // The status frame map must be dealt with manually because Jackson gives the frames as raw
-    // strings due to the
-    // type parameter being a wildcard (Object). The solution is to invoke Jackson again to parse
-    // them.
-    final var sparkStatusFramesMap =
-        new EnumMap<CANSparkMaxLowLevel.PeriodicFrame, Integer>(
-            CANSparkMaxLowLevel.PeriodicFrame.class);
-    final var talonStatusFramesMap =
-        new EnumMap<StatusFrameEnhanced, Integer>(StatusFrameEnhanced.class);
-
-    if (statusFrameRatesMillis != null) {
-      for (final Object frame : statusFrameRatesMillis.entrySet()) {
-        if (frame instanceof String) {
-          // Must put it in quotes so Jackson recognizes it as a string.
-          final String toBeParsed = "\"" + frame + "\"";
-          try {
-            if (actualType == Type.TALON) {
-              talonStatusFramesMap.put(
-                  new ObjectMapper().readValue(toBeParsed, StatusFrameEnhanced.class),
-                  statusFrameRatesMillis.get(frame));
-            } else if (actualType == Type.SPARK) {
-              sparkStatusFramesMap.put(
-                  new ObjectMapper().readValue(toBeParsed, CANSparkMaxLowLevel.PeriodicFrame.class),
-                  statusFrameRatesMillis.get(frame));
-            }
-          } catch (final Exception ex) {
-            logHelper.error(" Could not parse status frame rate key value " + toBeParsed);
-            throw new RuntimeException(ex);
-          }
-
-        } else if (frame instanceof CANSparkMaxLowLevel.PeriodicFrame) {
-          if (type == Type.TALON)
-            throw new IllegalArgumentException(
-                "statusFrameRatesMillis contains key of type CANSparkMaxLowLevel.PeriodicFrame that"
-                    + " will not work for MPSTalon");
-          sparkStatusFramesMap.put(
-              (CANSparkMaxLowLevel.PeriodicFrame) frame, statusFrameRatesMillis.get(frame));
-
-        } else if (frame instanceof StatusFrameEnhanced) {
-          if (actualType == Type.SPARK)
-            throw new IllegalArgumentException(
-                "statusFrameRatesMillis contains key of type StatusFrameEnhanced that will not work"
-                    + " for MPSSparkMax");
-          talonStatusFramesMap.put((StatusFrameEnhanced) frame, statusFrameRatesMillis.get(frame));
-
-        } else {
-          throw new IllegalArgumentException(
-              "statusFrameRatesMillis contains key of unexpected type "
-                  + frame.getClass().getName());
-        }
-      }
-    }
-
-    final SmartMotor result;
-    switch (actualType) {
-      case SPARK:
-        if (slaveTalons != null) unsupportedHelper.log("slaveTalons");
-        if (slaveVictors != null) unsupportedHelper.log("slaveTalons");
-        if (voltagePerCurrentLinReg != null) unsupportedHelper.log("voltagePerCurrentLinReg");
-        if (encoderCPR != null) unsupportedHelper.log("encoderCPR");
-        if (reverseSensor != null) unsupportedHelper.log("reverseSensor");
-        if (voltageCompSamples != null) unsupportedHelper.log("voltageCompSamples");
-        if (updaterProcessPeriodSecs != null) unsupportedHelper.log("updaterProcessPeriodSecs");
-        if (controlFrameRatesMillis != null)
-          unsupportedHelper.log("controlFrameRatesMillis (RATESSSS--plural)");
-
-        result =
-            new MappedSparkMax(
-                port,
-                name,
-                reverseOutput,
-                enableBrakeMode,
-                pdp,
-                fwdLimitSwitchNormallyOpen,
-                revLimitSwitchNormallyOpen,
-                remoteLimitSwitchID,
-                fwdSoftLimit,
-                revSoftLimit,
-                postEncoderGearing,
-                unitPerRotation,
-                currentLimit,
-                enableVoltageComp,
-                perGearSettings,
-                startingGear,
-                startingGearNum,
-                sparkStatusFramesMap,
-                controlFrameRateMillis,
-                slaveSparks);
-        break;
-
-      case TALON:
-        if (controlFrameRateMillis != null)
-          unsupportedHelper.log("controlFrameRatesMillis (RATE--singular)");
-
-        result =
-            new MappedTalon(
-                port,
-                name,
-                reverseOutput,
-                enableBrakeMode,
-                voltagePerCurrentLinReg,
-                pdp,
-                fwdLimitSwitchNormallyOpen,
-                revLimitSwitchNormallyOpen,
-                remoteLimitSwitchID,
-                fwdSoftLimit,
-                revSoftLimit,
-                postEncoderGearing,
-                unitPerRotation,
-                currentLimit,
-                enableVoltageComp,
-                voltageCompSamples,
-                feedbackDevice,
-                encoderCPR,
-                reverseSensor != null && reverseSensor,
-                perGearSettings,
-                startingGear,
-                startingGearNum,
-                talonStatusFramesMap,
-                controlFrameRatesMillis,
-                slaveTalons,
-                slaveVictors,
-                slaveSparks);
-        break;
-
-      case SIMULATED:
-        logHelper.log("SIM:  " + motorLogName);
-        final var simulated =
-            new MPSSmartMotorSimulated(
-                actualType,
-                port,
-                enableBrakeMode,
-                name,
-                reverseOutput,
-                pdp,
-                fwdLimitSwitchNormallyOpen,
-                revLimitSwitchNormallyOpen,
-                remoteLimitSwitchID,
-                fwdSoftLimit,
-                revSoftLimit,
-                postEncoderGearing,
-                unitPerRotation,
-                currentLimit,
-                enableVoltageComp,
-                perGearSettings,
-                startingGear,
-                startingGearNum,
-                sparkStatusFramesMap,
-                controlFrameRateMillis,
-                talonStatusFramesMap,
-                controlFrameRatesMillis,
-                voltagePerCurrentLinReg,
-                voltageCompSamples,
-                feedbackDevice,
-                encoderCPR,
-                reverseSensor,
-                updaterProcessPeriodSecs,
-                slaveTalons,
-                slaveVictors,
-                slaveSparks);
-        Updater.subscribe(simulated);
-        result = simulated;
-        break;
-
-      default:
-        throw new IllegalArgumentException("Unsupported motor type: " + actualType);
-    }
-
-    logHelper.direct("SUCCESS:     " + motorLogName);
-
-    MotorContainer.register(result);
-    return result;
+    return create(type, port, enableBrakeMode, name, reverseOutput, pdp,
+            fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen, remoteLimitSwitchID,
+            fwdSoftLimit, revSoftLimit, postEncoderGearing, unitPerRotation, currentLimit,
+            enableVoltageComp, perGearSettings, startingGear, startingGearNum, controlFrameRateMillis,
+            controlFrameRatesMillis, voltagePerCurrentLinReg, voltageCompSamples, feedbackDevice, encoderCPR,
+            reverseSensor, updaterProcessPeriodSecs, slaveTalons, slaveVictors, slaveSparks, statusFrameRatesMillis);
   }
   /**
-   * Old constructor, don't use this
-   *
-   * @deprecated since {@link SmartMotor#create(SmartMotorConfigObject)}
-   */
-  @Deprecated(since = "other constructor was added", forRemoval = true)
+  * Please don't use this :|
+  */
   static SmartMotor create(
       SmartMotor.Type type,
       int port,
