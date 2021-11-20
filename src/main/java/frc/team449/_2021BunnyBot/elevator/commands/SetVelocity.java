@@ -10,6 +10,8 @@ public class SetVelocity extends CommandBase {
   private final MappedJoystick joystick; // The joystick to read
   private final double maxVelocity; // The elevator's max allowed velocity
 
+  private static final double minInput = 0.03;
+
   public SetVelocity(OneMotorPulleyElevator elevator, MappedJoystick joystick, double maxVelocity) {
     addRequirements(elevator);
     this.elevator = elevator;
@@ -24,11 +26,13 @@ public class SetVelocity extends CommandBase {
    */
   @Override
   public void execute() {
-    double joystickValue = joystick.getY();
-    if (joystickValue
-        >= 0.01) { // Ignore anything <1% of the max value (assuming joystick is mapped to -1 to 1)
+    double joystickValue = -joystick.getY();
+
+    if (Math.abs(joystickValue) >= minInput) { // Ignore anything <1% of the max value (assuming joystick is mapped to -1 to 1)
       // Set the elevator velocity to the joystick value run through the converter
-      elevator.setVelocity(Converter.joystickInputToVelocity(joystickValue, maxVelocity));
+      var converted = Converter.joystickInputToVelocity(joystickValue, maxVelocity);
+      System.out.println("Joystick Y value: " + converted);
+      elevator.setVelocityUPS(converted);
     }
   }
 

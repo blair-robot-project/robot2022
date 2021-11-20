@@ -65,7 +65,7 @@ public class Bunnybot2021Map {
         rightMasterPort = 2,
         rightMasterSlave1Port = 4,
         rightMasterSlave2Port = 6,
-        elevatorMotorPort = 8;
+        elevatorMotorPort = 9;
 
     // Solenoid ports
     int intakeSolenoidForward = 2, intakeSolenoidReverse = 3;
@@ -203,7 +203,7 @@ public class Bunnybot2021Map {
 
     var elevator =
         new OneMotorPulleyElevator(
-            elevatorPulleyMotor, ElevatorPosition.BOTTOM, elevatorMaxVelocity);
+            elevatorPulleyMotor, ElevatorPosition.BOTTOM);
     var setVelocityCommand = new SetVelocity(elevator, mechanismsJoystick, elevatorMaxVelocity);
 
     // intake

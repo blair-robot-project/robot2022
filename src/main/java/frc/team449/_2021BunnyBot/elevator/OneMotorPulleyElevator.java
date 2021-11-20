@@ -8,18 +8,15 @@ import org.jetbrains.annotations.NotNull;
 public class OneMotorPulleyElevator extends SubsystemBase {
 
   @NotNull private final MappedSparkMax pulleyMotor;
-  @NotNull private final double maxVelocity;
   @NotNull private ElevatorPosition position;
 
   /** @param pulleyMotor single motor used for the pulley */
   @JsonCreator
   public OneMotorPulleyElevator(
       @NotNull MappedSparkMax pulleyMotor,
-      @NotNull ElevatorPosition position,
-      @NotNull double maxVelocity) {
+      @NotNull ElevatorPosition position) {
     this.pulleyMotor = pulleyMotor;
     this.position = position;
-    this.maxVelocity = maxVelocity;
   }
 
   /** @return velocity of the elevator motor */
@@ -50,20 +47,15 @@ public class OneMotorPulleyElevator extends SubsystemBase {
    * @param newVelocity the requested new velocity to be set (in m/s)
    * @return true if velocity set successfully, false if newVelocity was higher than maxVelocity
    */
-  public boolean setVelocity(double newVelocity) {
-    if (Math.abs(newVelocity) <= Math.abs(this.maxVelocity)) {
+  public void setVelocityUPS(double newVelocity) {
       pulleyMotor.setVelocityUPS(newVelocity);
-      return true;
-    } else {
-      return false;
-    }
   }
 
   public enum ElevatorPosition {
-    // preset positions
-    TOP(0.3),
-    UPPER(0.2),
-    LOWER(0.1),
+    // preset positions (meters)
+    TOP(2),
+    UPPER(1.25),
+    LOWER(0.75),
     BOTTOM(0.0);
 
     /** The distance of this position from the bottom in meters */
