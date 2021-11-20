@@ -13,8 +13,7 @@ public class OneMotorPulleyElevator extends SubsystemBase {
   /** @param pulleyMotor single motor used for the pulley */
   @JsonCreator
   public OneMotorPulleyElevator(
-      @NotNull MappedSparkMax pulleyMotor,
-      @NotNull ElevatorPosition position) {
+      @NotNull MappedSparkMax pulleyMotor, @NotNull ElevatorPosition position) {
     this.pulleyMotor = pulleyMotor;
     this.position = position;
   }
@@ -48,7 +47,7 @@ public class OneMotorPulleyElevator extends SubsystemBase {
    * @return true if velocity set successfully, false if newVelocity was higher than maxVelocity
    */
   public void setVelocityUPS(double newVelocity) {
-      pulleyMotor.setVelocityUPS(newVelocity);
+    pulleyMotor.setVelocityUPS(newVelocity);
   }
 
   public enum ElevatorPosition {

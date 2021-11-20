@@ -201,9 +201,7 @@ public class Bunnybot2021Map {
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
     // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
 
-    var elevator =
-        new OneMotorPulleyElevator(
-            elevatorPulleyMotor, ElevatorPosition.BOTTOM);
+    var elevator = new OneMotorPulleyElevator(elevatorPulleyMotor, ElevatorPosition.BOTTOM);
     var setVelocityCommand = new SetVelocity(elevator, mechanismsJoystick, elevatorMaxVelocity);
 
     // intake
