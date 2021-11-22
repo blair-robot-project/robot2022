@@ -6,8 +6,8 @@ import frc.team449._2021BunnyBot.intake.OnePistonIntake.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This command takes a position to set the intake to (open or closed)
- * Then sets the position by calling close() or open() in the OnePistonIntake.java
+ * This command takes a position to set the intake to (open or closed) Then sets the position by
+ * calling close() or open() in the OnePistonIntake.java
  */
 public class SetIntake extends CommandBase {
   @NotNull private final IntakePosition newPosition;
@@ -19,9 +19,7 @@ public class SetIntake extends CommandBase {
     this.intake = intake;
   }
 
-  /**
-   * On init, sends the position that the intake is being set to
-   */
+  /** On init, sends the position that the intake is being set to */
   @Override
   public void initialize() {
     System.out.println(
@@ -29,9 +27,7 @@ public class SetIntake extends CommandBase {
             + (newPosition == IntakePosition.OPEN ? "OPEN" : "CLOSED"));
   }
 
-  /**
-   * Sets the position of the intake to open or closed
-   */
+  /** Sets the position of the intake to open or closed */
   @Override
   public void execute() {
     if (newPosition == IntakePosition.OPEN) {

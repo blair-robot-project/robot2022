@@ -33,7 +33,7 @@ public class SetVelocity extends CommandBase {
       var converted = Converter.joystickInputToVelocity(joystickValue, maxVelocity);
       System.out.println("Joystick Y value: " + converted);
       elevator.setVelocityUPS(converted);
-    }else{ // set to 0 if input is <1%
+    } else { // set to 0 if input is <1%
       elevator.setVelocityUPS(0.0);
     }
   }
