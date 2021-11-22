@@ -1,6 +1,7 @@
 package frc.team449.javaMaps;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
@@ -22,11 +23,11 @@ import org.jetbrains.annotations.NotNull;
 public class PositionControlTest {
   // Drive system
   public static final int LEFT_MASTER_PORT = 1,
-      LEFT_MASTER_SLAVE_1_PORT = 3,
-      LEFT_MASTER_SLAVE_2_PORT = 5,
-      RIGHT_MASTER_PORT = 2,
-      RIGHT_MASTER_SLAVE_1_PORT = 4,
-      RIGHT_MASTER_SLAVE_2_PORT = 6;
+          LEFT_MASTER_SLAVE_1_PORT = 3,
+          LEFT_MASTER_SLAVE_2_PORT = 5,
+          RIGHT_MASTER_PORT = 2,
+          RIGHT_MASTER_SLAVE_1_PORT = 4,
+          RIGHT_MASTER_SLAVE_2_PORT = 6;
   // Solenoid ports
   public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
@@ -41,12 +42,12 @@ public class PositionControlTest {
 
     // Motor ports
     int leftMasterPort = 1,
-        leftMasterSlave1Port = 3,
-        leftMasterSlave2Port = 5,
-        rightMasterPort = 2,
-        rightMasterSlave1Port = 4,
-        rightMasterSlave2Port = 6,
-        elevatorMotorPort = 9;
+            leftMasterSlave1Port = 3,
+            leftMasterSlave2Port = 5,
+            rightMasterPort = 2,
+            rightMasterSlave1Port = 4,
+            rightMasterSlave2Port = 6,
+            elevatorMotorPort = 9;
 
     // Solenoid ports
     int intakeSolenoidForward = 2, intakeSolenoidReverse = 3;
@@ -57,21 +58,21 @@ public class PositionControlTest {
     int mechanismsJoystickPort = 0, driveJoystickPort = 1;
 
     // Driver button numbers
-    int driverIntakeOutOn = 1,
-        driverIntakeOff = 2, // TODO This is never used
-        driverIntakeRev = 3, // TODO This is never used
-        driverIntakeInOff = 4, // TODO This is never used
-        shiftUp = 5;
+    int     driverIntakeOutOn = 1,
+            driverIntakeOff = 2, // TODO This is never used
+            driverIntakeRev = 3, // TODO This is never used
+            driverIntakeInOff = 4, // TODO This is never used
+            shiftUp = 5;
 
     // Mechs button numbers
-    int elevatorMoveToTop = 1,
-        elevatorMoveToUpper = 2,
-        elevatorMoveToLower = 3,
-        elevatorMoveToBottom = 4,
-        intakeClose = 7,
-        intakeOpen = 8;
+    int     elevatorMoveToTop = 1,
+            elevatorMoveToUpper = 2,
+            elevatorMoveToLower = 3,
+            elevatorMoveToBottom = 4,
+            intakeClose = 7,
+            intakeOpen = 8;
     // Motor speeds
-    double elevatorMaxVelocity = 5000; // TODO this is a placeholder
+    double elevatorMaxVelocity = 5; // TODO this is a placeholder
 
     var useCameraServer = false;
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
@@ -164,30 +165,31 @@ public class PositionControlTest {
     */
     // Elevator
     var elevatorPulleyMotor =
-        new MappedSparkMax(
-            elevatorMotorPort,
-            "elevator",
-            false,
-            true,
-            pdp,
-            null,
-            null,
-            null,
-            null,
-            null,
-            1.0 / 30,
-            1.0,
-            40,
-            false,
-            List.of(new PerGearSettingsBuilder().gear(Shiftable.Gear.LOW).maxSpeed(5000.0).build()),
-            Shiftable.Gear.LOW,
-            null,
-            null,
-            null,
-            null);
-    // PID constants for velocity contolled elevator
-    //        elevatorPulleyMotor.setPID(0.00029, 0.000001, 0.01);
-    // PID constants for position controlled elevator
+            new MappedSparkMax(
+                    elevatorMotorPort,
+                    "elevator",
+                    false,
+                    true,
+                    pdp,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    1.0 / 30.0,
+                    1.0,
+                    40,
+                    false,
+                    List.of(new PerGearSettingsBuilder().gear(Shiftable.Gear.LOW).maxSpeed(5000.0).build()),
+                    Shiftable.Gear.LOW,
+                    null,
+                    null,
+                    null,
+                    null);
+    // PID constants for velocity controlled elevator motor
+//    elevatorPulleyMotor.setPID(0.0003, 0.0000008, 0.0146);
+    // PID constants for position controlled elevator motor
+    elevatorPulleyMotor.setPID(.045,.00000095,1);
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
     // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
 
@@ -251,40 +253,40 @@ public class PositionControlTest {
     var defaultCommands = List.<DefaultCommand>of();
 
     var buttons =
-        List.of(
-            //                         elevator move to TOP position
-            new CommandButton(
-                new SimpleButton(mechanismsJoystick, elevatorMoveToTop),
-                new MoveToPosition(ElevatorPosition.TOP, elevator),
-                CommandButton.Action.WHEN_PRESSED),
-            // elevator move to UPPER position
-            new CommandButton(
-                new SimpleButton(mechanismsJoystick, elevatorMoveToUpper),
-                new MoveToPosition(ElevatorPosition.UPPER, elevator),
-                CommandButton.Action.WHEN_PRESSED),
-            // elevator move to LOWER position
-            new CommandButton(
-                new SimpleButton(mechanismsJoystick, elevatorMoveToLower),
-                new MoveToPosition(ElevatorPosition.LOWER, elevator),
-                CommandButton.Action.WHEN_PRESSED),
-            // elevator move to BOTTOM position
-            new CommandButton(
-                new SimpleButton(mechanismsJoystick, elevatorMoveToBottom),
-                new MoveToPosition(ElevatorPosition.BOTTOM, elevator),
-                CommandButton.Action.WHEN_PRESSED));
+            List.of(
+                    // elevator move to TOP position
+                    new CommandButton(
+                            new SimpleButton(mechanismsJoystick, elevatorMoveToTop),
+                            new MoveToPosition(ElevatorPosition.TOP, elevator),
+                            CommandButton.Action.WHEN_PRESSED),
+                    // elevator move to UPPER position
+                    new CommandButton(
+                            new SimpleButton(mechanismsJoystick, elevatorMoveToUpper),
+                            new MoveToPosition(ElevatorPosition.UPPER, elevator),
+                            CommandButton.Action.WHEN_PRESSED),
+                    // elevator move to LOWER position
+                    new CommandButton(
+                            new SimpleButton(mechanismsJoystick, elevatorMoveToLower),
+                            new MoveToPosition(ElevatorPosition.LOWER, elevator),
+                            CommandButton.Action.WHEN_PRESSED),
+                    new CommandButton(
+                            new SimpleButton(mechanismsJoystick, elevatorMoveToBottom),
+                            new MoveToPosition(ElevatorPosition.BOTTOM, elevator),
+                            CommandButton.Action.WHEN_PRESSED)
+            );
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();
-    var teleopStartupCommands = List.<Command>of(setVelocityCommand);
+    var teleopStartupCommands = List.<Command>of();
     var testStartupCommands = List.<Command>of();
     var allCommands =
-        new CommandContainer(
-            defaultCommands,
-            buttons,
-            robotStartupCommands,
-            autoStartupCommands,
-            teleopStartupCommands,
-            testStartupCommands);
+            new CommandContainer(
+                    defaultCommands,
+                    buttons,
+                    robotStartupCommands,
+                    autoStartupCommands,
+                    teleopStartupCommands,
+                    testStartupCommands);
 
     return new RobotMap(subsystems, pdp, updater, allCommands, joysticks, useCameraServer);
   }

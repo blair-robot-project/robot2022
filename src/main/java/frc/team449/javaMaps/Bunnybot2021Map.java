@@ -13,7 +13,7 @@ import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator;
 import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator.ElevatorPosition;
 import frc.team449._2021BunnyBot.elevator.commands.MoveToPosition;
 import frc.team449._2021BunnyBot.elevator.commands.SetVelocity;
-import frc.team449._2021BunnyBot.intake.IntakeActuated;
+import frc.team449._2021BunnyBot.intake.OnePistonIntake;
 import frc.team449._2021BunnyBot.intake.commands.SetIntake;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.components.ShiftComponent;
@@ -206,7 +206,7 @@ public class Bunnybot2021Map {
 
     // intake
     var intake =
-        new IntakeActuated(
+        new OnePistonIntake(
             new SolenoidSimple(new DoubleSolenoid(intakeSolenoidForward, intakeSolenoidReverse)));
 
     var subsystems = List.<Subsystem>of(drive, elevator, intake);
@@ -297,12 +297,12 @@ public class Bunnybot2021Map {
             // Close the intake
             new CommandButton(
                 new SimpleButton(mechanismsJoystick, intakeClose),
-                new SetIntake(IntakeActuated.IntakePosition.CLOSED, intake),
+                new SetIntake(OnePistonIntake.IntakePosition.CLOSED, intake),
                 CommandButton.Action.WHEN_PRESSED),
             // Open the intake
             new CommandButton(
                 new SimpleButton(mechanismsJoystick, intakeOpen),
-                new SetIntake(IntakeActuated.IntakePosition.OPEN, intake),
+                new SetIntake(OnePistonIntake.IntakePosition.OPEN, intake),
                 CommandButton.Action.WHEN_PRESSED));
 
     var robotStartupCommands = List.<Command>of();

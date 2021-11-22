@@ -72,7 +72,7 @@ public class Testbed {
         intakeClose = 7,
         intakeOpen = 8;
     // Motor speeds
-    double elevatorMaxVelocity = 5000; // TODO this is a placeholder
+    double elevatorMaxVelocity = 5; // TODO this is a placeholder
 
     var useCameraServer = false;
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
@@ -187,7 +187,7 @@ public class Testbed {
             null,
             null);
     // PID constants for elevator
-    elevatorPulleyMotor.setPID(0.00029, 0.000001, 0.01);
+    elevatorPulleyMotor.setPID(0.00028, 0.0000008, 0.008);
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
     // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
 
@@ -196,7 +196,7 @@ public class Testbed {
 
     // intake
     /*var intake =
-                new IntakeActuated(
+                new Intake(
                         new SolenoidSimple(new DoubleSolenoid(intakeSolenoidForward, intakeSolenoidReverse)));
     */
     var subsystems = List.<Subsystem>of(elevator);
@@ -251,57 +251,16 @@ public class Testbed {
     var defaultCommands = List.<DefaultCommand>of();
 
     var buttons =
-        List.of(
-            // Run bumper and transition wheel
-            /*new CommandButton(
-                    new SimpleButton(driveJoystick, driverIntakeOutOn),
-                    new ParallelCommandGroup(
-                            new SetSolenoidPose(intakeSolenoid, DoubleSolenoid.Value.kForward)
-                            // todo more commands in this parallel command
-                    ),
-                    CommandButton.Action.WHEN_PRESSED),
-            // Shift drive up *or* down
-            // todo Should there be 2 separate commands instead?
-            new CommandButton(
-                    new SimpleButton(driveJoystick, shiftUp),
-                    new ShiftGears(drive),
-                    CommandButton.Action.WHEN_PRESSED),
-             elevator move to TOP position
-            new CommandButton(
-                    new SimpleButton(mechanismsJoystick, elevatorMoveToTop),
-                    new MoveToPosition(ElevatorPosition.TOP, elevator),
-                    CommandButton.Action.WHEN_PRESSED),
-            // elevator move to UPPER position
-            new CommandButton(
-                    new SimpleButton(mechanismsJoystick, elevatorMoveToUpper),
-                    new MoveToPosition(ElevatorPosition.UPPER, elevator),
-                    CommandButton.Action.WHEN_PRESSED),*/
-            // elevator move to LOWER position
-            new CommandButton(
-                new SimpleButton(mechanismsJoystick, 2),
-                new InstantCommand(() -> elevator.setVelocityUPS(1), elevator),
-                CommandButton.Action.WHEN_PRESSED),
-            new CommandButton(
-                new SimpleButton(mechanismsJoystick, 1),
-                new InstantCommand(() -> elevator.setVelocityUPS(0), elevator),
-                CommandButton.Action.WHEN_PRESSED),
-            // elevator move to BOTTOM position
-            new CommandButton(
-                new SimpleButton(mechanismsJoystick, elevatorMoveToBottom),
-                new MoveToPosition(ElevatorPosition.BOTTOM, elevator),
-                CommandButton.Action.WHEN_PRESSED)
-            // Close the intake
-            //                        new CommandButton(
-            //                                new SimpleButton(mechanismsJoystick, intakeClose),
-            //                                new SetIntake(IntakeActuated.IntakePosition.CLOSED,
-            // intake),
-            //                                CommandButton.Action.WHEN_PRESSED),
-            //                        // Open the intake
-            //                        new CommandButton(
-            //                                new SimpleButton(mechanismsJoystick, intakeOpen),
-            //                                new SetIntake(IntakeActuated.IntakePosition.OPEN,
-            // intake),
-            //                                CommandButton.Action.WHEN_PRESSED)
+        List.<CommandButton>of(
+//            // for tuning purposes, use stick on controller for vel control
+//            new CommandButton(
+//                new SimpleButton(mechanismsJoystick, 2),
+//                new InstantCommand(() -> elevator.setVelocityUPS(2), elevator),
+//                CommandButton.Action.WHEN_PRESSED),
+//            new CommandButton(
+//                new SimpleButton(mechanismsJoystick, 1),
+//                new InstantCommand(() -> elevator.setVelocityUPS(0), elevator),
+//                CommandButton.Action.WHEN_PRESSED)
             );
 
     var robotStartupCommands = List.<Command>of();
