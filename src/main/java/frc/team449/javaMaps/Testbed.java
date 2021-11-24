@@ -1,20 +1,17 @@
 package frc.team449.javaMaps;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator;
 import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator.ElevatorPosition;
-import frc.team449._2021BunnyBot.elevator.commands.MoveToPosition;
 import frc.team449._2021BunnyBot.elevator.commands.SetVelocity;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.jacksonWrappers.*;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
 import frc.team449.oi.buttons.CommandButton;
-import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
 import java.util.List;
@@ -252,15 +249,15 @@ public class Testbed {
 
     var buttons =
         List.<CommandButton>of(
-//            // for tuning purposes, use stick on controller for vel control
-//            new CommandButton(
-//                new SimpleButton(mechanismsJoystick, 2),
-//                new InstantCommand(() -> elevator.setVelocityUPS(2), elevator),
-//                CommandButton.Action.WHEN_PRESSED),
-//            new CommandButton(
-//                new SimpleButton(mechanismsJoystick, 1),
-//                new InstantCommand(() -> elevator.setVelocityUPS(0), elevator),
-//                CommandButton.Action.WHEN_PRESSED)
+            //            // for tuning purposes, use stick on controller for vel control
+            //            new CommandButton(
+            //                new SimpleButton(mechanismsJoystick, 2),
+            //                new InstantCommand(() -> elevator.setVelocityUPS(2), elevator),
+            //                CommandButton.Action.WHEN_PRESSED),
+            //            new CommandButton(
+            //                new SimpleButton(mechanismsJoystick, 1),
+            //                new InstantCommand(() -> elevator.setVelocityUPS(0), elevator),
+            //                CommandButton.Action.WHEN_PRESSED)
             );
 
     var robotStartupCommands = List.<Command>of();

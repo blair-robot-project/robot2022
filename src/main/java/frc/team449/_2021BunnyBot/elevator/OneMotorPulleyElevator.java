@@ -3,7 +3,6 @@ package frc.team449._2021BunnyBot.elevator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.jacksonWrappers.MappedSparkMax;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 public class OneMotorPulleyElevator extends SubsystemBase {
