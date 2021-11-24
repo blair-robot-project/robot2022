@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.team449.javaMaps.DriveTest;
 import frc.team449.javaMaps.PositionControlTest;
 import frc.team449.javaMaps.Testbed;
 import frc.team449.other.Clock;
@@ -20,7 +21,7 @@ public class Robot extends TimedRobot {
 
   /** The method that runs when the robot is turned on. Initializes all subsystems from the map. */
   public static @NotNull RobotMap loadMap() {
-    return PositionControlTest.createRobotMap();
+    return DriveTest.createRobotMap();
   }
 
   /**
