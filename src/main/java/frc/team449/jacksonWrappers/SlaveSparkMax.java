@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import frc.team449.generalInterfaces.SlaveMotor;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SlaveSparkMax implements SlaveMotor, Loggable {
@@ -48,7 +47,7 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
   }
 
   @Override
-  public String configureLogName(){
+  public String configureLogName() {
     return "slavespark_" + this.port;
   }
 

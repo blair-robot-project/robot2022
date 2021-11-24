@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * com.ctre.phoenix.motorcontrol.can.VictorSPX}.
  */
 public class SlaveTalon implements SlaveMotor, Loggable {
-  /** The Port of this talon.*/
+  /** The Port of this talon. */
   private int port;
   /** The TalonSRX this object wraps. */
   @NotNull private final TalonSRX talonSRX;
@@ -154,7 +154,7 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   //    }
 
   @Override
-  public String configureLogName(){
+  public String configureLogName() {
     return "slavetalon_" + this.port;
   }
 
