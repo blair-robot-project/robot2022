@@ -303,7 +303,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
 
     logHelper.direct("SUCCESS:     " + motorLogName);
 
-    MotorContainer.register(result);
+//    MotorContainer.register(result);
     return result;
   }
   /**

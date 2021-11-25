@@ -1,8 +1,10 @@
 package frc.team449.javaMaps;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
@@ -18,6 +20,7 @@ import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
 import frc.team449.javaMaps.builders.SmartMotorConfigObject;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.CommandButton;
+import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.oi.throttles.Throttle;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
@@ -81,9 +84,10 @@ public class DriveTest {
     var useCameraServer = false;
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
 
-    var mechanismsJoystick = new MappedJoystick(mechanismsJoystickPort);
+//    var mechanismsJoystick = new MappedJoystick(mechanismsJoystickPort);
     var driveJoystick = new MappedJoystick(driveJoystickPort);
-    var joysticks = List.of(mechanismsJoystick, driveJoystick);
+    var joysticks = List.of(/*mechanismsJoystick,*/ driveJoystick);
+
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
@@ -130,7 +134,7 @@ public class DriveTest {
             driveMasterPrototype
                 .setPort(leftMasterPort)
                 .setName("left")
-                .setReverseOutput(false)
+                .setReverseOutput(true)
                 .setSlaveSparks(
                     List.of(
                         new SlaveSparkMax(leftMasterSlave1Port, false, pdp),
@@ -250,7 +254,32 @@ public class DriveTest {
 
     var defaultCommands = List.<DefaultCommand>of();
 
-    var buttons = List.<CommandButton>of();
+    var buttons = List.<CommandButton>of(
+            // start left side
+            new CommandButton(
+                    new SimpleButton(driveJoystick, 1),
+                    new InstantCommand(() -> leftMaster.setVelocity(.2),drive),
+                    CommandButton.Action.WHEN_PRESSED
+            ),
+            // start right side
+            new CommandButton(
+                    new SimpleButton(driveJoystick, 4),
+                    new InstantCommand(() -> rightMaster.setVelocity(.2),drive),
+                    CommandButton.Action.WHEN_PRESSED
+            ),
+            // stop left side
+            new CommandButton(
+                    new SimpleButton(driveJoystick, 2),
+                    new InstantCommand(() -> leftMaster.setVelocity(0),drive),
+                    CommandButton.Action.WHEN_PRESSED
+            ),
+            // stop right side
+            new CommandButton(
+                    new SimpleButton(driveJoystick,3),
+                    new InstantCommand(() -> rightMaster.setVelocity(0), drive),
+                    CommandButton.Action.WHEN_PRESSED
+            )
+    );
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();
