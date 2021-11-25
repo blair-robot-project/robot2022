@@ -88,6 +88,7 @@ public class DriveTest {
     var driveJoystick = new MappedJoystick(driveJoystickPort);
     var joysticks = List.of(/*mechanismsJoystick,*/ driveJoystick);
 
+    var compressor = new Compressor();
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
