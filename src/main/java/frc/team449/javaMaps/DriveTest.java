@@ -14,6 +14,7 @@ import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyroShiftable;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
+import frc.team449.generalInterfaces.shiftable.commands.ShiftGears;
 import frc.team449.jacksonWrappers.*;
 import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
@@ -68,11 +69,7 @@ public class DriveTest {
     int mechanismsJoystickPort = 0, driveJoystickPort = 1;
 
     // Driver button numbers
-    int driverIntakeOutOn = 1,
-        driverIntakeOff = 2, // TODO This is never used
-        driverIntakeRev = 3, // TODO This is never used
-        driverIntakeInOff = 4, // TODO This is never used
-        shiftUp = 5;
+    int shift = 5;
 
     // Mechs button numbers
     int elevatorMoveToTop = 1,
@@ -89,6 +86,7 @@ public class DriveTest {
     var joysticks = List.of(/*mechanismsJoystick,*/ driveJoystick);
 
     var compressor = new Compressor();
+    var gearShiftingSolenoids = new DoubleSolenoid(0,1,0);
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
@@ -96,20 +94,20 @@ public class DriveTest {
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
             .setPdp(pdp)
-            .setUnitPerRotation(0.47877872)
+            .setUnitPerRotation(0.470799075)
             .setCurrentLimit(50)
             .setEnableVoltageComp(true)
-            .setStartingGear(Shiftable.Gear.LOW);
+            .setStartingGear(Shiftable.Gear.HIGH);
     var lowGear =
         new PerGearSettingsBuilder()
             .gear(Shiftable.Gear.LOW)
-            .postEncoderGearing(0.0488998)
+            .postEncoderGearing(1/20.45)
             .maxSpeed(2.3);
     var highGear =
         new PerGearSettingsBuilder()
             .gear(Shiftable.Gear.HIGH)
-            .postEncoderGearing(0.12936611)
-            .maxSpeed(5.2);
+            .postEncoderGearing(1/7.73)
+            .maxSpeed(5.2); // free speed max in m/s is 44.537592495 m/s
     var rightMaster =
         SmartMotor.create(
             driveMasterPrototype
@@ -158,7 +156,7 @@ public class DriveTest {
             navx,
             0.61755,
             new ShiftComponent(
-                List.of(leftMaster, rightMaster), new DoubleSolenoid(0, 0, 1), Shiftable.Gear.LOW),
+                List.of(leftMaster, rightMaster), gearShiftingSolenoids, Shiftable.Gear.LOW),
             false);
     // Elevator
     //        var elevatorPulleyMotor =
@@ -256,28 +254,33 @@ public class DriveTest {
     var defaultCommands = List.<DefaultCommand>of();
 
     var buttons = List.<CommandButton>of(
+            // toggle shift gears
+            new CommandButton(
+                    new SimpleButton(driveJoystick, shift),
+                    new ShiftGears(drive),
+                    CommandButton.Action.WHEN_PRESSED),
             // start left side
             new CommandButton(
                     new SimpleButton(driveJoystick, 1),
-                    new InstantCommand(() -> leftMaster.setVelocity(.2),drive),
+                    new InstantCommand(() -> leftMaster.setVoltage(1),drive),
                     CommandButton.Action.WHEN_PRESSED
             ),
             // start right side
             new CommandButton(
                     new SimpleButton(driveJoystick, 4),
-                    new InstantCommand(() -> rightMaster.setVelocity(.2),drive),
+                    new InstantCommand(() -> rightMaster.setVoltage(1),drive),
                     CommandButton.Action.WHEN_PRESSED
             ),
             // stop left side
             new CommandButton(
                     new SimpleButton(driveJoystick, 2),
-                    new InstantCommand(() -> leftMaster.setVelocity(0),drive),
+                    new InstantCommand(() -> leftMaster.setVoltage(0),drive),
                     CommandButton.Action.WHEN_PRESSED
             ),
             // stop right side
             new CommandButton(
                     new SimpleButton(driveJoystick,3),
-                    new InstantCommand(() -> rightMaster.setVelocity(0), drive),
+                    new InstantCommand(() -> rightMaster.setVoltage(0), drive),
                     CommandButton.Action.WHEN_PRESSED
             )
     );
