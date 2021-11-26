@@ -81,12 +81,12 @@ public class DriveTest {
     var useCameraServer = false;
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
 
-//    var mechanismsJoystick = new MappedJoystick(mechanismsJoystickPort);
+    //    var mechanismsJoystick = new MappedJoystick(mechanismsJoystickPort);
     var driveJoystick = new MappedJoystick(driveJoystickPort);
     var joysticks = List.of(/*mechanismsJoystick,*/ driveJoystick);
 
     var compressor = new Compressor();
-    var gearShiftingSolenoids = new DoubleSolenoid(0,1,0);
+    var gearShiftingSolenoids = new DoubleSolenoid(0, 1, 0);
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
@@ -101,12 +101,12 @@ public class DriveTest {
     var lowGear =
         new PerGearSettingsBuilder()
             .gear(Shiftable.Gear.LOW)
-            .postEncoderGearing(1/20.45)
+            .postEncoderGearing(1 / 20.45)
             .maxSpeed(2.3);
     var highGear =
         new PerGearSettingsBuilder()
             .gear(Shiftable.Gear.HIGH)
-            .postEncoderGearing(1/7.73)
+            .postEncoderGearing(1 / 7.73)
             .maxSpeed(5.2); // free speed max in m/s is 44.537592495 m/s
     var rightMaster =
         SmartMotor.create(
@@ -253,37 +253,33 @@ public class DriveTest {
 
     var defaultCommands = List.<DefaultCommand>of();
 
-    var buttons = List.<CommandButton>of(
+    var buttons =
+        List.<CommandButton>of(
             // toggle shift gears
             new CommandButton(
-                    new SimpleButton(driveJoystick, shift),
-                    new ShiftGears(drive),
-                    CommandButton.Action.WHEN_PRESSED),
+                new SimpleButton(driveJoystick, shift),
+                new ShiftGears(drive),
+                CommandButton.Action.WHEN_PRESSED),
             // start left side
             new CommandButton(
-                    new SimpleButton(driveJoystick, 1),
-                    new InstantCommand(() -> leftMaster.setVoltage(1),drive),
-                    CommandButton.Action.WHEN_PRESSED
-            ),
+                new SimpleButton(driveJoystick, 1),
+                new InstantCommand(() -> leftMaster.setVoltage(1), drive),
+                CommandButton.Action.WHEN_PRESSED),
             // start right side
             new CommandButton(
-                    new SimpleButton(driveJoystick, 4),
-                    new InstantCommand(() -> rightMaster.setVoltage(1),drive),
-                    CommandButton.Action.WHEN_PRESSED
-            ),
+                new SimpleButton(driveJoystick, 4),
+                new InstantCommand(() -> rightMaster.setVoltage(1), drive),
+                CommandButton.Action.WHEN_PRESSED),
             // stop left side
             new CommandButton(
-                    new SimpleButton(driveJoystick, 2),
-                    new InstantCommand(() -> leftMaster.setVoltage(0),drive),
-                    CommandButton.Action.WHEN_PRESSED
-            ),
+                new SimpleButton(driveJoystick, 2),
+                new InstantCommand(() -> leftMaster.setVoltage(0), drive),
+                CommandButton.Action.WHEN_PRESSED),
             // stop right side
             new CommandButton(
-                    new SimpleButton(driveJoystick,3),
-                    new InstantCommand(() -> rightMaster.setVoltage(0), drive),
-                    CommandButton.Action.WHEN_PRESSED
-            )
-    );
+                new SimpleButton(driveJoystick, 3),
+                new InstantCommand(() -> rightMaster.setVoltage(0), drive),
+                CommandButton.Action.WHEN_PRESSED));
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();
