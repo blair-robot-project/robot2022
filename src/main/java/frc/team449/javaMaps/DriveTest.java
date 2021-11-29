@@ -32,58 +32,28 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public class DriveTest {
-  // Drive system
-  public static final int RIGHT_MASTER_PORT = 1,
-      RIGHT_MASTER_SLAVE_1_PORT = 2,
-      RIGHT_MASTER_SLAVE_2_PORT = 3,
-      LEFT_MASTER_PORT = 4,
-      LEFT_MASTER_SLAVE_1_PORT = 5,
-      LEFT_MASTER_SLAVE_2_PORT = 6;
+  // Motor IDs
+  public static final int RIGHT_LEADER_PORT = 1,
+                          RIGHT_LEADER_FOLLOWER_1_PORT = 2,
+                          LEFT_LEADER_PORT = 3,
+                          LEFT_LEADER_FOLLOWER_1_PORT = 4;
   // Solenoid ports
   public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
+  // Controller ports
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
-
+  // Drive button numbers
+  public static final int SHIFT_TOGGLE_BUTTON = 5;
   private DriveTest() {
     throw new IllegalStateException("This is a utility class!");
   }
 
   @NotNull
   public static RobotMap createRobotMap() {
-    // TODO Declare these constants outside this method and remove unused variables
-
-    // Motor ports
-    int rightMasterPort = 1,
-        rightMasterSlave1Port = 2,
-        rightMasterSlave2Port = 3,
-        leftMasterPort = 4,
-        leftMasterSlave1Port = 5,
-        leftMasterSlave2Port = 6,
-        elevatorMotorPort = 9;
-
-    // Solenoid ports
-    int intakeSolenoidForward = 2, intakeSolenoidReverse = 3;
-
-    // Drive input-output ports. Things like encoders go here
-
-    // Joystick ports
-    int mechanismsJoystickPort = 0, driveJoystickPort = 1;
-
-    // Driver button numbers
-    int shift = 5;
-
-    // Mechs button numbers
-    int elevatorMoveToTop = 1,
-        elevatorMoveToUpper = 2,
-        elevatorMoveToLower = 3,
-        elevatorMoveToBottom = 4;
-    // Motor speeds
-
     var useCameraServer = false;
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
 
-//    var mechanismsJoystick = new MappedJoystick(mechanismsJoystickPort);
-    var driveJoystick = new MappedJoystick(driveJoystickPort);
-    var joysticks = List.of(/*mechanismsJoystick,*/ driveJoystick);
+    var driveJoystick = new MappedJoystick(DRIVE_JOYSTICK_PORT);
+    var joysticks = List.of(driveJoystick);
 
     var compressor = new Compressor();
     var gearShiftingSolenoids = new DoubleSolenoid(0,1,0);
@@ -112,12 +82,13 @@ public class DriveTest {
         SmartMotor.create(
             driveMasterPrototype
                 .setName("right")
-                .setPort(rightMasterPort)
+                .setPort(RIGHT_LEADER_PORT)
                 .setReverseOutput(false)
                 .setSlaveSparks(
                     List.of(
-                        new SlaveSparkMax(rightMasterSlave1Port, false, pdp),
-                        new SlaveSparkMax(rightMasterSlave2Port, false, pdp)))
+                        new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false, pdp)
+                    )
+                )
                 .setPerGearSettings(
                     List.of(
                         lowGear
@@ -131,13 +102,14 @@ public class DriveTest {
     var leftMaster =
         SmartMotor.create(
             driveMasterPrototype
-                .setPort(leftMasterPort)
+                .setPort(LEFT_LEADER_PORT)
                 .setName("left")
                 .setReverseOutput(true)
                 .setSlaveSparks(
                     List.of(
-                        new SlaveSparkMax(leftMasterSlave1Port, false, pdp),
-                        new SlaveSparkMax(leftMasterSlave2Port, false, pdp)))
+                        new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false, pdp)
+                    )
+                )
                 .setPerGearSettings(
                     List.of(
                         lowGear
@@ -158,51 +130,7 @@ public class DriveTest {
             new ShiftComponent(
                 List.of(leftMaster, rightMaster), gearShiftingSolenoids, Shiftable.Gear.LOW),
             false);
-    // Elevator
-    //        var elevatorPulleyMotor =
-    //                new MappedSparkMax(
-    //                        elevatorMotorPort,
-    //                        "elevator",
-    //                        false,
-    //                        true,
-    //                        pdp,
-    //                        null,
-    //                        null,
-    //                        null,
-    //                        null,
-    //                        null,
-    //                        1.0 / 30.0,
-    //                        1.0,
-    //                        40,
-    //                        false,
-    //                        List.of(new PerGearSettingsBuilder().
-    //                                gear(Shiftable.Gear.LOW).feedForwardCalculator(
-    //                                        new MappedFeedForwardCalculator(0.0993, 0.00414,
-    // 0.000128))
-    //                                .maxSpeed(5000.0)
-    //                                .build()),
-    //                        Shiftable.Gear.LOW,
-    //                        null,
-    //                        null,
-    //                        null,
-    //                        null);
-    //        // PID constants for velocity controlled elevator motor
-    ////    elevatorPulleyMotor.setPID(0.0003, 0.0000008, 0.0146);
-    //        // PID constants for position controlled elevator motor
-    //        elevatorPulleyMotor.setPID(1,0,1);
-    //        // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
-    //        // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
-    //
-    //        var elevator = new OneMotorPulleyElevator(elevatorPulleyMotor,
-    // ElevatorPosition.BOTTOM);
-    //        var setVelocityCommand = new SetVelocity(elevator, mechanismsJoystick,
-    // elevatorMaxVelocity);
 
-    // intake
-    /*var intake =
-                new IntakeActuated(
-                        new SolenoidSimple(new DoubleSolenoid(intakeSolenoidForward, intakeSolenoidReverse)));
-    */
     var subsystems = List.<Subsystem>of(drive);
 
     var throttlePrototype =
@@ -244,10 +172,6 @@ public class DriveTest {
                 null),
             1.0,
             true);
-    //
-    //        var intakeSolenoid =
-    //                new SolenoidSimple(new DoubleSolenoid(intakeSolenoidForward,
-    // intakeSolenoidReverse));
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
@@ -256,7 +180,7 @@ public class DriveTest {
     var buttons = List.<CommandButton>of(
             // toggle shift gears
             new CommandButton(
-                    new SimpleButton(driveJoystick, shift),
+                    new SimpleButton(driveJoystick, SHIFT_TOGGLE_BUTTON),
                     new ShiftGears(drive),
                     CommandButton.Action.WHEN_PRESSED),
             // start left side
