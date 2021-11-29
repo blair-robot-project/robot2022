@@ -34,15 +34,16 @@ import org.jetbrains.annotations.NotNull;
 public class DriveTest {
   // Motor IDs
   public static final int RIGHT_LEADER_PORT = 1,
-                          RIGHT_LEADER_FOLLOWER_1_PORT = 2,
-                          LEFT_LEADER_PORT = 3,
-                          LEFT_LEADER_FOLLOWER_1_PORT = 4;
+      RIGHT_LEADER_FOLLOWER_1_PORT = 2,
+      LEFT_LEADER_PORT = 3,
+      LEFT_LEADER_FOLLOWER_1_PORT = 4;
   // Solenoid ports
   public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
   // Controller ports
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
   // Drive button numbers
   public static final int SHIFT_TOGGLE_BUTTON = 5;
+
   private DriveTest() {
     throw new IllegalStateException("This is a utility class!");
   }
@@ -56,7 +57,7 @@ public class DriveTest {
     var joysticks = List.of(driveJoystick);
 
     var compressor = new Compressor();
-    var gearShiftingSolenoids = new DoubleSolenoid(0,1,0);
+    var gearShiftingSolenoids = new DoubleSolenoid(0, 1, 0);
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
@@ -71,12 +72,12 @@ public class DriveTest {
     var lowGear =
         new PerGearSettingsBuilder()
             .gear(Shiftable.Gear.LOW)
-            .postEncoderGearing(1/20.45)
+            .postEncoderGearing(1 / 20.45)
             .maxSpeed(2.3);
     var highGear =
         new PerGearSettingsBuilder()
             .gear(Shiftable.Gear.HIGH)
-            .postEncoderGearing(1/7.73)
+            .postEncoderGearing(1 / 7.73)
             .maxSpeed(5.2); // free speed max in m/s is 44.537592495 m/s
     var rightMaster =
         SmartMotor.create(
@@ -85,10 +86,7 @@ public class DriveTest {
                 .setPort(RIGHT_LEADER_PORT)
                 .setReverseOutput(false)
                 .setSlaveSparks(
-                    List.of(
-                        new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false, pdp)
-                    )
-                )
+                    List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false, pdp)))
                 .setPerGearSettings(
                     List.of(
                         lowGear
@@ -105,11 +103,7 @@ public class DriveTest {
                 .setPort(LEFT_LEADER_PORT)
                 .setName("left")
                 .setReverseOutput(true)
-                .setSlaveSparks(
-                    List.of(
-                        new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false, pdp)
-                    )
-                )
+                .setSlaveSparks(List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false, pdp)))
                 .setPerGearSettings(
                     List.of(
                         lowGear
@@ -177,37 +171,33 @@ public class DriveTest {
 
     var defaultCommands = List.<DefaultCommand>of();
 
-    var buttons = List.<CommandButton>of(
+    var buttons =
+        List.<CommandButton>of(
             // toggle shift gears
             new CommandButton(
-                    new SimpleButton(driveJoystick, SHIFT_TOGGLE_BUTTON),
-                    new ShiftGears(drive),
-                    CommandButton.Action.WHEN_PRESSED),
+                new SimpleButton(driveJoystick, SHIFT_TOGGLE_BUTTON),
+                new ShiftGears(drive),
+                CommandButton.Action.WHEN_PRESSED),
             // start left side
             new CommandButton(
-                    new SimpleButton(driveJoystick, 1),
-                    new InstantCommand(() -> leftMaster.setVoltage(1),drive),
-                    CommandButton.Action.WHEN_PRESSED
-            ),
+                new SimpleButton(driveJoystick, 1),
+                new InstantCommand(() -> leftMaster.setVoltage(1), drive),
+                CommandButton.Action.WHEN_PRESSED),
             // start right side
             new CommandButton(
-                    new SimpleButton(driveJoystick, 4),
-                    new InstantCommand(() -> rightMaster.setVoltage(1),drive),
-                    CommandButton.Action.WHEN_PRESSED
-            ),
+                new SimpleButton(driveJoystick, 4),
+                new InstantCommand(() -> rightMaster.setVoltage(1), drive),
+                CommandButton.Action.WHEN_PRESSED),
             // stop left side
             new CommandButton(
-                    new SimpleButton(driveJoystick, 2),
-                    new InstantCommand(() -> leftMaster.setVoltage(0),drive),
-                    CommandButton.Action.WHEN_PRESSED
-            ),
+                new SimpleButton(driveJoystick, 2),
+                new InstantCommand(() -> leftMaster.setVoltage(0), drive),
+                CommandButton.Action.WHEN_PRESSED),
             // stop right side
             new CommandButton(
-                    new SimpleButton(driveJoystick,3),
-                    new InstantCommand(() -> rightMaster.setVoltage(0), drive),
-                    CommandButton.Action.WHEN_PRESSED
-            )
-    );
+                new SimpleButton(driveJoystick, 3),
+                new InstantCommand(() -> rightMaster.setVoltage(0), drive),
+                CommandButton.Action.WHEN_PRESSED));
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();
