@@ -32,186 +32,186 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public class DriveTest {
-  // Motor IDs
-  public static final int RIGHT_LEADER_PORT = 1,
-      RIGHT_LEADER_FOLLOWER_1_PORT = 2,
-      LEFT_LEADER_PORT = 3,
-      LEFT_LEADER_FOLLOWER_1_PORT = 4;
-  // Solenoid ports
-  public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
-  // Controller ports
-  public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
-  // Drive button numbers
-  public static final int SHIFT_TOGGLE_BUTTON = 5;
+    // Motor IDs
+    public static final int RIGHT_LEADER_PORT = 1,
+            RIGHT_LEADER_FOLLOWER_1_PORT = 2,
+            LEFT_LEADER_PORT = 3,
+            LEFT_LEADER_FOLLOWER_1_PORT = 4;
+    // Solenoid ports
+    public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
+    // Controller ports
+    public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
+    // Drive button numbers
+    public static final int SHIFT_TOGGLE_BUTTON = 5;
 
-  private DriveTest() {
-    throw new IllegalStateException("This is a utility class!");
-  }
+    private DriveTest() {
+        throw new IllegalStateException("This is a utility class!");
+    }
 
-  @NotNull
-  public static RobotMap createRobotMap() {
-    var useCameraServer = false;
-    var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
+    @NotNull
+    public static RobotMap createRobotMap() {
+        var useCameraServer = false;
+        var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
 
-    var driveJoystick = new MappedJoystick(DRIVE_JOYSTICK_PORT);
-    var joysticks = List.of(driveJoystick);
+        var driveJoystick = new MappedJoystick(DRIVE_JOYSTICK_PORT);
+        var joysticks = List.of(driveJoystick);
 
-    var compressor = new Compressor();
-    var gearShiftingSolenoids = new DoubleSolenoid(0, 1, 0);
+        var compressor = new Compressor();
+        var gearShiftingSolenoids = new DoubleSolenoid(0, 1, 0);
 
-    var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
-    var driveMasterPrototype =
-        new SmartMotorConfigObject()
-            .setType(SmartMotor.Type.SPARK)
-            .setEnableBrakeMode(true)
-            .setPdp(pdp)
-            .setUnitPerRotation(0.470799075)
-            .setCurrentLimit(50)
-            .setEnableVoltageComp(true)
-            .setStartingGear(Shiftable.Gear.HIGH);
-    var lowGear =
-        new PerGearSettingsBuilder()
-            .gear(Shiftable.Gear.LOW)
-            .postEncoderGearing(1 / 20.45)
-            .maxSpeed(2.3);
-    var highGear =
-        new PerGearSettingsBuilder()
-            .gear(Shiftable.Gear.HIGH)
-            .postEncoderGearing(1 / 7.73)
-            .maxSpeed(5.2); // free speed max in m/s is 44.537592495 m/s
-    var rightMaster =
-        SmartMotor.create(
-            driveMasterPrototype
-                .setName("right")
-                .setPort(RIGHT_LEADER_PORT)
-                .setReverseOutput(false)
-                .setSlaveSparks(
-                    List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false, pdp)))
-                .setPerGearSettings(
-                    List.of(
-                        lowGear
-                            .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.139, 5.17, 0.0554))
-                            .build(),
-                        highGear
-                            .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.165, 2.01, 0.155))
-                            .build())));
-    var leftMaster =
-        SmartMotor.create(
-            driveMasterPrototype
-                .setPort(LEFT_LEADER_PORT)
-                .setName("left")
-                .setReverseOutput(true)
-                .setSlaveSparks(List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false, pdp)))
-                .setPerGearSettings(
-                    List.of(
-                        lowGear
-                            .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.128, 5.23, 0.0698))
-                            .build(),
-                        highGear
-                            .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.156, 2.01, 0.154))
-                            .build())));
+        var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
+        var driveMasterPrototype =
+                new SmartMotorConfigObject()
+                        .setType(SmartMotor.Type.SPARK)
+                        .setEnableBrakeMode(true)
+                        .setPdp(pdp)
+                        .setUnitPerRotation(0.470799075)
+                        .setCurrentLimit(50)
+                        .setEnableVoltageComp(true)
+                        .setStartingGear(Shiftable.Gear.HIGH);
+        var lowGear =
+                new PerGearSettingsBuilder()
+                        .gear(Shiftable.Gear.LOW)
+                        .postEncoderGearing(1 / 20.45)
+                        .maxSpeed(2.3);
+        var highGear =
+                new PerGearSettingsBuilder()
+                        .gear(Shiftable.Gear.HIGH)
+                        .postEncoderGearing(1 / 7.73)
+                        .maxSpeed(5.2); // free speed max in m/s is 44.537592495 m/s
+        var rightMaster =
+                SmartMotor.create(
+                        driveMasterPrototype
+                                .setName("right")
+                                .setPort(RIGHT_LEADER_PORT)
+                                .setReverseOutput(false)
+                                .setSlaveSparks(
+                                        List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false, pdp)))
+                                .setPerGearSettings(
+                                        List.of(
+                                                lowGear
+                                                        .feedForwardCalculator(
+                                                                new MappedFeedForwardCalculator(0.139, 5.17, 0.0554))
+                                                        .build(),
+                                                highGear
+                                                        .feedForwardCalculator(
+                                                                new MappedFeedForwardCalculator(0.165, 2.01, 0.155))
+                                                        .build())));
+        var leftMaster =
+                SmartMotor.create(
+                        driveMasterPrototype
+                                .setPort(LEFT_LEADER_PORT)
+                                .setName("left")
+                                .setReverseOutput(true)
+                                .setSlaveSparks(List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false, pdp)))
+                                .setPerGearSettings(
+                                        List.of(
+                                                lowGear
+                                                        .feedForwardCalculator(
+                                                                new MappedFeedForwardCalculator(0.128, 5.23, 0.0698))
+                                                        .build(),
+                                                highGear
+                                                        .feedForwardCalculator(
+                                                                new MappedFeedForwardCalculator(0.156, 2.01, 0.154))
+                                                        .build())));
 
-    var drive =
-        new DriveUnidirectionalWithGyroShiftable(
-            leftMaster,
-            rightMaster,
-            navx,
-            0.61755,
-            new ShiftComponent(
-                List.of(leftMaster, rightMaster), gearShiftingSolenoids, Shiftable.Gear.LOW),
-            false);
+        var drive =
+                new DriveUnidirectionalWithGyroShiftable(
+                        leftMaster,
+                        rightMaster,
+                        navx,
+                        0.61755,
+                        new ShiftComponent(
+                                List.of(leftMaster, rightMaster), gearShiftingSolenoids, Shiftable.Gear.LOW),
+                        false);
 
-    var subsystems = List.<Subsystem>of(drive);
+        var subsystems = List.<Subsystem>of(drive);
 
-    var throttlePrototype =
-        new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
-    var rotThrottle =
-        throttlePrototype
-            .axis(0)
-            .deadband(0.08)
-            .inverted(false)
-            .polynomial(new Polynomial(Map.of(1., 0.5), null))
-            .build();
-    var fwdThrottle =
-        new ThrottleSum(
-            new Throttle[] {
-              throttlePrototype
-                  .axis(3)
-                  .deadband(0.05)
-                  .inverted(false)
-                  .polynomial(
-                      new Polynomial(
-                          Map.of(
-                              1., 2.,
-                              2., 1.),
-                          null))
-                  .build(),
-              throttlePrototype.axis(2).inverted(true).build()
-            });
-    var oi =
-        new OIArcadeWithDPad(
-            rotThrottle,
-            fwdThrottle,
-            0.1,
-            false,
-            driveJoystick,
-            new Polynomial(
-                Map.of(
-                    0.5, 0.4,
-                    0., 0.2),
-                null),
-            1.0,
-            true);
+        var throttlePrototype =
+                new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
+        var rotThrottle =
+                throttlePrototype
+                        .axis(0)
+                        .deadband(0.08)
+                        .inverted(false)
+                        .polynomial(new Polynomial(Map.of(1., 0.5), null))
+                        .build();
+        var fwdThrottle =
+                new ThrottleSum(
+                        new Throttle[] {
+                                throttlePrototype
+                                        .axis(3)
+                                        .deadband(0.05)
+                                        .inverted(false)
+                                        .polynomial(
+                                                new Polynomial(
+                                                        Map.of(
+                                                                1., 2.,
+                                                                2., 1.),
+                                                        null))
+                                        .build(),
+                                throttlePrototype.axis(2).inverted(true).build()
+                        });
+        var oi =
+                new OIArcadeWithDPad(
+                        rotThrottle,
+                        fwdThrottle,
+                        0.1,
+                        false,
+                        driveJoystick,
+                        new Polynomial(
+                                Map.of(
+                                        0.5, 0.4,
+                                        0., 0.2),
+                                null),
+                        1.0,
+                        true);
 
-    var updater = new Updater(List.of(pdp, oi, navx, drive));
+        var updater = new Updater(List.of(pdp, oi, navx, drive));
 
-    var defaultCommands = List.<DefaultCommand>of();
+        var defaultCommands = List.<DefaultCommand>of();
 
-    var buttons =
-        List.<CommandButton>of(
-            // toggle shift gears
-            new CommandButton(
-                new SimpleButton(driveJoystick, SHIFT_TOGGLE_BUTTON),
-                new ShiftGears(drive),
-                CommandButton.Action.WHEN_PRESSED),
-            // start left side
-            new CommandButton(
-                new SimpleButton(driveJoystick, 1),
-                new InstantCommand(() -> leftMaster.setVoltage(1), drive),
-                CommandButton.Action.WHEN_PRESSED),
-            // start right side
-            new CommandButton(
-                new SimpleButton(driveJoystick, 4),
-                new InstantCommand(() -> rightMaster.setVoltage(1), drive),
-                CommandButton.Action.WHEN_PRESSED),
-            // stop left side
-            new CommandButton(
-                new SimpleButton(driveJoystick, 2),
-                new InstantCommand(() -> leftMaster.setVoltage(0), drive),
-                CommandButton.Action.WHEN_PRESSED),
-            // stop right side
-            new CommandButton(
-                new SimpleButton(driveJoystick, 3),
-                new InstantCommand(() -> rightMaster.setVoltage(0), drive),
-                CommandButton.Action.WHEN_PRESSED));
+        var buttons =
+                List.<CommandButton>of(
+                        // toggle shift gears
+                        new CommandButton(
+                                new SimpleButton(driveJoystick, SHIFT_TOGGLE_BUTTON),
+                                new ShiftGears(drive),
+                                CommandButton.Action.WHEN_PRESSED),
+                        // start left side
+                        new CommandButton(
+                                new SimpleButton(driveJoystick, 1),
+                                new InstantCommand(() -> leftMaster.setVoltage(1), drive),
+                                CommandButton.Action.WHEN_PRESSED),
+                        // start right side
+                        new CommandButton(
+                                new SimpleButton(driveJoystick, 4),
+                                new InstantCommand(() -> rightMaster.setVoltage(1), drive),
+                                CommandButton.Action.WHEN_PRESSED),
+                        // stop left side
+                        new CommandButton(
+                                new SimpleButton(driveJoystick, 2),
+                                new InstantCommand(() -> leftMaster.setVoltage(0), drive),
+                                CommandButton.Action.WHEN_PRESSED),
+                        // stop right side
+                        new CommandButton(
+                                new SimpleButton(driveJoystick, 3),
+                                new InstantCommand(() -> rightMaster.setVoltage(0), drive),
+                                CommandButton.Action.WHEN_PRESSED));
 
-    var robotStartupCommands = List.<Command>of();
-    var autoStartupCommands = List.<Command>of();
-    var teleopStartupCommands = List.<Command>of();
-    var testStartupCommands = List.<Command>of();
-    var allCommands =
-        new CommandContainer(
-            defaultCommands,
-            buttons,
-            robotStartupCommands,
-            autoStartupCommands,
-            teleopStartupCommands,
-            testStartupCommands);
+        var robotStartupCommands = List.<Command>of();
+        var autoStartupCommands = List.<Command>of();
+        var teleopStartupCommands = List.<Command>of();
+        var testStartupCommands = List.<Command>of();
+        var allCommands =
+                new CommandContainer(
+                        defaultCommands,
+                        buttons,
+                        robotStartupCommands,
+                        autoStartupCommands,
+                        teleopStartupCommands,
+                        testStartupCommands);
 
-    return new RobotMap(subsystems, pdp, updater, allCommands, joysticks, useCameraServer);
-  }
+        return new RobotMap(subsystems, pdp, updater, allCommands, joysticks, useCameraServer);
+    }
 }
