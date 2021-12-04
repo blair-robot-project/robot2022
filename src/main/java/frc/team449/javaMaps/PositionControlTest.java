@@ -18,9 +18,8 @@ import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class PositionControlTest {
   // Drive system
@@ -167,27 +166,27 @@ public class PositionControlTest {
     */
     // Elevator
     var elevatorPulleyMotor =
-            new MappedSparkMax(
-                    elevatorMotorPort,
-                    "elevator",
-                    false,
-                    true,
-                    pdp,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    1.0 / 30.0,
-                    1.0,
-                    40,
-                    false,
-                    List.of(new PerGearSettingsBuilder().gear(Shiftable.Gear.LOW).maxSpeed(5000.0).build()),
-                    Shiftable.Gear.LOW,
-                    null,
-                    null,
-                    null,
-                    null);
+        new MappedSparkMax(
+            elevatorMotorPort,
+            "elevator",
+            false,
+            true,
+            pdp,
+            null,
+            null,
+            null,
+            null,
+            null,
+            1.0 / 30.0,
+            1.0,
+            40,
+            false,
+            List.of(new PerGearSettingsBuilder().gear(Shiftable.Gear.LOW).maxSpeed(5000.0).build()),
+            Shiftable.Gear.LOW,
+            null,
+            null,
+            null,
+            null);
     // PID constants for velocity controlled elevator motor
     //    elevatorPulleyMotor.setPID(0.0003, 0.0000008, 0.0146);
     // PID constants for position controlled elevator motor
