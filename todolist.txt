@@ -3,22 +3,30 @@ Important TODOs:
 Non-important TODOs:
 src/main/java/frc/team449/javaMaps/MapTemplate.java: 106: // TODO call .copy() to make it clearer this and rightMaster make different instances?
 src/main/java/frc/team449/javaMaps/MapTemplate.java: 205: // todo more commands in this parallel command
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 59: // TODO Declare these constants outside this method and remove unused variables
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 80: driverIntakeOff = 2, // TODO This is never used
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 81: driverIntakeRev = 3, // TODO This is never used
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 82: driverIntakeInOff = 4, // TODO This is never used
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 93: double elevatorMaxVelocity = 1; // TODO this is a placeholder
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 270: // todo more commands in this parallel command
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 274: // todo Should there be 2 separate commands instead?
+src/main/java/frc/team449/javaMaps/DriveTest.java: 103: 0.165, 2.01, 0.155)) // TODO characterize
+src/main/java/frc/team449/javaMaps/DriveTest.java: 121: 0.156, 2.01, 0.154)) // TODO characterize
+src/main/java/frc/team449/javaMaps/DriveTest.java: 188: 0, // TODO tune pid
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 48: // TODO Declare these constants outside this method and remove unused variables
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 69: driverIntakeOff = 2, // TODO This is never used
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 70: driverIntakeRev = 3, // TODO This is never used
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 71: driverIntakeInOff = 4, // TODO This is never used
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 82: double elevatorMaxVelocity = 1; // TODO this is a placeholder
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 259: // todo more commands in this parallel command
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 263: // todo Should there be 2 separate commands instead?
+src/main/java/frc/team449/javaMaps/PositionControlTest.java: 42: // TODO Declare these constants outside this method and remove unused variables
+src/main/java/frc/team449/javaMaps/PositionControlTest.java: 63: driverIntakeOff = 2, // TODO This is never used
+src/main/java/frc/team449/javaMaps/PositionControlTest.java: 64: driverIntakeRev = 3, // TODO This is never used
+src/main/java/frc/team449/javaMaps/PositionControlTest.java: 65: driverIntakeInOff = 4, // TODO This is never used
+src/main/java/frc/team449/javaMaps/PositionControlTest.java: 76: double elevatorMaxVelocity = 5; // TODO this is a placeholder
 src/main/java/frc/team449/CommandContainer.java: 32: // TODO Figure out why this doesn't work @JsonInclude(JsonInclude.Include.NON_NULL)
 src/main/java/frc/team449/auto/commands/AutonomousCommand.java: 17: // TODO Make this a normal boolean. Making it nullable could cause a
 src/main/java/frc/team449/generalInterfaces/AHRS/commands/PIDAngleCommand.java: 21: extends CommandBase { // implements Loggable { TODO Logging causes the drive subsystem to be
 src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 46: int LOG_WIDTH = 4, LOG_HEIGHT = 3; // TODO Unused
-src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 480: double getError(); // TODO Unused
-src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 516: String getControlMode(); // TODO Unused
-src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 550: boolean getFwdLimitSwitch(); // TODO Unused
-src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 557: boolean getRevLimitSwitch(); // TODO Unused
-src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 605: default boolean isSimulated() { // TODO Unused
+src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 677: double getError(); // TODO Unused
+src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 713: String getControlMode(); // TODO Unused
+src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 747: boolean getFwdLimitSwitch(); // TODO Unused
+src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 754: boolean getRevLimitSwitch(); // TODO Unused
+src/main/java/frc/team449/generalInterfaces/SmartMotor.java: 802: default boolean isSimulated() { // TODO Unused
 src/main/java/frc/team449/_2020/multiSubsystem/commands/ConditionalPerpetualCommand.java: 44: // TODO This might be janky.
 src/main/java/frc/team449/_2020/multiSubsystem/commands/PerpetualCommandReinitializing.java: 28: // TODO: We should requireNonNull all @Nullable parameters because map errors can cause them to
 src/main/java/frc/team449/_2020/multiSubsystem/commands/PerpetualCommandReinitializing.java: 35: // TODO: How much less jank is this compared to ConditionalCommandDynamic?
@@ -40,5 +48,5 @@ src/main/java/frc/team449/components/AHRSRumbleComponent.java: 33: private final
 src/main/java/frc/team449/components/ShiftWithSensorComponent.java: 116: // TODO set up a lock system so no other part of the code can re-enable the motors.
 src/main/java/frc/team449/oi/unidirectional/arcade/OIArcade.java: 93: : (leftRightOutputCached = getLeftRightOutput()); // TODO assignment inside expression?
 src/main/java/frc/team449/oi/unidirectional/arcade/OIArcade.java: 106: : (fwdRotOutputCached = getFwdRotOutput()); // TODO assignment inside expression?
-src/main/java/frc/team449/jacksonWrappers/MappedSparkMax.java: 107: // todo determine if encoderCPR will ever be needed
+src/main/java/frc/team449/jacksonWrappers/MappedSparkMax.java: 108: // todo determine if encoderCPR will ever be needed
 src/main/java/frc/team449/jacksonWrappers/MappedSparkMaxExternalEncoder.java: 125: // todo determine if encoderCPR will ever be needed
