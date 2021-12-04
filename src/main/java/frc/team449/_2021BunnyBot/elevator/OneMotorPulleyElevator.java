@@ -1,33 +1,21 @@
 package frc.team449._2021BunnyBot.elevator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.generalInterfaces.SmartMotor;
-import frc.team449.generalInterfaces.updatable.Updatable;
 import frc.team449.jacksonWrappers.MappedSparkMax;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+public class OneMotorPulleyElevator extends SubsystemBase {
 
-public class OneMotorPulleyElevator extends SubsystemBase implements Updatable {
-
-  @NotNull private final SmartMotor pulleyMotor;
-  @NotNull private final double maxVelocity;
+  @NotNull private final MappedSparkMax pulleyMotor;
   @NotNull private ElevatorPosition position;
 
   /** @param pulleyMotor single motor used for the pulley */
   @JsonCreator
   public OneMotorPulleyElevator(
-      @NotNull SmartMotor pulleyMotor,
-      @NotNull ElevatorPosition position,
-      @NotNull double maxVelocity) {
+      @NotNull MappedSparkMax pulleyMotor, @NotNull ElevatorPosition position) {
     this.pulleyMotor = pulleyMotor;
     this.position = position;
-    this.maxVelocity = maxVelocity;
   }
 
   /** @return velocity of the elevator motor */
@@ -56,22 +44,16 @@ public class OneMotorPulleyElevator extends SubsystemBase implements Updatable {
    * <p>This allows for fine adjustment via the joystick if the setpoints aren't enough.
    *
    * @param newVelocity the requested new velocity to be set (in m/s)
-   * @return true if velocity set successfully, false if newVelocity was higher than maxVelocity
    */
-  public boolean setVelocity(double newVelocity) {
-    if (Math.abs(newVelocity) <= Math.abs(this.maxVelocity)) {
-      pulleyMotor.setVelocityUPS(newVelocity);
-      return true;
-    } else {
-      return false;
-    }
+  public void setVelocityUPS(double newVelocity) {
+    pulleyMotor.setVelocityUPS(newVelocity);
   }
 
   public enum ElevatorPosition {
-    // preset positions
-    TOP(0.3),
-    UPPER(0.2),
-    LOWER(0.1),
+    // preset positions (RPS)
+    TOP(2),
+    UPPER(1.25),
+    LOWER(0.75),
     BOTTOM(0.0);
 
     /** The distance of this position from the bottom in meters */
