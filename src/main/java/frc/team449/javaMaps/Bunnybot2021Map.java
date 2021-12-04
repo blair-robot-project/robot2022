@@ -21,8 +21,8 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
-import frc.team449.jacksonWrappers.*;
 import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
+import frc.team449.jacksonWrappers.*;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
 import frc.team449.javaMaps.builders.SmartMotorConfigObject;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
@@ -34,9 +34,10 @@ import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public class Bunnybot2021Map {
   // Motor IDs
@@ -52,10 +53,6 @@ public class Bunnybot2021Map {
   public static final int DRIVE_JOYSTICK_PORT = 1;
   // Drive button numbers
   public static final int SHIFT_TOGGLE_BUTTON = 5;
-
-  private Bunnybot2021Map() {
-    throw new IllegalStateException("This is a utility class!");
-  }
   // Elevator stuff
   private static final double ELEVATOR_MAX_VELOCITY = 5; // TODO this is a placeholder
   private static final int ELEVATOR_MOTOR_PORT = 9;
@@ -66,6 +63,10 @@ public class Bunnybot2021Map {
   // Intake stuff
   private static final int INTAKE_CLOSE = 7;
   private static final int INTAKE_OPEN = 8;
+
+  private Bunnybot2021Map() {
+    throw new IllegalStateException("This is a utility class!");
+  }
 
   @NotNull
   public static RobotMap createRobotMap() {
@@ -93,12 +94,12 @@ public class Bunnybot2021Map {
         new PerGearSettingsBuilder()
             .gear(Shiftable.Gear.LOW)
             .postEncoderGearing(1 / 20.45)
-            .maxSpeed(2.3);
+            .maxSpeed(1.0); // in m/s
     var highGear =
         new PerGearSettingsBuilder()
             .gear(Shiftable.Gear.HIGH)
             .postEncoderGearing(1 / 7.73)
-            .maxSpeed(5.2); // free speed max in m/s is 44.537592495 m/s
+            .maxSpeed(2.0); // in m/s
     var rightMaster =
         SmartMotor.create(
             driveMasterPrototype
@@ -111,7 +112,7 @@ public class Bunnybot2021Map {
                     List.of(
                         lowGear
                             .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.102, 5.66, 0.306))
+                                new MappedFeedForwardCalculator(0.102, 5.66, 0.306)) // TODO characterize
                             .build(),
                         highGear
                             .feedForwardCalculator(
@@ -129,7 +130,7 @@ public class Bunnybot2021Map {
                     List.of(
                         lowGear
                             .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.102, 5.66, 0.306))
+                                new MappedFeedForwardCalculator(0.102, 5.66, 0.306)) //TODO characterize
                             .build(),
                         highGear
                             .feedForwardCalculator(
@@ -142,12 +143,13 @@ public class Bunnybot2021Map {
             leftMaster,
             rightMaster,
             navx,
-            0.61755,
+            0.61755, //TODO measure the distance from one side of the drive to the other
             new ShiftComponent(
                 List.of(leftMaster, rightMaster), gearShiftingSolenoids, Shiftable.Gear.LOW),
             false);
 
     // Elevator
+    // TODO setup elevator, with Meters
     var elevatorPulleyMotor =
         new MappedSparkMax(
             ELEVATOR_MOTOR_PORT,
@@ -160,32 +162,32 @@ public class Bunnybot2021Map {
             null,
             null,
             null,
-            1.0 / 30.0,
             1.0,
+            1.0, //TODO set to circumference of pulley for the elevator
             40,
             false,
-            List.of(new PerGearSettingsBuilder().gear(Shiftable.Gear.LOW).maxSpeed(5000.0).build()),
+            List.of(new PerGearSettingsBuilder().gear(Shiftable.Gear.LOW).maxSpeed(2.0).build()),
             Shiftable.Gear.LOW,
             null,
             null,
             null,
             null);
-    // PID constants for velocity controlled elevator motor
-    //    elevatorPulleyMotor.setPID(0.0003, 0.0000008, 0.0146);
     // PID constants for position controlled elevator motor
-    elevatorPulleyMotor.setPID(.045, .00000095, 1);
+    elevatorPulleyMotor.setPID(0, 0, 0); // TODO tune pid
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
     // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
 
-    var elevator =
-        new OneMotorPulleyElevator(
+    var elevator = new OneMotorPulleyElevator(
             elevatorPulleyMotor, OneMotorPulleyElevator.ElevatorPosition.BOTTOM);
 
     // Intake
     var intake =
         new OnePistonIntake(
             new SolenoidSimple(
-                new DoubleSolenoid(INTAKE_SOLENOID_FORWARD_PORT, INTAKE_SOLENOID_REVERSE_PORT)));
+                new DoubleSolenoid(INTAKE_SOLENOID_FORWARD_PORT, INTAKE_SOLENOID_REVERSE_PORT)
+            )
+        );
+    // Controls for the drive
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
     var rotThrottle =
@@ -244,8 +246,12 @@ public class Bunnybot2021Map {
                 new Debouncer(0.15),
                 drive,
                 oi,
-                new RampComponent(3.0, 3.0)));
+                new RampComponent(3.0, 3.0)
+            )
+        );
+
     var subsystems = List.<Subsystem>of(drive, elevator, intake);
+
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
     var defaultCommands = List.of(defaultDriveCommand);
