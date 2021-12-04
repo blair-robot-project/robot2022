@@ -10,9 +10,14 @@ import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.components.ShiftComponent;
+import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyroShiftable;
+import frc.team449.drive.unidirectional.commands.SimpleUnidirectionalDrive;
+import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
+import frc.team449.drive.unidirectional.commands.UnidirectionalNavXShiftingDefaultDrive;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
+import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.shiftable.commands.ShiftGears;
 import frc.team449.jacksonWrappers.*;
@@ -25,6 +30,7 @@ import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.oi.throttles.Throttle;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
+import frc.team449.other.Debouncer;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
 import java.util.List;
@@ -91,11 +97,11 @@ public class DriveTest {
                     List.of(
                         lowGear
                             .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.139, 5.17, 0.0554))
+                                new MappedFeedForwardCalculator(0.102, 5.66, 0.306))
                             .build(),
                         highGear
                             .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.165, 2.01, 0.155))
+                                new MappedFeedForwardCalculator(0.165, 2.01, 0.155)) //TODO characterize
                             .build())));
     var leftMaster =
         SmartMotor.create(
@@ -108,11 +114,11 @@ public class DriveTest {
                     List.of(
                         lowGear
                             .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.128, 5.23, 0.0698))
+                                new MappedFeedForwardCalculator(0.102, 5.66, 0.306))
                             .build(),
                         highGear
                             .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.156, 2.01, 0.154))
+                                new MappedFeedForwardCalculator(0.156, 2.01, 0.154)) //TODO characterize
                             .build())));
 
     var drive =
@@ -167,9 +173,27 @@ public class DriveTest {
             1.0,
             true);
 
+    var defaultDriveCommand = new DefaultCommand(drive, new UnidirectionalNavXDefaultDrive<DriveUnidirectionalWithGyro>(
+            0,
+            new Debouncer(1.5),
+            0,
+            1.0,
+            null,
+            2,
+            3.0,
+            false,
+            0, //TODO tune pid
+            0,
+            0,
+            new Debouncer(0.15),
+            drive,
+            oi,
+            new RampComponent(3.0, 3.0)
+    ));
+
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
-    var defaultCommands = List.<DefaultCommand>of();
+    var defaultCommands = List.<DefaultCommand>of(defaultDriveCommand);
 
     var buttons =
         List.<CommandButton>of(
