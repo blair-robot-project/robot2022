@@ -12,9 +12,7 @@ import frc.team449.components.RunningLinRegComponent;
 import frc.team449.components.ShiftComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyroShiftable;
-import frc.team449.drive.unidirectional.commands.SimpleUnidirectionalDrive;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
-import frc.team449.drive.unidirectional.commands.UnidirectionalNavXShiftingDefaultDrive;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
@@ -101,7 +99,8 @@ public class DriveTest {
                             .build(),
                         highGear
                             .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.165, 2.01, 0.155)) //TODO characterize
+                                new MappedFeedForwardCalculator(
+                                    0.165, 2.01, 0.155)) // TODO characterize
                             .build())));
     var leftMaster =
         SmartMotor.create(
@@ -118,7 +117,8 @@ public class DriveTest {
                             .build(),
                         highGear
                             .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.156, 2.01, 0.154)) //TODO characterize
+                                new MappedFeedForwardCalculator(
+                                    0.156, 2.01, 0.154)) // TODO characterize
                             .build())));
 
     var drive =
@@ -173,23 +173,25 @@ public class DriveTest {
             1.0,
             true);
 
-    var defaultDriveCommand = new DefaultCommand(drive, new UnidirectionalNavXDefaultDrive<DriveUnidirectionalWithGyro>(
-            0,
-            new Debouncer(1.5),
-            0,
-            1.0,
-            null,
-            2,
-            3.0,
-            false,
-            0, //TODO tune pid
-            0,
-            0,
-            new Debouncer(0.15),
+    var defaultDriveCommand =
+        new DefaultCommand(
             drive,
-            oi,
-            new RampComponent(3.0, 3.0)
-    ));
+            new UnidirectionalNavXDefaultDrive<DriveUnidirectionalWithGyro>(
+                0,
+                new Debouncer(1.5),
+                0,
+                1.0,
+                null,
+                2,
+                3.0,
+                false,
+                0, // TODO tune pid
+                0,
+                0,
+                new Debouncer(0.15),
+                drive,
+                oi,
+                new RampComponent(3.0, 3.0)));
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
