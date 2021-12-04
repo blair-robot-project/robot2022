@@ -6,13 +6,16 @@ src/main/java/frc/team449/javaMaps/MapTemplate.java: 205: // todo more commands 
 src/main/java/frc/team449/javaMaps/DriveTest.java: 103: 0.165, 2.01, 0.155)) // TODO characterize
 src/main/java/frc/team449/javaMaps/DriveTest.java: 121: 0.156, 2.01, 0.154)) // TODO characterize
 src/main/java/frc/team449/javaMaps/DriveTest.java: 188: 0, // TODO tune pid
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 48: // TODO Declare these constants outside this method and remove unused variables
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 69: driverIntakeOff = 2, // TODO This is never used
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 70: driverIntakeRev = 3, // TODO This is never used
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 71: driverIntakeInOff = 4, // TODO This is never used
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 82: double elevatorMaxVelocity = 1; // TODO this is a placeholder
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 259: // todo more commands in this parallel command
-src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 263: // todo Should there be 2 separate commands instead?
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 57: private static final double ELEVATOR_MAX_VELOCITY = 2; // TODO this is a placeholder
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 115: new MappedFeedForwardCalculator(0.102, 5.66, 0.306)) // TODO characterize
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 120: 0.165, 2.01, 0.155)) // TODO characterize
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 133: new MappedFeedForwardCalculator(0.102, 5.66, 0.306)) //TODO characterize
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 138: 0.156, 2.01, 0.154)) // TODO characterize
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 146: 0.61755, //TODO measure the distance from one side of the drive to the other
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 152: // TODO setup elevator, with Meters
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 166: 1.0, //TODO set to circumference of pulley for the elevator
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 176: elevatorPulleyMotor.setPID(0, 0, 0); // TODO tune pid
+src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 243: 0, // TODO tune pid
 src/main/java/frc/team449/javaMaps/PositionControlTest.java: 42: // TODO Declare these constants outside this method and remove unused variables
 src/main/java/frc/team449/javaMaps/PositionControlTest.java: 63: driverIntakeOff = 2, // TODO This is never used
 src/main/java/frc/team449/javaMaps/PositionControlTest.java: 64: driverIntakeRev = 3, // TODO This is never used
