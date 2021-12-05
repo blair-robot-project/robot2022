@@ -1,6 +1,7 @@
 Important TODOs:
 ---------------------------------------------------------------------------------------------------------
 Non-important TODOs:
+src/main/java/frc/team449/javaMaps/builders/SmartMotorConfig.java: 275: // TODO initialize default stuff
 src/main/java/frc/team449/javaMaps/DriveTest.java: 105: 0.165, 2.01, 0.155)) // TODO characterize
 src/main/java/frc/team449/javaMaps/DriveTest.java: 126: 0.156, 2.01, 0.154)) // TODO characterize
 src/main/java/frc/team449/javaMaps/DriveTest.java: 194: 0, // TODO tune pid
