@@ -1,13 +1,27 @@
-name: Automated ToDo List Generator
-on: [workflow_dispatch]
+name: KiARC Repository Manager
+
+on: [push, pull_request, workflow_dispatch]
+
 jobs:
+  format-code:
+    name: Format Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: axel-op/googlejavaformat-action@v3
+        with:
+          args: "-r"
+          commitMessage: "Automated code formatting."
+
   generate-todo-list:
+    name: ToDo List Generator
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Generate List
         run: |
-          readarray -t todos < <(grep -Enri '\/+\**\ *todo' src/main/ | sed -e 's/: */: /g')
+          readarray -t todos < <(grep -Enri '\/+\**\ *.*todo' src/main/java/* | sed -e 's/: */: /g')
           important=()
           nonimportant=()
           for todo in "${todos[@]}"
@@ -36,6 +50,11 @@ jobs:
           git config user.email "<>"
       - name: Commit List
         run: |
-          git add todolist.txt
-          git commit -m "Update ToDo List"
-          git push origin dev
+          if [ -n "$(git status --porcelain)" ]
+          then
+            git add todolist.txt
+            git commit -m "Update ToDo List"
+            git push origin ${{ github.ref_name }}
+          else
+            echo "No changes to the ToDo List."
+          fi

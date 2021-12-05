@@ -16,7 +16,8 @@ import org.jetbrains.annotations.Nullable;
  * com.ctre.phoenix.motorcontrol.can.VictorSPX}.
  */
 public class SlaveTalon implements SlaveMotor, Loggable {
-
+  /** The Port of this talon. */
+  private int port;
   /** The TalonSRX this object wraps. */
   @NotNull private final TalonSRX talonSRX;
   /** The PDP this talon runs on. Used for resistance logging purposes. */
@@ -36,6 +37,9 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   public SlaveTalon(@JsonProperty(required = true) final int port, final InvertType invertType) {
     this.talonSRX = new TalonSRX(port);
     // this.talonSRX.setInverted(inverted);
+
+    // set the port
+    this.port = port;
 
     // Turn off features we don't want a slave to have
     this.talonSRX.setInverted(invertType == null ? InvertType.FollowMaster : invertType);
@@ -148,6 +152,11 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   //                (linRegComponent != null && PDP != null) ? -linRegComponent.getSlope() : null;
   //        };
   //    }
+
+  @Override
+  public String configureLogName() {
+    return "slavetalon_" + this.port;
+  }
 
   @Log
   public double getOutputCurrent() {
