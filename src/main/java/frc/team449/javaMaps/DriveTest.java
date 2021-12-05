@@ -21,7 +21,7 @@ import frc.team449.generalInterfaces.shiftable.commands.ShiftGears;
 import frc.team449.jacksonWrappers.*;
 import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
-import frc.team449.javaMaps.builders.SmartMotorConfigBuilder;
+import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.buttons.SimpleButton;
@@ -65,7 +65,7 @@ public class DriveTest {
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
-        new SmartMotorConfigBuilder()
+        new SmartMotorConfig()
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
             .setPdp(pdp)
@@ -104,7 +104,7 @@ public class DriveTest {
                                 new MappedFeedForwardCalculator(
                                     0.165, 2.01, 0.155)) // TODO characterize
                             .build()))
-                .build());
+                .ensureBuilt());
     var leftMaster =
         MappedSparkMax.create(
             null,
@@ -125,7 +125,7 @@ public class DriveTest {
                                 new MappedFeedForwardCalculator(
                                     0.156, 2.01, 0.154)) // TODO characterize
                             .build()))
-                .build());
+                .ensureBuilt());
 
     var drive =
         new DriveUnidirectionalWithGyroShiftable(

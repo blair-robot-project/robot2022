@@ -59,16 +59,16 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
       @Nullable Integer controlFrameRateMillis,
       @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
       @NotNull SmartMotorConfig cfg) {
-    this.spark = new CANSparkMax(cfg.port, CANSparkMaxLowLevel.MotorType.kBrushless);
+    this.spark = new CANSparkMax(cfg.getPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
     this.spark.restoreFactoryDefaults();
 
     // Set the name to the given one or to spark_<portnum>
-    this.name = cfg.name != null ? cfg.name : ("spark_" + cfg.port);
+    this.name = cfg.getName() != null ? cfg.getName() : ("spark_" + cfg.getPort());
     // Set this to false because we only use reverseOutput for slaves.
-    this.spark.setInverted(cfg.reverseOutput);
+    this.spark.setInverted(cfg.isReverseOutput());
     // Set brake mode
     this.spark.setIdleMode(
-        cfg.enableBrakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
+        cfg.isEnableBrakeMode() ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
     //    Reset the position
     //    this.resetPosition(); //causes null pointer exception
 
@@ -84,46 +84,46 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
       }
     }
 
-    this.PDP = cfg.pdp;
+    this.PDP = cfg.getPdp();
 
-    this.unitPerRotation = cfg.unitPerRotation;
+    this.unitPerRotation = cfg.getUnitPerRotation();
 
     // Initialize
-    this.perGearSettings = cfg.perGearSettings;
-    this.currentGearSettings = cfg.initialGearSettings;
+    this.perGearSettings = cfg.getPerGearSettingsMap();
+    this.currentGearSettings = cfg.getInitialGearSettings();
     //    Set up gear-based settings.
     //    this.setGear(currentGear);  // causes null pointer exception
 
-    this.postEncoderGearing = cfg.postEncoderGearing;
+    this.postEncoderGearing = cfg.getPostEncoderGearing();
 
     // Only enable the limit switches if it was specified if they're normally open or closed.
-    if (cfg.fwdLimitSwitchNormallyOpen != null) {
-      if (cfg.remoteLimitSwitchID != null) {
+    if (cfg.getFwdLimitSwitchNormallyOpen() != null) {
+      if (cfg.getRemoteLimitSwitchID() != null) {
         // set CANDigitalInput to other limit switch
         this.forwardLimitSwitch =
-            new CANSparkMax(cfg.remoteLimitSwitchID, CANSparkMaxLowLevel.MotorType.kBrushless)
+            new CANSparkMax(cfg.getRemoteLimitSwitchID(), CANSparkMaxLowLevel.MotorType.kBrushless)
                 .getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
       } else {
         this.forwardLimitSwitch =
             this.spark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
       }
-      this.fwdLimitSwitchNormallyOpen = cfg.fwdLimitSwitchNormallyOpen;
+      this.fwdLimitSwitchNormallyOpen = cfg.getFwdLimitSwitchNormallyOpen();
     } else {
       this.forwardLimitSwitch =
           this.spark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
       this.forwardLimitSwitch.enableLimitSwitch(false);
       this.fwdLimitSwitchNormallyOpen = true;
     }
-    if (cfg.revLimitSwitchNormallyOpen != null) {
-      if (cfg.remoteLimitSwitchID != null) {
+    if (cfg.getRevLimitSwitchNormallyOpen() != null) {
+      if (cfg.getRemoteLimitSwitchID() != null) {
         this.reverseLimitSwitch =
-            new CANSparkMax(cfg.remoteLimitSwitchID, CANSparkMaxLowLevel.MotorType.kBrushless)
+            new CANSparkMax(cfg.getRemoteLimitSwitchID(), CANSparkMaxLowLevel.MotorType.kBrushless)
                 .getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
       } else {
         this.reverseLimitSwitch =
             this.spark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
       }
-      this.revLimitSwitchNormallyOpen = cfg.revLimitSwitchNormallyOpen;
+      this.revLimitSwitchNormallyOpen = cfg.getRevLimitSwitchNormallyOpen();
     } else {
       this.reverseLimitSwitch =
           this.spark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
@@ -131,28 +131,28 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
       this.revLimitSwitchNormallyOpen = true;
     }
 
-    if (cfg.fwdSoftLimit != null) {
+    if (cfg.getFwdSoftLimit() != null) {
       this.spark.setSoftLimit(
-          CANSparkMax.SoftLimitDirection.kForward, cfg.fwdSoftLimit.floatValue());
+          CANSparkMax.SoftLimitDirection.kForward, cfg.getFwdSoftLimit().floatValue());
     }
-    if (cfg.revSoftLimit != null) {
+    if (cfg.getRevSoftLimit() != null) {
       this.spark.setSoftLimit(
-          CANSparkMax.SoftLimitDirection.kReverse, cfg.revSoftLimit.floatValue());
+          CANSparkMax.SoftLimitDirection.kReverse, cfg.getRevSoftLimit().floatValue());
     }
 
     // Set the current limit if it was given
-    if (cfg.currentLimit != null) {
-      this.spark.setSmartCurrentLimit(cfg.currentLimit);
+    if (cfg.getCurrentLimit() != null) {
+      this.spark.setSmartCurrentLimit(cfg.getCurrentLimit());
     }
 
-    if (cfg.enableVoltageComp) {
+    if (cfg.isEnableVoltageComp()) {
       this.spark.enableVoltageCompensation(12);
     } else {
       this.spark.disableVoltageCompensation();
     }
 
-    for (final SlaveSparkMax slave : cfg.slaveSparks) {
-      slave.setMasterSpark(this.spark, cfg.enableBrakeMode);
+    for (final SlaveSparkMax slave : cfg.getSlaveSparks()) {
+      slave.setMasterSpark(this.spark, cfg.isEnableBrakeMode());
     }
 
     this.spark.burnFlash();

@@ -1,8 +1,5 @@
 package frc.team449.jacksonWrappers.simulated;
 
-import static frc.team449.other.Util.clamp;
-import static frc.team449.other.Util.getLogPrefix;
-
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -20,12 +17,16 @@ import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import static frc.team449.other.Util.clamp;
+import static frc.team449.other.Util.getLogPrefix;
 
 /**
  * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
@@ -69,7 +70,6 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   @Log private double lastStateUpdateTime = Clock.currentTimeMillis();
 
   public MPSSmartMotorSimulated(
-      @NotNull final SmartMotorConfig cfg,
       // Spark-specific
       @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
       @Nullable final Integer controlFrameRateMillis,
@@ -83,26 +83,27 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
       @Nullable final Boolean reverseSensor,
       @Nullable final Double updaterProcessPeriodSecs,
       @Nullable final List<SlaveTalon> slaveTalons,
-      @Nullable final List<SlaveVictor> slaveVictors) {
-    this.controllerType = cfg.type;
-    this.port = cfg.port;
-    this.reverseOutput = cfg.reverseOutput;
-    this.unitPerRotation = cfg.unitPerRotation;
-    this.enableVoltageComp = cfg.enableVoltageComp;
+      @Nullable final List<SlaveVictor> slaveVictors,
+      //General config
+      @NotNull final SmartMotorConfig cfg
+      ) {
+    this.controllerType = cfg.getType();
+    this.port = cfg.getPort();
+    this.reverseOutput = cfg.isReverseOutput();
+    this.unitPerRotation = cfg.getUnitPerRotation();
+    this.enableVoltageComp = cfg.isEnableVoltageComp();
     this.name =
-        cfg.name != null
-            ? cfg.name
+        cfg.getName() != null
+            ? cfg.getName()
             : String.format(
                 "%s_%d",
-                cfg.type == Type.SPARK
+                cfg.getType() == Type.SPARK
                     ? "spark"
-                    : cfg.type == Type.TALON ? "talon" : "MotorControllerUnknownType",
+                    : cfg.getType() == Type.TALON ? "talon" : "MotorControllerUnknownType",
                 port);
 
-    // Most of the constructor is stolen from MPSSparkMax.
-
-    this.perGearSettings = cfg.perGearSettings;
-    this.currentGearSettings = cfg.initialGearSettings;
+    this.perGearSettings = cfg.getPerGearSettingsMap();
+    this.currentGearSettings = cfg.getInitialGearSettings();
     // Set up gear-based settings.
     this.setGear(currentGearSettings.gear);
 
@@ -115,7 +116,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
    * @param cfg The general configurations for the controller
    */
   public MPSSmartMotorSimulated(@NotNull final SmartMotorConfig cfg) {
-    this(cfg, null, null, null, null, null, null, null, null, null, null, null, null);
+    this(null, null, null, null, null, null, null, null, null, null, null, null, cfg);
   }
 
   public void setControlModeAndSetpoint(final ControlMode controlMode, final double setpoint) {

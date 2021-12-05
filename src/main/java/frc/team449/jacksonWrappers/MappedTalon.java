@@ -90,17 +90,17 @@ public class MappedTalon implements SmartMotor {
       @Nullable final List<SlaveVictor> slaveVictors,
       @Nullable final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis) {
     // Instantiate the base CANTalon this is a wrapper on.
-    this.canTalon = new TalonSRX(cfg.port);
+    this.canTalon = new TalonSRX(cfg.getPort());
     // Set the name to the given one or to talon_portnum
-    this.name = cfg.name != null ? cfg.name : ("talon_" + cfg.port);
+    this.name = cfg.getName() != null ? cfg.getName() : ("talon_" + cfg.getPort());
     // Set this to false because we only use reverseOutput for slaves.
-    this.canTalon.setInverted(cfg.reverseOutput);
+    this.canTalon.setInverted(cfg.isReverseOutput());
     // Set brake mode
-    this.canTalon.setNeutralMode(cfg.enableBrakeMode ? NeutralMode.Brake : NeutralMode.Coast);
+    this.canTalon.setNeutralMode(cfg.isEnableBrakeMode() ? NeutralMode.Brake : NeutralMode.Coast);
     // Reset the position
     this.resetPosition();
 
-    this.PDP = cfg.pdp;
+    this.PDP = cfg.getPdp();
     this.voltagePerCurrentLinReg = voltagePerCurrentLinReg;
 
     // Set frame rates
@@ -117,54 +117,54 @@ public class MappedTalon implements SmartMotor {
     }
 
     // Set fields
-    this.unitPerRotation = cfg.unitPerRotation;
+    this.unitPerRotation = cfg.getUnitPerRotation();
 
     // Initialize
-    this.perGearSettings = cfg.perGearSettings;
-    this.currentGearSettings = cfg.initialGearSettings;
+    this.perGearSettings = cfg.getPerGearSettingsMap();
+    this.currentGearSettings = cfg.getInitialGearSettings();
 
     // Only enable the limit switches if it was specified if they're normally open or closed.
-    if (cfg.fwdLimitSwitchNormallyOpen != null) {
-      if (cfg.remoteLimitSwitchID != null) {
+    if (cfg.getFwdLimitSwitchNormallyOpen() != null) {
+      if (cfg.getRemoteLimitSwitchID() != null) {
         this.canTalon.configForwardLimitSwitchSource(
             RemoteLimitSwitchSource.RemoteTalonSRX,
-            cfg.fwdLimitSwitchNormallyOpen
+            cfg.getFwdLimitSwitchNormallyOpen()
                 ? LimitSwitchNormal.NormallyOpen
                 : LimitSwitchNormal.NormallyClosed,
-            cfg.remoteLimitSwitchID,
+            cfg.getRemoteLimitSwitchID(),
             0);
       } else {
         this.canTalon.configForwardLimitSwitchSource(
             LimitSwitchSource.FeedbackConnector,
-            cfg.fwdLimitSwitchNormallyOpen
+            cfg.getFwdLimitSwitchNormallyOpen()
                 ? LimitSwitchNormal.NormallyOpen
                 : LimitSwitchNormal.NormallyClosed,
             0);
       }
-      this.fwdLimitSwitchNormallyOpen = cfg.fwdLimitSwitchNormallyOpen;
+      this.fwdLimitSwitchNormallyOpen = cfg.getFwdLimitSwitchNormallyOpen();
     } else {
       this.canTalon.configForwardLimitSwitchSource(
           LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
       this.fwdLimitSwitchNormallyOpen = true;
     }
-    if (cfg.revLimitSwitchNormallyOpen != null) {
-      if (cfg.remoteLimitSwitchID != null) {
+    if (cfg.getRevLimitSwitchNormallyOpen() != null) {
+      if (cfg.getRemoteLimitSwitchID() != null) {
         this.canTalon.configReverseLimitSwitchSource(
             RemoteLimitSwitchSource.RemoteTalonSRX,
-            cfg.revLimitSwitchNormallyOpen
+            cfg.getRevLimitSwitchNormallyOpen()
                 ? LimitSwitchNormal.NormallyOpen
                 : LimitSwitchNormal.NormallyClosed,
-            cfg.remoteLimitSwitchID,
+            cfg.getRemoteLimitSwitchID(),
             0);
       } else {
         this.canTalon.configReverseLimitSwitchSource(
             LimitSwitchSource.FeedbackConnector,
-            cfg.revLimitSwitchNormallyOpen
+            cfg.getRevLimitSwitchNormallyOpen()
                 ? LimitSwitchNormal.NormallyOpen
                 : LimitSwitchNormal.NormallyClosed,
             0);
       }
-      this.revLimitSwitchNormallyOpen = cfg.revLimitSwitchNormallyOpen;
+      this.revLimitSwitchNormallyOpen = cfg.getRevLimitSwitchNormallyOpen();
     } else {
       this.canTalon.configReverseLimitSwitchSource(
           LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
@@ -186,17 +186,17 @@ public class MappedTalon implements SmartMotor {
       this.canTalon.setSensorPhase(reverseSensor != null && reverseSensor);
 
       // Only enable the software limits if they were given a value and there's an encoder.
-      if (cfg.fwdSoftLimit != null) {
+      if (cfg.getFwdSoftLimit() != null) {
         this.canTalon.configForwardSoftLimitEnable(true, 0);
         this.canTalon.configForwardSoftLimitThreshold(
-            (int) this.unitToEncoder(cfg.fwdSoftLimit), 0);
+            (int) this.unitToEncoder(cfg.getFwdSoftLimit()), 0);
       } else {
         this.canTalon.configForwardSoftLimitEnable(false, 0);
       }
-      if (cfg.revSoftLimit != null) {
+      if (cfg.getRevSoftLimit() != null) {
         this.canTalon.configReverseSoftLimitEnable(true, 0);
         this.canTalon.configReverseSoftLimitThreshold(
-            (int) this.unitToEncoder(cfg.revSoftLimit), 0);
+            (int) this.unitToEncoder(cfg.getRevSoftLimit()), 0);
       } else {
         this.canTalon.configReverseSoftLimitEnable(false, 0);
       }
@@ -206,14 +206,14 @@ public class MappedTalon implements SmartMotor {
     }
 
     // postEncoderGearing defaults to 1
-    this.postEncoderGearing = cfg.postEncoderGearing;
+    this.postEncoderGearing = cfg.getPostEncoderGearing();
 
     // Set up gear-based settings.
     this.setGear(currentGearSettings.gear);
 
     // Set the current limit if it was given
-    if (cfg.currentLimit != null) {
-      this.canTalon.configContinuousCurrentLimit(cfg.currentLimit, 0);
+    if (cfg.getCurrentLimit() != null) {
+      this.canTalon.configContinuousCurrentLimit(cfg.getCurrentLimit(), 0);
       this.canTalon.configPeakCurrentDuration(0, 0);
       this.canTalon.configPeakCurrentLimit(0, 0); // No duration
       this.canTalon.enableCurrentLimit(true);
@@ -223,7 +223,7 @@ public class MappedTalon implements SmartMotor {
     }
 
     // Enable or disable voltage comp
-    if (cfg.enableVoltageComp) {
+    if (cfg.isEnableVoltageComp()) {
       canTalon.enableVoltageCompensation(true);
       canTalon.configVoltageCompSaturation(12, 0);
       voltageCompEnabled = true;
@@ -239,10 +239,10 @@ public class MappedTalon implements SmartMotor {
       // Set up slaves.
       for (final SlaveTalon slave : slaveTalons) {
         slave.setMaster(
-            cfg.port,
-            cfg.enableBrakeMode,
-            cfg.currentLimit,
-            cfg.enableVoltageComp ? notNullVoltageCompSamples : null,
+            cfg.getPort(),
+            cfg.isEnableBrakeMode(),
+            cfg.getCurrentLimit(),
+            cfg.isEnableVoltageComp() ? notNullVoltageCompSamples : null,
             PDP,
             voltagePerCurrentLinReg);
       }
@@ -253,13 +253,13 @@ public class MappedTalon implements SmartMotor {
       for (final SlaveVictor slave : slaveVictors) {
         slave.setMaster(
             this.canTalon,
-            cfg.enableBrakeMode,
-            cfg.enableVoltageComp ? notNullVoltageCompSamples : null);
+            cfg.isEnableBrakeMode(),
+            cfg.isEnableVoltageComp() ? notNullVoltageCompSamples : null);
       }
     }
 
-    for (final SlaveSparkMax slave : cfg.slaveSparks) {
-      slave.setMasterPhoenix(cfg.port, cfg.enableBrakeMode);
+    for (final SlaveSparkMax slave : cfg.getSlaveSparks()) {
+      slave.setMasterPhoenix(cfg.getPort(), cfg.isEnableBrakeMode());
     }
 
     canTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms);

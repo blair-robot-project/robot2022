@@ -24,7 +24,7 @@ import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.jacksonWrappers.*;
 import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
-import frc.team449.javaMaps.builders.SmartMotorConfigBuilder;
+import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.buttons.SimpleButton;
@@ -82,7 +82,7 @@ public class Bunnybot2021Map {
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
-        new SmartMotorConfigBuilder()
+        new SmartMotorConfig()
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
             .setPdp(pdp)
@@ -122,7 +122,7 @@ public class Bunnybot2021Map {
                                 new MappedFeedForwardCalculator(
                                     0.156, 2.01, 0.154)) // TODO characterize
                             .build()))
-                .build());
+                .ensureBuilt());
 
     var rightMaster =
         MappedSparkMax.create(
@@ -149,7 +149,7 @@ public class Bunnybot2021Map {
                                 new MappedFeedForwardCalculator(
                                     0.165, 2.01, 0.155)) // TODO characterize
                             .build()))
-                .build());
+                .ensureBuilt());
 
     var drive =
         new DriveUnidirectionalWithGyroShiftable(
@@ -167,7 +167,7 @@ public class Bunnybot2021Map {
         MappedSparkMax.create(
             null,
             null,
-            new SmartMotorConfigBuilder()
+            new SmartMotorConfig()
                 .setName("elevator")
                 .setPort(ELEVATOR_MOTOR_PORT)
                 .setReverseOutput(false)
@@ -180,7 +180,7 @@ public class Bunnybot2021Map {
                         .gear(Shiftable.Gear.LOW)
                         .maxSpeed(ELEVATOR_MAX_VELOCITY)
                         .build()))
-                .build());
+                .ensureBuilt());
     // PID constants for position controlled elevator motor
     elevatorPulleyMotor.setPID(0, 0, 0); // TODO tune pid
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
