@@ -89,7 +89,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   void setPositionSetpoint(double meters);
 
   /**
-   * Since the PID controller isn't accessible to this abstract class, this method must be
+   * Since the PID controller isn't accessible to this interface, this method must be
    * overwritten to set values for P, I, and D in {@link MappedSparkMaxBase#setGear(int gear)}
    */
   void setPID(double kP, double kI, double kD);

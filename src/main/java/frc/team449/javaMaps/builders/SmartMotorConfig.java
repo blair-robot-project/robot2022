@@ -7,7 +7,11 @@ import frc.team449.jacksonWrappers.SlaveSparkMax;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The constructor for {@link SmartMotor} was hell so this will help resolve that.
@@ -174,27 +178,15 @@ public class SmartMotorConfig {
     return this;
   }
 
-  public @NotNull List<Shiftable.PerGearSettings> getPerGearSettings() {
-    return perGearSettings;
-  }
-
   public SmartMotorConfig setPerGearSettings(
       @NotNull List<Shiftable.PerGearSettings> perGearSettings) {
     this.perGearSettings = perGearSettings;
     return this;
   }
 
-  public Shiftable.@Nullable Gear getStartingGear() {
-    return startingGear;
-  }
-
   public SmartMotorConfig setStartingGear(Shiftable.Gear startingGear) {
     this.startingGear = startingGear;
     return this;
-  }
-
-  public @Nullable Integer getStartingGearNum() {
-    return startingGearNum;
   }
 
   public SmartMotorConfig setStartingGearNum(Integer startingGearNum) {
@@ -235,18 +227,13 @@ public class SmartMotorConfig {
   }
 
   public Map<Integer, Shiftable.PerGearSettings> getPerGearSettingsMap() {
-    var perGearSettingsMap = new HashMap<Integer, Shiftable.PerGearSettings>();
     // If given no gear settings, use the default values.
     if (this.perGearSettings.isEmpty()) {
-      perGearSettingsMap.put(0, Shiftable.PerGearSettings.DEFAULT);
+      return Map.of(0, Shiftable.PerGearSettings.DEFAULT);
     }
     // Otherwise, map the settings to the gear they are.
-    else {
-      for (final Shiftable.PerGearSettings settings : this.perGearSettings) {
-        perGearSettingsMap.put(settings.gear, settings);
-      }
-    }
-    return perGearSettingsMap;
+    return perGearSettings.stream()
+        .collect(Collectors.toMap(settings -> settings.gear, settings -> settings));
   }
 
   public Shiftable.PerGearSettings getInitialGearSettings() {
@@ -272,7 +259,6 @@ public class SmartMotorConfig {
    */
   public SmartMotorConfig ensureBuilt() {
     assert pdp != null : "PDP was null when constructing motor " + name;
-    // TODO initialize default stuff
     return this;
   }
 }

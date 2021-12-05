@@ -13,11 +13,12 @@ import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Component wrapper on the CTRE {@link TalonSRX}, with unit conversions to/from MPS built in. Every
@@ -62,7 +63,7 @@ public class MappedTalon implements SmartMotor {
   /**
    * Default constructor.
    *
-   * @param cfg The configuration for this Talon
+   * @param controlFrameRatesMillis The update rate, in milliseconds, for each of the control frame.
    * @param voltageCompSamples TALON-SPECIFIC. The number of 1-millisecond samples to use for
    *     voltage compensation. Defaults to 32.
    * @param feedbackDevice TALON-SPECIFIC. The type of encoder used to measure the output velocity
@@ -71,15 +72,13 @@ public class MappedTalon implements SmartMotor {
    *     Can be null if feedbackDevice is, but otherwise must have a value.
    * @param reverseSensor TALON-SPECIFIC. Whether or not to reverse the reading from the encoder on
    *     this controller. Ignored if feedbackDevice is null. Defaults to false.
-   * @param statusFrameRatesMillis The update rates, in millis, for each of the Talon status frames.
-   * @param controlFrameRatesMillis The update rate, in milliseconds, for each of the control frame.
    * @param slaveTalons TALON-SPECIFIC. The {@link TalonSRX}s that are slaved to this controller.
    * @param slaveVictors TALON-SPECIFIC. The {@link com.ctre.phoenix.motorcontrol.can.VictorSPX}s
-   *     that are slaved to this controller.
+   * @param statusFrameRatesMillis The update rates, in millis, for each of the Talon status frames.
+   * @param cfg The configuration for this Talon
    */
   @JsonCreator
   public MappedTalon(
-      @NotNull final SmartMotorConfig cfg,
       @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
       @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
       @Nullable final Integer voltageCompSamples,
@@ -88,7 +87,8 @@ public class MappedTalon implements SmartMotor {
       @Nullable final Boolean reverseSensor,
       @Nullable final List<SlaveTalon> slaveTalons,
       @Nullable final List<SlaveVictor> slaveVictors,
-      @Nullable final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis) {
+      @Nullable final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
+      @NotNull final SmartMotorConfig cfg) {
     // Instantiate the base CANTalon this is a wrapper on.
     this.canTalon = new TalonSRX(cfg.getPort());
     // Set the name to the given one or to talon_portnum
