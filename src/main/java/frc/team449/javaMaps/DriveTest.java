@@ -21,7 +21,7 @@ import frc.team449.generalInterfaces.shiftable.commands.ShiftGears;
 import frc.team449.jacksonWrappers.*;
 import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
-import frc.team449.javaMaps.builders.SmartMotorConfigObject;
+import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.buttons.SimpleButton;
@@ -65,7 +65,7 @@ public class DriveTest {
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
-        new SmartMotorConfigObject()
+        new SmartMotorConfig()
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
             .setPdp(pdp)
@@ -84,7 +84,9 @@ public class DriveTest {
             .postEncoderGearing(1 / 7.73)
             .maxSpeed(5.2); // free speed max in m/s is 44.537592495 m/s
     var rightMaster =
-        SmartMotor.create(
+        MappedSparkMax.create(
+            null,
+            null,
             driveMasterPrototype
                 .setName("right")
                 .setPort(RIGHT_LEADER_PORT)
@@ -101,9 +103,12 @@ public class DriveTest {
                             .feedForwardCalculator(
                                 new MappedFeedForwardCalculator(
                                     0.165, 2.01, 0.155)) // TODO characterize
-                            .build())));
+                            .build()))
+                .ensureBuilt());
     var leftMaster =
-        SmartMotor.create(
+        MappedSparkMax.create(
+            null,
+            null,
             driveMasterPrototype
                 .setPort(LEFT_LEADER_PORT)
                 .setName("left")
@@ -119,7 +124,8 @@ public class DriveTest {
                             .feedForwardCalculator(
                                 new MappedFeedForwardCalculator(
                                     0.156, 2.01, 0.154)) // TODO characterize
-                            .build())));
+                            .build()))
+                .ensureBuilt());
 
     var drive =
         new DriveUnidirectionalWithGyroShiftable(

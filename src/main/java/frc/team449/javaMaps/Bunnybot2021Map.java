@@ -24,7 +24,7 @@ import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.jacksonWrappers.*;
 import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
-import frc.team449.javaMaps.builders.SmartMotorConfigObject;
+import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.buttons.SimpleButton;
@@ -70,6 +70,7 @@ public class Bunnybot2021Map {
   @NotNull
   public static RobotMap createRobotMap() {
     var useCameraServer = false;
+
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
 
     var driveJoystick = new MappedJoystick(DRIVE_JOYSTICK_PORT);
@@ -81,7 +82,7 @@ public class Bunnybot2021Map {
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
-        new SmartMotorConfigObject()
+        new SmartMotorConfig()
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
             .setPdp(pdp)
@@ -99,29 +100,12 @@ public class Bunnybot2021Map {
             .gear(Shiftable.Gear.HIGH)
             .postEncoderGearing(1 / 7.73)
             .maxSpeed(2.0); // in m/s
-    var rightMaster =
-        SmartMotor.create(
-            driveMasterPrototype
-                .setName("right")
-                .setPort(RIGHT_LEADER_PORT)
-                .setReverseOutput(false)
-                .setSlaveSparks(
-                    List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false, pdp)))
-                .setPerGearSettings(
-                    List.of(
-                        lowGear
-                            .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(
-                                    0.102, 5.66, 0.306)) // TODO characterize
-                            .build(),
-                        highGear
-                            .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(
-                                    0.165, 2.01, 0.155)) // TODO characterize
-                            .build())));
     var leftMaster =
-        SmartMotor.create(
+        MappedSparkMax.create(
+            null,
+            null,
             driveMasterPrototype
+                .copy()
                 .setPort(LEFT_LEADER_PORT)
                 .setName("left")
                 .setReverseOutput(true)
@@ -137,7 +121,35 @@ public class Bunnybot2021Map {
                             .feedForwardCalculator(
                                 new MappedFeedForwardCalculator(
                                     0.156, 2.01, 0.154)) // TODO characterize
-                            .build())));
+                            .build()))
+                .ensureBuilt());
+
+    var rightMaster =
+        MappedSparkMax.create(
+            null,
+            null,
+            driveMasterPrototype
+                .copy()
+                .setName("right")
+                .setPort(RIGHT_LEADER_PORT)
+                .setReverseOutput(false)
+                .setSlaveSparks(
+                    List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false, pdp)))
+                .setSlaveSparks(
+                    List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false, pdp)))
+                .setPerGearSettings(
+                    List.of(
+                        lowGear
+                            .feedForwardCalculator(
+                                new MappedFeedForwardCalculator(
+                                    0.102, 5.66, 0.306)) // TODO characterize
+                            .build(),
+                        highGear
+                            .feedForwardCalculator(
+                                new MappedFeedForwardCalculator(
+                                    0.165, 2.01, 0.155)) // TODO characterize
+                            .build()))
+                .ensureBuilt());
 
     var drive =
         new DriveUnidirectionalWithGyroShiftable(
@@ -152,31 +164,23 @@ public class Bunnybot2021Map {
     // Elevator
     // TODO setup elevator, with Meters
     var elevatorPulleyMotor =
-        new MappedSparkMax(
-            ELEVATOR_MOTOR_PORT,
-            "elevator",
-            false,
-            true,
-            pdp,
+        MappedSparkMax.create(
             null,
             null,
-            null,
-            null,
-            null,
-            1.0,
-            1.0, // TODO set to circumference of pulley for the elevator
-            40,
-            false,
-            List.of(
-                new PerGearSettingsBuilder()
-                    .gear(Shiftable.Gear.LOW)
-                    .maxSpeed(ELEVATOR_MAX_VELOCITY)
-                    .build()),
-            Shiftable.Gear.LOW,
-            null,
-            null,
-            null,
-            null);
+            new SmartMotorConfig()
+                .setName("elevator")
+                .setPort(ELEVATOR_MOTOR_PORT)
+                .setReverseOutput(false)
+                .setEnableBrakeMode(true)
+                .setPdp(pdp)
+                .setCurrentLimit(40)
+                .setEnableVoltageComp(false)
+                .setPerGearSettings(List.of(
+                    new PerGearSettingsBuilder()
+                        .gear(Shiftable.Gear.LOW)
+                        .maxSpeed(ELEVATOR_MAX_VELOCITY)
+                        .build()))
+                .ensureBuilt());
     // PID constants for position controlled elevator motor
     elevatorPulleyMotor.setPID(0, 0, 0); // TODO tune pid
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM

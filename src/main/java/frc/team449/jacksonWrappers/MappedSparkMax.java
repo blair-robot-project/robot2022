@@ -2,25 +2,20 @@ package frc.team449.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.ControlType;
+import com.revrobotics.*;
 import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
-import frc.team449.generalInterfaces.shiftable.Shiftable;
+import frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated;
+import frc.team449.javaMaps.builders.SmartMotorConfig;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
-  /** The counts per rotation of the encoder being used, or null if there is no encoder. */
-  @Nullable private final Integer encoderCPR;
   /** REV provided encoder object */
   private final CANEncoder canEncoder;
   /** REV provided PID Controller */
@@ -29,86 +24,44 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
   /**
    * Create a new SPARK MAX Controller
    *
-   * @param port CAN port of this Spark.
-   * @param name The Spark's name, used for logging purposes. Defaults to "spark_&gt;port&lt;"
-   * @param reverseOutput Whether to reverse the output.
-   * @param enableBrakeMode Whether to brake or coast when stopped.
-   * @param PDP The PDP this Spark is connected to.
-   * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed.
-   *     If this is null, the forward limit switch is disabled.
-   * @param revLimitSwitchNormallyOpen Whether the reverse limit switch is normally open or closed.
-   *     If this is null, the reverse limit switch is disabled.
-   * @param remoteLimitSwitchID The CAN ID the limit switch to use for this Spark is plugged into,
-   *     or null to not use a limit switch.
-   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward
-   *     software limit is disabled. Ignored if there's no encoder.
-   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse
-   *     software limit is disabled. Ignored if there's no encoder.
-   * @param postEncoderGearing The coefficient the output changes by after being measured by the
-   *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
-   *     final output. Defaults to 1.
-   * @param unitPerRotation The number of meters travelled per rotation of the motor this is
-   *     attached to. Defaults to 1.
-   * @param currentLimit The max amps this device can draw. If this is null, no current limit is
-   *     used.
-   * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.
-   * @param perGearSettings The settings for each gear this motor has. Can be null to use default
-   *     values and gear # of zero. Gear numbers can't be repeated.
-   * @param startingGear The gear to start in. Can be null to use startingGearNum instead.
-   * @param startingGearNum The number of the gear to start in. Ignored if startingGear isn't null.
-   *     Defaults to the lowest gear.
-   * @param statusFrameRatesMillis The update rates, in millis, for each of the status frames.
    * @param controlFrameRateMillis The update rate, in milliseconds, for each control frame.
+   * @param statusFrameRatesMillis The update rates, in millis, for each of the status frames.
+   * @param cfg The configuration for this Spark
    */
   @JsonCreator
   public MappedSparkMax(
-      @JsonProperty(required = true) final int port,
-      @Nullable final String name,
-      final boolean reverseOutput,
-      @JsonProperty(required = true) final boolean enableBrakeMode,
-      @Nullable final PDP PDP,
-      @Nullable final Boolean fwdLimitSwitchNormallyOpen,
-      @Nullable final Boolean revLimitSwitchNormallyOpen,
-      @Nullable final Integer remoteLimitSwitchID,
-      @Nullable final Double fwdSoftLimit,
-      @Nullable final Double revSoftLimit,
-      @Nullable final Double postEncoderGearing,
-      @Nullable final Double unitPerRotation,
-      @Nullable final Integer currentLimit,
-      final boolean enableVoltageComp,
-      @Nullable final List<PerGearSettings> perGearSettings,
-      @Nullable final Shiftable.Gear startingGear,
-      @Nullable final Integer startingGearNum,
-      @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> statusFrameRatesMillis,
       @Nullable final Integer controlFrameRateMillis,
-      @Nullable final List<SlaveSparkMax> slaveSparks) {
-    super(
-        port,
-        name,
-        reverseOutput,
-        enableBrakeMode,
-        PDP,
-        fwdLimitSwitchNormallyOpen,
-        revLimitSwitchNormallyOpen,
-        remoteLimitSwitchID,
-        fwdSoftLimit,
-        revSoftLimit,
-        postEncoderGearing,
-        unitPerRotation,
-        currentLimit,
-        enableVoltageComp,
-        perGearSettings,
-        startingGear,
-        startingGearNum,
-        statusFrameRatesMillis,
-        controlFrameRateMillis,
-        slaveSparks);
+      @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+      @NotNull final SmartMotorConfig cfg) {
+    super(controlFrameRateMillis, statusFrameRatesMillis, cfg);
     this.canEncoder = this.spark.getEncoder();
     this.pidController = this.spark.getPIDController();
-    // todo determine if encoderCPR will ever be needed
-    this.encoderCPR = this.canEncoder.getCountsPerRevolution();
     this.resetPosition();
     MotorContainer.register(this);
+  }
+
+  /**
+   * Tries to create a MappedSparkMax, but if there's a HAL error, it creates a {@link
+   * frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated} instead
+   *
+   * @see MappedSparkMax#MappedSparkMax(Integer, Map, SmartMotorConfig)
+   */
+  public static SmartMotor create(
+      @Nullable final Integer controlFrameRateMillis,
+      @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+      @NotNull final SmartMotorConfig cfg) {
+    try (final var spark = new CANSparkMax(cfg.getPort(), CANSparkMaxLowLevel.MotorType.kBrushless)) {
+      spark.restoreFactoryDefaults();
+      if (spark.getLastError() == CANError.kHALError) {
+        System.out.println(
+            "HAL error for spark on port "
+                + cfg.getPort()
+                + "; assuming nonexistent and replacing with simulated controller");
+        return new MPSSmartMotorSimulated(cfg);
+      } else {
+        return new MappedSparkMax(controlFrameRateMillis, statusFrameRatesMillis, cfg);
+      }
+    }
   }
 
   @Override

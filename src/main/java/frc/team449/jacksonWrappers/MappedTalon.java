@@ -4,21 +4,21 @@ import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.team449.components.RunningLinRegComponent;
+import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
-import frc.team449.generalInterfaces.shiftable.Shiftable;
+import frc.team449.javaMaps.builders.SmartMotorConfig;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Component wrapper on the CTRE {@link TalonSRX}, with unit conversions to/from MPS built in. Every
@@ -63,186 +63,108 @@ public class MappedTalon implements SmartMotor {
   /**
    * Default constructor.
    *
-   * @param port CAN port of this Talon.
-   * @param name The talon's name, used for logging purposes. Defaults to talon_portnum
-   * @param reverseOutput Whether to reverse the output.
-   * @param enableBrakeMode Whether to brake or coast when stopped.
-   * @param voltagePerCurrentLinReg The component for doing linear regression to find the
-   *     resistance.
-   * @param PDP The PDP this Talon is connected to.
-   * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed.
-   *     If this is null, the forward limit switch is disabled.
-   * @param revLimitSwitchNormallyOpen Whether the reverse limit switch is normally open or closed.
-   *     If this is null, the reverse limit switch is disabled.
-   * @param remoteLimitSwitchID The CAN port of the Talon the limit switch to use for this talon is
-   *     plugged into, or null to not use a limit switch or use the limit switch plugged into this
-   *     talon.
-   * @param fwdSoftLimit The forward software limit, in meters. If this is null, the forward
-   *     software limit is disabled. Ignored if there's no encoder.
-   * @param revSoftLimit The reverse software limit, in meters. If this is null, the reverse
-   *     software limit is disabled. Ignored if there's no encoder.
-   * @param postEncoderGearing The coefficient the output changes by after being measured by the
-   *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
-   *     final output. Defaults to 1.
-   * @param unitPerRotation The number of meters travelled per rotation of the motor this is
-   *     attached to. Defaults to 1.
-   * @param currentLimit The max amps this device can draw. If this is null, no current limit is
-   *     used.
-   * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.
-   * @param voltageCompSamples The number of 1-millisecond samples to use for voltage compensation.
-   *     Defaults to 32.
-   * @param feedbackDevice The type of encoder used to measure the output velocity of this motor.
-   *     Can be null if there is no encoder attached to this Talon.
-   * @param encoderCPR The counts per rotation of the encoder on this Talon. Can be null if
-   *     feedbackDevice is, but otherwise must have a value.
-   * @param reverseSensor Whether or not to reverse the reading from the encoder on this Talon.
-   *     Ignored if feedbackDevice is null. Defaults to false.
-   * @param perGearSettings The settings for each gear this motor has. Can be null to use default
-   *     values and gear # of zero. Gear numbers can't be repeated.
-   * @param startingGear The gear to start in. Can be null to use startingGearNum instead.
-   * @param startingGearNum The number of the gear to start in. Ignored if startingGear isn't null.
-   *     Defaults to the lowest gear.
-   * @param statusFrameRatesMillis The update rates, in millis, for each of the Talon status frames.
    * @param controlFrameRatesMillis The update rate, in milliseconds, for each of the control frame.
-   * @param slaveTalons The other {@link TalonSRX}s that are slaved to this one.
-   * @param slaveVictors The {@link com.ctre.phoenix.motorcontrol.can.VictorSPX}s that are slaved to
-   *     this Talon.
-   * @param slaveSparks The Spark/Neo combinations slaved to this Talon.
+   * @param voltageCompSamples TALON-SPECIFIC. The number of 1-millisecond samples to use for
+   *     voltage compensation. Defaults to 32.
+   * @param feedbackDevice TALON-SPECIFIC. The type of encoder used to measure the output velocity
+   *     of this motor. Can be null if there is no encoder attached to this controller.
+   * @param encoderCPR TALON-SPECIFIC. The counts per rotation of the encoder on this controller.
+   *     Can be null if feedbackDevice is, but otherwise must have a value.
+   * @param reverseSensor TALON-SPECIFIC. Whether or not to reverse the reading from the encoder on
+   *     this controller. Ignored if feedbackDevice is null. Defaults to false.
+   * @param slaveTalons TALON-SPECIFIC. The {@link TalonSRX}s that are slaved to this controller.
+   * @param slaveVictors TALON-SPECIFIC. The {@link com.ctre.phoenix.motorcontrol.can.VictorSPX}s
+   * @param statusFrameRatesMillis The update rates, in millis, for each of the Talon status frames.
+   * @param cfg The configuration for this Talon
    */
   @JsonCreator
   public MappedTalon(
-      @JsonProperty(required = true) final int port,
-      @Nullable final String name,
-      final boolean reverseOutput,
-      @JsonProperty(required = true) final boolean enableBrakeMode,
+      @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
       @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
-      @Nullable final PDP PDP,
-      @Nullable final Boolean fwdLimitSwitchNormallyOpen,
-      @Nullable final Boolean revLimitSwitchNormallyOpen,
-      @Nullable final Integer remoteLimitSwitchID,
-      @Nullable final Double fwdSoftLimit,
-      @Nullable final Double revSoftLimit,
-      @Nullable final Double postEncoderGearing,
-      @Nullable final Double unitPerRotation,
-      @Nullable final Integer currentLimit,
-      final boolean enableVoltageComp,
       @Nullable final Integer voltageCompSamples,
       @Nullable final FeedbackDevice feedbackDevice,
       @Nullable final Integer encoderCPR,
-      final boolean reverseSensor,
-      @Nullable final List<PerGearSettings> perGearSettings,
-      @Nullable final Shiftable.Gear startingGear,
-      @Nullable final Integer startingGearNum,
-      @Nullable final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
-      @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
+      @Nullable final Boolean reverseSensor,
       @Nullable final List<SlaveTalon> slaveTalons,
       @Nullable final List<SlaveVictor> slaveVictors,
-      @Nullable final List<SlaveSparkMax> slaveSparks) {
+      @Nullable final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
+      @NotNull final SmartMotorConfig cfg) {
     // Instantiate the base CANTalon this is a wrapper on.
-    this.canTalon = new TalonSRX(port);
+    this.canTalon = new TalonSRX(cfg.getPort());
     // Set the name to the given one or to talon_portnum
-    this.name = name != null ? name : ("talon_" + port);
+    this.name = cfg.getName() != null ? cfg.getName() : ("talon_" + cfg.getPort());
     // Set this to false because we only use reverseOutput for slaves.
-    this.canTalon.setInverted(reverseOutput);
+    this.canTalon.setInverted(cfg.isReverseOutput());
     // Set brake mode
-    this.canTalon.setNeutralMode(enableBrakeMode ? NeutralMode.Brake : NeutralMode.Coast);
+    this.canTalon.setNeutralMode(cfg.isEnableBrakeMode() ? NeutralMode.Brake : NeutralMode.Coast);
     // Reset the position
     this.resetPosition();
 
-    this.PDP = PDP;
+    this.PDP = cfg.getPdp();
     this.voltagePerCurrentLinReg = voltagePerCurrentLinReg;
 
     // Set frame rates
     if (controlFrameRatesMillis != null) {
-      for (final Map.Entry<ControlFrame, Integer> controlFrame :
-          controlFrameRatesMillis.entrySet()) {
-        this.canTalon.setControlFramePeriod(controlFrame.getKey(), controlFrame.getValue());
+      for (final ControlFrame controlFrame : controlFrameRatesMillis.keySet()) {
+        this.canTalon.setControlFramePeriod(
+            controlFrame, controlFrameRatesMillis.get(controlFrame));
       }
     }
     if (statusFrameRatesMillis != null) {
-      for (final Map.Entry<StatusFrameEnhanced, Integer> statusFrame :
-          statusFrameRatesMillis.entrySet()) {
-        this.canTalon.setStatusFramePeriod(statusFrame.getKey(), statusFrame.getValue(), 0);
+      for (final StatusFrameEnhanced statusFrame : statusFrameRatesMillis.keySet()) {
+        this.canTalon.setStatusFramePeriod(statusFrame, statusFrameRatesMillis.get(statusFrame), 0);
       }
     }
 
     // Set fields
-    this.unitPerRotation = unitPerRotation != null ? unitPerRotation : 1;
+    this.unitPerRotation = cfg.getUnitPerRotation();
 
     // Initialize
-    this.perGearSettings = new HashMap<>();
-
-    // If given no gear settings, use the default values.
-    if (perGearSettings == null || perGearSettings.isEmpty()) {
-      this.perGearSettings.put(0, new PerGearSettings());
-    }
-    // Otherwise, map the settings to the gear they are.
-    else {
-      for (final PerGearSettings settings : perGearSettings) {
-        this.perGearSettings.put(settings.gear, settings);
-      }
-    }
-
-    int currentGear;
-    // If the starting gear isn't given, assume we start in low gear.
-    if (startingGear == null) {
-      if (startingGearNum == null) {
-        currentGear = Integer.MAX_VALUE;
-        for (final Integer gear : this.perGearSettings.keySet()) {
-          if (gear < currentGear) {
-            currentGear = gear;
-          }
-        }
-      } else {
-        currentGear = startingGearNum;
-      }
-    } else {
-      currentGear = startingGear.getNumVal();
-    }
-    this.currentGearSettings = this.perGearSettings.get(currentGear);
+    this.perGearSettings = cfg.getPerGearSettingsMap();
+    this.currentGearSettings = cfg.getInitialGearSettings();
 
     // Only enable the limit switches if it was specified if they're normally open or closed.
-    if (fwdLimitSwitchNormallyOpen != null) {
-      if (remoteLimitSwitchID != null) {
+    if (cfg.getFwdLimitSwitchNormallyOpen() != null) {
+      if (cfg.getRemoteLimitSwitchID() != null) {
         this.canTalon.configForwardLimitSwitchSource(
             RemoteLimitSwitchSource.RemoteTalonSRX,
-            fwdLimitSwitchNormallyOpen
+            cfg.getFwdLimitSwitchNormallyOpen()
                 ? LimitSwitchNormal.NormallyOpen
                 : LimitSwitchNormal.NormallyClosed,
-            remoteLimitSwitchID,
+            cfg.getRemoteLimitSwitchID(),
             0);
       } else {
         this.canTalon.configForwardLimitSwitchSource(
             LimitSwitchSource.FeedbackConnector,
-            fwdLimitSwitchNormallyOpen
+            cfg.getFwdLimitSwitchNormallyOpen()
                 ? LimitSwitchNormal.NormallyOpen
                 : LimitSwitchNormal.NormallyClosed,
             0);
       }
-      this.fwdLimitSwitchNormallyOpen = fwdLimitSwitchNormallyOpen;
+      this.fwdLimitSwitchNormallyOpen = cfg.getFwdLimitSwitchNormallyOpen();
     } else {
       this.canTalon.configForwardLimitSwitchSource(
           LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
       this.fwdLimitSwitchNormallyOpen = true;
     }
-    if (revLimitSwitchNormallyOpen != null) {
-      if (remoteLimitSwitchID != null) {
+    if (cfg.getRevLimitSwitchNormallyOpen() != null) {
+      if (cfg.getRemoteLimitSwitchID() != null) {
         this.canTalon.configReverseLimitSwitchSource(
             RemoteLimitSwitchSource.RemoteTalonSRX,
-            revLimitSwitchNormallyOpen
+            cfg.getRevLimitSwitchNormallyOpen()
                 ? LimitSwitchNormal.NormallyOpen
                 : LimitSwitchNormal.NormallyClosed,
-            remoteLimitSwitchID,
+            cfg.getRemoteLimitSwitchID(),
             0);
       } else {
         this.canTalon.configReverseLimitSwitchSource(
             LimitSwitchSource.FeedbackConnector,
-            revLimitSwitchNormallyOpen
+            cfg.getRevLimitSwitchNormallyOpen()
                 ? LimitSwitchNormal.NormallyOpen
                 : LimitSwitchNormal.NormallyClosed,
             0);
       }
-      this.revLimitSwitchNormallyOpen = revLimitSwitchNormallyOpen;
+      this.revLimitSwitchNormallyOpen = cfg.getRevLimitSwitchNormallyOpen();
     } else {
       this.canTalon.configReverseLimitSwitchSource(
           LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
@@ -261,18 +183,20 @@ public class MappedTalon implements SmartMotor {
         this.canTalon.configSelectedFeedbackSensor(feedbackDevice, 0, 0);
       }
       this.encoderCPR = encoderCPR;
-      this.canTalon.setSensorPhase(reverseSensor);
+      this.canTalon.setSensorPhase(reverseSensor != null && reverseSensor);
 
       // Only enable the software limits if they were given a value and there's an encoder.
-      if (fwdSoftLimit != null) {
+      if (cfg.getFwdSoftLimit() != null) {
         this.canTalon.configForwardSoftLimitEnable(true, 0);
-        this.canTalon.configForwardSoftLimitThreshold((int) this.unitToEncoder(fwdSoftLimit), 0);
+        this.canTalon.configForwardSoftLimitThreshold(
+            (int) this.unitToEncoder(cfg.getFwdSoftLimit()), 0);
       } else {
         this.canTalon.configForwardSoftLimitEnable(false, 0);
       }
-      if (revSoftLimit != null) {
+      if (cfg.getRevSoftLimit() != null) {
         this.canTalon.configReverseSoftLimitEnable(true, 0);
-        this.canTalon.configReverseSoftLimitThreshold((int) this.unitToEncoder(revSoftLimit), 0);
+        this.canTalon.configReverseSoftLimitThreshold(
+            (int) this.unitToEncoder(cfg.getRevSoftLimit()), 0);
       } else {
         this.canTalon.configReverseSoftLimitEnable(false, 0);
       }
@@ -282,14 +206,14 @@ public class MappedTalon implements SmartMotor {
     }
 
     // postEncoderGearing defaults to 1
-    this.postEncoderGearing = postEncoderGearing != null ? postEncoderGearing : 1.;
+    this.postEncoderGearing = cfg.getPostEncoderGearing();
 
     // Set up gear-based settings.
-    this.setGear(currentGear);
+    this.setGear(currentGearSettings.gear);
 
     // Set the current limit if it was given
-    if (currentLimit != null) {
-      this.canTalon.configContinuousCurrentLimit(currentLimit, 0);
+    if (cfg.getCurrentLimit() != null) {
+      this.canTalon.configContinuousCurrentLimit(cfg.getCurrentLimit(), 0);
       this.canTalon.configPeakCurrentDuration(0, 0);
       this.canTalon.configPeakCurrentLimit(0, 0); // No duration
       this.canTalon.enableCurrentLimit(true);
@@ -299,7 +223,7 @@ public class MappedTalon implements SmartMotor {
     }
 
     // Enable or disable voltage comp
-    if (enableVoltageComp) {
+    if (cfg.isEnableVoltageComp()) {
       canTalon.enableVoltageCompensation(true);
       canTalon.configVoltageCompSaturation(12, 0);
       voltageCompEnabled = true;
@@ -315,10 +239,10 @@ public class MappedTalon implements SmartMotor {
       // Set up slaves.
       for (final SlaveTalon slave : slaveTalons) {
         slave.setMaster(
-            port,
-            enableBrakeMode,
-            currentLimit,
-            enableVoltageComp ? notNullVoltageCompSamples : null,
+            cfg.getPort(),
+            cfg.isEnableBrakeMode(),
+            cfg.getCurrentLimit(),
+            cfg.isEnableVoltageComp() ? notNullVoltageCompSamples : null,
             PDP,
             voltagePerCurrentLinReg);
       }
@@ -328,18 +252,20 @@ public class MappedTalon implements SmartMotor {
       // Set up slaves.
       for (final SlaveVictor slave : slaveVictors) {
         slave.setMaster(
-            this.canTalon, enableBrakeMode, enableVoltageComp ? notNullVoltageCompSamples : null);
+            this.canTalon,
+            cfg.isEnableBrakeMode(),
+            cfg.isEnableVoltageComp() ? notNullVoltageCompSamples : null);
       }
     }
 
-    if (slaveSparks != null) {
-      for (final SlaveSparkMax slave : slaveSparks) {
-        slave.setMasterPhoenix(port, enableBrakeMode);
-      }
+    for (final SlaveSparkMax slave : cfg.getSlaveSparks()) {
+      slave.setMasterPhoenix(cfg.getPort(), cfg.isEnableBrakeMode());
     }
 
     canTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms);
     canTalon.configVelocityMeasurementWindow(10);
+
+    MotorContainer.register(this);
   }
 
   /** Disables the motor, if applicable. */
@@ -525,6 +451,13 @@ public class MappedTalon implements SmartMotor {
     } else {
       setPercentVoltage(volts / getBatteryVoltage());
     }
+  }
+
+  @Override
+  public void setPID(double kP, double kI, double kD) {
+    this.canTalon.config_kP(0, kP, 0);
+    this.canTalon.config_kI(0, kI, 0);
+    this.canTalon.config_kD(0, kD, 0);
   }
 
   /**

@@ -1,8 +1,5 @@
 package frc.team449.jacksonWrappers.simulated;
 
-import static frc.team449.other.Util.clamp;
-import static frc.team449.other.Util.getLogPrefix;
-
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -10,20 +7,26 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import frc.team449.components.RunningLinRegComponent;
+import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.updatable.Updatable;
-import frc.team449.jacksonWrappers.PDP;
-import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.jacksonWrappers.SlaveTalon;
 import frc.team449.jacksonWrappers.SlaveVictor;
+import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.*;
-import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.DoubleSupplier;
+
+import static frc.team449.other.Util.clamp;
+import static frc.team449.other.Util.getLogPrefix;
 
 /**
  * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
@@ -67,26 +70,8 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   @Log private double lastStateUpdateTime = Clock.currentTimeMillis();
 
   public MPSSmartMotorSimulated(
-      final Type type,
-      final int port,
-      final boolean enableBrakeMode,
-      @Nullable final String name,
-      final boolean reverseOutput,
-      @Nullable final PDP PDP,
-      @Nullable final Boolean fwdLimitSwitchNormallyOpen,
-      @Nullable final Boolean revLimitSwitchNormallyOpen,
-      @Nullable final Integer remoteLimitSwitchID,
-      @Nullable final Double fwdSoftLimit,
-      @Nullable final Double revSoftLimit,
-      @Nullable final Double postEncoderGearing,
-      @Nullable final Double unitPerRotation,
-      @Nullable final Integer currentLimit,
-      final boolean enableVoltageComp,
-      @Nullable final List<Shiftable.PerGearSettings> perGearSettings,
-      @Nullable final Shiftable.Gear startingGear,
-      @Nullable final Integer startingGearNum,
       // Spark-specific
-      @Nullable final EnumMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
+      @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
       @Nullable final Integer controlFrameRateMillis,
       // Talon-specific
       @Nullable final EnumMap<StatusFrameEnhanced, Integer> talonStatusFramesMap,
@@ -99,56 +84,39 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
       @Nullable final Double updaterProcessPeriodSecs,
       @Nullable final List<SlaveTalon> slaveTalons,
       @Nullable final List<SlaveVictor> slaveVictors,
-      @Nullable final List<SlaveSparkMax> slaveSparks) {
-    this.controllerType = type;
-    this.port = port;
-    this.reverseOutput = reverseOutput;
-    this.unitPerRotation = Objects.requireNonNullElse(unitPerRotation, 1.0);
-    this.enableVoltageComp = enableVoltageComp;
+      //General config
+      @NotNull final SmartMotorConfig cfg
+      ) {
+    this.controllerType = cfg.getType();
+    this.port = cfg.getPort();
+    this.reverseOutput = cfg.isReverseOutput();
+    this.unitPerRotation = cfg.getUnitPerRotation();
+    this.enableVoltageComp = cfg.isEnableVoltageComp();
     this.name =
-        name != null
-            ? name
+        cfg.getName() != null
+            ? cfg.getName()
             : String.format(
                 "%s_%d",
-                type == Type.SPARK
+                cfg.getType() == Type.SPARK
                     ? "spark"
-                    : type == Type.TALON ? "talon" : "MotorControllerUnknownType",
+                    : cfg.getType() == Type.TALON ? "talon" : "MotorControllerUnknownType",
                 port);
 
-    // Most of the constructor is stolen from MPSSparkMax.
-
-    this.perGearSettings = new HashMap<>();
-
-    // If given no gear settings, use the default values.
-    if (perGearSettings == null || perGearSettings.isEmpty()) {
-      this.perGearSettings.put(0, new Shiftable.PerGearSettings());
-    }
-    // Otherwise, map the settings to the gear they are.
-    else {
-      for (final Shiftable.PerGearSettings settings : perGearSettings) {
-        this.perGearSettings.put(settings.gear, settings);
-      }
-    }
-
-    int currentGear;
-    // If the starting gear isn't given, assume we start in low gear.
-    if (startingGear == null) {
-      if (startingGearNum == null) {
-        currentGear = Integer.MAX_VALUE;
-        for (final Integer gear : this.perGearSettings.keySet()) {
-          if (gear < currentGear) {
-            currentGear = gear;
-          }
-        }
-      } else {
-        currentGear = startingGearNum;
-      }
-    } else {
-      currentGear = startingGear.getNumVal();
-    }
-    this.currentGearSettings = this.perGearSettings.get(currentGear);
+    this.perGearSettings = cfg.getPerGearSettingsMap();
+    this.currentGearSettings = cfg.getInitialGearSettings();
     // Set up gear-based settings.
-    this.setGear(currentGear);
+    this.setGear(currentGearSettings.gear);
+
+    MotorContainer.register(this);
+  }
+
+  /**
+   * Construct a simulated controller but without any Spark- or Talon-specific settings
+   *
+   * @param cfg The general configurations for the controller
+   */
+  public MPSSmartMotorSimulated(@NotNull final SmartMotorConfig cfg) {
+    this(null, null, null, null, null, null, null, null, null, null, null, null, cfg);
   }
 
   public void setControlModeAndSetpoint(final ControlMode controlMode, final double setpoint) {
@@ -329,6 +297,11 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   @Log
   public double encoderPosition() {
     return this.motor.getPosition();
+  }
+
+  @Override
+  public void setPID(double kP, double kI, double kD) {
+    // Nothing to do here
   }
 
   /** Set a position setpoint for the controller. */

@@ -76,6 +76,8 @@ public interface Shiftable {
      */
     public SimpleMotorFeedforward feedForwardCalculator;
 
+    public static final PerGearSettings DEFAULT = new PerGearSettings();
+
     /**
      * Default constructor.
      *

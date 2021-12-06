@@ -14,6 +14,7 @@ import frc.team449.jacksonWrappers.MappedJoystick;
 import frc.team449.jacksonWrappers.MappedSparkMax;
 import frc.team449.jacksonWrappers.PDP;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
+import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.other.DefaultCommand;
@@ -166,27 +167,23 @@ public class PositionControlTest {
     */
     // Elevator
     var elevatorPulleyMotor =
-        new MappedSparkMax(
-            elevatorMotorPort,
-            "elevator",
-            false,
-            true,
-            pdp,
+        MappedSparkMax.create(
             null,
             null,
-            null,
-            null,
-            null,
-            1.0 / 30.0,
-            1.0,
-            40,
-            false,
-            List.of(new PerGearSettingsBuilder().gear(Shiftable.Gear.LOW).maxSpeed(5000.0).build()),
-            Shiftable.Gear.LOW,
-            null,
-            null,
-            null,
-            null);
+            new SmartMotorConfig()
+                .setName("elevator")
+                .setPort(elevatorMotorPort)
+                .setReverseOutput(false)
+                .setEnableBrakeMode(true)
+                .setPdp(pdp)
+                .setCurrentLimit(40)
+                .setEnableVoltageComp(false)
+                .setPerGearSettings(List.of(
+                    new PerGearSettingsBuilder()
+                        .gear(Shiftable.Gear.LOW)
+                        .maxSpeed(elevatorMaxVelocity)
+                        .build()))
+                .ensureBuilt());
     // PID constants for velocity controlled elevator motor
     //    elevatorPulleyMotor.setPID(0.0003, 0.0000008, 0.0146);
     // PID constants for position controlled elevator motor
