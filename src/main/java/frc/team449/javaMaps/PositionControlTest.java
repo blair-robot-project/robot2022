@@ -178,11 +178,12 @@ public class PositionControlTest {
                 .setPdp(pdp)
                 .setCurrentLimit(40)
                 .setEnableVoltageComp(false)
-                .setPerGearSettings(List.of(
-                    new PerGearSettingsBuilder()
-                        .gear(Shiftable.Gear.LOW)
-                        .maxSpeed(elevatorMaxVelocity)
-                        .build()))
+                .setPerGearSettings(
+                    List.of(
+                        new PerGearSettingsBuilder()
+                            .gear(Shiftable.Gear.LOW)
+                            .maxSpeed(elevatorMaxVelocity)
+                            .build()))
                 .ensureBuilt());
     // PID constants for velocity controlled elevator motor
     //    elevatorPulleyMotor.setPID(0.0003, 0.0000008, 0.0146);

@@ -4,20 +4,18 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.jacksonWrappers.PDP;
 import frc.team449.jacksonWrappers.SlaveSparkMax;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The constructor for {@link SmartMotor} was hell so this will help resolve that.
  *
- * <p>You can set config options in this then pass it to
- * various constructors.
+ * <p>You can set config options in this then pass it to various constructors.
  *
  * @author Katie Del Toro
  * @see SmartMotor
@@ -254,9 +252,7 @@ public class SmartMotorConfig {
     }
   }
 
-  /**
-   * Ensure that all required fields of this {@link SmartMotorConfig} have been initialized
-   */
+  /** Ensure that all required fields of this {@link SmartMotorConfig} have been initialized */
   public SmartMotorConfig ensureBuilt() {
     assert pdp != null : "PDP was null when constructing motor " + name;
     return this;

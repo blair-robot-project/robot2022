@@ -175,11 +175,12 @@ public class Bunnybot2021Map {
                 .setPdp(pdp)
                 .setCurrentLimit(40)
                 .setEnableVoltageComp(false)
-                .setPerGearSettings(List.of(
-                    new PerGearSettingsBuilder()
-                        .gear(Shiftable.Gear.LOW)
-                        .maxSpeed(ELEVATOR_MAX_VELOCITY)
-                        .build()))
+                .setPerGearSettings(
+                    List.of(
+                        new PerGearSettingsBuilder()
+                            .gear(Shiftable.Gear.LOW)
+                            .maxSpeed(ELEVATOR_MAX_VELOCITY)
+                            .build()))
                 .ensureBuilt());
     // PID constants for position controlled elevator motor
     elevatorPulleyMotor.setPID(0, 0, 0); // TODO tune pid

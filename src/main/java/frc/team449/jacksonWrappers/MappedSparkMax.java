@@ -50,7 +50,8 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
       @Nullable final Integer controlFrameRateMillis,
       @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
       @NotNull final SmartMotorConfig cfg) {
-    try (final var spark = new CANSparkMax(cfg.getPort(), CANSparkMaxLowLevel.MotorType.kBrushless)) {
+    try (final var spark =
+        new CANSparkMax(cfg.getPort(), CANSparkMaxLowLevel.MotorType.kBrushless)) {
       spark.restoreFactoryDefaults();
       if (spark.getLastError() == CANError.kHALError) {
         System.out.println(
