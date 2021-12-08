@@ -6,7 +6,6 @@ jobs:
   format-code:
     name: Format Code
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - uses: axel-op/googlejavaformat-action@v3
@@ -17,6 +16,7 @@ jobs:
   generate-todo-list:
     name: ToDo List Generator
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - name: Generate List
