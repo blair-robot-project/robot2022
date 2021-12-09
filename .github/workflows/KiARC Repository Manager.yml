@@ -1,12 +1,60 @@
 name: KiARC Repository Manager
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
+
 jobs:
-  kiarc-repository-manager:
-    name: KiARC Repository Manager
+  format-code:
+    name: Format Code
     runs-on: ubuntu-latest
     steps:
-      - uses: KiARC/KiARC-Repository-Manager@main
+      - uses: actions/checkout@v2
+      - uses: axel-op/googlejavaformat-action@v3
         with:
-          generate-tdl: 'true'
-          format-code: 'true'
+          args: "-r"
+          commitMessage: "Automated code formatting."
+
+  generate-todo-list:
+    name: ToDo List Generator
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Generate List
+        run: |
+          readarray -t todos < <(grep -Enri '\/+\**\ *.*todo' src/main/java/* | sed -e 's/: */: /g')
+          important=()
+          nonimportant=()
+          for todo in "${todos[@]}"
+          do
+            if [[ "$todo" = *"[IMPORTANT]"* ]]
+            then
+              important+=("$todo")
+            else
+              nonimportant+=("$todo")
+            fi
+          done
+          echo Important TODOs: > todolist.txt
+          for todo in "${important[@]}"
+          do
+            echo "$todo" >> todolist.txt
+          done
+          echo --------------------------------------------------------------------------------------------------------- >> todolist.txt
+          echo Non-important TODOs: >> todolist.txt
+          for todo in "${nonimportant[@]}"
+          do
+            echo "$todo" >> todolist.txt
+          done
+      - name: Git Config
+        run: |
+          git config user.name "ToDo List Generator"
+          git config user.email "<>"
+      - name: Commit List
+        run: |
+          if [ -n "$(git status --porcelain)" ]
+          then
+            git add todolist.txt
+            git commit -m "Update ToDo List"
+            git push origin ${{ github.ref_name }}
+          else
+            echo "No changes to the ToDo List."
+          fi
