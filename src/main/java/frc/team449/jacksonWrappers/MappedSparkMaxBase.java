@@ -337,12 +337,12 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
   }
 
   @Override
-  public boolean getFwdLimitSwitch() {
+  public boolean isFwdLimitSwitch() {
     return this.forwardLimitSwitch.get();
   }
 
   @Override
-  public boolean getRevLimitSwitch() {
+  public boolean isRevLimitSwitch() {
     return this.reverseLimitSwitch.get();
   }
 

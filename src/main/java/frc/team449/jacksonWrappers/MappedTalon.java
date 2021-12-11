@@ -647,7 +647,7 @@ public class MappedTalon implements SmartMotor {
    * @return True if the forwards limit switch is closed, false if it's open or doesn't exist.
    */
   @Override
-  public boolean getFwdLimitSwitch() {
+  public boolean isFwdLimitSwitch() {
     return fwdLimitSwitchNormallyOpen == canTalon.getSensorCollection().isFwdLimitSwitchClosed();
   }
 
@@ -657,7 +657,7 @@ public class MappedTalon implements SmartMotor {
    * @return True if the reverse limit switch is closed, false if it's open or doesn't exist.
    */
   @Override
-  public boolean getRevLimitSwitch() {
+  public boolean isRevLimitSwitch() {
     return this.revLimitSwitchNormallyOpen
         == this.canTalon.getSensorCollection().isRevLimitSwitchClosed();
   }

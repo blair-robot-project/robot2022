@@ -108,14 +108,6 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   double getVelocity();
 
   /**
-   * Set the velocity for the motor to go at.
-   *
-   * @param velocity the desired velocity, on [-1, 1].
-   */
-  @Override
-  void setVelocity(double velocity);
-
-  /**
    * Give a velocity closed loop setpoint in MPS.
    *
    * @param velocity velocity setpoint in MPS.
@@ -128,7 +120,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @return The closed-loop error in MPS, or null if no encoder CPR was given.
    */
-  double getError(); // TODO Unused
+  double getError();
 
   /**
    * Get the current velocity setpoint of the motor in MPS, the position setpoint in meters
@@ -164,7 +156,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @return Control mode as a string.
    */
-  String getControlMode(); // TODO Unused
+  String getControlMode();
 
   /**
    * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
@@ -198,14 +190,14 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @return True if the forwards limit switch is closed, false if it's open or doesn't exist.
    */
-  boolean getFwdLimitSwitch(); // TODO Unused
+  boolean isFwdLimitSwitch();
 
   /**
    * Get the status of the reverse limit switch.
    *
    * @return True if the reverse limit switch is closed, false if it's open or doesn't exist.
    */
-  boolean getRevLimitSwitch(); // TODO Unused
+  boolean isRevLimitSwitch();
 
   boolean isInhibitedForward();
 
@@ -253,7 +245,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * @return whether the motor is a software simulation of a motor
    */
   @Log
-  default boolean isSimulated() { // TODO Unused
+  default boolean isSimulated() {
     return false;
   }
 
@@ -277,7 +269,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
 
     @Override
     public String toString() {
-      return this.friendlyName;
+      return friendlyName;
     }
   }
 }

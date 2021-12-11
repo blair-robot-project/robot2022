@@ -3,6 +3,9 @@ package frc.team449.javaMaps;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.controller.ElevatorFeedforward;
+import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.CommandContainer;
@@ -189,7 +192,11 @@ public class Bunnybot2021Map {
 
     var elevator =
         new OneMotorPulleyElevator(
-            elevatorPulleyMotor, OneMotorPulleyElevator.ElevatorPosition.BOTTOM);
+            elevatorPulleyMotor,
+            OneMotorPulleyElevator.ElevatorPosition.BOTTOM,
+            new ElevatorFeedforward(0.0, 0.0, 0.0, 0.0), // TODO do characterization
+            new ProfiledPIDController(
+                0.0, 0.0, 0.0, new TrapezoidProfile.Constraints())); // TODO PID tuning
 
     // Intake
     var intake =
