@@ -24,9 +24,7 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
   private final Command flywheelStopCommand;
 
   /** The previous values from the IR sensors */
-  private boolean sensor1Cached,
-      sensor2Cached,
-      flywheelStoppedCached; // TODO sensor2Cached is never accessed
+  private boolean sensor1Cached, sensor2Cached, flywheelStoppedCached;
   /** The current number of balls inside the robot */
   @Log private int numBalls;
 
@@ -78,7 +76,7 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
       if (!sensor2Now) {
         numBalls = 0;
       } else {
-        // Having a ball still there wouldn't make sense. Maybe set numBalls to 1?
+        // TODO Having a ball still there wouldn't make sense. Maybe set numBalls to 1?
       }
     }
 

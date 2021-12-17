@@ -46,11 +46,6 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
     this.PDP = PDP;
   }
 
-  @Override
-  public String configureLogName() {
-    return "slavespark_" + this.port;
-  }
-
   public void setMasterSpark(final CANSparkMax masterController, final boolean brakeMode) {
     this.slaveSpark.follow(masterController, this.inverted);
     this.slaveSpark.setIdleMode(

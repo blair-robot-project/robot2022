@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.controller.ElevatorFeedforward;
-import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -195,8 +194,8 @@ public class Bunnybot2021Map {
             elevatorPulleyMotor,
             OneMotorPulleyElevator.ElevatorPosition.BOTTOM,
             new ElevatorFeedforward(0.0, 0.0, 0.0, 0.0), // TODO do characterization
-            new ProfiledPIDController(
-                0.0, 0.0, 0.0, new TrapezoidProfile.Constraints())); // TODO PID tuning
+            new TrapezoidProfile.Constraints(
+                1, 1)); // TODO [IMPORTANT] These values are placeholders
 
     // Intake
     var intake =
@@ -302,7 +301,6 @@ public class Bunnybot2021Map {
                 new SimpleButton(mechanismsJoystick, INTAKE_OPEN),
                 new SetIntake(OnePistonIntake.IntakePosition.OPEN, intake),
                 CommandButton.Action.WHEN_PRESSED));
-
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();
     var teleopStartupCommands = List.<Command>of();

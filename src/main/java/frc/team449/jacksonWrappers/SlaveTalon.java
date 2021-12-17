@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class SlaveTalon implements SlaveMotor, Loggable {
   /** The Port of this talon. */
-  private int port;
+  private final int port;
   /** The TalonSRX this object wraps. */
   @NotNull private final TalonSRX talonSRX;
   /** The PDP this talon runs on. Used for resistance logging purposes. */
@@ -152,11 +152,6 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   //                (linRegComponent != null && PDP != null) ? -linRegComponent.getSlope() : null;
   //        };
   //    }
-
-  @Override
-  public String configureLogName() {
-    return "slavetalon_" + this.port;
-  }
 
   @Log
   public double getOutputCurrent() {

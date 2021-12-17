@@ -288,6 +288,12 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
     return this.getSetpoint() - this.getVelocity();
   }
 
+  // todo declared janky
+  @Log
+  public double getPositionError() {
+    return this.getSetpoint() - this.encoderPosition();
+  }
+
   @Override
   @Log
   public double getSetpoint() {

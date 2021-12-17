@@ -30,7 +30,7 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
   @JsonCreator
   public MappedSparkMax(
       @Nullable final Integer controlFrameRateMillis,
-      @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+      @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> statusFrameRatesMillis,
       @NotNull final SmartMotorConfig cfg) {
     super(controlFrameRateMillis, statusFrameRatesMillis, cfg);
     this.canEncoder = this.spark.getEncoder();
@@ -46,7 +46,7 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
    */
   public static SmartMotor create(
       @Nullable final Integer controlFrameRateMillis,
-      @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+      @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> statusFrameRatesMillis,
       @NotNull final SmartMotorConfig cfg) {
     try (final var spark =
         new CANSparkMax(cfg.getPort(), CANSparkMaxLowLevel.MotorType.kBrushless)) {
@@ -164,6 +164,7 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
   }
 
   @Override
+  @Log
   public double getPositionUnits() {
     return encoderToUnit(canEncoder.getPosition());
   }

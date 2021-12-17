@@ -1,11 +1,16 @@
 Important TODOs:
+./src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 198: 1, 1)); // TODO [IMPORTANT] These values are placeholders
+./src/main/java/frc/team449/javaMaps/ElevatorUnitsTest.java: 106: elevatorMaxAccel)); // TODO [IMPORTANT] These values are placeholders
+./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 116: elevatorMaxVelocity, 0.1)); // TODO [IMPORTANT] These values are placeholders
+./src/main/java/frc/team449/javaMaps/builders/SmartMotorConfig.java: 30: pdp; // TODO [IMPORTANT] Find a way to make this @NotNull. Current band-aid fix (@Nullable) is
+./src/main/java/frc/team449/javaMaps/builders/SmartMotorConfig.java: 258: public SmartMotorConfig ensureBuilt() { // TODO [IMPORTANT] We should remove this
 ---------------------------------------------------------------------------------------------------------
 Non-important TODOs:
 ./src/main/java/frc/team449/CommandContainer.java: 32: // TODO Figure out why this doesn't work @JsonInclude(JsonInclude.Include.NON_NULL)
 ./src/main/java/frc/team449/WPIModule.java: 35: // TODO Verify how this actually works (probably it's because Jackson ignores the constructor's
-./src/main/java/frc/team449/_2020/feeder/commands/BallCountingFeederCommand.java: 29: flywheelStoppedCached; // TODO sensor2Cached is never accessed
-./src/main/java/frc/team449/_2020/feeder/commands/BallCountingFeederCommand.java: 53: // todo consider using generics
-./src/main/java/frc/team449/_2020/feeder/commands/BallCountingFeederCommand.java: 85: // todo check if sensor2 should also be checked
+./src/main/java/frc/team449/_2020/feeder/commands/BallCountingFeederCommand.java: 51: // todo consider using generics
+./src/main/java/frc/team449/_2020/feeder/commands/BallCountingFeederCommand.java: 79: // TODO Having a ball still there wouldn't make sense. Maybe set numBalls to 1?
+./src/main/java/frc/team449/_2020/feeder/commands/BallCountingFeederCommand.java: 83: // todo check if sensor2 should also be checked
 ./src/main/java/frc/team449/_2020/intake/IntakeGroundSpeedRegulating.java: 76: // TODO Currently one drive master's output is always reversed, so we subtract the velocities.
 ./src/main/java/frc/team449/_2020/intake/IntakeGroundSpeedRegulating.java: 84: // TODO Fix the units
 ./src/main/java/frc/team449/_2020/multiSubsystem/BooleanSupplierSubsystemBased.java: 21: final @Nullable Boolean useCached) { // TODO useCached probably shouldn't be nullable
@@ -38,11 +43,10 @@ Non-important TODOs:
 ./src/main/java/frc/team449/javaMaps/DriveTest.java: 124: 0.156, 2.01, 0.154)) // TODO characterize
 ./src/main/java/frc/team449/javaMaps/DriveTest.java: 192: 0, // TODO tune pid
 ./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 46: // TODO Declare these constants outside this method and remove unused variables
-./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 67: driverIntakeOff = 2, // TODO This is never used
-./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 68: driverIntakeRev = 3, // TODO This is never used
-./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 69: driverIntakeInOff = 4, // TODO This is never used
-./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 80: double elevatorMaxVelocity = .5; // TODO this is a placeholder
-./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 202: new ElevatorFeedforward(0.0, 0.0, 0.0, 0.0), // TODO do characterization
-./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 207: new TrapezoidProfile.Constraints(elevatorMaxVelocity, 1))); // TODO PID tuning
+./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 61: driverIntakeOff = 2, // TODO This is never used
+./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 62: driverIntakeRev = 3, // TODO This is never used
+./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 63: driverIntakeInOff = 4, // TODO This is never used
+./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 74: double elevatorMaxVelocity = .05; // TODO this is a placeholder
+./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 114: new ElevatorFeedforward(0.11311, 0.15109, 3.8541, 0.30047), // TODO do characterization
 ./src/main/java/frc/team449/oi/unidirectional/arcade/OIArcade.java: 93: : (leftRightOutputCached = getLeftRightOutput()); // TODO assignment inside expression?
 ./src/main/java/frc/team449/oi/unidirectional/arcade/OIArcade.java: 106: : (fwdRotOutputCached = getFwdRotOutput()); // TODO assignment inside expression?

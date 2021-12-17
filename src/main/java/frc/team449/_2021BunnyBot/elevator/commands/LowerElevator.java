@@ -6,6 +6,7 @@ import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator.ElevatorPositio
 
 public class LowerElevator extends CommandBase {
   private final OneMotorPulleyElevator elevator;
+  private final double startTime = System.currentTimeMillis();
 
   public LowerElevator(OneMotorPulleyElevator elevator) {
     addRequirements(elevator);
@@ -16,13 +17,13 @@ public class LowerElevator extends CommandBase {
   public void execute() {
     switch (elevator.getPosition()) {
       case TOP:
-        elevator.moveToPosition(ElevatorPosition.UPPER);
+        elevator.moveToPosition(ElevatorPosition.UPPER, System.currentTimeMillis() - startTime);
         break;
       case UPPER:
-        elevator.moveToPosition(ElevatorPosition.LOWER);
+        elevator.moveToPosition(ElevatorPosition.LOWER, System.currentTimeMillis() - startTime);
         break;
       case LOWER:
-        elevator.moveToPosition(ElevatorPosition.BOTTOM);
+        elevator.moveToPosition(ElevatorPosition.BOTTOM, System.currentTimeMillis() - startTime);
         break;
         // Case bottom does not exist because we cannot move lower than the bottom of the elevator
     }

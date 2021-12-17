@@ -67,7 +67,7 @@ public class DriveTest {
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
             .setPdp(pdp)
-            .setUnitPerRotation(0.470799075)
+            .setUnitPerRotation(0.4787787204060999)
             .setCurrentLimit(50)
             .setEnableVoltageComp(true)
             .setStartingGear(Shiftable.Gear.HIGH);

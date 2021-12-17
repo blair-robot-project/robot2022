@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
@@ -25,21 +26,7 @@ import frc.team449.other.Updater;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class PositionControlTest {
-  // Drive system
-  public static final int LEFT_MASTER_PORT = 1,
-      LEFT_MASTER_SLAVE_1_PORT = 3,
-      LEFT_MASTER_SLAVE_2_PORT = 5,
-      RIGHT_MASTER_PORT = 2,
-      RIGHT_MASTER_SLAVE_1_PORT = 4,
-      RIGHT_MASTER_SLAVE_2_PORT = 6;
-  // Solenoid ports
-  public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
-  public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
-
-  private PositionControlTest() {
-    throw new IllegalStateException("This is a utility class!");
-  }
+public class ElevatorUnitsTest {
 
   @NotNull
   public static RobotMap createRobotMap() {
@@ -71,7 +58,7 @@ public class PositionControlTest {
         intakeClose = 7,
         intakeOpen = 8;
     // Motor speeds
-    double elevatorMaxVelocity = .05; // TODO this is a placeholder
+    double elevatorMaxVelocity = .02, elevatorMaxAccel = 0.07; // TODO this is a placeholder
 
     var useCameraServer = false;
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
@@ -91,7 +78,9 @@ public class PositionControlTest {
                 .setEnableBrakeMode(true)
                 .setPdp(pdp)
                 .setCurrentLimit(40)
+                .setUnitPerRotation(.19244564)
                 .setEnableVoltageComp(false)
+                .setPostEncoderGearing(1.0 / 30)
                 .setPerGearSettings(
                     List.of(
                         new PerGearSettingsBuilder()
@@ -103,7 +92,7 @@ public class PositionControlTest {
     //    elevatorPulleyMotor.setPID(0.0003, 0.0000008, 0.0146);
     // PID constants for position controlled elevator motor
     //    elevatorPulleyMotor.setPID(0.2, 0.0008, 0.016);
-    elevatorPulleyMotor.setPID(0.0, 0.0, 0.0);
+    elevatorPulleyMotor.setPID(1, 0.000000, 1.000);
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
     // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
 
@@ -113,7 +102,8 @@ public class PositionControlTest {
             ElevatorPosition.BOTTOM,
             new ElevatorFeedforward(0.11311, 0.15109, 3.8541, 0.30047), // TODO do characterization
             new TrapezoidProfile.Constraints(
-                elevatorMaxVelocity, 0.1)); // TODO [IMPORTANT] These values are placeholders
+                elevatorMaxVelocity,
+                elevatorMaxAccel)); // TODO [IMPORTANT] These values are placeholders
     var setVelocityCommand = new SetVelocity(elevator, mechanismsJoystick, elevatorMaxVelocity);
 
     // intake
@@ -126,7 +116,10 @@ public class PositionControlTest {
     var updater = new Updater(List.of(pdp /*, oi, navx*/));
 
     var defaultCommands = List.<DefaultCommand>of();
-
+    var resetElevatorSetpointCommand =
+        new InstantCommand(
+            () -> elevatorPulleyMotor.setPositionSetpoint(elevatorPulleyMotor.getPositionUnits()),
+            elevator);
     var buttons =
         List.of(
             // elevator move to TOP position
@@ -150,8 +143,8 @@ public class PositionControlTest {
                 CommandButton.Action.WHEN_PRESSED));
 
     var robotStartupCommands = List.<Command>of();
-    var autoStartupCommands = List.<Command>of();
-    var teleopStartupCommands = List.<Command>of();
+    var autoStartupCommands = List.<Command>of(resetElevatorSetpointCommand);
+    var teleopStartupCommands = List.<Command>of(resetElevatorSetpointCommand);
     var testStartupCommands = List.<Command>of();
     var allCommands =
         new CommandContainer(

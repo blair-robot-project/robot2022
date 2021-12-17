@@ -95,6 +95,7 @@ public class Robot extends TimedRobot {
   /** Run when we first enable in teleop. */
   @Override
   public void teleopInit() {
+
     // cancel remaining auto commands
     if (this.robotMap.getAutoStartupCommands() != null) {
       this.robotMap.getAutoStartupCommands().forEachRemaining(Command::cancel);
