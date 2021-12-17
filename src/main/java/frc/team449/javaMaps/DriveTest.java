@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
@@ -17,14 +16,12 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
-import frc.team449.generalInterfaces.shiftable.commands.ShiftGears;
 import frc.team449.jacksonWrappers.*;
 import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.CommandButton;
-import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.oi.throttles.Throttle;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
@@ -37,9 +34,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class DriveTest {
   // Motor IDs
-  public static final int RIGHT_LEADER_PORT = 1,
-      RIGHT_LEADER_FOLLOWER_1_PORT = 2,
-      LEFT_LEADER_PORT = 3,
+  public static final int RIGHT_LEADER_PORT = 2,
+      RIGHT_LEADER_FOLLOWER_1_PORT = 3,
+      LEFT_LEADER_PORT = 1,
       LEFT_LEADER_FOLLOWER_1_PORT = 4;
   // Solenoid ports
   public static final int INTAKE_SOLENOID_FORWARD_PORT = 2, INTAKE_SOLENOID_REVERSE_PORT = 3;
@@ -61,6 +58,7 @@ public class DriveTest {
     var joysticks = List.of(driveJoystick);
 
     var compressor = new Compressor();
+    compressor.start();
     var gearShiftingSolenoids = new DoubleSolenoid(0, 1, 0);
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
@@ -97,7 +95,7 @@ public class DriveTest {
                     List.of(
                         lowGear
                             .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.102, 5.66, 0.306))
+                                new MappedFeedForwardCalculator(0.2691, 5.3099, 0.51261))
                             .build(),
                         highGear
                             .feedForwardCalculator(
@@ -118,7 +116,7 @@ public class DriveTest {
                     List.of(
                         lowGear
                             .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.102, 5.66, 0.306))
+                                new MappedFeedForwardCalculator(0.24453, 5.4511, 0.7127))
                             .build(),
                         highGear
                             .feedForwardCalculator(
@@ -146,7 +144,7 @@ public class DriveTest {
             .axis(0)
             .deadband(0.08)
             .inverted(false)
-            .polynomial(new Polynomial(Map.of(1., 0.5), null))
+            .polynomial(new Polynomial(Map.of(1., 0.2), null))
             .build();
     var fwdThrottle =
         new ThrottleSum(
@@ -154,15 +152,15 @@ public class DriveTest {
               throttlePrototype
                   .axis(3)
                   .deadband(0.05)
-                  .inverted(false)
+                  .inverted(true)
                   .polynomial(
                       new Polynomial(
                           Map.of(
-                              1., 2.,
-                              2., 1.),
+                              1., 1.,
+                              2., 0.5),
                           null))
                   .build(),
-              throttlePrototype.axis(2).inverted(true).build()
+              throttlePrototype.axis(2).inverted(false).build()
             });
     var oi =
         new OIArcadeWithDPad(
@@ -205,31 +203,12 @@ public class DriveTest {
 
     var buttons =
         List.<CommandButton>of(
-            // toggle shift gears
-            new CommandButton(
-                new SimpleButton(driveJoystick, SHIFT_TOGGLE_BUTTON),
-                new ShiftGears(drive),
-                CommandButton.Action.WHEN_PRESSED),
-            // start left side
-            new CommandButton(
-                new SimpleButton(driveJoystick, 1),
-                new InstantCommand(() -> leftMaster.setVoltage(1), drive),
-                CommandButton.Action.WHEN_PRESSED),
-            // start right side
-            new CommandButton(
-                new SimpleButton(driveJoystick, 4),
-                new InstantCommand(() -> rightMaster.setVoltage(1), drive),
-                CommandButton.Action.WHEN_PRESSED),
-            // stop left side
-            new CommandButton(
-                new SimpleButton(driveJoystick, 2),
-                new InstantCommand(() -> leftMaster.setVoltage(0), drive),
-                CommandButton.Action.WHEN_PRESSED),
-            // stop right side
-            new CommandButton(
-                new SimpleButton(driveJoystick, 3),
-                new InstantCommand(() -> rightMaster.setVoltage(0), drive),
-                CommandButton.Action.WHEN_PRESSED));
+            //            // toggle shift gears
+            //            new CommandButton(
+            //                new SimpleButton(driveJoystick, SHIFT_TOGGLE_BUTTON),
+            //                new ShiftGears(drive),
+            //                CommandButton.Action.WHEN_PRESSED)
+            );
 
     var robotStartupCommands = List.<Command>of();
     var autoStartupCommands = List.<Command>of();
