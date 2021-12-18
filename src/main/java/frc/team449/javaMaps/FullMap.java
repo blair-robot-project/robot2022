@@ -14,6 +14,7 @@ import frc.team449.components.RunningLinRegComponent;
 import frc.team449.components.ShiftComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyroShiftable;
+import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
@@ -162,7 +163,7 @@ public class FullMap {
             .axis(0)
             .deadband(0.08)
             .inverted(false)
-            .polynomial(new Polynomial(Map.of(1., 0.01, 2., 0.5), null))
+            .polynomial(new Polynomial(Map.of(1., 0.005, 2., 0.01), null))
             .build();
     var fwdThrottle =
         new ThrottleSum(
@@ -174,8 +175,8 @@ public class FullMap {
                   .polynomial(
                       new Polynomial(
                           Map.of(
-                              1., 0.02,
-                              2., 0.6),
+                              1., 0.01,
+                              2., 0.06),
                           null))
                   .build(),
               throttlePrototype.axis(2).inverted(false).build()
@@ -192,7 +193,7 @@ public class FullMap {
                     0.5, 0.4,
                     0., 0.2),
                 null),
-            1.0,
+            0.7,
             true);
 
     var defaultDriveCommand =
@@ -213,7 +214,7 @@ public class FullMap {
                 new Debouncer(0.15),
                 drive,
                 oi,
-                new RampComponent(3.0, 3.0)));
+                new RampComponent(2.0, 2.0)));
 
 
 
@@ -316,9 +317,10 @@ public class FullMap {
     var subsystems = List.<Subsystem>of(drive/*, elevator*/);
 
     var robotStartupCommands = List.<Command>of();
-    //        var fallbackAutoCommand = new DriveAtSpeed(drive, .2, 2).withTimeout(2);
+            var fallbackAutoCommand = new DriveAtSpeed(drive, -.4, 2).withTimeout(2);
     var autoStartupCommands =
         List.<Command>of(
+                fallbackAutoCommand
             //                new RamseteControllerGoToPosition(
             //                        drive,
             //                        0.01,
