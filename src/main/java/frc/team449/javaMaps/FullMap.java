@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449.components.RunningLinRegComponent;
@@ -40,6 +41,20 @@ import java.util.Map;
 
 public class FullMap {
   // Motor IDs
+  /*
+  var VE1 = 0;
+  var VE2 = false;
+  public void MegaOverdrive {
+    if (VE2 == false) {
+      VE1 = 0;
+      VE2 = true;
+    }
+    else {
+      VE1 = 0;
+      VE2 = false;
+    }
+  }
+  */
   public static final int RIGHT_LEADER_PORT = 2,
       RIGHT_LEADER_FOLLOWER_1_PORT = 3,
       LEFT_LEADER_PORT = 1,
@@ -55,7 +70,7 @@ public class FullMap {
       ELEVATOR_MOVE_TO_LOWER = 3,
       ELEVATOR_MOVE_TO_BOTTOM = 4,
       ELEVATOR_MOVE_UP = 1,
-      ELEVATOR_MOVE_DOWN = 2,
+      ELEVATOR_MOVE_DOWN = 3,
       INTAKE_OPEN_BUTTON = 7,
       INTAKE_CLOSE_BUTTON = 8;
   // Solenoid ports
@@ -163,7 +178,7 @@ public class FullMap {
             .axis(0)
             .deadband(0.08)
             .inverted(false)
-            .polynomial(new Polynomial(Map.of(1., 0.005, 2., 0.01), null))
+            .polynomial(new Polynomial(Map.of(1., 0.009, 2., 0.002), null))
             .build();
     var fwdThrottle =
         new ThrottleSum(
@@ -175,7 +190,7 @@ public class FullMap {
                   .polynomial(
                       new Polynomial(
                           Map.of(
-                              1., 0.01,
+                              1., 0.01, // 0.06 * x^2 + 0.01 * x^1
                               2., 0.06),
                           null))
                   .build(),
@@ -216,48 +231,47 @@ public class FullMap {
                 oi,
                 new RampComponent(2.0, 2.0)));
 
-
-
     // Elevator
-//    var elevatorPulleyMotor =
-//        new MappedSparkMax(
-//            null,
-//            null,
-//            new SmartMotorConfig()
-//                .setName("elevator")
-//                .setPort(ELEVATOR_MOTOR_PORT)
-//                .setReverseOutput(false)
-//                .setEnableBrakeMode(true)
-//                .setPdp(pdp)
-//                .setCurrentLimit(40)
-//                .setUnitPerRotation(.19244564)
-//                .setEnableVoltageComp(false)
-//                .setPostEncoderGearing(1.0 / 30)
-//                .setPerGearSettings(
-//                    List.of(
-//                        new PerGearSettingsBuilder()
-//                            .gear(Shiftable.Gear.LOW)
-//                            .maxSpeed(ELEVATOR_MAX_VELOCITY)
-//                            .build()))
-//                .ensureBuilt());
-//    // PID constants for velocity controlled elevator motor
-//    //    elevatorPulleyMotor.setPID(0.0003, 0.0000008, 0.0146);
-//    // PID constants for position controlled elevator motor
-//    //    elevatorPulleyMotor.setPID(0.2, 0.0008, 0.016);
-//    elevatorPulleyMotor.setPID(1, 0.000000, 1.000);
-//    // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
-//    // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
+    //    var elevatorPulleyMotor =
+    //        new MappedSparkMax(
+    //            null,
+    //            null,
+    //            new SmartMotorConfig()
+    //                .setName("elevator")
+    //                .setPort(ELEVATOR_MOTOR_PORT)
+    //                .setReverseOutput(false)
+    //                .setEnableBrakeMode(true)
+    //                .setPdp(pdp)
+    //                .setCurrentLimit(40)
+    //                .setUnitPerRotation(.19244564)
+    //                .setEnableVoltageComp(false)
+    //                .setPostEncoderGearing(1.0 / 30)
+    //                .setPerGearSettings(
+    //                    List.of(
+    //                        new PerGearSettingsBuilder()
+    //                            .gear(Shiftable.Gear.LOW)
+    //                            .maxSpeed(ELEVATOR_MAX_VELOCITY)
+    //                            .build()))
+    //                .ensureBuilt());
+    //    // PID constants for velocity controlled elevator motor
+    //    //    elevatorPulleyMotor.setPID(0.0003, 0.0000008, 0.0146);
+    //    // PID constants for position controlled elevator motor
+    //    //    elevatorPulleyMotor.setPID(0.2, 0.0008, 0.016);
+    //    elevatorPulleyMotor.setPID(1, 0.000000, 1.000);
+    //    // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM
+    //    // PLEASE MAKE SURE ELEVATOR IS ACTUALLY AT THE BOTTOM
 
-//    var elevator =
-//        new OneMotorPulleyElevator(
-//            elevatorPulleyMotor,
-//            OneMotorPulleyElevator.ElevatorPosition.BOTTOM,
-//            new ElevatorFeedforward(0.11311, 0.15109, 3.8541, 0.30047),
-//            new TrapezoidProfile.Constraints(ELEVATOR_MAX_VELOCITY, ELEVATOR_MAX_ACCEL));
+    //    var elevator =
+    //        new OneMotorPulleyElevator(
+    //            elevatorPulleyMotor,
+    //            OneMotorPulleyElevator.ElevatorPosition.BOTTOM,
+    //            new ElevatorFeedforward(0.11311, 0.15109, 3.8541, 0.30047),
+    //            new TrapezoidProfile.Constraints(ELEVATOR_MAX_VELOCITY, ELEVATOR_MAX_ACCEL));
     //        var setVelocityCommand = new SetVelocity(elevator, mechanismsJoystick,
     // ELEVATOR_MAX_VELOCITY);
 
-    var elevatorspark = new CANSparkMax(ELEVATOR_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
+    var elevatorspark =
+        new CANSparkMax(ELEVATOR_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
@@ -273,12 +287,12 @@ public class FullMap {
             //                CommandButton.Action.WHEN_PRESSED),
             new CommandButton(
                 new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_UP),
-                new InstantCommand(() -> elevatorspark.set(0.7)),
+                new InstantCommand(() -> elevatorspark.set(0.75)),
                 CommandButton.Action.WHILE_HELD),
             new CommandButton(
-                        new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_UP),
-                        new InstantCommand(() -> elevatorspark.set(0)),
-                        CommandButton.Action.WHEN_RELEASED),
+                new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_UP),
+                new InstantCommand(() -> elevatorspark.set(0)),
+                CommandButton.Action.WHEN_RELEASED),
             // elevator move to UPPER position
             //            new CommandButton(
             //                new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_TO_UPPER),
@@ -287,22 +301,24 @@ public class FullMap {
             //                CommandButton.Action.WHEN_PRESSED),
             new CommandButton(
                 new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_DOWN),
-                    new InstantCommand(() -> elevatorspark.set(-0.4)),
+                new InstantCommand(() -> elevatorspark.set(-0.4)),
                 CommandButton.Action.WHILE_HELD),
             new CommandButton(
-                    new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_DOWN),
-                    new InstantCommand(() -> elevatorspark.set(0)),
-                    CommandButton.Action.WHEN_RELEASED),
+                new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_DOWN),
+                new InstantCommand(() -> elevatorspark.set(0)),
+                CommandButton.Action.WHEN_RELEASED),
             // elevator move to LOWER position
-//            new CommandButton(
-//                new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_TO_LOWER),
-//                new MoveToPosition(OneMotorPulleyElevator.ElevatorPosition.LOWER, elevator),
-//                CommandButton.Action.WHEN_PRESSED),
+            //            new CommandButton(
+            //                new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_TO_LOWER),
+            //                new MoveToPosition(OneMotorPulleyElevator.ElevatorPosition.LOWER,
+            // elevator),
+            //                CommandButton.Action.WHEN_PRESSED),
             // elevator move to BOTTOM position
-//            new CommandButton(
-//                new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_TO_BOTTOM),
-//                new MoveToPosition(OneMotorPulleyElevator.ElevatorPosition.BOTTOM, elevator),
-//                CommandButton.Action.WHEN_PRESSED),
+            //            new CommandButton(
+            //                new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_TO_BOTTOM),
+            //                new MoveToPosition(OneMotorPulleyElevator.ElevatorPosition.BOTTOM,
+            // elevator),
+            //                CommandButton.Action.WHEN_PRESSED),
             // Close intake
             new CommandButton(
                 new SimpleButton(mechanismsJoystick, INTAKE_CLOSE_BUTTON),
@@ -314,28 +330,42 @@ public class FullMap {
                 new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kReverse)),
                 CommandButton.Action.WHEN_PRESSED));
 
-    var subsystems = List.<Subsystem>of(drive/*, elevator*/);
+    var subsystems = List.<Subsystem>of(drive /*, elevator*/);
 
-    var robotStartupCommands = List.<Command>of();
-            var fallbackAutoCommand = new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kReverse)).andThen(
-                    new DriveAtSpeed(drive, -.4, 2).withTimeout(2)
-                            .andThen(
-                                    new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kForward))
-                            )
-            );
+    var robotStartupCommands = List.<Command>of(new InstantCommand(drive::resetPosition));
+
     var autoStartupCommands =
         List.<Command>of(
-                fallbackAutoCommand
+            new InstantCommand(() -> elevatorspark.set(0.3))
+                .andThen(new WaitCommand(3.0))
+                .andThen(new InstantCommand(() -> elevatorspark.set(0))),
+            new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kReverse))
+                    .andThen(new DriveAtSpeed<>(drive, -.5, 5))
+                    .andThen(new WaitCommand(1.0))
+                    .andThen(new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kForward)))
+                    .andThen(new WaitCommand(1.0))
+                    .andThen(new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kReverse)))
+                    .andThen( // Move down a little
+                            new InstantCommand(() -> elevatorspark.set(-0.3))
+                                    .andThen(new WaitCommand(2.35))
+                                    .andThen(new InstantCommand(() -> elevatorspark.set(0))))
+                    .andThen(new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kForward)))
+                    .andThen(new WaitCommand(0.5))
+                    .andThen( // Move up a little
+                            new InstantCommand(() -> elevatorspark.set(0.3))
+                                    .andThen(new WaitCommand(2))
+                                    .andThen(new InstantCommand(() -> elevatorspark.set(0))))
+                    .andThen(new DriveAtSpeed<>(drive, 0.2, 2))
             //                new RamseteControllerGoToPosition(
-            //                        drive,
-            //                        0.01,
-            //                        0.01,
-            //                        0.01,
-            //                        new MappedPIDController(0.001, 0, 0, "leftPIDController"),
-            //                        new MappedPIDController(0.001, 0, 0, "rightPIDController"),
-            //                        new Pose2d(new Translation2d(3.6, 0), new Rotation2d(0)),
-            //                        List.of(),
-            //                        false)
+            ////                        drive,
+            ////                        0.1,
+            ////                        0.1,
+            ////                        0.01,
+            ////                        new MappedPIDController(0.001, 0, 0, "leftPIDController"),
+            ////                        new MappedPIDController(0.001, 0, 0, "rightPIDController"),
+            ////                        new Pose2d(new Translation2d(-3.6, 0), new Rotation2d(0)),
+            ////                        List.of(),
+            ////                        true)
             );
     var teleopStartupCommands = List.<Command>of();
     var testStartupCommands = List.<Command>of();
