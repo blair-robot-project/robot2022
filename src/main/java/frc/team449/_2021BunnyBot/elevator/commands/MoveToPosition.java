@@ -37,10 +37,10 @@ public class MoveToPosition extends CommandBase {
       System.out.println("[UNSUCCESSFUL] Attempted to move to " + position + " position.");
     }
   }
-  /** Some tolerance, stops if elevator is within .01 meters of the setpoint */
+  /** Some tolerance, stops if elevator is within .0075 meters of the setpoint */
   @Override
   public boolean isFinished() {
     return Math.abs(elevator.getRawPosition() - position.distanceFromBottom)
-        < 0.0075; // 1 centimetre threshold
+        < 0.0075;
   }
 }

@@ -8,10 +8,11 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
@@ -33,6 +34,7 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
       @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> statusFrameRatesMillis,
       @NotNull final SmartMotorConfig cfg) {
     super(controlFrameRateMillis, statusFrameRatesMillis, cfg);
+    System.out.println("spark Port = " + cfg.getPort());
     this.canEncoder = this.spark.getEncoder();
     this.pidController = this.spark.getPIDController();
     this.resetPosition();
@@ -148,7 +150,6 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
     this.currentControlMode = ControlType.kVelocity;
     double nativeSetpoint = upsToEncoder(velocity);
     this.setpoint = velocity;
-    System.out.println("Native: " + nativeSetpoint + ", orig vel: " + velocity);
     this.pidController.setFF(0);
     this.pidController.setReference(
         nativeSetpoint,

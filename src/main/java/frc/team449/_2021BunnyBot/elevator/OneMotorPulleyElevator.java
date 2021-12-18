@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.generalInterfaces.SmartMotor;
+import frc.team449.jacksonWrappers.MappedSparkMaxBase;
 import org.jetbrains.annotations.NotNull;
 
 public class OneMotorPulleyElevator extends SubsystemBase {
@@ -19,7 +20,7 @@ public class OneMotorPulleyElevator extends SubsystemBase {
   /** @param pulleyMotor single motor used for the pulley */
   @JsonCreator
   public OneMotorPulleyElevator(
-      @NotNull SmartMotor pulleyMotor,
+      @NotNull MappedSparkMaxBase pulleyMotor,
       @NotNull ElevatorPosition position,
       @NotNull ElevatorFeedforward feedforward,
       @NotNull TrapezoidProfile.Constraints constraints) {
@@ -76,9 +77,10 @@ public class OneMotorPulleyElevator extends SubsystemBase {
   public enum ElevatorPosition {
     // preset positions (RPS)
     // Each crate is 11 inches high (0.2794 meters)
-    TOP(0.8382),
+    TOP(0.7000), //(0.8382),
     UPPER(0.5588),
     LOWER(0.2794),
+//    SPIKE(0.1500),
     BOTTOM(0.0);
 
     /** The distance of this position from the bottom in meters */

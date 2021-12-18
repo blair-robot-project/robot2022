@@ -23,8 +23,9 @@ import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class ElevatorUnitsTest {
 
@@ -58,17 +59,17 @@ public class ElevatorUnitsTest {
         intakeClose = 7,
         intakeOpen = 8;
     // Motor speeds
-    double elevatorMaxVelocity = .02, elevatorMaxAccel = 0.07; // TODO this is a placeholder
+    double elevatorMaxVelocity = .02, elevatorMaxAccel = 0.01;
 
     var useCameraServer = false;
-    var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
+    var pdp = new PDP(1, new RunningLinRegComponent(250, 0.75));
 
     var mechanismsJoystick = new MappedJoystick(mechanismsJoystickPort);
     //        var driveJoystick = new MappedJoystick(driveJoystickPort);
     var joysticks = List.of(mechanismsJoystick /*, driveJoystick*/);
     // Elevator
     var elevatorPulleyMotor =
-        MappedSparkMax.create(
+            new MappedSparkMax(
             null,
             null,
             new SmartMotorConfig()
