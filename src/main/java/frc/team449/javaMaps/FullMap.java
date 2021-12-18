@@ -273,7 +273,7 @@ public class FullMap {
             //                CommandButton.Action.WHEN_PRESSED),
             new CommandButton(
                 new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_UP),
-                new InstantCommand(() -> elevatorspark.set(0.5)),
+                new InstantCommand(() -> elevatorspark.set(0.7)),
                 CommandButton.Action.WHILE_HELD),
             new CommandButton(
                         new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_UP),
@@ -287,7 +287,7 @@ public class FullMap {
             //                CommandButton.Action.WHEN_PRESSED),
             new CommandButton(
                 new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_DOWN),
-                    new InstantCommand(() -> elevatorspark.set(-0.2)),
+                    new InstantCommand(() -> elevatorspark.set(-0.4)),
                 CommandButton.Action.WHILE_HELD),
             new CommandButton(
                     new SimpleButton(mechanismsJoystick, ELEVATOR_MOVE_DOWN),
@@ -317,7 +317,12 @@ public class FullMap {
     var subsystems = List.<Subsystem>of(drive/*, elevator*/);
 
     var robotStartupCommands = List.<Command>of();
-            var fallbackAutoCommand = new DriveAtSpeed(drive, -.4, 2).withTimeout(2);
+            var fallbackAutoCommand = new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kReverse)).andThen(
+                    new DriveAtSpeed(drive, -.4, 2).withTimeout(2)
+                            .andThen(
+                                    new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kForward))
+                            )
+            );
     var autoStartupCommands =
         List.<Command>of(
                 fallbackAutoCommand

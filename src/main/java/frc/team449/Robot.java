@@ -124,4 +124,14 @@ public class Robot extends TimedRobot {
       this.robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
     }
   }
+
+  @Override
+  public void disabledInit(){
+
+  }
+
+  @Override
+  public void disabledPeriodic(){
+
+  }
 }
