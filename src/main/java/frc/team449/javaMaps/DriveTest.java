@@ -17,7 +17,7 @@ import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.jacksonWrappers.*;
-import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
+import frc.team449.jacksonWrappers.feedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;

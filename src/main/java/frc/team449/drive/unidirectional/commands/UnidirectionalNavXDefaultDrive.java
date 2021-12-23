@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
-import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
-import frc.team449.generalInterfaces.AHRS.commands.PIDAngleCommand;
+import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
+import frc.team449.generalInterfaces.ahrs.commands.PIDAngleCommand;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.other.Debouncer;
@@ -109,7 +109,7 @@ public class UnidirectionalNavXDefaultDrive<
     this.subsystem = subsystem;
     this.leftRamp = rampComponent;
     this.rightRamp =
-        rampComponent != null ? rampComponent.clone() : null; // We want the same settings but
+        rampComponent != null ? rampComponent.copy() : null; // We want the same settings but
     // different objects, so we clone
 
     this.driveStraightLoopEntryTimer = driveStraightLoopEntryTimer;
@@ -192,8 +192,6 @@ public class UnidirectionalNavXDefaultDrive<
     }
     // If we're free driving...
     else {
-      processedOutput = 0;
-      finalOutput = 0;
       // Set the throttle to normal arcade throttle.
       this.subsystem.setOutput(leftOutput, rightOutput);
     }

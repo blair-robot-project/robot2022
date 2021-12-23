@@ -15,7 +15,8 @@ import org.jetbrains.annotations.NotNull;
 public class Robot extends TimedRobot {
   private static boolean isUnitTesting = false;
   private static boolean isTestingHasBeenCalled = false;
-  @NotNull RobotMap robotMap = loadMap();
+  @NotNull
+  final RobotMap robotMap = loadMap();
 
   /** The method that runs when the robot is turned on. Initializes all subsystems from the map. */
   public static @NotNull RobotMap loadMap() {

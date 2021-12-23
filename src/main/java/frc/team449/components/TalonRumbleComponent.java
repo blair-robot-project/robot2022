@@ -11,10 +11,10 @@ import javax.annotation.Nullable;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class TalonRumbleComponent implements Runnable {
 
-  MappedTalon talon;
-  Rumbleable joystick;
-  boolean inverted;
-  Double rumbleAmount;
+  final MappedTalon talon;
+  final Rumbleable joystick;
+  final boolean inverted;
+  final Double rumbleAmount;
 
   @JsonCreator
   public TalonRumbleComponent(

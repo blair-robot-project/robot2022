@@ -31,7 +31,7 @@ public class OnePistonIntake extends SubsystemBase {
     OPEN(DoubleSolenoid.Value.kForward),
     CLOSED(DoubleSolenoid.Value.kReverse);
 
-    DoubleSolenoid.Value intakePosition;
+    final DoubleSolenoid.Value intakePosition;
 
     IntakePosition(DoubleSolenoid.Value intakePosition) {
       this.intakePosition = intakePosition;

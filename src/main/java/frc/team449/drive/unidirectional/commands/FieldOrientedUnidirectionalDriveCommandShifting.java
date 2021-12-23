@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.components.AutoshiftComponent;
 import frc.team449.drive.shifting.DriveShiftable;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
+import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.oi.fieldoriented.OIFieldOriented;
 import frc.team449.other.Debouncer;

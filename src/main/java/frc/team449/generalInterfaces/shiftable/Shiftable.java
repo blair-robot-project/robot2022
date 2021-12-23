@@ -3,7 +3,7 @@ package frc.team449.generalInterfaces.shiftable;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
+import frc.team449.jacksonWrappers.feedForwardCalculators.MappedFeedForwardCalculator;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,7 +74,7 @@ public interface Shiftable {
      * WPI object for calculating feed forward constants given a max achievable velocity and
      * acceleration
      */
-    public SimpleMotorFeedforward feedForwardCalculator;
+    public final SimpleMotorFeedforward feedForwardCalculator;
 
     public static final PerGearSettings DEFAULT = new PerGearSettings();
 

@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
+import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.jacksonWrappers.MappedAHRS;
 import io.github.oblarg.oblog.Loggable;

@@ -1,4 +1,4 @@
-package frc.team449.jacksonWrappers.FeedForwardCalculators;
+package frc.team449.jacksonWrappers.feedForwardCalculators;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

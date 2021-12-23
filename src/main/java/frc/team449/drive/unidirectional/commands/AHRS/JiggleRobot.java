@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
-import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
+import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
 import frc.team449.other.Debouncer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

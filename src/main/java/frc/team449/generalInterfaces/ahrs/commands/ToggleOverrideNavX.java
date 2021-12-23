@@ -1,4 +1,4 @@
-package frc.team449.generalInterfaces.AHRS.commands;
+package frc.team449.generalInterfaces.ahrs.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -7,16 +7,13 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
+import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-/** Set whether or not to override the AHRS. */
+/** Toggle whether or not to override the AHRS. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class OverrideNavX extends InstantCommand {
-
-  /** Whether or not to override the AHRS. */
-  private final boolean override;
+public class ToggleOverrideNavX extends InstantCommand {
 
   /** The subsystem to execute this command on. */
   @NotNull @Log.Exclude private final SubsystemAHRS subsystem;
@@ -25,13 +22,9 @@ public class OverrideNavX extends InstantCommand {
    * Default constructor.
    *
    * @param subsystem The subsystem to execute this command on
-   * @param override Whether or not to override the AHRS.
    */
   @JsonCreator
-  public OverrideNavX(
-      @NotNull @JsonProperty(required = true) SubsystemAHRS subsystem,
-      @JsonProperty(required = true) boolean override) {
-    this.override = override;
+  public ToggleOverrideNavX(@NotNull @JsonProperty(required = true) SubsystemAHRS subsystem) {
     this.subsystem = subsystem;
   }
 
@@ -43,16 +36,16 @@ public class OverrideNavX extends InstantCommand {
     // Logger.addEvent("OverrideNavX init", this.getClass());
   }
 
-  /** Set whether or not we're overriding the AHRS */
+  /** Toggle whether or not we're overriding the AHRS */
   @Override
   public void execute() {
-    subsystem.setOverrideGyro(override);
+    subsystem.setOverrideGyro(!subsystem.getOverrideGyro());
   }
 
   /** Log when this command ends */
   @Override
-  public void end(boolean interrupt) {
-    if (interrupt) {
+  public void end(boolean interrupted) {
+    if (interrupted) {
       Shuffleboard.addEventMarker(
           "OverrideNavX Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
     }

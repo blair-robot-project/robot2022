@@ -12,13 +12,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class SlaveSparkMax implements SlaveMotor, Loggable {
   /** The port/canID of the spark. */
-  int port;
+  final int port;
   /** The SparkMAX this object wraps. */
-  CANSparkMax slaveSpark;
+  final CANSparkMax slaveSpark;
   /** The pdp this spark runs on. */
-  PDP PDP;
+  final PDP PDP;
 
-  boolean inverted;
+  final boolean inverted;
 
   @JsonCreator
   public SlaveSparkMax(

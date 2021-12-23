@@ -19,11 +19,11 @@ import org.jetbrains.annotations.Nullable;
     property = "@class")
 public class TrajectoryGenerationCubicComponent implements TrajectoryGenerationComponent {
 
-  DriveUnidirectionalWithGyro drivetrain;
-  double maxSpeedMeters;
-  double maxAccelMeters;
+  final DriveUnidirectionalWithGyro drivetrain;
+  final double maxSpeedMeters;
+  final double maxAccelMeters;
   double maxCentripitalAcceleration;
-  Trajectory trajectory;
+  final Trajectory trajectory;
 
   @JsonCreator
   public TrajectoryGenerationCubicComponent(

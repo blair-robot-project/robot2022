@@ -1,4 +1,4 @@
-package frc.team449.generalInterfaces.AHRS.commands;
+package frc.team449.generalInterfaces.ahrs.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -7,49 +7,52 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.team449.generalInterfaces.AHRS.SubsystemAHRS;
+import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-/** Toggle whether or not to override the AHRS. */
+/** Set the heading of the AHRS. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ToggleOverrideNavX extends InstantCommand {
+public class SetHeading extends InstantCommand {
 
   /** The subsystem to execute this command on. */
   @NotNull @Log.Exclude private final SubsystemAHRS subsystem;
 
+  /** The heading to set, in degrees. */
+  private final double newHeading;
+
   /**
    * Default constructor.
    *
-   * @param subsystem The subsystem to execute this command on
+   * @param subsystem The subsystem to execute this command on.
+   * @param newHeading The heading to set, in degrees. Defaults to 0.
    */
   @JsonCreator
-  public ToggleOverrideNavX(@NotNull @JsonProperty(required = true) SubsystemAHRS subsystem) {
+  public SetHeading(
+      @NotNull @JsonProperty(required = true) SubsystemAHRS subsystem, double newHeading) {
     this.subsystem = subsystem;
+    this.newHeading = newHeading;
   }
 
-  /** Log when this command is initialized */
+  /** Log on init. */
   @Override
   public void initialize() {
     Shuffleboard.addEventMarker(
-        "OverrideNavX init", this.getClass().getSimpleName(), EventImportance.kNormal);
-    // Logger.addEvent("OverrideNavX init", this.getClass());
+        "SetHeading init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+    // Logger.addEvent("SetHeading init.", this.getClass());
   }
 
-  /** Toggle whether or not we're overriding the AHRS */
+  /** Set the heading. */
   @Override
   public void execute() {
-    subsystem.setOverrideGyro(!subsystem.getOverrideGyro());
+    subsystem.setHeading(newHeading);
   }
 
-  /** Log when this command ends */
+  /** Log on exit. */
   @Override
   public void end(boolean interrupted) {
-    if (interrupted) {
-      Shuffleboard.addEventMarker(
-          "OverrideNavX Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-    }
     Shuffleboard.addEventMarker(
-        "OverrideNavX end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        "SetHeading end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+    // Logger.addEvent("SetHeading end.", this.getClass());
   }
 }

@@ -7,11 +7,11 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import java.util.List;
 
 public class MappedTranslationSet {
-  Pose2d startingPose;
+  final Pose2d startingPose;
 
-  Pose2d endingPose;
+  final Pose2d endingPose;
 
-  List<Translation2d> translations;
+  final List<Translation2d> translations;
 
   /**
    * Pose2d wrapper for Trajectory loading from map

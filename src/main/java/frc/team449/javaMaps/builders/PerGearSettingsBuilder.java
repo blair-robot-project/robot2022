@@ -1,7 +1,7 @@
 package frc.team449.javaMaps.builders;
 
 import frc.team449.generalInterfaces.shiftable.Shiftable;
-import frc.team449.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
+import frc.team449.jacksonWrappers.feedForwardCalculators.MappedFeedForwardCalculator;
 
 public final class PerGearSettingsBuilder {
   private int gearNum;
