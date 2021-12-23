@@ -18,9 +18,9 @@ import java.util.List;
     property = "@class")
 public class TrajectoryGenerationQuinticComponent implements TrajectoryGenerationComponent {
 
-  final TrajectoryConstraint constraint;
-  final TrajectoryConfig configuration;
-  final List<Pose2d> waypoints = new ArrayList<>();
+  TrajectoryConstraint constraint;
+  TrajectoryConfig configuration;
+  List<Pose2d> waypoints = new ArrayList<>();
   Trajectory trajectory;
 
   @JsonCreator
