@@ -103,8 +103,7 @@ public class RunningLinRegComponent {
    *
    * @return A RunningLinRegComponent with the same buffer size as this one.
    */
-  @Override
-  public RunningLinRegComponent clone() {
+  public RunningLinRegComponent copy() {
     return new RunningLinRegComponent(bufferSize, rSquaredThreshhold);
   }
 }

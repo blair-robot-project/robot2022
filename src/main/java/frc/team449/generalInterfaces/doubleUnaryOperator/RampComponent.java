@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** A component for limiting the rate of change of a value. */
-public class RampComponent implements DoubleUnaryOperator, Cloneable {
+public class RampComponent implements DoubleUnaryOperator {
 
   /** The maximum allowed change in the value per second. */
   private final double maxIncreasePerMillis, maxDecreasePerMillis;
@@ -61,9 +61,8 @@ public class RampComponent implements DoubleUnaryOperator, Cloneable {
    *
    * @return a new {@link RampComponent} with the same max change per second
    */
-  @Override
   @NotNull
-  public RampComponent clone() {
+  public RampComponent copy() {
     return new RampComponent(maxIncreasePerMillis * 1000., maxDecreasePerMillis * 1000.);
   }
 }

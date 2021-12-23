@@ -109,7 +109,7 @@ public class UnidirectionalNavXDefaultDrive<
     this.subsystem = subsystem;
     this.leftRamp = rampComponent;
     this.rightRamp =
-        rampComponent != null ? rampComponent.clone() : null; // We want the same settings but
+        rampComponent != null ? rampComponent.copy() : null; // We want the same settings but
     // different objects, so we clone
 
     this.driveStraightLoopEntryTimer = driveStraightLoopEntryTimer;
@@ -173,13 +173,11 @@ public class UnidirectionalNavXDefaultDrive<
       rightOutput = this.rightRamp.applyAsDouble(rightOutput);
     }
 
-    // If we're driving straight..
-    double processedOutput;
-    double finalOutput;
     if (this.drivingStraight) {
+      // If we're driving straight..
       // Process the output (minimumOutput, deadband, etc.)
-      processedOutput = this.getOutput();
-
+      double processedOutput = this.getOutput();
+      double finalOutput;
       // Deadband if we're stationary
       if (leftOutput == 0 && rightOutput == 0) {
         finalOutput = this.deadbandOutput(processedOutput);
@@ -189,11 +187,8 @@ public class UnidirectionalNavXDefaultDrive<
 
       // Adjust the heading according to the PID output, it'll be positive if we want to go right.
       this.subsystem.setOutput(leftOutput - finalOutput, rightOutput + finalOutput);
-    }
-    // If we're free driving...
-    else {
-      processedOutput = 0;
-      finalOutput = 0;
+    } else {
+      // If we're free driving...
       // Set the throttle to normal arcade throttle.
       this.subsystem.setOutput(leftOutput, rightOutput);
     }

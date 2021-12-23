@@ -9,11 +9,14 @@ public interface AutonomousCommand extends Command {
 
   default void setRunTimeSeconds() {}
 
+  @SuppressWarnings("SameReturnValue")
   @Nullable
   default Double getRunTimeSeconds() {
     return null;
   }
 
+  @SuppressWarnings("SameReturnValue")
+  @Nullable
   default Boolean autoFinishedCondition() {
     return null;
   }
