@@ -13,8 +13,8 @@ Non-important TODOs:
 ./src/main/java/frc/team449/components/ShiftWithSensorComponent.java: 116: // TODO set up a lock system so no other part of the code can re-enable the motors.
 ./src/main/java/frc/team449/components/TrajectoryGenerationComponent.java: 6: /** TODO add some actual javadocs here */
 ./src/main/java/frc/team449/generalInterfaces/ahrs/commands/PIDAngleCommand.java: 21: extends CommandBase { // implements Loggable { TODO Logging causes the drive subsystem to be
-./src/main/java/frc/team449/jacksonWrappers/MappedSparkMaxBase.java: 97: // todo why is this creating a new sparkmax?
-./src/main/java/frc/team449/jacksonWrappers/MappedSparkMaxBase.java: 116: // todo why is this creating a new sparkmax?
+./src/main/java/frc/team449/jacksonWrappers/MappedSparkMaxBase.java: 93: // todo why is this creating a new sparkmax?
+./src/main/java/frc/team449/jacksonWrappers/MappedSparkMaxBase.java: 112: // todo why is this creating a new sparkmax?
 ./src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 58: private static final double ELEVATOR_MAX_VELOCITY = 2; // TODO this is a placeholder
 ./src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 119: 0.102, 5.66, 0.306)) // TODO characterize
 ./src/main/java/frc/team449/javaMaps/Bunnybot2021Map.java: 124: 0.156, 2.01, 0.154)) // TODO characterize
@@ -37,7 +37,7 @@ Non-important TODOs:
 ./src/main/java/frc/team449/javaMaps/FullMap.java: 143: 0.156, 2.01, 0.154)) // TODO characterize
 ./src/main/java/frc/team449/javaMaps/FullMap.java: 208: 0, // TODO tune pid
 ./src/main/java/frc/team449/javaMaps/IntakeTest.java: 22: // todo check these channels
-./src/main/java/frc/team449/javaMaps/IntakeTest.java: 41: // todo make a DoubleSolenoidSubsystem class in jacksonWrappers or someplace else instead of the
+./src/main/java/frc/team449/javaMaps/IntakeTest.java: 43: // todo make a DoubleSolenoidSubsystem class in jacksonWrappers or someplace else instead of the
 ./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 46: // TODO Declare these constants outside this method and remove unused variables
 ./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 61: driverIntakeOff = 2, // TODO This is never used
 ./src/main/java/frc/team449/javaMaps/PositionControlTest.java: 62: driverIntakeRev = 3, // TODO This is never used
