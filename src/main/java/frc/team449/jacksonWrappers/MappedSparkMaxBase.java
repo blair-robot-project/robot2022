@@ -102,10 +102,13 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
       if (cfg.getRemoteLimitSwitchID() != null) {
         // set CANDigitalInput to other limit switch
         System.out.println("Forwardlimitswitchnotnull");
-        //todo why is this creating a new sparkmax?
-        this.forwardLimitSwitch =
-            new CANSparkMax(cfg.getRemoteLimitSwitchID(), CANSparkMaxLowLevel.MotorType.kBrushless)
-                .getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
+        // todo why is this creating a new sparkmax?
+        try (var remote =
+            new CANSparkMax(
+                cfg.getRemoteLimitSwitchID(), CANSparkMaxLowLevel.MotorType.kBrushless)) {
+          this.forwardLimitSwitch =
+              remote.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
+        }
       } else {
         this.forwardLimitSwitch =
             this.spark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
@@ -120,10 +123,13 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
     if (cfg.getRevLimitSwitchNormallyOpen() != null) {
       if (cfg.getRemoteLimitSwitchID() != null) {
         System.out.println("Reverselimitswitchnotnull");
-        //todo why is this creating a new sparkmax?
-        this.reverseLimitSwitch =
-            new CANSparkMax(cfg.getRemoteLimitSwitchID(), CANSparkMaxLowLevel.MotorType.kBrushless)
-                .getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
+        // todo why is this creating a new sparkmax?
+        try (var remote =
+            new CANSparkMax(
+                cfg.getRemoteLimitSwitchID(), CANSparkMaxLowLevel.MotorType.kBrushless)) {
+          this.reverseLimitSwitch =
+              remote.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
+        }
       } else {
         this.reverseLimitSwitch =
             this.spark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
