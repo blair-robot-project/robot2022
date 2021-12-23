@@ -373,18 +373,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Get the current closed-loop velocity error in MPS. WARNING: will give garbage if not in
-   * velocity mode.
-   *
-   * @return The closed-loop error in MPS, or null if no encoder CPR was given.
-   */
-  @Override
-  public double getError() {
-    return this.encoderToUPS(this.setpoint - this.motor.getVelocity());
-  }
-
-  /**
-   * Get the current velocity setpoint of the Talon in MPS, the position setpoint in meters
+   * Get the current velocity setpoint of the simulated motor in MPS, the position setpoint in meters
    *
    * @return The setpoint in sensible units for the current control mode.
    */
@@ -401,7 +390,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Get the voltage the Talon is currently drawing from the PDP.
+   * Get the voltage the simulated motor is currently drawing from the PDP.
    *
    * @return Voltage in volts.
    */
@@ -412,7 +401,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Get the voltage available for the Talon.
+   * Get the voltage available for the motor.
    *
    * @return Voltage in volts.
    */
@@ -423,7 +412,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Get the current the Talon is currently drawing from the PDP.
+   * Get the current the motor is currently drawing from the PDP.
    *
    * @return Current in amps.
    */
@@ -434,7 +423,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Get the current control mode of the Talon. Please don't use this for anything other than
+   * Get the current control mode of the motor. Please don't use this for anything other than
    * logging.
    *
    * @return Control mode as a string.
@@ -478,13 +467,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
     return currentGearSettings.feedForwardCalculator;
   }
 
-  /** @return the position of the talon in meters, or null of inches per rotation wasn't given. */
-  @Override
-  public double getPositionUnits() {
-    return this.encoderToUnit(this.encoderPosition());
-  }
-
-  /** Resets the position of the Talon to 0. */
+  /** Resets the position of the motor to 0. */
   @Override
   public void resetPosition() {
     this.motor.resetPosition();

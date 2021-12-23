@@ -10,6 +10,7 @@ import frc.team449.generalInterfaces.simpleMotor.SimpleMotor;
 import frc.team449.jacksonWrappers.MappedSparkMaxBase;
 import frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 
 /**
@@ -92,7 +93,11 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * Since the PID controller isn't accessible to this interface, this method must be overwritten to
    * set values for P, I, and D in {@link MappedSparkMaxBase#setGear(int gear)}
    */
-  void setPID(double kP, double kI, double kD);
+  @Config
+  void setPID(
+      @Config(name = "kP") double kP,
+      @Config(name = "kI") double kI,
+      @Config(name = "kD") double kD);
 
   /** @return Raw velocity units for debugging purposes */
   double encoderVelocity();
@@ -102,8 +107,6 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
 
   /**
    * Get the velocity of the controller in MPS.
-   *
-   * @return The controller's velocity in MPS, or null if no encoder CPR was given.
    */
   double getVelocity();
 
@@ -117,10 +120,20 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   /**
    * Get the current closed-loop velocity error in MPS. WARNING: will give garbage if not in
    * velocity mode.
-   *
-   * @return The closed-loop error in MPS, or null if no encoder CPR was given.
    */
-  double getError();
+  @Log
+  default double getVelocityError() {
+    return this.getSetpoint() - this.getVelocity();
+  }
+
+  /**
+   * Get the current closed-loop position error in meters. WARNING: will give garbage if not in
+   * position mode.
+   */
+  @Log
+  default double getPositionError() {
+    return this.getSetpoint() - this.getPositionUnits();
+  }
 
   /**
    * Get the current velocity setpoint of the motor in MPS, the position setpoint in meters
@@ -180,7 +193,10 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   SimpleMotorFeedforward getCurrentGearFeedForward();
 
   /** @return the position of the motor in meters, or null of inches per rotation wasn't given. */
-  double getPositionUnits();
+  @Log
+  default double getPositionUnits() {
+    return encoderToUnit(encoderPosition());
+  }
 
   /** Resets the position of the motor to 0. */
   void resetPosition();

@@ -100,6 +100,7 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
 
   /** @return Total revolutions for debug purposes */
   @Override
+  @Log
   public double encoderPosition() {
     return this.canEncoder.getPosition();
   }
@@ -130,9 +131,9 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
   }
 
   /**
-   * Get the velocity of the CANTalon in MPS.
+   * Get the velocity of the motor in MPS.
    *
-   * @return The CANTalon's velocity in MPS, or null if no encoder CPR was given.
+   * @return The motor's velocity in MPS, or null if no encoder CPR was given.
    */
   @Override
   @Log
@@ -157,17 +158,6 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
         0,
         this.currentGearSettings.feedForwardCalculator.calculate(velocity),
         CANPIDController.ArbFFUnits.kVoltage);
-  }
-
-  @Log
-  public double getPosition() {
-    return canEncoder.getPosition();
-  }
-
-  @Override
-  @Log
-  public double getPositionUnits() {
-    return encoderToUnit(canEncoder.getPosition());
   }
 
   @Override

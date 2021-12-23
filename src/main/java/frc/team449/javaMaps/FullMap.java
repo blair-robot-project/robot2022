@@ -21,8 +21,8 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
-import frc.team449.jacksonWrappers.feedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.jacksonWrappers.*;
+import frc.team449.jacksonWrappers.feedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
@@ -41,20 +41,6 @@ import java.util.Map;
 
 public class FullMap {
   // Motor IDs
-  /*
-  var VE1 = 0;
-  var VE2 = false;
-  public void MegaOverdrive {
-    if (VE2 == false) {
-      VE1 = 0;
-      VE2 = true;
-    }
-    else {
-      VE1 = 0;
-      VE2 = false;
-    }
-  }
-  */
   public static final int RIGHT_LEADER_PORT = 2,
       RIGHT_LEADER_FOLLOWER_1_PORT = 3,
       LEFT_LEADER_PORT = 1,
@@ -100,7 +86,6 @@ public class FullMap {
         new SmartMotorConfig()
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
-            .setPdp(pdp)
             .setUnitPerRotation(0.4787787204060999)
             .setCurrentLimit(50)
             .setEnableVoltageComp(true)
@@ -136,8 +121,7 @@ public class FullMap {
                             .feedForwardCalculator(
                                 new MappedFeedForwardCalculator(
                                     0.165, 2.01, 0.155)) // TODO characterize
-                            .build()))
-                .ensureBuilt());
+                            .build())));
     var leftMaster =
         new MappedSparkMax(
             null,
@@ -158,8 +142,7 @@ public class FullMap {
                             .feedForwardCalculator(
                                 new MappedFeedForwardCalculator(
                                     0.156, 2.01, 0.154)) // TODO characterize
-                            .build()))
-                .ensureBuilt());
+                            .build())));
 
     var drive =
         new DriveUnidirectionalWithGyroShiftable(
@@ -252,7 +235,7 @@ public class FullMap {
     //                            .gear(Shiftable.Gear.LOW)
     //                            .maxSpeed(ELEVATOR_MAX_VELOCITY)
     //                            .build()))
-    //                .ensureBuilt());
+    //                );
     //    // PID constants for velocity controlled elevator motor
     //    //    elevatorPulleyMotor.setPID(0.0003, 0.0000008, 0.0146);
     //    // PID constants for position controlled elevator motor

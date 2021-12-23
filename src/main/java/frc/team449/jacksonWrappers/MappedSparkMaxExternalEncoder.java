@@ -12,10 +12,11 @@ import frc.team449.generalInterfaces.SmartMotorExternalEncoder;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 /** Represents a spark max with an external encoder */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

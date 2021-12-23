@@ -69,7 +69,7 @@ public class ElevatorUnitsTest {
     var joysticks = List.of(mechanismsJoystick /*, driveJoystick*/);
     // Elevator
     var elevatorPulleyMotor =
-            new MappedSparkMax(
+        new MappedSparkMax(
             null,
             null,
             new SmartMotorConfig()
@@ -77,7 +77,6 @@ public class ElevatorUnitsTest {
                 .setPort(elevatorMotorPort)
                 .setReverseOutput(false)
                 .setEnableBrakeMode(true)
-                .setPdp(pdp)
                 .setCurrentLimit(40)
                 .setUnitPerRotation(.19244564)
                 .setEnableVoltageComp(false)
@@ -87,8 +86,7 @@ public class ElevatorUnitsTest {
                         new PerGearSettingsBuilder()
                             .gear(Shiftable.Gear.LOW)
                             .maxSpeed(elevatorMaxVelocity)
-                            .build()))
-                .ensureBuilt());
+                            .build())));
     // PID constants for velocity controlled elevator motor
     //    elevatorPulleyMotor.setPID(0.0003, 0.0000008, 0.0146);
     // PID constants for position controlled elevator motor

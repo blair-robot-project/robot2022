@@ -17,9 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
-
-  /** The PDP this Spark is connected to. */
-  @Nullable @Log.Exclude protected final PDP PDP;
   /** A list of all the gears this robot has and their settings. */
   @NotNull protected final Map<Integer, PerGearSettings> perGearSettings;
   /** REV brushless controller object */
@@ -35,8 +32,6 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
   private final CANDigitalInput reverseLimitSwitch;
   /** The Spark's name, used for logging purposes. */
   @NotNull private final String name;
-  /** Whether the forwards or reverse limit switches are normally open or closed, respectively. */
-  private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
   /** The settings currently being used by this Spark. */
   @NotNull protected PerGearSettings currentGearSettings;
   /** The control mode of the motor */
@@ -85,8 +80,6 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
       }
     }
 
-    this.PDP = cfg.getPdp();
-
     this.unitPerRotation = cfg.getUnitPerRotation();
 
     // Initialize
@@ -113,12 +106,10 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
         this.forwardLimitSwitch =
             this.spark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
       }
-      this.fwdLimitSwitchNormallyOpen = cfg.getFwdLimitSwitchNormallyOpen();
     } else {
       this.forwardLimitSwitch =
           this.spark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
       this.forwardLimitSwitch.enableLimitSwitch(false);
-      this.fwdLimitSwitchNormallyOpen = true;
     }
     if (cfg.getRevLimitSwitchNormallyOpen() != null) {
       if (cfg.getRemoteLimitSwitchID() != null) {
@@ -134,12 +125,10 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
         this.reverseLimitSwitch =
             this.spark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
       }
-      this.revLimitSwitchNormallyOpen = cfg.getRevLimitSwitchNormallyOpen();
     } else {
       this.reverseLimitSwitch =
           this.spark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
       this.reverseLimitSwitch.enableLimitSwitch(false);
-      this.revLimitSwitchNormallyOpen = true;
     }
 
     if (cfg.getFwdSoftLimit() != null) {
@@ -179,18 +168,20 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
   @Override
   public void setPercentVoltage(double percentVoltage) {
     this.currentControlMode = ControlType.kVoltage;
-    // Warn the user if they're setting Vbus to a number that's outside the range of values.
-    if (Math.abs(percentVoltage) > 1.0) {
+
+    if (Math.abs(percentVoltage) <= 1.0) {
+      this.setpoint = percentVoltage;
+    } else {
+      // Warn the user if they're setting Vbus to a number that's outside the range of values.
       Shuffleboard.addEventMarker(
           "WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage,
           this.getClass().getSimpleName(),
           EventImportance.kNormal);
-      percentVoltage = Math.signum(percentVoltage);
+      // Set setpoint to -1.0 or 1.0 instead
+      this.setpoint = Math.signum(percentVoltage);
     }
 
-    this.setpoint = percentVoltage;
-
-    this.spark.set(percentVoltage);
+    this.spark.set(this.setpoint);
   }
 
   @Override
@@ -291,18 +282,6 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
     } else {
       this.setPercentVoltage(velocity);
     }
-  }
-
-  @Override
-  @Log
-  public double getError() {
-    return this.getSetpoint() - this.getVelocity();
-  }
-
-  // todo declared janky
-  @Log
-  public double getPositionError() {
-    return this.getSetpoint() - this.getPositionUnits();
   }
 
   @Override

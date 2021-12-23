@@ -2,15 +2,15 @@ package frc.team449.javaMaps.builders;
 
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
-import frc.team449.jacksonWrappers.PDP;
 import frc.team449.jacksonWrappers.SlaveSparkMax;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * The constructor for {@link SmartMotor} was hell so this will help resolve that.
@@ -26,9 +26,6 @@ public class SmartMotorConfig {
   private boolean enableBrakeMode;
   private @Nullable String name; // See line 29
   private boolean reverseOutput;
-  private @Nullable PDP
-      pdp; // TODO [IMPORTANT] Find a way to make this @NotNull. Current band-aid fix (@Nullable) is
-  // terrible.
   private @Nullable Boolean fwdLimitSwitchNormallyOpen;
   private @Nullable Boolean revLimitSwitchNormallyOpen;
   private @Nullable Integer remoteLimitSwitchID;
@@ -85,15 +82,6 @@ public class SmartMotorConfig {
 
   public SmartMotorConfig setReverseOutput(boolean reverseOutput) {
     this.reverseOutput = reverseOutput;
-    return this;
-  }
-
-  public @Nullable PDP getPdp() {
-    return pdp;
-  }
-
-  public SmartMotorConfig setPdp(@NotNull PDP pdp) {
-    this.pdp = pdp;
     return this;
   }
 
@@ -210,7 +198,6 @@ public class SmartMotorConfig {
         .setEnableBrakeMode(enableBrakeMode)
         .setName(name)
         .setReverseOutput(reverseOutput)
-        .setPdp(pdp)
         .setFwdLimitSwitchNormallyOpen(fwdLimitSwitchNormallyOpen)
         .setRevLimitSwitchNormallyOpen(revLimitSwitchNormallyOpen)
         .setRemoteLimitSwitchID(remoteLimitSwitchID)
@@ -252,11 +239,5 @@ public class SmartMotorConfig {
           .min(Comparator.comparingInt(settings -> settings.gear))
           .orElse(Shiftable.PerGearSettings.DEFAULT);
     }
-  }
-
-  /** Ensure that all required fields of this {@link SmartMotorConfig} have been initialized */
-  public SmartMotorConfig ensureBuilt() { // TODO [IMPORTANT] We should remove this
-    assert pdp != null : "PDP was null when constructing motor " + name;
-    return this;
   }
 }

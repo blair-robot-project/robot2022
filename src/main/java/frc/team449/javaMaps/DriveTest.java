@@ -28,9 +28,10 @@ import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public class DriveTest {
   // Motor IDs
@@ -66,7 +67,6 @@ public class DriveTest {
         new SmartMotorConfig()
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
-            .setPdp(pdp)
             .setUnitPerRotation(0.4787787204060999)
             .setCurrentLimit(50)
             .setEnableVoltageComp(true)
@@ -101,8 +101,7 @@ public class DriveTest {
                             .feedForwardCalculator(
                                 new MappedFeedForwardCalculator(
                                     0.165, 2.01, 0.155)) // TODO characterize
-                            .build()))
-                .ensureBuilt());
+                            .build())));
     var leftMaster =
         MappedSparkMax.create(
             null,
@@ -122,8 +121,7 @@ public class DriveTest {
                             .feedForwardCalculator(
                                 new MappedFeedForwardCalculator(
                                     0.156, 2.01, 0.154)) // TODO characterize
-                            .build()))
-                .ensureBuilt());
+                            .build())));
 
     var drive =
         new DriveUnidirectionalWithGyroShiftable(

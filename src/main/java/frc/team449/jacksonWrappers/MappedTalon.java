@@ -8,16 +8,16 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import frc.team449.components.RunningLinRegComponent;
 import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Component wrapper on the CTRE {@link TalonSRX}, with unit conversions to/from MPS built in. Every
@@ -28,8 +28,6 @@ public class MappedTalon implements SmartMotor {
 
   /** The CTRE CAN Talon SRX that this class is a wrapper on */
   @NotNull protected final TalonSRX canTalon;
-  /** The PDP this Talon is connected to. */
-  @Nullable @Log.Exclude protected final PDP PDP;
   /** The counts per rotation of the encoder being used, or null if there is no encoder. */
   @Nullable private final Integer encoderCPR;
   /**
@@ -41,8 +39,6 @@ public class MappedTalon implements SmartMotor {
   @NotNull private final Map<Integer, PerGearSettings> perGearSettings;
   /** The talon's name, used for logging purposes. */
   @NotNull private final String name;
-  /** The component for doing linear regression to find the resistance. */
-  @Nullable private final RunningLinRegComponent voltagePerCurrentLinReg;
   /** Whether the forwards or reverse limit switches are normally open or closed, respectively. */
   private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
   /** The settings currently being used by this Talon. */
@@ -79,7 +75,6 @@ public class MappedTalon implements SmartMotor {
   @JsonCreator
   public MappedTalon(
       @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
-      @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
       @Nullable final Integer voltageCompSamples,
       @Nullable final FeedbackDevice feedbackDevice,
       @Nullable final Integer encoderCPR,
@@ -98,9 +93,6 @@ public class MappedTalon implements SmartMotor {
     this.canTalon.setNeutralMode(cfg.isEnableBrakeMode() ? NeutralMode.Brake : NeutralMode.Coast);
     // Reset the position
     this.resetPosition();
-
-    this.PDP = cfg.getPdp();
-    this.voltagePerCurrentLinReg = voltagePerCurrentLinReg;
 
     // Set frame rates
     if (controlFrameRatesMillis != null) {
@@ -241,9 +233,7 @@ public class MappedTalon implements SmartMotor {
             cfg.getPort(),
             cfg.isEnableBrakeMode(),
             cfg.getCurrentLimit(),
-            cfg.isEnableVoltageComp() ? notNullVoltageCompSamples : null,
-            PDP,
-            voltagePerCurrentLinReg);
+            cfg.isEnableVoltageComp() ? notNullVoltageCompSamples : null);
       }
     }
 
@@ -286,8 +276,6 @@ public class MappedTalon implements SmartMotor {
           "WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage,
           this.getClass().getSimpleName(),
           EventImportance.kNormal);
-      // Logger.addEvent("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage,
-      // this.getClass());
       percentVoltage = Math.signum(percentVoltage);
     }
 
@@ -513,10 +501,10 @@ public class MappedTalon implements SmartMotor {
    */
   @Override
   public void setVelocityUPS(final double velocity) {
+    this.setpoint = velocity;
     double nativeSetpoint = upsToEncoder(velocity);
-    setpoint = velocity;
-    canTalon.config_kF(0, 0, 0);
-    canTalon.set(
+    this.canTalon.config_kF(0, 0, 0);
+    this.canTalon.set(
         ControlMode.Velocity,
         nativeSetpoint,
         DemandType.ArbitraryFeedForward,
@@ -531,12 +519,15 @@ public class MappedTalon implements SmartMotor {
    */
   @Log
   @Override
-  public double getError() {
-    if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
-      return this.encoderToUPS(canTalon.getClosedLoopError(0));
-    } else {
-      return this.encoderToUnit(canTalon.getClosedLoopError(0));
+  public double getVelocityError() {
+    if (!canTalon.getControlMode().equals(ControlMode.Velocity)) {
+      Shuffleboard.addEventMarker(
+          "MappedTalon#getVelocityError",
+          "Attempted to get velocity error when not in velocity mode",
+          EventImportance.kTrivial);
     }
+
+    return this.encoderToUPS(canTalon.getClosedLoopError(0));
   }
 
   /**
@@ -626,13 +617,6 @@ public class MappedTalon implements SmartMotor {
   @Override
   public SimpleMotorFeedforward getCurrentGearFeedForward() {
     return this.currentGearSettings.feedForwardCalculator;
-  }
-
-  /** @return the position of the talon in meters, or null of inches per rotation wasn't given. */
-  @Override
-  @Log
-  public double getPositionUnits() {
-    return encoderToUnit(canTalon.getSelectedSensorPosition(0));
   }
 
   /** Resets the position of the Talon to 0. */

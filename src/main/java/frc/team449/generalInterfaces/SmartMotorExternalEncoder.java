@@ -33,11 +33,6 @@ public interface SmartMotorExternalEncoder extends SmartMotor {
   }
 
   @Override
-  default double getPositionUnits() {
-    return encoderToUnit(getEncoder().getDistance());
-  }
-
-  @Override
   default void resetPosition() {
     getEncoder().reset();
   }

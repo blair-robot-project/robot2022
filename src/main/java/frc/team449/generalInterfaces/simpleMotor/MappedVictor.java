@@ -32,10 +32,4 @@ public class MappedVictor extends VictorSP implements SimpleMotor {
   public void setVelocity(double velocity) {
     set(velocity);
   }
-
-  /** Enables the motor, if applicable. */
-  @Override
-  public void enable() {
-    // Do nothing.
-  }
 }

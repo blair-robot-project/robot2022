@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
-import frc.team449.multiSubsystem.SolenoidSimple;
 import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator;
 import frc.team449._2021BunnyBot.elevator.commands.MoveToPosition;
 import frc.team449._2021BunnyBot.intake.OnePistonIntake;
@@ -23,11 +22,12 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
-import frc.team449.jacksonWrappers.feedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.jacksonWrappers.*;
+import frc.team449.jacksonWrappers.feedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
+import frc.team449.multiSubsystem.SolenoidSimple;
 import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.oi.throttles.Throttle;
@@ -88,7 +88,6 @@ public class Bunnybot2021Map {
         new SmartMotorConfig()
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
-            .setPdp(pdp)
             .setUnitPerRotation(0.470799075)
             .setCurrentLimit(50)
             .setEnableVoltageComp(true)
@@ -124,8 +123,7 @@ public class Bunnybot2021Map {
                             .feedForwardCalculator(
                                 new MappedFeedForwardCalculator(
                                     0.156, 2.01, 0.154)) // TODO characterize
-                            .build()))
-                .ensureBuilt());
+                            .build())));
 
     var rightMaster =
         MappedSparkMax.create(
@@ -151,8 +149,7 @@ public class Bunnybot2021Map {
                             .feedForwardCalculator(
                                 new MappedFeedForwardCalculator(
                                     0.165, 2.01, 0.155)) // TODO characterize
-                            .build()))
-                .ensureBuilt());
+                            .build())));
 
     var drive =
         new DriveUnidirectionalWithGyroShiftable(
@@ -175,7 +172,6 @@ public class Bunnybot2021Map {
                 .setPort(ELEVATOR_MOTOR_PORT)
                 .setReverseOutput(false)
                 .setEnableBrakeMode(true)
-                .setPdp(pdp)
                 .setCurrentLimit(40)
                 .setEnableVoltageComp(false)
                 .setPerGearSettings(
@@ -183,8 +179,7 @@ public class Bunnybot2021Map {
                         new PerGearSettingsBuilder()
                             .gear(Shiftable.Gear.LOW)
                             .maxSpeed(ELEVATOR_MAX_VELOCITY)
-                            .build()))
-                .ensureBuilt());
+                            .build())));
     // PID constants for position controlled elevator motor
     elevatorPulleyMotor.setPID(0, 0, 0); // TODO tune pid
     // WE ASSUME THE ELEVATOR STARTS AT THE BOTTOM

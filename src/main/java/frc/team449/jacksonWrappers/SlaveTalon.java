@@ -20,11 +20,6 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   private final int port;
   /** The TalonSRX this object wraps. */
   @NotNull private final TalonSRX talonSRX;
-  /** The PDP this talon runs on. Used for resistance logging purposes. */
-  @Nullable private PDP PDP;
-
-  /** The linear regression component for logging resistance. */
-  @Nullable private RunningLinRegComponent linRegComponent;
 
   /**
    * Default constructor.
@@ -84,9 +79,7 @@ public class SlaveTalon implements SlaveMotor, Loggable {
       final int port,
       final boolean brakeMode,
       @Nullable final Integer currentLimit,
-      @Nullable final Integer voltageCompSamples,
-      @Nullable final PDP PDP,
-      @Nullable final RunningLinRegComponent linRegComponent) {
+      @Nullable final Integer voltageCompSamples) {
     // Brake mode doesn't automatically follow master
     this.talonSRX.setNeutralMode(brakeMode ? NeutralMode.Brake : NeutralMode.Coast);
 
@@ -112,10 +105,6 @@ public class SlaveTalon implements SlaveMotor, Loggable {
 
     // Follow the leader
     this.talonSRX.set(ControlMode.Follower, port);
-
-    // Resistance logging
-    this.PDP = PDP;
-    this.linRegComponent = linRegComponent;
   }
 
   //    /**
@@ -161,12 +150,5 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   @Log
   public double getMotorOutputVoltage() {
     return this.talonSRX.getMotorOutputVoltage();
-  }
-
-  @Log
-  public Double getResistance() {
-    return (this.linRegComponent != null && this.PDP != null)
-        ? -this.linRegComponent.getSlope()
-        : Double.NaN;
   }
 }

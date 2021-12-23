@@ -71,12 +71,6 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
     victorSPX.set(ControlMode.PercentOutput, velocity);
   }
 
-  /** Enables the motor, if applicable. */
-  @Override
-  public void enable() {
-    // Do nothing
-  }
-
   /** Disables the motor, if applicable. */
   @Override
   public void disable() {
