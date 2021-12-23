@@ -60,6 +60,7 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
 
     encoder.setDistancePerPulse(encoderCPR != null ? 1. / encoderCPR : 1.);
     encoder.setSamplesToAverage(5);
+    this.setGear(currentGearSettings.gear);
   }
 
   @Override
