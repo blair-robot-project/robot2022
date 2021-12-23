@@ -73,7 +73,7 @@ public class FlywheelSimple extends SubsystemBase
     simDevice = SimDevice.create(this.getClass().getSimpleName(), motor.getPort());
     if (simDevice != null) {
       // TODO figure out why using SimDevice.Direction.kInput instead of false
-      // for the parameter readonly gives a NoSuchMethodError
+      //   for the parameter readonly gives a NoSuchMethodError
       simManualStates = simDevice.createBoolean("ManualStates", false, false);
       simIsAtSpeed = simDevice.createBoolean("IsAtSpeed", false, false);
     } else {

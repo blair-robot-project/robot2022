@@ -150,23 +150,18 @@ public abstract class PIDAngleCommand
    */
   @Log
   protected double getOutput() {
-    double controllerOutput = getRawOutput();
-    // Set the output to the minimum if it's too small.
-    if (controllerOutput > 0 && controllerOutput < minimumOutput) {
-      controllerOutput = minimumOutput;
-    } else if (controllerOutput < 0 && controllerOutput > -minimumOutput) {
-      controllerOutput = -minimumOutput;
-    }
-    if (inverted) {
-      controllerOutput *= -1;
-    }
-
-    return controllerOutput;
+    return processOutput(getRawOutput());
   }
 
   protected double getOutputHardcoded(final double setpoint) {
-    double controllerOutput = pidController.calculate(subsystem.getHeadingCached(), setpoint);
-    // Set the output to the minimum if it's too small.
+    return processOutput(pidController.calculate(subsystem.getHeadingCached(), setpoint));
+  }
+
+  /**
+   * Set controller output to the minimum if it's too small
+   * @param controllerOutput PID loop output
+   */
+  private double processOutput(double controllerOutput) {
     if (controllerOutput > 0 && controllerOutput < minimumOutput) {
       controllerOutput = minimumOutput;
     } else if (controllerOutput < 0 && controllerOutput > -minimumOutput) {

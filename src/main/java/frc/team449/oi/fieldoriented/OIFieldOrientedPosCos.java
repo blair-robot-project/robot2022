@@ -29,8 +29,6 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
   /** The velocity value calculated the last time calcValues was called. */
   private double vel;
 
-  private double x, y;
-
   /**
    * Default constructor
    *
@@ -54,8 +52,8 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
    * logic once.
    */
   private void calcValues() {
-    x = xThrottle.getValue();
-    y = yThrottle.getValue();
+    var x = xThrottle.getValue();
+    var y = yThrottle.getValue();
     vel = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 
     // 0,0ish has no angle so null

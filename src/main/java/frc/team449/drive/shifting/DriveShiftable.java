@@ -11,6 +11,7 @@ import frc.team449.generalInterfaces.shiftable.Shiftable;
 public interface DriveShiftable extends Shiftable {
 
   /** @return true if currently overriding autoshifting, false otherwise. */
+  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
   boolean getOverrideAutoshift();
 
   /** @param override Whether or not to override autoshifting. */

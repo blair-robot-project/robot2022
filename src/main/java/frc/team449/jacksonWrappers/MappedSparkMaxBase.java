@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public abstract class MappedSparkMaxBase implements SmartMotor {
+public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
 
   /** The PDP this Spark is connected to. */
   @Nullable @Log.Exclude protected final PDP PDP;
@@ -370,6 +370,11 @@ public abstract class MappedSparkMaxBase implements SmartMotor {
   @Override
   public int getPort() {
     return this.spark.getDeviceId();
+  }
+
+  @Override
+  public void close() {
+    this.spark.close();
   }
 
   @Override
