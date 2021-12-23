@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition;
 import frc.team449.jacksonWrappers.MappedPIDController;
 import java.util.Collections;
 import java.util.List;

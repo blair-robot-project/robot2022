@@ -40,6 +40,7 @@ public class LEDComponent {
 
   /**
    * Set a specific part of the LED to the given RGB/HSV values
+   *
    * @param lowerBound The start of the range (0 or greater)
    * @param upperBound The end of the range (can be at most {@code buffer}'s length)
    * @param v1 r if RGB, h if HSV
@@ -47,7 +48,8 @@ public class LEDComponent {
    * @param v3 b if RGB, v if HSV
    * @param colorModel RGB or HSV
    */
-  private void setSpecificRange(int lowerBound, int upperBound, int v1, int v2, int v3, ColorModel colorModel) {
+  private void setSpecificRange(
+      int lowerBound, int upperBound, int v1, int v2, int v3, ColorModel colorModel) {
     int checkedLowerBound = Math.max(lowerBound, 0);
     int checkedUpperBound = Math.min(upperBound, buffer.getLength());
 
@@ -70,7 +72,11 @@ public class LEDComponent {
   }
 
   public void setStripColor(Color color) {
-    setStrip((int) (color.red * 255), (int) (color.green * 255), (int) (color.blue * 255), ColorModel.RGB);
+    setStrip(
+        (int) (color.red * 255),
+        (int) (color.green * 255),
+        (int) (color.blue * 255),
+        ColorModel.RGB);
   }
 
   private void setStrip(int v1, int v2, int v3, ColorModel colorModel) {
@@ -88,6 +94,7 @@ public class LEDComponent {
   }
 
   private enum ColorModel {
-    RGB, HSV;
+    RGB,
+    HSV;
   }
 }

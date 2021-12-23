@@ -77,10 +77,10 @@ public class OneMotorPulleyElevator extends SubsystemBase {
   public enum ElevatorPosition {
     // preset positions (RPS)
     // Each crate is 11 inches high (0.2794 meters)
-    TOP(0.7000), //(0.8382),
+    TOP(0.7000), // (0.8382),
     UPPER(0.5588),
     LOWER(0.2794),
-//    SPIKE(0.1500),
+    //    SPIKE(0.1500),
     BOTTOM(0.0);
 
     /** The distance of this position from the bottom in meters */

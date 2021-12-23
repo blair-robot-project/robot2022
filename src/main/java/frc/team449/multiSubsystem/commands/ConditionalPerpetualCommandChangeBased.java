@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.team449.multiSubsystem.BooleanSupplierUpdatable;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

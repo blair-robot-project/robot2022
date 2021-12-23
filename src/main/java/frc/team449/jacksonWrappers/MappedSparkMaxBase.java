@@ -11,10 +11,9 @@ import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
   /** A list of all the gears this robot has and their settings. */

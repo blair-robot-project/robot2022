@@ -29,10 +29,12 @@ public interface AutonomousCommand extends Command {
     }
     if (getRunTimeSeconds() == null) {
       // run command until autofinished is met
-      return new WaitUntilCommand(() -> Boolean.TRUE.equals(this.autoFinishedCondition())).deadlineWith(this);
+      return new WaitUntilCommand(() -> Boolean.TRUE.equals(this.autoFinishedCondition()))
+          .deadlineWith(this);
     }
     // run command until either the auto condition is met or the runtime
     return this.raceWith(
-        new WaitUntilCommand(() -> Boolean.TRUE.equals(this.autoFinishedCondition())), new WaitCommand(getRunTimeSeconds()));
+        new WaitUntilCommand(() -> Boolean.TRUE.equals(this.autoFinishedCondition())),
+        new WaitCommand(getRunTimeSeconds()));
   }
 }
