@@ -95,6 +95,6 @@ public class LEDComponent {
 
   private enum ColorModel {
     RGB,
-    HSV;
+    HSV
   }
 }

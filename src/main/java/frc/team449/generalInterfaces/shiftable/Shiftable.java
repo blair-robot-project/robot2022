@@ -43,40 +43,31 @@ public interface Shiftable {
   /** An object representing the settings that are different for each gear. */
   class PerGearSettings {
 
+    public static final PerGearSettings DEFAULT = new PerGearSettings();
     /** The gear number this is the settings for. */
     public final int gear;
-
     /** The forwards and reverse peak output voltages. */
     public final double fwdPeakOutputVoltage, revPeakOutputVoltage;
-
     /** The forwards and reverse nominal output voltages. */
     public final double fwdNominalOutputVoltage, revNominalOutputVoltage;
-
     /** The ramp rate, in volts/sec. null means no ramp rate. */
     @Nullable public final Double rampRate;
-
     /** The maximum speed of the motor in this gear, in MPS. Used for throttle scaling. */
     @Nullable public final Double maxSpeed;
-
     /**
      * The coefficient the output changes by after being measured by the encoder, e.g. this would be
      * 1/70 if there was a 70:1 gearing between the encoder and the final output.
      */
     @Nullable public final Double postEncoderGearing;
-
     /** The PID constants for the motor in this gear. Ignored if maxSpeed is null. */
     public final double kP, kI, kD;
-
     /** The position PID constants for the motor in this gear. */
     public final double posKP, posKI, posKD;
-
     /**
      * WPI object for calculating feed forward constants given a max achievable velocity and
      * acceleration
      */
     public final SimpleMotorFeedforward feedForwardCalculator;
-
-    public static final PerGearSettings DEFAULT = new PerGearSettings();
 
     /**
      * Default constructor.

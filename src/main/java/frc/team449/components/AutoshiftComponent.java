@@ -7,8 +7,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.other.Clock;
 import frc.team449.other.Debouncer;
-import java.util.function.IntConsumer;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.IntConsumer;
 
 /** A component class for autoshifting. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

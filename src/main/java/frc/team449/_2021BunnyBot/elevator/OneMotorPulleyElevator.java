@@ -74,6 +74,18 @@ public class OneMotorPulleyElevator extends SubsystemBase {
     pulleyMotor.setVelocityUPS(feedforward.calculate(newVelocity));
   }
 
+  /**
+   * Uses motion profiling magic to calculate the next interpolated setpoint between the current
+   * position and the goal.
+   *
+   * @author Katie Del Toro
+   * @param kDt the time since the profile was started
+   * @return a new {@linkplain TrapezoidProfile.State profile state}
+   */
+  public TrapezoidProfile.State calculateNextPosition(double kDt) {
+    TrapezoidProfile profile = new TrapezoidProfile(constraints, goal, setpoint);
+    return profile.calculate(kDt);
+  }
   public enum ElevatorPosition {
     // preset positions (RPS)
     // Each crate is 11 inches high (0.2794 meters)
@@ -89,17 +101,5 @@ public class OneMotorPulleyElevator extends SubsystemBase {
     ElevatorPosition(double distanceFromBottom) {
       this.distanceFromBottom = distanceFromBottom;
     }
-  }
-  /**
-   * Uses motion profiling magic to calculate the next interpolated setpoint between the current
-   * position and the goal.
-   *
-   * @author Katie Del Toro
-   * @param kDt the time since the profile was started
-   * @return a new {@linkplain TrapezoidProfile.State profile state}
-   */
-  public TrapezoidProfile.State calculateNextPosition(double kDt) {
-    TrapezoidProfile profile = new TrapezoidProfile(constraints, goal, setpoint);
-    return profile.calculate(kDt);
   }
 }

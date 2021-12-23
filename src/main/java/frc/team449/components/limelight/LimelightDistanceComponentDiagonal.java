@@ -3,8 +3,9 @@ package frc.team449.components.limelight;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import frc.team449.generalInterfaces.limelight.Limelight;
-import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.DoubleSupplier;
 
 /**
  * Determines the diagonal distance from the Limelight to a vision target, on the field plane.

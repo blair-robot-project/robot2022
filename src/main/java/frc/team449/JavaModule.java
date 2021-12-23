@@ -2,6 +2,7 @@ package frc.team449;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import frc.team449.mixIn.UseCLASSIncludeWRAPPER_OBJECTMixIn;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.DoubleUnaryOperator;

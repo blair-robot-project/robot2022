@@ -2,7 +2,7 @@ package frc.team449._2021BunnyBot.intake.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449._2021BunnyBot.intake.OnePistonIntake;
-import frc.team449._2021BunnyBot.intake.OnePistonIntake.*;
+import frc.team449._2021BunnyBot.intake.OnePistonIntake.IntakePosition;
 import org.jetbrains.annotations.NotNull;
 
 /**

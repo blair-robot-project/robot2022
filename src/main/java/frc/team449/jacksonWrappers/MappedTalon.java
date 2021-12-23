@@ -28,6 +28,7 @@ public class MappedTalon implements SmartMotor {
 
   /** The CTRE CAN Talon SRX that this class is a wrapper on */
   @NotNull protected final TalonSRX canTalon;
+  final Faults faults = new Faults();
   /** The counts per rotation of the encoder being used, or null if there is no encoder. */
   @Nullable private final Integer encoderCPR;
   /**
@@ -43,8 +44,6 @@ public class MappedTalon implements SmartMotor {
   private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
   /** The settings currently being used by this Talon. */
   @NotNull protected PerGearSettings currentGearSettings;
-
-  final Faults faults = new Faults();
   /**
    * The coefficient the output changes by after being measured by the encoder, e.g. this would be
    * 1/70 if there was a 70:1 gearing between the encoder and the final output.

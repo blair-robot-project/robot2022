@@ -31,6 +31,8 @@ public class IntakeTest {
 
   private static final boolean USE_CAMERA_SERVER = false;
 
+  private IntakeTest() {}
+
   @NotNull
   public static RobotMap createRobotMap() {
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75));
@@ -80,6 +82,4 @@ public class IntakeTest {
 
     return new RobotMap(subsystems, pdp, updater, allCommands, joysticks, USE_CAMERA_SERVER);
   }
-
-  private IntakeTest() {}
 }

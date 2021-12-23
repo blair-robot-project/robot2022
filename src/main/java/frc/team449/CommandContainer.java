@@ -8,8 +8,9 @@ import frc.team449.oi.buttons.CommandButton;
 import frc.team449.other.DefaultCommand;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.List;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * A container class that holds all the commands on the robot, for cleanliness in the map and so

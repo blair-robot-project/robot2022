@@ -1,8 +1,5 @@
 package frc.team449.jacksonWrappers.simulated;
 
-import static frc.team449.other.Util.clamp;
-import static frc.team449.other.Util.getLogPrefix;
-
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -20,12 +17,16 @@ import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import static frc.team449.other.Util.clamp;
+import static frc.team449.other.Util.getLogPrefix;
 
 /**
  * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
@@ -373,7 +374,8 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Get the current velocity setpoint of the simulated motor in MPS, the position setpoint in meters
+   * Get the current velocity setpoint of the simulated motor in MPS, the position setpoint in
+   * meters
    *
    * @return The setpoint in sensible units for the current control mode.
    */

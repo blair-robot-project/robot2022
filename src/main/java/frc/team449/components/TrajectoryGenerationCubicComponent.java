@@ -22,8 +22,8 @@ public class TrajectoryGenerationCubicComponent implements TrajectoryGenerationC
   final DriveUnidirectionalWithGyro drivetrain;
   final double maxSpeedMeters;
   final double maxAccelMeters;
-  double maxCentripitalAcceleration;
   final Trajectory trajectory;
+  double maxCentripitalAcceleration;
 
   @JsonCreator
   public TrajectoryGenerationCubicComponent(

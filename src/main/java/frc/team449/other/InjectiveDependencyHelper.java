@@ -2,11 +2,12 @@ package frc.team449.other;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.function.Predicate;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Ensures that <em>depended</em> object instances are not each depended on by more than one

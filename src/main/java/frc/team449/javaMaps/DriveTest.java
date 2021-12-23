@@ -197,7 +197,7 @@ public class DriveTest {
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
-    var defaultCommands = List.<DefaultCommand>of(defaultDriveCommand);
+    var defaultCommands = List.of(defaultDriveCommand);
 
     var buttons =
         List.<CommandButton>of(

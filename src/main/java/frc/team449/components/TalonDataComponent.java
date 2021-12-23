@@ -3,8 +3,9 @@ package frc.team449.components;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import frc.team449.jacksonWrappers.MappedTalon;
-import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.DoubleSupplier;
 
 public class TalonDataComponent implements DoubleSupplier {
   @NotNull private final MappedTalon talon;

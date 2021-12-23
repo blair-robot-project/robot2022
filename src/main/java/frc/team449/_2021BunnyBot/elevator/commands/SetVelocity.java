@@ -6,11 +6,10 @@ import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator;
 import frc.team449.jacksonWrappers.MappedJoystick;
 
 public class SetVelocity extends CommandBase {
+  private static final double minInput = 0.01;
   private final OneMotorPulleyElevator elevator; // The elevator to control
   private final MappedJoystick joystick; // The joystick to read
   private final double maxVelocity; // The elevator's max allowed velocity
-
-  private static final double minInput = 0.01;
 
   public SetVelocity(OneMotorPulleyElevator elevator, MappedJoystick joystick, double maxVelocity) {
     addRequirements(elevator);
