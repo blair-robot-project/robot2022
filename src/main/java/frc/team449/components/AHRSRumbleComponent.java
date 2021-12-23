@@ -7,9 +7,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.generalInterfaces.rumbleable.Rumbleable;
 import frc.team449.jacksonWrappers.MappedAHRS;
 import frc.team449.other.Clock;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /** A component to rumble controllers based off the jerk measurements from an AHRS. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

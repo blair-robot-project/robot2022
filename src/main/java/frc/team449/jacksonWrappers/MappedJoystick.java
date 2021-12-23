@@ -1,5 +1,7 @@
 package frc.team449.jacksonWrappers;
 
+import static frc.team449.other.Util.getLogPrefix;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,8 +10,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.team449.generalInterfaces.rumbleable.Rumbleable;
 import frc.team449.jacksonWrappers.simulated.JoystickSimulated;
-
-import static frc.team449.other.Util.getLogPrefix;
 
 /** A Jackson-compatible wrapper on a {@link Joystick}. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

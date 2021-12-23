@@ -13,10 +13,9 @@ import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.other.Debouncer;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 /**
  * Drive with arcade drive setup, autoshift, and when the driver isn't turning, use a NavX to

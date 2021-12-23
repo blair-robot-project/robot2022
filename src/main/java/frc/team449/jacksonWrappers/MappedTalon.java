@@ -27,6 +27,7 @@ public class MappedTalon implements SmartMotor {
 
   /** The CTRE CAN Talon SRX that this class is a wrapper on */
   @NotNull protected final TalonSRX canTalon;
+
   final Faults faults = new Faults();
   /** The counts per rotation of the encoder being used, or null if there is no encoder. */
   @Nullable private final Integer encoderCPR;

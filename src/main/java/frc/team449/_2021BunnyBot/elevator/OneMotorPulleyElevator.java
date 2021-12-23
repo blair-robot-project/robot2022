@@ -86,6 +86,7 @@ public class OneMotorPulleyElevator extends SubsystemBase {
     TrapezoidProfile profile = new TrapezoidProfile(constraints, goal, setpoint);
     return profile.calculate(kDt);
   }
+
   public enum ElevatorPosition {
     // preset positions (RPS)
     // Each crate is 11 inches high (0.2794 meters)

@@ -3,10 +3,9 @@ package frc.team449.components;
 import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /** A component that a subsystem can use to handle shifting gears. */
 @JsonTypeInfo(
