@@ -1,4 +1,4 @@
-package frc.team449._2020.multiSubsystem.commands;
+package frc.team449.multiSubsystem.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.team449._2020.multiSubsystem.SubsystemBinaryMotor;
+import frc.team449.multiSubsystem.SubsystemBinaryMotor;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 

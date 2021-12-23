@@ -2,7 +2,7 @@ package frc.team449._2021BunnyBot.intake;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449._2020.multiSubsystem.SolenoidSimple;
+import frc.team449.multiSubsystem.SolenoidSimple;
 import org.jetbrains.annotations.NotNull;
 
 public class OnePistonIntake extends SubsystemBase {

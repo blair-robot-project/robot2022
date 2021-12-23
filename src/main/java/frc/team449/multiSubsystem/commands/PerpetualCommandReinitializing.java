@@ -1,4 +1,4 @@
-package frc.team449._2020.multiSubsystem.commands;
+package frc.team449.multiSubsystem.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;

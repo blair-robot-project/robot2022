@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
-import frc.team449._2020.multiSubsystem.SolenoidSimple;
+import frc.team449.multiSubsystem.SolenoidSimple;
 import frc.team449._2021BunnyBot.elevator.OneMotorPulleyElevator;
 import frc.team449._2021BunnyBot.elevator.commands.MoveToPosition;
 import frc.team449._2021BunnyBot.intake.OnePistonIntake;

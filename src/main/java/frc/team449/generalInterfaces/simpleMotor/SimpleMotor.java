@@ -1,7 +1,7 @@
 package frc.team449.generalInterfaces.simpleMotor;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import frc.team449._2020.multiSubsystem.SubsystemAnalogMotor;
+import frc.team449.multiSubsystem.SubsystemAnalogMotor;
 
 /** A motor with velocity/voltage control and the ability to enable and disable. */
 @JsonTypeInfo(

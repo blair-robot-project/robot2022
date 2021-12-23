@@ -1,4 +1,4 @@
-package frc.team449._2020.multiSubsystem.commands;
+package frc.team449.multiSubsystem.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -6,9 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import frc.team449._2020.multiSubsystem.BooleanSupplierUpdatable;
+import frc.team449.multiSubsystem.BooleanSupplierUpdatable;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
