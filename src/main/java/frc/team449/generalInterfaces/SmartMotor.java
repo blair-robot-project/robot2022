@@ -105,9 +105,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   /** Sets the output in volts. */
   void setVoltage(double volts);
 
-  /**
-   * Get the velocity of the controller in MPS.
-   */
+  /** Get the velocity of the controller in MPS. */
   double getVelocity();
 
   /**

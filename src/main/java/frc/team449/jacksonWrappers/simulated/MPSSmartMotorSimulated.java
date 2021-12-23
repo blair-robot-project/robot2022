@@ -373,7 +373,8 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /**
-   * Get the current velocity setpoint of the simulated motor in MPS, the position setpoint in meters
+   * Get the current velocity setpoint of the simulated motor in MPS, the position setpoint in
+   * meters
    *
    * @return The setpoint in sensible units for the current control mode.
    */
