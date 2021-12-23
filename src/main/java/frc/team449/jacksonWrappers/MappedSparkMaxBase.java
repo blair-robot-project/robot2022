@@ -11,10 +11,9 @@ import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
 
@@ -102,7 +101,7 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
       if (cfg.getRemoteLimitSwitchID() != null) {
         // set CANDigitalInput to other limit switch
         System.out.println("Forwardlimitswitchnotnull");
-        //todo why is this creating a new sparkmax?
+        // todo why is this creating a new sparkmax?
         this.forwardLimitSwitch =
             new CANSparkMax(cfg.getRemoteLimitSwitchID(), CANSparkMaxLowLevel.MotorType.kBrushless)
                 .getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
@@ -120,7 +119,7 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
     if (cfg.getRevLimitSwitchNormallyOpen() != null) {
       if (cfg.getRemoteLimitSwitchID() != null) {
         System.out.println("Reverselimitswitchnotnull");
-        //todo why is this creating a new sparkmax?
+        // todo why is this creating a new sparkmax?
         this.reverseLimitSwitch =
             new CANSparkMax(cfg.getRemoteLimitSwitchID(), CANSparkMaxLowLevel.MotorType.kBrushless)
                 .getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);

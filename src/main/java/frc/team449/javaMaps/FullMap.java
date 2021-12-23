@@ -21,8 +21,8 @@ import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.generalInterfaces.shiftable.Shiftable;
-import frc.team449.jacksonWrappers.feedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.jacksonWrappers.*;
+import frc.team449.jacksonWrappers.feedForwardCalculators.MappedFeedForwardCalculator;
 import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
 import frc.team449.javaMaps.builders.SmartMotorConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
@@ -34,10 +34,9 @@ import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public class FullMap {
   // Motor IDs
@@ -340,22 +339,22 @@ public class FullMap {
                 .andThen(new WaitCommand(3.0))
                 .andThen(new InstantCommand(() -> elevatorspark.set(0))),
             new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kReverse))
-                    .andThen(new DriveAtSpeed<>(drive, -.5, 5))
-                    .andThen(new WaitCommand(1.0))
-                    .andThen(new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kForward)))
-                    .andThen(new WaitCommand(1.0))
-                    .andThen(new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kReverse)))
-                    .andThen( // Move down a little
-                            new InstantCommand(() -> elevatorspark.set(-0.3))
-                                    .andThen(new WaitCommand(2.35))
-                                    .andThen(new InstantCommand(() -> elevatorspark.set(0))))
-                    .andThen(new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kForward)))
-                    .andThen(new WaitCommand(0.5))
-                    .andThen( // Move up a little
-                            new InstantCommand(() -> elevatorspark.set(0.3))
-                                    .andThen(new WaitCommand(2))
-                                    .andThen(new InstantCommand(() -> elevatorspark.set(0))))
-                    .andThen(new DriveAtSpeed<>(drive, 0.2, 2))
+                .andThen(new DriveAtSpeed<>(drive, -.5, 5))
+                .andThen(new WaitCommand(1.0))
+                .andThen(new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kForward)))
+                .andThen(new WaitCommand(1.0))
+                .andThen(new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kReverse)))
+                .andThen( // Move down a little
+                    new InstantCommand(() -> elevatorspark.set(-0.3))
+                        .andThen(new WaitCommand(2.35))
+                        .andThen(new InstantCommand(() -> elevatorspark.set(0))))
+                .andThen(new InstantCommand(() -> intake.set(DoubleSolenoid.Value.kForward)))
+                .andThen(new WaitCommand(0.5))
+                .andThen( // Move up a little
+                    new InstantCommand(() -> elevatorspark.set(0.3))
+                        .andThen(new WaitCommand(2))
+                        .andThen(new InstantCommand(() -> elevatorspark.set(0))))
+                .andThen(new DriveAtSpeed<>(drive, 0.2, 2))
             //                new RamseteControllerGoToPosition(
             ////                        drive,
             ////                        0.1,

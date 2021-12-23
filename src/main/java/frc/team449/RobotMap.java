@@ -18,7 +18,8 @@ import org.jetbrains.annotations.Nullable;
 @JsonIgnoreProperties({"CONSTANTS", "NAVIGATION"})
 public class RobotMap {
   @SuppressWarnings("FieldCanBeLocal")
-  @NotNull private final List<Subsystem> subsystems;
+  @NotNull
+  private final List<Subsystem> subsystems;
 
   @NotNull private final MotorContainer motors = MotorContainer.getInstance();
 
@@ -34,7 +35,8 @@ public class RobotMap {
   @NotNull private final CommandContainer commands;
 
   @SuppressWarnings("FieldCanBeLocal")
-  @NotNull private final PDP pdp;
+  @NotNull
+  private final PDP pdp;
 
   /** Whether the camera server should be run. */
   private final boolean useCameraServer;

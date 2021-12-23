@@ -159,6 +159,7 @@ public abstract class PIDAngleCommand
 
   /**
    * Set controller output to the minimum if it's too small
+   *
    * @param controllerOutput PID loop output
    */
   private double processOutput(double controllerOutput) {

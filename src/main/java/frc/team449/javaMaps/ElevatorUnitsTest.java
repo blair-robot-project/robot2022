@@ -23,9 +23,8 @@ import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class ElevatorUnitsTest {
 
@@ -69,7 +68,7 @@ public class ElevatorUnitsTest {
     var joysticks = List.of(mechanismsJoystick /*, driveJoystick*/);
     // Elevator
     var elevatorPulleyMotor =
-            new MappedSparkMax(
+        new MappedSparkMax(
             null,
             null,
             new SmartMotorConfig()
