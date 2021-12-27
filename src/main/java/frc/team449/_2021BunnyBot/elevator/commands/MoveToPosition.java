@@ -40,6 +40,6 @@ public class MoveToPosition extends CommandBase {
   /** Some tolerance, stops if elevator is within .0075 meters of the setpoint */
   @Override
   public boolean isFinished() {
-    return Math.abs(elevator.getRawPosition() - position.distanceFromBottom) < 0.0075;
+    return Math.abs(elevator.getPositionUnits() - position.distanceFromBottom) < 0.0075;
   }
 }

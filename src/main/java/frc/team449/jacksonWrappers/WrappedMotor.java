@@ -6,6 +6,8 @@ import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.TalonConfig;
@@ -38,9 +40,13 @@ public final class WrappedMotor implements SpeedController, Loggable {
     var externalEncoder = cfg.getExternalEncoder();
     var wrappedEnc =
         externalEncoder == null
-            ? new WrappedEncoder.SparkEncoder(motor.getEncoder(), cfg.getUnitPerRotation())
+            ? new WrappedEncoder.SparkEncoder(
+                motor.getEncoder(), cfg.getUnitPerRotation(), cfg.getPostEncoderGearing())
             : new WrappedEncoder.WPIEncoder(
-                externalEncoder, cfg.getEncoderCPR(), cfg.getUnitPerRotation());
+                externalEncoder,
+                cfg.getEncoderCPR(),
+                cfg.getUnitPerRotation(),
+                cfg.getPostEncoderGearing());
 
     motor.restoreFactoryDefaults();
 
@@ -118,12 +124,17 @@ public final class WrappedMotor implements SpeedController, Loggable {
     var externalEncoder = cfg.getExternalEncoder();
     var wrappedEnc =
         externalEncoder == null
-            ? new WrappedEncoder.TalonEncoder(motor, cfg.getEncoderCPR(), cfg.getUnitPerRotation())
+            ? new WrappedEncoder.TalonEncoder(
+                motor, cfg.getEncoderCPR(), cfg.getUnitPerRotation(), cfg.getPostEncoderGearing())
             : new WrappedEncoder.WPIEncoder(
-                externalEncoder, cfg.getEncoderCPR(), cfg.getUnitPerRotation());
+                externalEncoder,
+                cfg.getEncoderCPR(),
+                cfg.getUnitPerRotation(),
+                cfg.getPostEncoderGearing());
 
-    // Setup Talon using cfg
+    // todo do only slaves need to be inverted?
     motor.setInverted(cfg.isReverseOutput());
+    //Set brake mode
     motor.setNeutralMode(cfg.isEnableBrakeMode() ? NeutralMode.Brake : NeutralMode.Coast);
 
     cfg.getControlFrameRatesMillis().forEach(motor::setControlFramePeriod);
@@ -191,14 +202,14 @@ public final class WrappedMotor implements SpeedController, Loggable {
       if (cfg.getFwdSoftLimit() != null) {
         motor.configForwardSoftLimitEnable(true, 0);
         motor.configForwardSoftLimitThreshold(
-            (int) wrappedEnc.unitToEncoder(cfg.getFwdSoftLimit(), cfg.getPostEncoderGearing()), 0);
+            (int) wrappedEnc.unitToEncoder(cfg.getFwdSoftLimit()), 0);
       } else {
         motor.configForwardSoftLimitEnable(false, 0);
       }
       if (cfg.getRevSoftLimit() != null) {
         motor.configReverseSoftLimitEnable(true, 0);
         motor.configReverseSoftLimitThreshold(
-            (int) wrappedEnc.unitToEncoder(cfg.getRevSoftLimit(), cfg.getPostEncoderGearing()), 0);
+            (int) wrappedEnc.unitToEncoder(cfg.getRevSoftLimit()), 0);
       } else {
         motor.configReverseSoftLimitEnable(false, 0);
       }
@@ -222,7 +233,6 @@ public final class WrappedMotor implements SpeedController, Loggable {
       motor.enableVoltageCompensation(true);
       motor.configVoltageCompSaturation(12, 0);
     }
-
     motor.configVoltageMeasurementFilter(cfg.getVoltageCompSamples(), 0);
 
     // Use slot 0
@@ -236,6 +246,7 @@ public final class WrappedMotor implements SpeedController, Loggable {
           cfg.getCurrentLimit(),
           cfg.isEnableVoltageComp() ? cfg.getVoltageCompSamples() : null);
     }
+
     for (final SlaveVictor slave : cfg.getSlaveVictors()) {
       slave.setMaster(
           motor,

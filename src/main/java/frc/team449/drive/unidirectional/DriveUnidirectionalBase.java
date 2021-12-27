@@ -106,25 +106,25 @@ public class DriveUnidirectionalBase extends SubsystemBase
   @NotNull
   @Override
   public Double getLeftVel() {
-    return this.leftMaster.encoder.getVelocityUnits(settings.postEncoderGearing);
+    return this.leftMaster.encoder.getVelocityUnits();
   }
 
   @NotNull
   @Override
   public Double getRightVel() {
-    return this.rightMaster.encoder.getVelocityUnits(settings.postEncoderGearing);
+    return this.rightMaster.encoder.getVelocityUnits();
   }
 
   @NotNull
   @Override
   public Double getLeftPos() {
-    return this.leftMaster.encoder.getPositionUnits(settings.postEncoderGearing);
+    return this.leftMaster.encoder.getPositionUnits();
   }
 
   @NotNull
   @Override
   public Double getRightPos() {
-    return this.rightMaster.encoder.getPositionUnits(settings.postEncoderGearing);
+    return this.rightMaster.encoder.getPositionUnits();
   }
 
   @NotNull

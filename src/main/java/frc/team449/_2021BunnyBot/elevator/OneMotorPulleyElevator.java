@@ -2,38 +2,43 @@ package frc.team449._2021BunnyBot.elevator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.wpilibj.controller.ElevatorFeedforward;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.generalInterfaces.SmartMotor;
-import frc.team449.jacksonWrappers.MappedSparkMaxBase;
+import frc.team449.jacksonWrappers.WrappedEncoder;
+import frc.team449.jacksonWrappers.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 
 public class OneMotorPulleyElevator extends SubsystemBase {
-
-  @NotNull private final SmartMotor pulleyMotor;
+  @NotNull private final WrappedMotor pulleyMotor;
+  @NotNull private final WrappedEncoder encoder;
   @NotNull private final ElevatorPosition position;
   @NotNull private final ElevatorFeedforward feedforward;
   @NotNull private final TrapezoidProfile.Constraints constraints;
   @NotNull private TrapezoidProfile.State goal = new TrapezoidProfile.State();
   @NotNull private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
+  @NotNull private final PIDController pidController;
 
   /** @param pulleyMotor single motor used for the pulley */
   @JsonCreator
   public OneMotorPulleyElevator(
-      @NotNull MappedSparkMaxBase pulleyMotor,
+      @NotNull WrappedMotor pulleyMotor,
       @NotNull ElevatorPosition position,
       @NotNull ElevatorFeedforward feedforward,
-      @NotNull TrapezoidProfile.Constraints constraints) {
+      @NotNull TrapezoidProfile.Constraints constraints,
+      @NotNull PIDController pidController) {
     this.pulleyMotor = pulleyMotor;
+    this.encoder = pulleyMotor.encoder;
     this.position = position;
     this.feedforward = feedforward;
-    this.pulleyMotor.resetPosition();
+    this.encoder.resetPosition();
     this.constraints = constraints;
+    this.pidController = pidController;
   }
 
   /** @return velocity of the elevator motor */
   public double getVelocity() {
-    return pulleyMotor.getVelocity();
+    return encoder.getVelocity();
   }
 
   /** @return the current position of the elevator */
@@ -43,8 +48,8 @@ public class OneMotorPulleyElevator extends SubsystemBase {
   }
 
   /** @return the position reading on the encoder */
-  public double getRawPosition() {
-    return pulleyMotor.getPositionUnits();
+  public double getPositionUnits() {
+    return encoder.getPositionUnits();
   }
 
   /**
@@ -60,7 +65,11 @@ public class OneMotorPulleyElevator extends SubsystemBase {
         Math.max(Math.min(pos.distanceFromBottom, ElevatorPosition.TOP.distanceFromBottom), 0);
     goal = new TrapezoidProfile.State(distance, 0);
     setpoint = calculateNextPosition(kDt);
-    pulleyMotor.setPositionSetpoint(setpoint.position);
+
+    pidController.setSetpoint(setpoint.position);
+    while (!pidController.atSetpoint()) {
+      pulleyMotor.setVoltage(feedforward.ks + pidController.calculate(encoder.getPositionUnits()));
+    }
   }
 
   /**
@@ -71,7 +80,9 @@ public class OneMotorPulleyElevator extends SubsystemBase {
    * @param newVelocity the requested new velocity to be set (in m/s)
    */
   public void setVelocityUPS(double newVelocity) {
-    pulleyMotor.setVelocityUPS(feedforward.calculate(newVelocity));
+    pulleyMotor.setVoltage(
+        pidController.calculate(encoder.getVelocity(), encoder.upsToEncoder(newVelocity))
+            + feedforward.calculate(newVelocity));
   }
 
   /**

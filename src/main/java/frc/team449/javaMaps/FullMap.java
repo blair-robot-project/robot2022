@@ -16,7 +16,6 @@ import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
-import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.jacksonWrappers.*;
@@ -79,7 +78,6 @@ public class FullMap {
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
         new SparkMaxConfig()
-            .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
             .setUnitPerRotation(0.4787787204060999)
             .setCurrentLimit(50)
@@ -159,7 +157,7 @@ public class FullMap {
     var defaultDriveCommand =
         new DefaultCommand(
             drive,
-            new UnidirectionalNavXDefaultDrive<DriveUnidirectionalWithGyro>(
+            new UnidirectionalNavXDefaultDrive<>(
                 0,
                 new Debouncer(1.5),
                 0,

@@ -1,7 +1,6 @@
 package frc.team449.javaMaps.builders;
 
 import edu.wpi.first.wpilibj.Encoder;
-import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.jacksonWrappers.SlaveSparkMax;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,18 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The constructor for {@link SmartMotor} was hell so this will help resolve that.
+ * The constructor for SmartMotors was hell so this will help resolve that.
  *
  * <p>You can set config options in this then pass it to various constructors.
  *
  * <p>todo find a better way to make the subclass the return type than F-bounds
  *
  * @param <Self> The type of the "current" subclass of {@link MotorConfig}
- * @see SmartMotor
+ * @see frc.team449.jacksonWrappers.WrappedMotor
  */
 @SuppressWarnings("unchecked")
 public class MotorConfig<Self extends MotorConfig<Self>> {
-  private SmartMotor.Type type;
   private int port;
   private boolean enableBrakeMode;
   private @Nullable String name;
@@ -39,15 +37,6 @@ public class MotorConfig<Self extends MotorConfig<Self>> {
   private boolean enableVoltageComp;
   private @NotNull List<SlaveSparkMax> slaveSparks = new ArrayList<>();
   private @Nullable Encoder externalEncoder;
-
-  public SmartMotor.Type getType() {
-    return type;
-  }
-
-  public Self setType(SmartMotor.Type type) {
-    this.type = type;
-    return (Self) this;
-  }
 
   public int getPort() {
     return port;
@@ -214,7 +203,6 @@ public class MotorConfig<Self extends MotorConfig<Self>> {
   /** Copy properties from this config to another config */
   void copyTo(MotorConfig<?> other) {
     other
-        .setType(type)
         .setPort(port)
         .setEnableBrakeMode(enableBrakeMode)
         .setName(name)
