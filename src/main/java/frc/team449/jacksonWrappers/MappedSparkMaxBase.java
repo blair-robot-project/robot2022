@@ -7,17 +7,18 @@ import com.revrobotics.ControlType;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import frc.team449.generalInterfaces.DriveSettings;
 import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
-import frc.team449.javaMaps.builders.SmartMotorConfig;
+import frc.team449.javaMaps.builders.MotorConfig;
+import frc.team449.javaMaps.builders.SparkMaxConfig;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
-  /** A list of all the gears this robot has and their settings. */
-  @NotNull protected final Map<Integer, PerGearSettings> perGearSettings;
+import java.util.Map;
+
+public abstract class MappedSparkMaxBase implements SmartMotor {
   /** REV brushless controller object */
   protected final CANSparkMax spark;
   /**
@@ -32,7 +33,7 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
   /** The Spark's name, used for logging purposes. */
   @NotNull private final String name;
   /** The settings currently being used by this Spark. */
-  @NotNull protected PerGearSettings currentGearSettings;
+  @NotNull protected DriveSettings currentGearSettings;
   /** The control mode of the motor */
   protected ControlType currentControlMode;
   /** The most recently set setpoint. */
@@ -53,7 +54,7 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
   public MappedSparkMaxBase(
       @Nullable Integer controlFrameRateMillis,
       @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
-      @NotNull SmartMotorConfig cfg) {
+      @NotNull SparkMaxConfig cfg) {
     this.spark = new CANSparkMax(cfg.getPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
     this.spark.restoreFactoryDefaults();
 
@@ -80,9 +81,6 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
     this.unitPerRotation = cfg.getUnitPerRotation();
 
     // Initialize
-    this.perGearSettings = cfg.getPerGearSettingsMap();
-    this.currentGearSettings = cfg.getInitialGearSettings();
-
     this.postEncoderGearing = cfg.getPostEncoderGearing();
 
     // Only enable the limit switches if it was specified if they're normally open or closed.
@@ -146,7 +144,7 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
       this.spark.disableVoltageCompensation();
     }
 
-    for (final SlaveSparkMax slave : cfg.getSlaveSparks()) {
+    for (SlaveSparkMax slave : cfg.getSlaveSparks()) {
       slave.setMasterSpark(this.spark, cfg.isEnableBrakeMode());
     }
 
@@ -177,36 +175,6 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
     }
 
     this.spark.set(this.setpoint);
-  }
-
-  @Override
-  @Log
-  public int getGear() {
-    return this.currentGearSettings.gear;
-  }
-
-  @Override
-  public void setGear(final int gear) {
-    // Set the current gear
-    this.currentGearSettings = this.perGearSettings.get(gear);
-
-    // note, no current limiting
-
-    if (this.currentGearSettings.rampRate != null) {
-      // Set ramp rate, converting from volts/sec to seconds until 12 volts.
-      this.spark.setClosedLoopRampRate(1 / (this.currentGearSettings.rampRate / 12.));
-      this.spark.setOpenLoopRampRate(1 / (this.currentGearSettings.rampRate / 12.));
-    } else {
-      this.spark.setClosedLoopRampRate(0);
-      this.spark.setOpenLoopRampRate(0);
-    }
-
-    if (this.currentGearSettings.postEncoderGearing != null) {
-      this.postEncoderGearing = currentGearSettings.postEncoderGearing;
-    }
-
-    this.setPID(
-        this.currentGearSettings.kP, this.currentGearSettings.kI, this.currentGearSettings.kD);
   }
 
   /**
@@ -309,22 +277,8 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
   }
 
   @Override
-  public void setGearScaledVelocity(final double velocity, final int gear) {
-    if (currentGearSettings.maxSpeed != null) {
-      setVelocityUPS(currentGearSettings.maxSpeed * velocity);
-    } else {
-      this.setPercentVoltage(velocity);
-    }
-  }
-
-  @Override
-  public void setGearScaledVelocity(final double velocity, final Gear gear) {
-    this.setGearScaledVelocity(velocity, gear.getNumVal());
-  }
-
-  @Override
   public SimpleMotorFeedforward getCurrentGearFeedForward() {
-    return this.currentGearSettings.feedForwardCalculator;
+    return this.currentGearSettings.leftFeedforward;
   }
 
   @Override
@@ -350,11 +304,6 @@ public abstract class MappedSparkMaxBase implements SmartMotor, AutoCloseable {
   @Override
   public int getPort() {
     return this.spark.getDeviceId();
-  }
-
-  @Override
-  public void close() {
-    this.spark.close();
   }
 
   @Override

@@ -6,12 +6,13 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.revrobotics.*;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated;
-import frc.team449.javaMaps.builders.SmartMotorConfig;
+import frc.team449.javaMaps.builders.SparkMaxConfig;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
@@ -31,25 +32,24 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
   public MappedSparkMax(
       @Nullable final Integer controlFrameRateMillis,
       @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> statusFrameRatesMillis,
-      @NotNull final SmartMotorConfig cfg) {
+      @NotNull final SparkMaxConfig cfg) {
     super(controlFrameRateMillis, statusFrameRatesMillis, cfg);
     System.out.println("spark Port = " + cfg.getPort());
     this.canEncoder = this.spark.getEncoder();
     this.pidController = this.spark.getPIDController();
     this.resetPosition();
-    this.setGear(currentGearSettings.gear);
   }
 
   /**
    * Tries to create a MappedSparkMax, but if there's a HAL error, it creates a {@link
    * frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated} instead
    *
-   * @see MappedSparkMax#MappedSparkMax(Integer, Map, SmartMotorConfig)
+   * @see MappedSparkMax#MappedSparkMax(Integer, Map, SparkMaxConfig)
    */
   public static SmartMotor create(
       @Nullable final Integer controlFrameRateMillis,
       @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> statusFrameRatesMillis,
-      @NotNull final SmartMotorConfig cfg) {
+      @NotNull final SparkMaxConfig cfg) {
     try (final var spark =
         new CANSparkMax(cfg.getPort(), CANSparkMaxLowLevel.MotorType.kBrushless)) {
       spark.restoreFactoryDefaults();
@@ -114,12 +114,12 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
   public void setPositionSetpoint(final double meters) {
     this.setpoint = meters;
     double nativeSetpoint = this.unitToEncoder(meters);
-    this.pidController.setFF(this.currentGearSettings.feedForwardCalculator.ks / 12.);
+    this.pidController.setFF(this.currentGearSettings.leftFeedforward.ks / 12.);
     this.pidController.setReference(
         nativeSetpoint,
         ControlType.kPosition,
         0,
-        this.currentGearSettings.feedForwardCalculator.ks,
+        this.currentGearSettings.leftFeedforward.ks,
         CANPIDController.ArbFFUnits.kVoltage);
   }
 
@@ -156,7 +156,7 @@ public class MappedSparkMax extends MappedSparkMaxBase implements SmartMotor {
         nativeSetpoint,
         ControlType.kVelocity,
         0,
-        this.currentGearSettings.feedForwardCalculator.calculate(velocity),
+        this.currentGearSettings.leftFeedforward.calculate(velocity),
         CANPIDController.ArbFFUnits.kVoltage);
   }
 

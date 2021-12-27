@@ -1,8 +1,5 @@
 package frc.team449.jacksonWrappers.simulated;
 
-import static frc.team449.other.Util.clamp;
-import static frc.team449.other.Util.getLogPrefix;
-
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -10,22 +7,26 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import frc.team449.components.RunningLinRegComponent;
+import frc.team449.generalInterfaces.DriveSettings;
 import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
-import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.updatable.Updatable;
 import frc.team449.jacksonWrappers.SlaveTalon;
 import frc.team449.jacksonWrappers.SlaveVictor;
-import frc.team449.javaMaps.builders.SmartMotorConfig;
+import frc.team449.javaMaps.builders.MotorConfig;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import static frc.team449.other.Util.clamp;
+import static frc.team449.other.Util.getLogPrefix;
 
 /**
  * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
@@ -47,7 +48,6 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   private final boolean reverseOutput;
   private final double unitPerRotation;
   private final boolean enableVoltageComp;
-  @NotNull private final Map<Integer, Shiftable.PerGearSettings> perGearSettings;
   /** (V) */
   private final double busVoltage = SimulatedMotor.NOMINAL_VOLTAGE;
   /** (Depends on mode) */
@@ -58,7 +58,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
       new PID(MAX_INTEGRAL, () -> this.setpoint, 0, 0, 0);
 
   @Log.ToString @NotNull private ControlMode controlMode = ControlMode.Disabled;
-  @NotNull private Shiftable.PerGearSettings currentGearSettings;
+  @NotNull private DriveSettings currentGearSettings;
   // Log the getters instead because logging the fields doesn't cause physics updates.
   private double percentOutput;
 
@@ -84,7 +84,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
       @Nullable final List<SlaveTalon> slaveTalons,
       @Nullable final List<SlaveVictor> slaveVictors,
       // General config
-      @NotNull final SmartMotorConfig cfg) {
+      @NotNull final MotorConfig<?> cfg) {
     this.controllerType = cfg.getType();
     this.port = cfg.getPort();
     this.reverseOutput = cfg.isReverseOutput();
@@ -100,11 +100,6 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
                     : cfg.getType() == Type.TALON ? "talon" : "MotorControllerUnknownType",
                 port);
 
-    this.perGearSettings = cfg.getPerGearSettingsMap();
-    this.currentGearSettings = cfg.getInitialGearSettings();
-    // Set up gear-based settings.
-    this.setGear(currentGearSettings.gear);
-
     MotorContainer.register(this);
   }
 
@@ -113,7 +108,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
    *
    * @param cfg The general configurations for the controller
    */
-  public MPSSmartMotorSimulated(@NotNull final SmartMotorConfig cfg) {
+  public MPSSmartMotorSimulated(@NotNull final MotorConfig<?> cfg) {
     this(null, null, null, null, null, null, null, null, null, null, null, null, cfg);
   }
 
@@ -123,16 +118,7 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
 
     switch (controlMode) {
       case Velocity:
-        this.pid.reconfigure(
-            this.currentGearSettings.kP, this.currentGearSettings.kI, this.currentGearSettings.kD);
-        break;
       case Position:
-        this.pid.reconfigure(
-            this.currentGearSettings.posKP,
-            this.currentGearSettings.posKI,
-            this.currentGearSettings.posKD);
-        break;
-
       case Current:
       case Follower:
         System.out.println("WARNING: Not yet implemented.");
@@ -434,38 +420,10 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
     return this.controlMode.name();
   }
 
-  /**
-   * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
-   *
-   * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *     gear.
-   * @param gear The number of the gear to use the max speed from to scale the velocity.
-   */
-  @Override
-  public void setGearScaledVelocity(final double velocity, final int gear) {
-    if (this.currentGearSettings.maxSpeed != null) {
-      this.setVelocityUPS(this.currentGearSettings.maxSpeed * velocity);
-    } else {
-      this.setPercentVoltage(velocity);
-    }
-  }
-
-  /**
-   * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
-   *
-   * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *     gear.
-   * @param gear The gear to use the max speed from to scale the velocity.
-   */
-  @Override
-  public void setGearScaledVelocity(final double velocity, final Shiftable.Gear gear) {
-    this.setGearScaledVelocity(velocity, gear.getNumVal());
-  }
-
   /** @return Feedforward calculator for this gear */
   @Override
   public SimpleMotorFeedforward getCurrentGearFeedForward() {
-    return currentGearSettings.feedForwardCalculator;
+    return currentGearSettings.leftFeedforward;
   }
 
   /** Resets the position of the motor to 0. */
@@ -508,23 +466,6 @@ public class MPSSmartMotorSimulated implements SmartMotor, Updatable {
   @Override
   public int getPort() {
     return this.port;
-  }
-
-  /** @return The gear this subsystem is currently in. */
-  @Override
-  public int getGear() {
-    return 0;
-  }
-
-  /**
-   * Shift to a specific gear.
-   *
-   * @param gear Which gear to shift to.
-   */
-  @Override
-  public void setGear(final int gear) {
-    // Set the current gear
-    this.currentGearSettings = this.perGearSettings.get(gear);
   }
 
   @Override

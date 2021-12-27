@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
-import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.generalInterfaces.simpleMotor.SimpleMotor;
 import frc.team449.jacksonWrappers.MappedSparkMaxBase;
 import frc.team449.jacksonWrappers.simulated.MPSSmartMotorSimulated;
@@ -18,7 +17,7 @@ import io.github.oblarg.oblog.annotations.Log;
  * support. Also features built in MPS conversions.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
+public interface SmartMotor extends SimpleMotor, Loggable {
   /**
    * Set the motor output voltage to a given percent of available voltage.
    *
@@ -168,24 +167,6 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * @return Control mode as a string.
    */
   String getControlMode();
-
-  /**
-   * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
-   *
-   * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *     gear.
-   * @param gear The number of the gear to use the max speed from to scale the velocity.
-   */
-  void setGearScaledVelocity(double velocity, int gear);
-
-  /**
-   * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
-   *
-   * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *     gear.
-   * @param gear The gear to use the max speed from to scale the velocity.
-   */
-  void setGearScaledVelocity(double velocity, Gear gear);
 
   /** @return Feedforward calculator for this gear */
   SimpleMotorFeedforward getCurrentGearFeedForward();

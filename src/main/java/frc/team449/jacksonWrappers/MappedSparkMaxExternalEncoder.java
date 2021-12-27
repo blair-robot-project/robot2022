@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import frc.team449.generalInterfaces.SmartMotorExternalEncoder;
-import frc.team449.javaMaps.builders.SmartMotorConfig;
+import frc.team449.javaMaps.builders.MotorConfig;
+import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
       final boolean reverseSensor,
       @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
       @Nullable final Integer controlFrameRateMillis,
-      @NotNull final SmartMotorConfig cfg) {
+      @NotNull final SparkMaxConfig cfg) {
     super(controlFrameRateMillis, statusFrameRatesMillis, cfg);
 
     if (encoderDIO1 != null && encoderDIO2 != null) {
@@ -59,7 +60,6 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
 
     encoder.setDistancePerPulse(encoderCPR != null ? 1. / encoderCPR : 1.);
     encoder.setSamplesToAverage(5);
-    this.setGear(currentGearSettings.gear);
   }
 
   @Override
@@ -112,7 +112,7 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
     this.setpoint = meters;
     double nativeSetpoint = this.unitToEncoder(meters);
     setVoltage(
-        currentGearSettings.feedForwardCalculator.ks
+        currentGearSettings.leftFeedforward.ks
             + pidController.calculate(encoderPosition(), nativeSetpoint));
   }
 
@@ -127,7 +127,7 @@ public class MappedSparkMaxExternalEncoder extends MappedSparkMaxBase
     double nativeSetpoint = upsToEncoder(velocity);
     this.setpoint = velocity;
     setVoltage(
-        currentGearSettings.feedForwardCalculator.calculate(velocity)
+        currentGearSettings.leftFeedforward.calculate(velocity)
             + pidController.calculate(encoderVelocity(), nativeSetpoint));
   }
 

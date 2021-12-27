@@ -122,7 +122,6 @@ public class UnidirectionalNavXDefaultDrive<
     // Logging, but in Spanish.
     Shuffleboard.addEventMarker(
         "Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
-    // Logger.addEvent("Drive Robot bueno", this.getClass());
   }
 
   /** Initialize PIDController and variables. */

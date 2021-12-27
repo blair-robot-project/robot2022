@@ -30,7 +30,6 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   @JsonCreator
   public SlaveTalon(@JsonProperty(required = true) final int port, final InvertType invertType) {
     this.talonSRX = new TalonSRX(port);
-    // this.talonSRX.setInverted(inverted);
 
     // set the port
     this.port = port;

@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -12,19 +13,15 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449.components.RunningLinRegComponent;
-import frc.team449.components.ShiftComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyroShiftable;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.SmartMotor;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
-import frc.team449.generalInterfaces.shiftable.Shiftable;
 import frc.team449.jacksonWrappers.*;
-import frc.team449.jacksonWrappers.feedForwardCalculators.MappedFeedForwardCalculator;
-import frc.team449.javaMaps.builders.PerGearSettingsBuilder;
-import frc.team449.javaMaps.builders.SmartMotorConfig;
+import frc.team449.javaMaps.builders.DriveSettingsBuilder;
+import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.buttons.SimpleButton;
@@ -34,9 +31,10 @@ import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public class FullMap {
   // Motor IDs
@@ -78,80 +76,45 @@ public class FullMap {
     var intake =
         new DoubleSolenoid(0, INTAKE_SOLENOID_FORWARD_CHANNEL, INTAKE_SOLENOID_REVERSE_CHANNEL);
 
-    var gearShiftingSolenoids = new DoubleSolenoid(0, 0, 1);
-
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
     var driveMasterPrototype =
-        new SmartMotorConfig()
+        new SparkMaxConfig()
             .setType(SmartMotor.Type.SPARK)
             .setEnableBrakeMode(true)
             .setUnitPerRotation(0.4787787204060999)
             .setCurrentLimit(50)
-            .setEnableVoltageComp(true)
-            .setStartingGear(Shiftable.Gear.HIGH);
-    var lowGear =
-        new PerGearSettingsBuilder()
-            .gear(Shiftable.Gear.LOW)
-            .postEncoderGearing(1 / 20.45)
-            .maxSpeed(2.3);
-    var highGear =
-        new PerGearSettingsBuilder()
-            .gear(Shiftable.Gear.HIGH)
-            .postEncoderGearing(1 / 7.73)
-            .maxSpeed(5.2); // free speed max in m/s is 44.537592495 m/s
+            .setEnableVoltageComp(true);
     var rightMaster =
-        new MappedSparkMax(
-            null,
-            null,
+        WrappedMotor.createSpark(
             driveMasterPrototype
                 .copy()
                 .setName("right")
                 .setPort(RIGHT_LEADER_PORT)
                 .setReverseOutput(false)
                 .setSlaveSparks(
-                    List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false, pdp)))
-                .setPerGearSettings(
-                    List.of(
-                        lowGear
-                            .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.2691, 5.3099, 0.51261))
-                            .build(),
-                        highGear
-                            .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(
-                                    0.165, 2.01, 0.155)) // TODO characterize
-                            .build())));
+                    List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false, pdp))));
     var leftMaster =
-        new MappedSparkMax(
-            null,
-            null,
+        WrappedMotor.createSpark(
             driveMasterPrototype
                 .copy()
                 .setPort(LEFT_LEADER_PORT)
                 .setName("left")
                 .setReverseOutput(true)
-                .setSlaveSparks(List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false, pdp)))
-                .setPerGearSettings(
-                    List.of(
-                        lowGear
-                            .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(0.24453, 5.4511, 0.7127))
-                            .build(),
-                        highGear
-                            .feedForwardCalculator(
-                                new MappedFeedForwardCalculator(
-                                    0.156, 2.01, 0.154)) // TODO characterize
-                            .build())));
+                .setSlaveSparks(
+                    List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false, pdp))));
 
     var drive =
-        new DriveUnidirectionalWithGyroShiftable(
+        new DriveUnidirectionalWithGyro(
             leftMaster,
             rightMaster,
             navx,
-            0.61755,
-            new ShiftComponent(
-                List.of(leftMaster, rightMaster), gearShiftingSolenoids, Shiftable.Gear.LOW),
-            false);
+            new DriveSettingsBuilder()
+                .postEncoderGearing(1 / 20.45)
+                .maxSpeed(2.3)
+                .leftFeedforward(new SimpleMotorFeedforward(0.24453, 5.4511, 0.7127))
+                .rightFeedforward(new SimpleMotorFeedforward(0.2691, 5.3099, 0.51261))
+                .build(),
+            0.61755);
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);

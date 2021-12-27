@@ -1,18 +1,19 @@
 package frc.team449.drive.unidirectional;
 
-import com.fasterxml.jackson.annotation.*;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.generalInterfaces.SmartMotor;
+import frc.team449.generalInterfaces.DriveSettings;
 import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
 import frc.team449.jacksonWrappers.MappedAHRS;
-import io.github.oblarg.oblog.Loggable;
+import frc.team449.jacksonWrappers.WrappedMotor;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,15 +23,7 @@ import org.jetbrains.annotations.NotNull;
     include = JsonTypeInfo.As.WRAPPER_OBJECT,
     property = "@class")
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class DriveUnidirectionalWithGyro extends SubsystemBase
-    implements SubsystemAHRS, DriveUnidirectional, Loggable {
-
-  /** Right master Talon */
-  @NotNull protected final SmartMotor rightMaster;
-
-  /** Left master Talon */
-  @NotNull protected final SmartMotor leftMaster;
-
+public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase implements SubsystemAHRS {
   /** The NavX gyro */
   @NotNull private final MappedAHRS ahrs;
 
@@ -41,12 +34,6 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   private final DifferentialDriveOdometry driveOdometry;
   /** Whether or not to use the NavX for driving straight */
   private boolean overrideGyro;
-  /** Cached values for various sensor readings. */
-  private double cachedLeftVel = Double.NaN;
-
-  private double cachedRightVel = Double.NaN;
-  private double cachedLeftPos = Double.NaN;
-  private double cachedRightPos = Double.NaN;
 
   /**
    * Default constructor.
@@ -58,14 +45,13 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    */
   @JsonCreator
   public DriveUnidirectionalWithGyro(
-      @NotNull @JsonProperty(required = true) final SmartMotor leftMaster,
-      @NotNull @JsonProperty(required = true) final SmartMotor rightMaster,
-      @NotNull @JsonProperty(required = true) final MappedAHRS ahrs,
-      @JsonProperty(required = true) final double trackWidthMeters) {
-    super();
+      @NotNull WrappedMotor leftMaster,
+      @NotNull WrappedMotor rightMaster,
+      @NotNull MappedAHRS ahrs,
+      @NotNull DriveSettings driveSettings,
+      double trackWidthMeters) {
+    super(leftMaster, rightMaster, driveSettings);
     // Initialize stuff
-    this.rightMaster = rightMaster;
-    this.leftMaster = leftMaster;
     this.ahrs = ahrs;
     this.overrideGyro = false;
     this.driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
@@ -78,19 +64,6 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   }
 
   /**
-   * Set the output of each side of the drive.
-   *
-   * @param left The output for the left side of the drive, from [-1, 1]
-   * @param right the output for the right side of the drive, from [-1, 1]
-   */
-  @Override
-  public void setOutput(final double left, final double right) {
-    // scale by the max speed
-    this.leftMaster.setVelocity(left);
-    this.rightMaster.setVelocity(right);
-  }
-
-  /**
    * Set voltage output raw
    *
    * @param left The voltage output for the left side of the drive from [-12, 12]
@@ -98,119 +71,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    */
   public void setVoltage(final double left, final double right) {
     leftMaster.setVoltage(left);
-    rightMaster.setVoltage(right);
-  }
-
-  /**
-   * Get the velocity of the left side of the drive.
-   *
-   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
-   */
-  @Override
-  @NotNull
-  public Double getLeftVel() {
-    return this.leftMaster.getVelocity();
-  }
-
-  /**
-   * Get the velocity of the right side of the drive.
-   *
-   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
-   */
-  @Override
-  @NotNull
-  public Double getRightVel() {
-    return this.rightMaster.getVelocity();
-  }
-
-  /**
-   * Get the position of the left side of the drive.
-   *
-   * @return The signed position in meters, or null if the drive doesn't have encoders.
-   */
-  @NotNull
-  @Override
-  public Double getLeftPos() {
-    return this.leftMaster.getPositionUnits();
-  }
-
-  /**
-   * Get the position of the right side of the drive.
-   *
-   * @return The signed position in meters, or null if the drive doesn't have encoders.
-   */
-  @NotNull
-  @Override
-  public Double getRightPos() {
-    return this.rightMaster.getPositionUnits();
-  }
-
-  /**
-   * Get the cached velocity of the left side of the drive.
-   *
-   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
-   */
-  @NotNull
-  @Override
-  public Double getLeftVelCached() {
-    return this.cachedLeftVel;
-  }
-
-  /**
-   * Get the cached velocity of the right side of the drive.
-   *
-   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
-   */
-  @NotNull
-  @Override
-  public Double getRightVelCached() {
-    return this.cachedRightVel;
-  }
-
-  /**
-   * Get the cached position of the left side of the drive.
-   *
-   * @return The signed position in meters, or null if the drive doesn't have encoders.
-   */
-  @NotNull
-  @Override
-  public Double getLeftPosCached() {
-    return this.cachedLeftPos;
-  }
-
-  /**
-   * Get the cached position of the right side of the drive.
-   *
-   * @return The signed position in meters, or null if the drive doesn't have encoders.
-   */
-  @NotNull
-  @Override
-  public Double getRightPosCached() {
-    return this.cachedRightPos;
-  }
-
-  /** @return The feedforward calculator for left motors */
-  public SimpleMotorFeedforward getLeftFeedforwardCalculator() {
-    return this.leftMaster.getCurrentGearFeedForward();
-  }
-
-  /** @return The feedforward calculator for right motors */
-  public SimpleMotorFeedforward getRightFeedforwardCalculator() {
-    return this.rightMaster.getCurrentGearFeedForward();
-  }
-
-  /** Completely stop the robot by setting the voltage to each side to be 0. */
-  @Override
-  public void fullStop() {
-    this.leftMaster.setPercentVoltage(0);
-    this.rightMaster.setPercentVoltage(0);
-  }
-
-  /** If this drive uses motors that can be disabled, enable them. */
-  @Override
-  public void enableMotors() {
-    this.leftMaster.enable();
-    this.rightMaster.enable();
+    rightMaster.set(right);
   }
 
   /**
@@ -350,55 +211,13 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
     return this.driveKinematics;
   }
 
-  /** Disable the motors. */
-  public void disable() {
-    this.leftMaster.disable();
-    this.rightMaster.disable();
-  }
-
-  /**
-   * Hold the current position.
-   *
-   * @param pos the position to stop at
-   */
-  public void holdPosition(final double pos) {
-    this.holdPosition(pos, pos);
-  }
-
-  /** Reset the position of the drive if it has encoders. */
-  @Override
-  public void resetPosition() {
-    this.leftMaster.resetPosition();
-    this.rightMaster.resetPosition();
-  }
-
-  /** Updates all cached values with current ones. */
-  @Override
-  public void update() {
-    this.cachedLeftVel = this.getLeftVel();
-    this.cachedLeftPos = this.getLeftPos();
-    this.cachedRightVel = this.getRightVel();
-    this.cachedRightPos = this.getRightPos();
-  }
-
-  /**
-   * Hold the current position.
-   *
-   * @param leftPos the position to stop the left side at
-   * @param rightPos the position to stop the right side at
-   */
-  public void holdPosition(final double leftPos, final double rightPos) {
-    this.leftMaster.setPositionSetpoint(leftPos);
-    this.rightMaster.setPositionSetpoint(rightPos);
-  }
-
   @Override
   public String getName() {
     return this.getClass().getSimpleName()
         + "_"
-        + this.leftMaster.getPort()
+        + this.leftMaster.configureLogName()
         + "_"
-        + this.rightMaster.getPort();
+        + this.rightMaster.configureLogName();
   }
 
   @Override

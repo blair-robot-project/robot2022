@@ -10,7 +10,9 @@ import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
-import frc.team449.javaMaps.builders.SmartMotorConfig;
+import frc.team449.generalInterfaces.DriveSettings;
+import frc.team449.javaMaps.builders.MotorConfig;
+import frc.team449.javaMaps.builders.TalonConfig;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.List;
 import java.util.Map;
@@ -36,14 +38,12 @@ public class MappedTalon implements SmartMotor {
    * is no encoder.
    */
   private final double unitPerRotation;
-  /** A list of all the gears this robot has and their settings. */
-  @NotNull private final Map<Integer, PerGearSettings> perGearSettings;
   /** The talon's name, used for logging purposes. */
   @NotNull private final String name;
   /** Whether the forwards or reverse limit switches are normally open or closed, respectively. */
   private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
   /** The settings currently being used by this Talon. */
-  @NotNull protected PerGearSettings currentGearSettings;
+  @NotNull protected DriveSettings currentGearSettings;
   /**
    * The coefficient the output changes by after being measured by the encoder, e.g. this would be
    * 1/70 if there was a 70:1 gearing between the encoder and the final output.
@@ -81,7 +81,7 @@ public class MappedTalon implements SmartMotor {
       @Nullable final List<SlaveTalon> slaveTalons,
       @Nullable final List<SlaveVictor> slaveVictors,
       @Nullable final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
-      @NotNull final SmartMotorConfig cfg) {
+      @NotNull final TalonConfig cfg) {
     // Instantiate the base CANTalon this is a wrapper on.
     this.canTalon = new TalonSRX(cfg.getPort());
     // Set the name to the given one or to talon_portnum
@@ -108,10 +108,6 @@ public class MappedTalon implements SmartMotor {
 
     // Set fields
     this.unitPerRotation = cfg.getUnitPerRotation();
-
-    // Initialize
-    this.perGearSettings = cfg.getPerGearSettingsMap();
-    this.currentGearSettings = cfg.getInitialGearSettings();
 
     // Only enable the limit switches if it was specified if they're normally open or closed.
     if (cfg.getFwdLimitSwitchNormallyOpen() != null) {
@@ -198,9 +194,6 @@ public class MappedTalon implements SmartMotor {
     // postEncoderGearing defaults to 1
     this.postEncoderGearing = cfg.getPostEncoderGearing();
 
-    // Set up gear-based settings.
-    this.setGear(currentGearSettings.gear);
-
     // Set the current limit if it was given
     if (cfg.getCurrentLimit() != null) {
       this.canTalon.configContinuousCurrentLimit(cfg.getCurrentLimit(), 0);
@@ -283,53 +276,6 @@ public class MappedTalon implements SmartMotor {
     this.canTalon.set(ControlMode.PercentOutput, percentVoltage);
   }
 
-  /** @return The gear this subsystem is currently in. */
-  @Override
-  @Log
-  public int getGear() {
-    return this.currentGearSettings.gear;
-  }
-
-  /**
-   * Shift to a specific gear.
-   *
-   * @param gear Which gear to shift to.
-   */
-  @Override
-  public void setGear(final int gear) {
-    // Set the current gear
-    this.currentGearSettings = this.perGearSettings.get(gear);
-
-    if (currentGearSettings.postEncoderGearing != null) {
-      this.postEncoderGearing = currentGearSettings.postEncoderGearing;
-    }
-
-    // Set max voltage
-    this.canTalon.configPeakOutputForward(this.currentGearSettings.fwdPeakOutputVoltage / 12., 0);
-    this.canTalon.configPeakOutputReverse(this.currentGearSettings.revPeakOutputVoltage / 12., 0);
-
-    // Set min voltage
-    this.canTalon.configNominalOutputForward(
-        this.currentGearSettings.fwdNominalOutputVoltage / 12., 0);
-    this.canTalon.configNominalOutputReverse(
-        this.currentGearSettings.revNominalOutputVoltage / 12., 0);
-
-    if (this.currentGearSettings.rampRate != null) {
-      // Set ramp rate, converting from volts/sec to seconds until 12 volts.
-      this.canTalon.configClosedloopRamp(1 / (this.currentGearSettings.rampRate / 12.), 0);
-      this.canTalon.configOpenloopRamp(1 / (this.currentGearSettings.rampRate / 12.), 0);
-    } else {
-      this.canTalon.configClosedloopRamp(0, 0);
-      this.canTalon.configOpenloopRamp(0, 0);
-    }
-
-    // Set PID stuff
-    // Slot 0 velocity gains. We don't set F yet because that changes based on setpoint.
-    this.canTalon.config_kP(0, this.currentGearSettings.kP, 0);
-    this.canTalon.config_kI(0, this.currentGearSettings.kI, 0);
-    this.canTalon.config_kD(0, this.currentGearSettings.kD, 0);
-  }
-
   /**
    * Convert from native units read by an encoder to meters moved. Note this DOES account for
    * post-encoder gearing.
@@ -350,7 +296,7 @@ public class MappedTalon implements SmartMotor {
    * post-encoder gearing.
    *
    * @param meters A distance in meters.
-   * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
+   * @return That distance in native units as measured by the encoder, or NaN if no encoder CPR was
    *     given.
    */
   @Override
@@ -460,7 +406,7 @@ public class MappedTalon implements SmartMotor {
         ControlMode.Position,
         nativeSetpoint,
         DemandType.ArbitraryFeedForward,
-        this.currentGearSettings.feedForwardCalculator.ks / 12.);
+        this.currentGearSettings.leftFeedforward.ks / 12.);
   }
 
   /** @return Ticks per 100ms for debug purposes */
@@ -507,7 +453,7 @@ public class MappedTalon implements SmartMotor {
         ControlMode.Velocity,
         nativeSetpoint,
         DemandType.ArbitraryFeedForward,
-        currentGearSettings.feedForwardCalculator.calculate(velocity) / 12.);
+        currentGearSettings.leftFeedforward.calculate(velocity) / 12.);
   }
 
   /**
@@ -584,38 +530,10 @@ public class MappedTalon implements SmartMotor {
     return this.canTalon.getControlMode().name();
   }
 
-  /**
-   * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
-   *
-   * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *     gear.
-   * @param gear The number of the gear to use the max speed from to scale the velocity.
-   */
-  @Override
-  public void setGearScaledVelocity(final double velocity, final int gear) {
-    if (this.currentGearSettings.maxSpeed != null) {
-      this.setVelocityUPS(this.currentGearSettings.maxSpeed * velocity);
-    } else {
-      this.setPercentVoltage(velocity);
-    }
-  }
-
-  /**
-   * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
-   *
-   * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *     gear.
-   * @param gear The gear to use the max speed from to scale the velocity.
-   */
-  @Override
-  public void setGearScaledVelocity(final double velocity, final Gear gear) {
-    this.setGearScaledVelocity(velocity, gear.getNumVal());
-  }
-
   /** @return Feedforward calculator for this gear */
   @Override
   public SimpleMotorFeedforward getCurrentGearFeedForward() {
-    return this.currentGearSettings.feedForwardCalculator;
+    return this.currentGearSettings.leftFeedforward;
   }
 
   /** Resets the position of the Talon to 0. */
