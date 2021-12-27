@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import frc.team449.generalInterfaces.SmartMotorExternalEncoder;
-import frc.team449.javaMaps.builders.MotorConfig;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.annotations.Log;

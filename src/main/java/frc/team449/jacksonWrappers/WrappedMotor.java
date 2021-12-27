@@ -10,9 +10,8 @@ import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.TalonConfig;
 import io.github.oblarg.oblog.Loggable;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public final class WrappedMotor implements SpeedController, Loggable {
   private final @NotNull SpeedController motor;
@@ -21,7 +20,8 @@ public final class WrappedMotor implements SpeedController, Loggable {
   /** Name for logging */
   private final @NotNull String name;
 
-  private WrappedMotor(@NotNull SpeedController motor, @NotNull WrappedEncoder encoder, @NotNull String name) {
+  private WrappedMotor(
+      @NotNull SpeedController motor, @NotNull WrappedEncoder encoder, @NotNull String name) {
     this.motor = motor;
     this.encoder = encoder;
     this.name = name;
@@ -105,7 +105,8 @@ public final class WrappedMotor implements SpeedController, Loggable {
 
     motor.burnFlash();
 
-    return new WrappedMotor(motor, wrappedEnc, Objects.requireNonNullElse(cfg.getName(), "spark_" + cfg.getPort()));
+    return new WrappedMotor(
+        motor, wrappedEnc, Objects.requireNonNullElse(cfg.getName(), "spark_" + cfg.getPort()));
   }
 
   /**
@@ -274,7 +275,8 @@ public final class WrappedMotor implements SpeedController, Loggable {
       motor.configOpenloopRamp(0, 0);
     }
 
-    return new WrappedMotor(motor, wrappedEnc, Objects.requireNonNullElse(cfg.getName(), "talon_" + cfg.getPort()));
+    return new WrappedMotor(
+        motor, wrappedEnc, Objects.requireNonNullElse(cfg.getName(), "talon_" + cfg.getPort()));
   }
 
   @Override

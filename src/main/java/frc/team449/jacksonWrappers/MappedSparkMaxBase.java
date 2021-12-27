@@ -10,13 +10,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.team449.generalInterfaces.DriveSettings;
 import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.generalInterfaces.SmartMotor;
-import frc.team449.javaMaps.builders.MotorConfig;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 public abstract class MappedSparkMaxBase implements SmartMotor {
   /** REV brushless controller object */

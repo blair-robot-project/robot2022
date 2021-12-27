@@ -75,7 +75,7 @@ public abstract class WrappedEncoder {
 
     public WPIEncoder(@NotNull Encoder encoder, int encoderCPR, double unitPerRotation) {
       super(1, unitPerRotation);
-      //Set field encoderCPR to 1 because the WPI encoder handles it itself
+      // Set field encoderCPR to 1 because the WPI encoder handles it itself
       encoder.setDistancePerPulse(1.0 / encoderCPR);
       encoder.setSamplesToAverage(5);
       this.encoder = encoder;
