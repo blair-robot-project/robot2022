@@ -2,11 +2,10 @@ package frc.team449.javaMaps.builders;
 
 import edu.wpi.first.wpilibj.Encoder;
 import frc.team449.jacksonWrappers.SlaveSparkMax;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The constructor for SmartMotors was hell so this will help resolve that.

@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-
 import java.util.ArrayList;
 import java.util.List;
 

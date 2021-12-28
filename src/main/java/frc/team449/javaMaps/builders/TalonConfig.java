@@ -5,13 +5,12 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import frc.team449.jacksonWrappers.SlaveTalon;
 import frc.team449.jacksonWrappers.SlaveVictor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /** Motor controller configuration, along with Talon-specific stuff */
 public class TalonConfig extends MotorConfig<TalonConfig> {

@@ -1,8 +1,7 @@
 package frc.team449.other;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.IdentityHashMap;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Associates object instances ID based on order of registration.
