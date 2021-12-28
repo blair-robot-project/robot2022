@@ -3,7 +3,6 @@ package frc.team449.generalInterfaces.doubleUnaryOperator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import frc.team449.other.Clock;
-
 import java.util.function.DoubleUnaryOperator;
 
 /**

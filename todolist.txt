@@ -10,12 +10,11 @@ Non-important TODOs:
 ./src/main/java/frc/team449/components/TrajectoryGenerationComponent.java: 6: /** TODO add some actual javadocs here */
 ./src/main/java/frc/team449/drive/unidirectional/DriveUnidirectionalBase.java: 61: // todo can this method just be removed?
 ./src/main/java/frc/team449/generalInterfaces/ahrs/commands/PIDAngleCommand.java: 21: extends CommandBase { // implements Loggable { TODO Logging causes the drive subsystem to be
-./src/main/java/frc/team449/jacksonWrappers/MappedSparkMaxBase.java: 89: // todo why is this creating a new sparkmax?
-./src/main/java/frc/team449/jacksonWrappers/MappedSparkMaxBase.java: 108: // todo why is this creating a new sparkmax?
-./src/main/java/frc/team449/jacksonWrappers/WrappedMotor.java: 47: // todo Set this to false because we only use reverseOutput for slaves.
-./src/main/java/frc/team449/jacksonWrappers/WrappedMotor.java: 61: // todo handle limit switches
-./src/main/java/frc/team449/jacksonWrappers/WrappedMotor.java: 254: // todo figure out how to get fwdPeakOutputVoltage and friends here
-./src/main/java/frc/team449/javaMaps/FullMap.java: 170: 0, // TODO tune pid
+./src/main/java/frc/team449/jacksonWrappers/WrappedMotor.java: 50: // todo Set this to false because we only use reverseOutput for slaves.
+./src/main/java/frc/team449/jacksonWrappers/WrappedMotor.java: 64: // todo handle limit switches
+./src/main/java/frc/team449/jacksonWrappers/WrappedMotor.java: 133: // todo do only slaves need to be inverted?
+./src/main/java/frc/team449/jacksonWrappers/WrappedMotor.java: 262: // todo figure out how to get fwdPeakOutputVoltage and friends here
+./src/main/java/frc/team449/javaMaps/FullMap.java: 168: 0, // TODO tune pid
 ./src/main/java/frc/team449/multiSubsystem/BooleanSupplierSubsystemBased.java: 21: final @Nullable Boolean useCached) { // TODO useCached probably shouldn't be nullable
 ./src/main/java/frc/team449/multiSubsystem/commands/ConditionalPerpetualCommand.java: 44: // TODO This might be janky.
 ./src/main/java/frc/team449/multiSubsystem/commands/ConditionalPerpetualCommandChangeBased.java: 36: //      @Nullable final Double pollingInterval) { TODO: Not sure if polling interval logic

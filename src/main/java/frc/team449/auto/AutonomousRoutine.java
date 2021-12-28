@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators.StringIdGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.team449.auto.commands.AutonomousCommand;
-
 import java.util.List;
 
 @JsonTypeInfo(

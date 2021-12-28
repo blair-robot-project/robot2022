@@ -12,10 +12,9 @@ import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.other.Debouncer;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.function.DoubleUnaryOperator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.DoubleUnaryOperator;
 
 /**
  * Drive with arcade drive setup, and when the driver isn't turning, use a NavX to stabilize the
