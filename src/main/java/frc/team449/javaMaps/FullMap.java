@@ -86,8 +86,7 @@ public class FullMap {
                 .setName("right")
                 .setPort(RIGHT_LEADER_PORT)
                 .setReverseOutput(false)
-                .setSlaveSparks(
-                    List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false))));
+                .setSlaveSparks(List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false))));
     var leftMaster =
         WrappedMotor.createSpark(
             driveMasterPrototype
@@ -95,8 +94,7 @@ public class FullMap {
                 .setPort(LEFT_LEADER_PORT)
                 .setName("left")
                 .setReverseOutput(true)
-                .setSlaveSparks(
-                    List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false))));
+                .setSlaveSparks(List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false))));
 
     var drive =
         new DriveUnidirectionalWithGyro(
