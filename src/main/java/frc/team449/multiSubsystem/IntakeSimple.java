@@ -85,12 +85,6 @@ public class IntakeSimple extends SubsystemBase
       this.motor.enable();
       this.motor.setVelocity(this.velocities.get(mode));
     } else {
-      //      System.err.println(getLogPrefix(this) + "Warning: use of undefined mode " + mode);
-      //      Shuffleboard.addEventMarker(
-      //          "Undefined " + getLogPrefix(this) + "mode used",
-      //          "mode: " + mode,
-      //          EventImportance.kCritical);
-
       DriverStation.reportError("Mode not defined for instance: " + mode, false);
     }
   }

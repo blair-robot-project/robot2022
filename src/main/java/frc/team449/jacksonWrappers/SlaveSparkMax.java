@@ -11,23 +11,15 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 
 public class SlaveSparkMax implements SlaveMotor, Loggable {
-  /** The port/canID of the spark. */
-  final int port;
   /** The SparkMAX this object wraps. */
-  final CANSparkMax slaveSpark;
-  /** The pdp this spark runs on. */
-  final PDP PDP;
+  private final CANSparkMax slaveSpark;
 
-  final boolean inverted;
+  private final boolean inverted;
 
   @JsonCreator
   public SlaveSparkMax(
       @JsonProperty(required = true) final int port,
-      @Nullable final Boolean inverted,
-      @Nullable final PDP PDP) {
-
-    this.port = port;
-
+      @Nullable final Boolean inverted) {
     this.slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     this.inverted = inverted != null && inverted;
@@ -42,8 +34,6 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
     this.slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100);
     this.slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 100);
     this.slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 100);
-
-    this.PDP = PDP;
   }
 
   public void setMasterSpark(final CANSparkMax masterController, final boolean brakeMode) {

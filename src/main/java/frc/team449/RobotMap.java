@@ -24,12 +24,6 @@ public class RobotMap {
 
   @NotNull private final MotorContainer motors = MotorContainer.getInstance();
 
-  //    /**
-  //     * The logger for recording events and telemetry data.
-  //     */
-  //    @NotNull
-  //    private final Logger logger;
-
   /** A runnable that updates cached variables. */
   @NotNull private final Runnable updater;
 
@@ -66,14 +60,6 @@ public class RobotMap {
     this.subsystems = subsystems;
     this.commands = commands;
   }
-
-  //    /**
-  //     * @return The logger for recording events and telemetry data.
-  //     */
-  //    @NotNull
-  //    public Logger getLogger() {
-  //        return logger;
-  //    }
 
   /** @return The commands to be run when first enabled in autonomous mode. */
   @Nullable

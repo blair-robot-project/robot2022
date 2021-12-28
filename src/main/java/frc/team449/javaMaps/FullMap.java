@@ -62,8 +62,6 @@ public class FullMap {
 
   @NotNull
   public static RobotMap createRobotMap() {
-
-    var useCameraServer = false;
     var pdp = new PDP(1, new RunningLinRegComponent(250, 0.75));
 
     var mechanismsJoystick = new MappedJoystick(MECHANISMS_JOYSTICK_PORT);
@@ -90,7 +88,7 @@ public class FullMap {
                 .setPort(RIGHT_LEADER_PORT)
                 .setReverseOutput(false)
                 .setSlaveSparks(
-                    List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false, pdp))));
+                    List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false))));
     var leftMaster =
         WrappedMotor.createSpark(
             driveMasterPrototype
@@ -99,7 +97,7 @@ public class FullMap {
                 .setName("left")
                 .setReverseOutput(true)
                 .setSlaveSparks(
-                    List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false, pdp))));
+                    List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false))));
 
     var drive =
         new DriveUnidirectionalWithGyro(
@@ -321,6 +319,6 @@ public class FullMap {
             teleopStartupCommands,
             testStartupCommands);
 
-    return new RobotMap(subsystems, pdp, updater, allCommands, joysticks, useCameraServer);
+    return new RobotMap(subsystems, pdp, updater, allCommands, joysticks, false);
   }
 }

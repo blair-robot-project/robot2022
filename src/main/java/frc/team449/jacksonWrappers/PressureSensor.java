@@ -39,7 +39,7 @@ public class PressureSensor {
    * @return pressure in PSI
    */
   public double getPressure() {
-    return 50.0 * sensor.getAverageVoltage()
-        - 25.0; // these are constants given by REV, assuming 5.0V in
+    // these are constants given by REV, assuming 5.0V in
+    return 50.0 * sensor.getAverageVoltage() - 25.0;
   }
 }

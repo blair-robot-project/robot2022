@@ -262,16 +262,14 @@ public final class WrappedMotor implements SpeedController, Loggable {
 
     // todo figure out how to get fwdPeakOutputVoltage and friends here
     // Set max voltage
-    //    motor.configPeakOutputForward(this.currentGearSettings.fwdPeakOutputVoltage / 12., 0);
-    //    motor.configPeakOutputReverse(this.currentGearSettings.revPeakOutputVoltage / 12., 0);
+    // motor.configPeakOutputForward(this.currentGearSettings.fwdPeakOutputVoltage / 12., 0);
+    // motor.configPeakOutputReverse(this.currentGearSettings.revPeakOutputVoltage / 12., 0);
     motor.configPeakOutputForward(1.0, 0);
     motor.configPeakOutputReverse(1.0, 0);
 
     // Set min voltage
-    //    motor.configNominalOutputForward(this.currentGearSettings.fwdNominalOutputVoltage / 12.,
-    // 0);
-    //    motor.configNominalOutputReverse(this.currentGearSettings.revNominalOutputVoltage / 12.,
-    // 0);
+    // motor.configNominalOutputForward(this.currentGearSettings.fwdNominalOutputVoltage / 12., 0);
+    // motor.configNominalOutputReverse(this.currentGearSettings.revNominalOutputVoltage / 12., 0);
     motor.configNominalOutputForward(0.0, 0);
     motor.configNominalOutputReverse(0.0, 0);
 

@@ -15,8 +15,6 @@ import org.jetbrains.annotations.Nullable;
  * com.ctre.phoenix.motorcontrol.can.VictorSPX}.
  */
 public class SlaveTalon implements SlaveMotor, Loggable {
-  /** The Port of this talon. */
-  private final int port;
   /** The TalonSRX this object wraps. */
   @NotNull private final TalonSRX talonSRX;
 
@@ -30,9 +28,6 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   @JsonCreator
   public SlaveTalon(@JsonProperty(required = true) final int port, final InvertType invertType) {
     this.talonSRX = new TalonSRX(port);
-
-    // set the port
-    this.port = port;
 
     // Turn off features we don't want a slave to have
     this.talonSRX.setInverted(invertType == null ? InvertType.FollowMaster : invertType);
@@ -70,8 +65,6 @@ public class SlaveTalon implements SlaveMotor, Loggable {
    * @param currentLimit The current limit for this Talon. Can be null for no current limit.
    * @param voltageCompSamples The number of voltage compensation samples to use, or null to not
    *     compensate voltage.
-   * @param PDP The PDP this Talon is connected to.
-   * @param linRegComponent The linear regression component for logging resistance.
    */
   public void setMaster(
       final int port,
@@ -104,41 +97,6 @@ public class SlaveTalon implements SlaveMotor, Loggable {
     // Follow the leader
     this.talonSRX.set(ControlMode.Follower, port);
   }
-
-  //    /**
-  //     * Get the headers for the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of String labels for data, where N is the length of the
-  // Object[] returned by getData().
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String[] getHeader() {
-  //        return new String[]{
-  //                "current",
-  //                "voltage",
-  //                "resistance"
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-  //     */
-  //    @Nullable
-  //    @Override
-  //    public Object[] getData() {
-  //        if (linRegComponent != null && PDP != null) {
-  //            linRegComponent.addPoint(talonSRX.getOutputCurrent(), PDP.getVoltage() -
-  // talonSRX.getBusVoltage());
-  //        }
-  //        return new Object[]{
-  //                talonSRX.getOutputCurrent(),
-  //                talonSRX.getMotorOutputVoltage(),
-  //                (linRegComponent != null && PDP != null) ? -linRegComponent.getSlope() : null;
-  //        };
-  //    }
 
   @Log
   public double getOutputCurrent() {

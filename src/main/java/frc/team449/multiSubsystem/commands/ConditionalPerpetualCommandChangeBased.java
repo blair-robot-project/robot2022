@@ -48,16 +48,10 @@ public class ConditionalPerpetualCommandChangeBased extends ConditionalPerpetual
 
         // A supplier that tests for whether the condition has changed.
         new BooleanSupplier() {
-          //          private long lastPollTime;
           private boolean lastState;
 
           @Override
           public boolean getAsBoolean() {
-            //            final var now = Clock.currentTimeMillis();
-            //            if (pollingInterval != null && now - this.lastPollTime < pollingInterval)
-            // return false;
-
-            //            this.lastPollTime = now;
             booleanSupplier.update();
 
             final boolean current = booleanSupplier.getAsBoolean();
