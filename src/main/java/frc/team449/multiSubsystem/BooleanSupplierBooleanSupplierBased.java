@@ -2,8 +2,9 @@ package frc.team449.multiSubsystem;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.BooleanSupplier;
 
 /** Intended to be used as a base class. */
 public class BooleanSupplierBooleanSupplierBased implements BooleanSupplier {

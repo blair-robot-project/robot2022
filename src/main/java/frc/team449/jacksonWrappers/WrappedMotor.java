@@ -6,19 +6,17 @@ import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.TalonConfig;
 import io.github.oblarg.oblog.Loggable;
-import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public final class WrappedMotor implements SpeedController, Loggable {
-  private final @NotNull SpeedController motor;
-  public final @NotNull WrappedEncoder encoder;
+import java.util.Objects;
 
+public final class WrappedMotor implements SpeedController, Loggable {
+  public final @NotNull WrappedEncoder encoder;
+  private final @NotNull SpeedController motor;
   /** Name for logging */
   private final @NotNull String name;
 
@@ -135,7 +133,7 @@ public final class WrappedMotor implements SpeedController, Loggable {
 
     // todo do only slaves need to be inverted?
     motor.setInverted(cfg.isReverseOutput());
-    //Set brake mode
+    // Set brake mode
     motor.setNeutralMode(cfg.isEnableBrakeMode() ? NeutralMode.Brake : NeutralMode.Coast);
 
     cfg.getControlFrameRatesMillis().forEach(motor::setControlFramePeriod);
@@ -306,13 +304,13 @@ public final class WrappedMotor implements SpeedController, Loggable {
   }
 
   @Override
-  public void setInverted(boolean isInverted) {
-    motor.setInverted(isInverted);
+  public boolean getInverted() {
+    return motor.getInverted();
   }
 
   @Override
-  public boolean getInverted() {
-    return motor.getInverted();
+  public void setInverted(boolean isInverted) {
+    motor.setInverted(isInverted);
   }
 
   @Override

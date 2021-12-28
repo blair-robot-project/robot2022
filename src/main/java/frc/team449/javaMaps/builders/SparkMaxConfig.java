@@ -2,14 +2,15 @@ package frc.team449.javaMaps.builders;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.jetbrains.annotations.Nullable;
 
 /** Motor controller configuration, along with some Spark-specific stuff */
 public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
-  private @Nullable Integer controlFrameRateMillis;
   private final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis = new HashMap<>();
+  private @Nullable Integer controlFrameRateMillis;
 
   @Nullable
   public Integer getControlFrameRateMillis() {

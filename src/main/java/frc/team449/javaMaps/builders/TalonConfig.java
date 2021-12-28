@@ -5,23 +5,24 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import frc.team449.jacksonWrappers.SlaveTalon;
 import frc.team449.jacksonWrappers.SlaveVictor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /** Motor controller configuration, along with Talon-specific stuff */
 public class TalonConfig extends MotorConfig<TalonConfig> {
 
   private final Map<ControlFrame, Integer> controlFrameRatesMillis = new HashMap<>();
   private final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis = new HashMap<>();
+  private final List<SlaveTalon> slaveTalons = new ArrayList<>();
+  private final List<SlaveVictor> slaveVictors = new ArrayList<>();
   private int voltageCompSamples = 32;
   private @Nullable FeedbackDevice feedbackDevice;
   private boolean reverseSensor = false;
-  private final List<SlaveTalon> slaveTalons = new ArrayList<>();
-  private final List<SlaveVictor> slaveVictors = new ArrayList<>();
 
   @NotNull
   public Map<ControlFrame, Integer> getControlFrameRatesMillis() {

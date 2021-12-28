@@ -121,7 +121,7 @@ public abstract class WrappedEncoder {
         double unitPerRotation,
         double postEncoderGearing) {
       super(1, unitPerRotation, postEncoderGearing);
-      //Set field encoderCPR to 1 because the WPI encoder handles it itself
+      // Set field encoderCPR to 1 because the WPI encoder handles it itself
       encoder.setDistancePerPulse(1.0 / encoderCPR);
       encoder.setSamplesToAverage(5);
       this.encoder = encoder;

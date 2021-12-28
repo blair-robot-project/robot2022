@@ -15,9 +15,9 @@ public class OneMotorPulleyElevator extends SubsystemBase {
   @NotNull private final ElevatorPosition position;
   @NotNull private final ElevatorFeedforward feedforward;
   @NotNull private final TrapezoidProfile.Constraints constraints;
+  @NotNull private final PIDController pidController;
   @NotNull private TrapezoidProfile.State goal = new TrapezoidProfile.State();
   @NotNull private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
-  @NotNull private final PIDController pidController;
 
   /** @param pulleyMotor single motor used for the pulley */
   @JsonCreator
