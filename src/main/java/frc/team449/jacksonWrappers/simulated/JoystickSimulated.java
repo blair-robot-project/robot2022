@@ -404,6 +404,7 @@ public class JoystickSimulated extends MappedJoystick {
 
   // Janky awt for now.
   private class SimulatedJoystickUI extends JFrame {
+    private static final long serialVersionUID = 1357L;
     private final JLabel[][] buttonStateLayout = new JLabel[3][3];
     private final Map<String, JLabel> buttonStateLabels = new HashMap<>();
 

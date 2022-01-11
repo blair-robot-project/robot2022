@@ -8,6 +8,7 @@ import java.util.function.DoubleUnaryOperator;
 
 /** A module that adds mix-ins for various Java interfaces, classes, etc. */
 public class JavaModule extends SimpleModule {
+  private static final long serialVersionUID = 12345678L;
 
   /** Default constructor */
   public JavaModule() {

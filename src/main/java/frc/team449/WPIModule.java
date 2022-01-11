@@ -10,6 +10,7 @@ import frc.team449.mixIn.*;
  * A Jackson {@link com.fasterxml.jackson.databind.Module} for adding mix-in annotations to classes.
  */
 public class WPIModule extends SimpleModule {
+  private static final long serialVersionUID = 1234L;
 
   /** Default constructor */
   public WPIModule() {
