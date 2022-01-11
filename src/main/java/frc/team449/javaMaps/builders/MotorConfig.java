@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * @param <Self> The type of the "current" subclass of {@link MotorConfig}
  * @see frc.team449.jacksonWrappers.WrappedMotor
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "UnusedReturnValue"})
 public class MotorConfig<Self extends MotorConfig<Self>> {
   private int port;
   private boolean enableBrakeMode;
@@ -204,7 +204,6 @@ public class MotorConfig<Self extends MotorConfig<Self>> {
     other
         .setPort(port)
         .setEnableBrakeMode(enableBrakeMode)
-        .setName(name)
         .setReverseOutput(reverseOutput)
         .setFwdLimitSwitchNormallyOpen(fwdLimitSwitchNormallyOpen)
         .setRevLimitSwitchNormallyOpen(revLimitSwitchNormallyOpen)
@@ -217,7 +216,9 @@ public class MotorConfig<Self extends MotorConfig<Self>> {
         .setRampRate(rampRate)
         .setCurrentLimit(currentLimit)
         .setEnableVoltageComp(enableVoltageComp)
-        .setSlaveSparks(slaveSparks)
-        .setExternalEncoder(externalEncoder);
+        .setSlaveSparks(slaveSparks);
+
+    if (this.name != null) other.setName(name);
+    if (this.externalEncoder != null) other.setExternalEncoder(externalEncoder);
   }
 }

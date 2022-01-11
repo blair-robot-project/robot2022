@@ -37,8 +37,6 @@ deploy {
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 
-wpi.java.debugJni = false
-
 dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '31.0-jre'
 
@@ -99,6 +97,8 @@ jar {
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
+
+wpi.java.debugJni = false
 
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)

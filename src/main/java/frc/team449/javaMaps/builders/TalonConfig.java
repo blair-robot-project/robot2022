@@ -95,9 +95,11 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
   public TalonConfig copy() {
     var copy =
         new TalonConfig()
-            .setFeedbackDevice(this.getFeedbackDevice())
             .setReverseSensor(this.getReverseSensor())
             .setVoltageCompSamples(this.getVoltageCompSamples());
+    if (this.getFeedbackDevice() != null) {
+      copy.setFeedbackDevice(this.getFeedbackDevice());
+    }
     this.copyTo(copy);
 
     copy.controlFrameRatesMillis.putAll(this.controlFrameRatesMillis);
