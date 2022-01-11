@@ -1,9 +1,9 @@
 package frc.team449._2021BunnyBot.elevator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import edu.wpi.first.wpilibj.controller.ElevatorFeedforward;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.jacksonWrappers.WrappedEncoder;
 import frc.team449.jacksonWrappers.WrappedMotor;

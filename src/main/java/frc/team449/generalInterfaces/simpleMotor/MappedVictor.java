@@ -20,7 +20,8 @@ public class MappedVictor extends VictorSP implements SimpleMotor {
   public MappedVictor(@JsonProperty(required = true) int port, boolean inverted) {
     super(port);
     this.setInverted(inverted);
-    this.setSafetyEnabled(false);
+    // todo figure out the alternative to setSafetyEnabled for 2022
+    // this.setSafetyEnabled(false);
   }
 
   /**
@@ -31,5 +32,10 @@ public class MappedVictor extends VictorSP implements SimpleMotor {
   @Override
   public void setVelocity(double velocity) {
     set(velocity);
+  }
+
+  @Override
+  public void stopMotor() {
+    this.set(0);
   }
 }

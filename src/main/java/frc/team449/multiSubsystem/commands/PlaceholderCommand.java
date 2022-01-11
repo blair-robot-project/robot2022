@@ -59,4 +59,9 @@ public class PlaceholderCommand implements Command {
   public boolean equals(final Object obj) {
     return false;
   }
+
+  @Override
+  public int hashCode() {
+    return -1;
+  }
 }

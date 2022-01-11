@@ -2,10 +2,11 @@ package frc.team449.jacksonWrappers;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.TalonConfig;
@@ -13,14 +14,14 @@ import io.github.oblarg.oblog.Loggable;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public final class WrappedMotor implements SpeedController, Loggable {
+public final class WrappedMotor implements MotorController, Loggable {
   public final @NotNull WrappedEncoder encoder;
-  private final @NotNull SpeedController motor;
+  private final @NotNull MotorController motor;
   /** Name for logging */
   private final @NotNull String name;
 
   private WrappedMotor(
-      @NotNull SpeedController motor, @NotNull WrappedEncoder encoder, @NotNull String name) {
+      @NotNull MotorController motor, @NotNull WrappedEncoder encoder, @NotNull String name) {
     this.motor = motor;
     this.encoder = encoder;
     this.name = name;
@@ -256,7 +257,7 @@ public final class WrappedMotor implements SpeedController, Loggable {
       slave.setMasterPhoenix(cfg.getPort(), cfg.isEnableBrakeMode());
     }
 
-    motor.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms);
+    motor.configVelocityMeasurementPeriod(SensorVelocityMeasPeriod.Period_10Ms);
     motor.configVelocityMeasurementWindow(10);
 
     // todo figure out how to get fwdPeakOutputVoltage and friends here
@@ -318,11 +319,6 @@ public final class WrappedMotor implements SpeedController, Loggable {
   @Override
   public void stopMotor() {
     motor.stopMotor();
-  }
-
-  @Override
-  public void pidWrite(double output) {
-    this.set(output);
   }
 
   @Override

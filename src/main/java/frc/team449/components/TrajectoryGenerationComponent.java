@@ -1,7 +1,7 @@
 package frc.team449.components;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.Trajectory;
 
 /** TODO add some actual javadocs here */
 @JsonTypeInfo(

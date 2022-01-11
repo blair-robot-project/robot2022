@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
     System.out.println("Started robotInit.");
 
     if (this.robotMap.useCameraServer()) {
-      CameraServer.getInstance().startAutomaticCapture();
+      CameraServer.startAutomaticCapture();
     }
 
     // Read sensors
