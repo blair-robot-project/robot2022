@@ -2,9 +2,9 @@ package frc.team449.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.SparkMaxLimitSwitch;
 import frc.team449.generalInterfaces.SlaveMotor;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -24,10 +24,10 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
     this.inverted = inverted != null && inverted;
 
     this.slaveSpark
-        .getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
+        .getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen)
         .enableLimitSwitch(false);
     this.slaveSpark
-        .getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
+        .getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen)
         .enableLimitSwitch(false);
 
     this.slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100);

@@ -1,7 +1,7 @@
 package frc.team449.jacksonWrappers;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.revrobotics.CANEncoder;
+import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import org.jetbrains.annotations.NotNull;
 
@@ -155,10 +155,10 @@ public abstract class WrappedEncoder {
   }
 
   public static class SparkEncoder extends WrappedEncoder {
-    private final CANEncoder encoder;
+    private final RelativeEncoder encoder;
 
     public SparkEncoder(
-        @NotNull CANEncoder encoder, double unitPerRotation, double postEncoderGearing) {
+        @NotNull RelativeEncoder encoder, double unitPerRotation, double postEncoderGearing) {
       super(1, unitPerRotation, postEncoderGearing);
       this.encoder = encoder;
       this.resetPosition();

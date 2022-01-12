@@ -3,9 +3,9 @@ package frc.team449.jacksonWrappers;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
-import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
@@ -65,12 +65,12 @@ public final class WrappedMotor implements MotorController, Loggable {
     // todo handle limit switches
     if (cfg.getFwdLimitSwitchNormallyOpen() == null) {
       motor
-          .getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
+          .getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen)
           .enableLimitSwitch(false);
     }
     if (cfg.getRevLimitSwitchNormallyOpen() == null) {
       motor
-          .getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
+          .getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen)
           .enableLimitSwitch(false);
     }
 
