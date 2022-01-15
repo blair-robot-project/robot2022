@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.team449.jacksonWrappers.MappedDigitalInput;
 import org.jetbrains.annotations.NotNull;
 
 /** A button triggered off of a digital input switch on the RoboRIO. */
@@ -23,7 +22,7 @@ public class ButtonDigitalInput extends Button {
    */
   @JsonCreator
   public ButtonDigitalInput(
-      @NotNull @JsonProperty(required = true) final MappedDigitalInput input) {
+      @NotNull @JsonProperty(required = true) final DigitalInput input) {
     this.input = input;
   }
 

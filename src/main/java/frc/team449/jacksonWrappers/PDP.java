@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.generalInterfaces.updatable.Updatable;
 import io.github.oblarg.oblog.Loggable;
@@ -13,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * An object representing the {@link PowerDistributionPanel} that logs power, current, and
+ * An object representing the {@link PowerDistribution} that logs power, current, and
  * resistance.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

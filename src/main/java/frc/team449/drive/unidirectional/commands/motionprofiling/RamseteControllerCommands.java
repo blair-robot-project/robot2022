@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.jacksonWrappers.MappedPIDController;
 import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -67,8 +66,8 @@ public class RamseteControllerCommands {
       double maxAccelMeters,
       @Nullable Double maxCentripetalAcceleration,
       double waitSeconds,
-      @NotNull MappedPIDController leftPidController,
-      @NotNull MappedPIDController rightPidController,
+      @NotNull PIDController leftPidController,
+      @NotNull PIDController rightPidController,
       @NotNull List<Pose2d> poses,
       boolean reversed) {
     var cmd = new SequentialCommandGroup();

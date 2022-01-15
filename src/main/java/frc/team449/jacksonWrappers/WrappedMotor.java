@@ -11,8 +11,9 @@ import frc.team449.generalInterfaces.MotorContainer;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.TalonConfig;
 import io.github.oblarg.oblog.Loggable;
-import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public final class WrappedMotor implements MotorController, Loggable {
   public final @NotNull WrappedEncoder encoder;
