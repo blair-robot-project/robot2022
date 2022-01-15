@@ -39,9 +39,7 @@ public class FullMap {
 
   // TODO PUT ADDITIONAL CONSTANTS HERE
 
-  private FullMap() {
-      throw new IllegalStateException("This is a utility class!");
-  }
+  private FullMap() {}
 
   @NotNull
   public static RobotMap createRobotMap() {
