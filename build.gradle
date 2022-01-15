@@ -62,25 +62,25 @@ dependencies {
     roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
     roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
 
-//    nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
-//    nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
-//    simulationDebug wpi.sim.enableDebug()
-//
-//    nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
-//    nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
-//    simulationRelease wpi.sim.enableRelease()
+   nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
+   nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
+   simulationDebug wpi.sim.enableDebug()
+
+   nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
+   nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
+   simulationRelease wpi.sim.enableRelease()
 }
 
 
-//// Simulation configuration (e.g. environment variables).
-//
-//wpi.sim.addGui().defaultEnabled = true
-//wpi.sim.addDriverstation()
-//
-////Sets the websocket client remote host.
-//wpi.sim.envVar("HALSIMWS_HOST", "10.0.0.2")
-//wpi.sim.addWebsocketsServer().defaultEnabled = true
-//wpi.sim.addWebsocketsClient().defaultEnabled = true
+// Simulation configuration (e.g. environment variables).
+
+wpi.sim.addGui().defaultEnabled = true
+wpi.sim.addDriverstation()
+
+//Sets the websocket client remote host.
+wpi.sim.envVar("HALSIMWS_HOST", "10.0.0.2")
+wpi.sim.addWebsocketsServer().defaultEnabled = true
+wpi.sim.addWebsocketsClient().defaultEnabled = true
 
 repositories {
     maven { url 'https://jitpack.io' }
