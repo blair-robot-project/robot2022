@@ -12,7 +12,10 @@ import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
-import frc.team449.jacksonWrappers.*;
+import frc.team449.jacksonWrappers.MappedAHRS;
+import frc.team449.jacksonWrappers.MappedJoystick;
+import frc.team449.jacksonWrappers.PDP;
+import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
@@ -44,10 +47,7 @@ public class FullMap {
   @NotNull
   public static RobotMap createRobotMap() {
 
-    var pdp = new PDP(
-        1,
-        new RunningLinRegComponent(250, 0.75),
-        PowerDistribution.ModuleType.kCTRE);
+    var pdp = new PDP(1, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
 
     var mechanismsJoystick = new MappedJoystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new MappedJoystick(DRIVE_JOYSTICK_PORT);
@@ -62,21 +62,21 @@ public class FullMap {
             .setCurrentLimit(50)
             .setEnableVoltageComp(true);
     var rightMaster =
-        WrappedMotor.createSpark(
-            driveMasterPrototype
-                .copy()
-                .setName("right")
-                .setPort(RIGHT_LEADER_PORT)
-                .setReverseOutput(false)
-                .setSlaveSparks(List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false))));
+        driveMasterPrototype
+            .copy()
+            .setName("right")
+            .setPort(RIGHT_LEADER_PORT)
+            .setReverseOutput(false)
+            .setSlaveSparks(List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false)))
+            .createReal();
     var leftMaster =
-        WrappedMotor.createSpark(
-            driveMasterPrototype
-                .copy()
-                .setPort(LEFT_LEADER_PORT)
-                .setName("left")
-                .setReverseOutput(true)
-                .setSlaveSparks(List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false))));
+        driveMasterPrototype
+            .copy()
+            .setPort(LEFT_LEADER_PORT)
+            .setName("left")
+            .setReverseOutput(true)
+            .setSlaveSparks(List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false)))
+            .createReal();
 
     var drive =
         new DriveUnidirectionalWithGyro(
@@ -151,7 +151,8 @@ public class FullMap {
                 oi,
                 new RampComponent(2.0, 2.0)));
 
-    var subsystems = List.<Subsystem>of(drive); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
+    var subsystems =
+        List.<Subsystem>of(drive); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
@@ -159,14 +160,15 @@ public class FullMap {
 
     var buttons =
         List.<CommandButton>of(
-                // TODO BUTTON BINDINGS HERE
-        );
+            // TODO BUTTON BINDINGS HERE
+            );
 
     var robotStartupCommands = List.<Command>of();
 
-    var autoStartupCommands = List.<Command>of(
+    var autoStartupCommands =
+        List.<Command>of(
             // TODO AUTO
-    );
+            );
 
     var teleopStartupCommands = List.<Command>of();
 

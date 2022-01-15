@@ -1,11 +1,16 @@
 package frc.team449.javaMaps.builders;
 
+import edu.wpi.first.hal.util.HalHandleException;
 import edu.wpi.first.wpilibj.Encoder;
 import frc.team449.jacksonWrappers.SlaveSparkMax;
-import java.util.ArrayList;
-import java.util.List;
+import frc.team449.jacksonWrappers.WrappedMotor;
+import frc.team449.jacksonWrappers.simulated.DummyMotorController;
+import frc.team449.jacksonWrappers.simulated.DummyWrappedEncoder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The constructor for SmartMotors was hell so this will help resolve that.
@@ -18,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * @see frc.team449.jacksonWrappers.WrappedMotor
  */
 @SuppressWarnings({"unchecked", "UnusedReturnValue"})
-public class MotorConfig<Self extends MotorConfig<Self>> {
+public abstract class MotorConfig<Self extends MotorConfig<Self>> {
   private int port;
   private boolean enableBrakeMode;
   private @Nullable String name;
@@ -200,7 +205,7 @@ public class MotorConfig<Self extends MotorConfig<Self>> {
   }
 
   /** Copy properties from this config to another config */
-  void copyTo(MotorConfig<?> other) {
+  protected void copyTo(MotorConfig<?> other) {
     other
         .setPort(port)
         .setEnableBrakeMode(enableBrakeMode)
@@ -221,4 +226,30 @@ public class MotorConfig<Self extends MotorConfig<Self>> {
     if (this.name != null) other.setName(name);
     if (this.externalEncoder != null) other.setExternalEncoder(externalEncoder);
   }
+
+  /** Create a simulated motor */
+  @NotNull
+  public WrappedMotor createSim() {
+    return new WrappedMotor(
+        "sim_" + port,
+        new DummyMotorController(),
+        new DummyWrappedEncoder(encoderCPR, unitPerRotation, postEncoderGearing));
+  }
+
+  /** Try creating a real motor, and if that fails, create a simulated one */
+  @NotNull
+  public WrappedMotor createRealOrSim() {
+    try {
+      return this.createReal();
+    } catch (HalHandleException e) {
+      return this.createSim();
+    }
+  }
+
+  /**
+   * Create a physical motor
+   *
+   * @throws HalHandleException if the motor couldn't be constructed
+   */
+  public abstract WrappedMotor createReal();
 }
