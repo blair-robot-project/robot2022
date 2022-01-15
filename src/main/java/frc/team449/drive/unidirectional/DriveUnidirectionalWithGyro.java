@@ -71,7 +71,7 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
    */
   public void setVoltage(final double left, final double right) {
     leftMaster.setVoltage(left);
-    rightMaster.set(right);
+    rightMaster.setVoltage(right);
   }
 
   /**

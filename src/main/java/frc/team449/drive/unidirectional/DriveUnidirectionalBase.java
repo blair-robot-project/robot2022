@@ -74,13 +74,13 @@ public class DriveUnidirectionalBase extends SubsystemBase
    * @param rightPos Position setpoint for right side
    */
   public void setPositionSetpoint(double leftPos, double rightPos) {
-    settings.leftPosPID.setSetpoint(leftPos);
-    settings.rightPosPID.setSetpoint(rightPos);
+    var leftOutput = settings.leftPosPID.calculate(this.getLeftPos(), leftPos);
+    var rightOutput = settings.rightPosPID.calculate(this.getRightPos(), rightPos);
 
     while (!settings.leftPosPID.atSetpoint() || !settings.rightPosPID.atSetpoint()) {
-      this.setOutput(
-          settings.leftPosPID.calculate(this.getLeftPos()),
-          settings.rightPosPID.calculate(this.getRightPos()));
+      this.setOutput(leftOutput, rightOutput);
+      leftOutput = settings.leftPosPID.calculate(this.getLeftPos());
+      rightOutput = settings.rightPosPID.calculate(this.getRightPos());
     }
   }
 

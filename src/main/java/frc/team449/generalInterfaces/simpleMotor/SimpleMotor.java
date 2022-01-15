@@ -1,6 +1,7 @@
 package frc.team449.generalInterfaces.simpleMotor;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.team449.multiSubsystem.SubsystemAnalogMotor;
 
 /** A motor with velocity/voltage control and the ability to enable and disable. */
@@ -8,7 +9,7 @@ import frc.team449.multiSubsystem.SubsystemAnalogMotor;
     use = JsonTypeInfo.Id.CLASS,
     include = JsonTypeInfo.As.WRAPPER_OBJECT,
     property = "@class")
-public interface SimpleMotor extends SubsystemAnalogMotor {
+public interface SimpleMotor extends MotorController, SubsystemAnalogMotor {
   /**
    * Set the velocity for the motor to go at.
    *
@@ -30,15 +31,7 @@ public interface SimpleMotor extends SubsystemAnalogMotor {
    * @deprecated use {@link SimpleMotor#setVelocity(double)} instead
    */
   @Override
-  @Deprecated
   default void set(final double input) {
     this.setVelocity(input);
-  }
-
-  /** Unused. */
-  enum Type {
-    MPSTalon,
-    Victor,
-    VictorSPX,
   }
 }

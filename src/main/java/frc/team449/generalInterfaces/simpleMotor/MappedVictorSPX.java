@@ -3,6 +3,7 @@ package frc.team449.generalInterfaces.simpleMotor;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 public class MappedVictorSPX implements SimpleMotor, Loggable {
 
   /** The Victor SPX this object is a wrapper on. */
-  @NotNull private final VictorSPX victorSPX;
+  @NotNull private final WPI_VictorSPX victorSPX;
 
   /**
    * Default constructor.
@@ -42,7 +43,7 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
       final Double peakVoltageRev,
       @Nullable final Integer voltageCompSamples,
       @Nullable final List<SlaveVictor> slaveVictors) {
-    victorSPX = new VictorSPX(port);
+    victorSPX = new WPI_VictorSPX(port);
     victorSPX.setInverted(inverted);
     victorSPX.setNeutralMode(brakeMode ? NeutralMode.Brake : NeutralMode.Coast);
     victorSPX.enableVoltageCompensation(enableVoltageComp);
@@ -68,7 +69,22 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
    */
   @Override
   public void setVelocity(final double velocity) {
-    victorSPX.set(ControlMode.PercentOutput, velocity);
+    victorSPX.set(velocity);
+  }
+
+  @Override
+  public double get() {
+    return victorSPX.get();
+  }
+
+  @Override
+  public void setInverted(boolean isInverted) {
+    victorSPX.setInverted(isInverted);
+  }
+
+  @Override
+  public boolean getInverted() {
+    return victorSPX.getInverted();
   }
 
   /** Disables the motor, if applicable. */
@@ -77,13 +93,18 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
     victorSPX.set(ControlMode.Disabled, 0);
   }
 
+  @Override
+  public void stopMotor() {
+    this.set(0);
+  }
+
   @Log
-  public double getBusVolt() {
+  public double getBusVoltage() {
     return victorSPX.getBusVoltage();
   }
 
   @Log
-  public double getMotorOutPutVolt() {
+  public double getMotorOutputVoltage() {
     return victorSPX.getMotorOutputVoltage();
   }
 }
