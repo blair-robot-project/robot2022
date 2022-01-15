@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -62,7 +63,10 @@ public class FullMap {
 
   @NotNull
   public static RobotMap createRobotMap() {
-    var pdp = new PDP(1, new RunningLinRegComponent(250, 0.75));
+    var pdp = new PDP(
+        1,
+        new RunningLinRegComponent(250, 0.75),
+        PowerDistribution.ModuleType.kCTRE);
 
     var mechanismsJoystick = new MappedJoystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new MappedJoystick(DRIVE_JOYSTICK_PORT);
