@@ -19,7 +19,10 @@ public class HighRungClimb extends CommandBase {
 
     @Override
     public void execute() {
-        climber.highRungClimb();
+        climber.pivotTelescopingArmOut();
+        climber.extendTelescopingArm();
+        climber.pivotTelescopingArmIn();
+        climber.retractTelescopingArm();
     }
 
     @Override
