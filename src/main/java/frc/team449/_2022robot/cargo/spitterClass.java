@@ -5,6 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class Spitter extends SubsystemBase {
 
-  #define motor/solenoid/etc. we will be using
+  //define motor/solenoid/etc. we will be using
 
 }
