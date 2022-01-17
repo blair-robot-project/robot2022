@@ -2,14 +2,13 @@ package frc.team449.generalInterfaces.simpleMotor;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import frc.team449.multiSubsystem.SubsystemAnalogMotor;
 
 /** A motor with velocity/voltage control and the ability to enable and disable. */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,
     include = JsonTypeInfo.As.WRAPPER_OBJECT,
     property = "@class")
-public interface SimpleMotor extends MotorController, SubsystemAnalogMotor {
+public interface SimpleMotor extends MotorController {
   /**
    * Set the velocity for the motor to go at.
    *
