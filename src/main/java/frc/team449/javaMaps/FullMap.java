@@ -153,6 +153,8 @@ public class FullMap {
 
     var subsystems =
         List.<Subsystem>of(drive); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
+    
+    var spitter = new Spitter();
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
