@@ -19,7 +19,8 @@ public class MidRungClimb extends CommandBase {
 
     @Override
     public void execute() {
-        climber.midRungClimb();
+        climber.extendTelescopingArm();
+        climber.retractTelescopingArm();
     }
 
     @Override
