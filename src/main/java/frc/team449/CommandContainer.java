@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.team449.oi.buttons.CommandButton;
 import frc.team449.other.DefaultCommand;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.List;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * A container class that holds all the commands on the robot, for cleanliness in the map and so
@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class CommandContainer implements Loggable {
   @Log.Include private final List<DefaultCommand> defaultCommands;
-  @Log.Include private final List<CommandButton> buttons;
 
   private final List<Command> robotStartupCommand;
 
@@ -31,13 +30,11 @@ public class CommandContainer implements Loggable {
   public CommandContainer(
       // TODO Figure out why this doesn't work @JsonInclude(JsonInclude.Include.NON_NULL)
       @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<DefaultCommand> defaultCommands,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<CommandButton> buttons,
       @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> robotStartupCommand,
       @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> autoStartupCommand,
       @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> teleopStartupCommand,
       @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> testStartupCommand) {
     this.defaultCommands = defaultCommands;
-    this.buttons = buttons;
     this.robotStartupCommand = robotStartupCommand;
     this.autoStartupCommand = autoStartupCommand;
     this.teleopStartupCommand = teleopStartupCommand;

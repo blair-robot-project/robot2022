@@ -1,8 +1,8 @@
 package frc.team449.oi.throttles;
 
 import com.fasterxml.jackson.annotation.*;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.LinearFilter;
-import frc.team449.jacksonWrappers.MappedJoystick;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +31,7 @@ public class ThrottleDeadbanded extends ThrottleBasic {
    */
   @JsonCreator
   public ThrottleDeadbanded(
-      @NotNull @JsonProperty(required = true) final MappedJoystick stick,
+      @NotNull @JsonProperty(required = true) final GenericHID stick,
       @JsonProperty(required = true) final int axis,
       final double deadband,
       @Nullable final Double smoothingTimeSecs,

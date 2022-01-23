@@ -4,15 +4,16 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.generalInterfaces.MotorContainer;
-import frc.team449.jacksonWrappers.MappedJoystick;
 import frc.team449.jacksonWrappers.PDP;
-import java.util.Iterator;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Iterator;
+import java.util.List;
 
 /** The Jackson-compatible object representing the entire robot. */
 @JsonIgnoreProperties({"CONSTANTS", "NAVIGATION"})
@@ -51,7 +52,7 @@ public class RobotMap {
       @NotNull @JsonProperty(required = true) final PDP pdp,
       @NotNull @JsonProperty(required = true) final Runnable updater,
       @NotNull @JsonProperty(required = true) final CommandContainer commands,
-      @Nullable final List<MappedJoystick> joysticks,
+      @Nullable final List<GenericHID> joysticks,
       final boolean useCameraServer) {
     this.updater = updater;
     this.pdp = pdp;

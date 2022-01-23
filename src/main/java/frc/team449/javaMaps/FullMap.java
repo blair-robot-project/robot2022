@@ -1,6 +1,7 @@
 package frc.team449.javaMaps;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,7 +20,6 @@ import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
-import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.throttles.Throttle;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
@@ -51,7 +51,7 @@ public class FullMap {
 
     var mechanismsJoystick = new MappedJoystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new MappedJoystick(DRIVE_JOYSTICK_PORT);
-    var joysticks = List.of(mechanismsJoystick, driveJoystick);
+    List<GenericHID> joysticks = List.of(mechanismsJoystick, driveJoystick);
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
 
@@ -153,32 +153,26 @@ public class FullMap {
 
     var subsystems =
         List.<Subsystem>of(drive); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
-    
-    var spitter = new Spitter();
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
     var defaultCommands = List.of(defaultDriveCommand);
 
-    var buttons =
-        List.<CommandButton>of(
-            // TODO BUTTON BINDINGS HERE
-            );
+    // TODO BUTTON BINDINGS HERE
 
-    var robotStartupCommands = List.<Command>of();
+    List<Command> robotStartupCommands = List.of();
 
     var autoStartupCommands =
         List.<Command>of(
             // TODO AUTO
             );
 
-    var teleopStartupCommands = List.<Command>of();
+    List<Command> teleopStartupCommands = List.of();
 
-    var testStartupCommands = List.<Command>of();
+    List<Command> testStartupCommands = List.of();
     var allCommands =
         new CommandContainer(
             defaultCommands,
-            buttons,
             robotStartupCommands,
             autoStartupCommands,
             teleopStartupCommands,

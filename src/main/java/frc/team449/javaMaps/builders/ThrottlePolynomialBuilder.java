@@ -1,13 +1,13 @@
 package frc.team449.javaMaps.builders;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
-import frc.team449.jacksonWrappers.MappedJoystick;
 import frc.team449.oi.throttles.ThrottlePolynomial;
 import org.jetbrains.annotations.NotNull;
 
 public class ThrottlePolynomialBuilder {
 
-  private MappedJoystick stick;
+  private GenericHID stick;
   private int axis;
   private double deadband;
   private Double smoothingTimeSecs;
@@ -15,7 +15,7 @@ public class ThrottlePolynomialBuilder {
   private Polynomial polynomial;
   private Double scale;
 
-  public ThrottlePolynomialBuilder stick(@NotNull MappedJoystick stick) {
+  public ThrottlePolynomialBuilder stick(@NotNull GenericHID stick) {
     this.stick = stick;
     return this;
   }
