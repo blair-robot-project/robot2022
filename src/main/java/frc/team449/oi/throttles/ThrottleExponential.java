@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import frc.team449.jacksonWrappers.MappedJoystick;
+import edu.wpi.first.wpilibj.GenericHID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,7 @@ public class ThrottleExponential extends ThrottleDeadbanded {
    */
   @JsonCreator
   public ThrottleExponential(
-      @NotNull @JsonProperty(required = true) MappedJoystick stick,
+      @NotNull @JsonProperty(required = true) GenericHID stick,
       @JsonProperty(required = true) int axis,
       double deadband,
       @Nullable Double smoothingTimeSecs,

@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.Joystick;
-import frc.team449.jacksonWrappers.MappedJoystick;
+import edu.wpi.first.wpilibj.GenericHID;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class ThrottleBasic implements Throttle {
 
   /** The stick we're using */
-  @NotNull protected final Joystick stick;
+  @NotNull protected final GenericHID stick;
 
   /** The axis on the joystick we care about. */
   private final int axis;
@@ -34,7 +33,7 @@ public class ThrottleBasic implements Throttle {
    */
   @JsonCreator
   public ThrottleBasic(
-      @NotNull @JsonProperty(required = true) final MappedJoystick stick,
+      @NotNull @JsonProperty(required = true) final GenericHID stick,
       @JsonProperty(required = true) final int axis,
       final boolean inverted) {
     this.stick = stick;

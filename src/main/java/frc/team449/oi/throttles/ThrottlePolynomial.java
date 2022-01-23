@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj.GenericHID;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
-import frc.team449.jacksonWrappers.MappedJoystick;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +32,7 @@ public class ThrottlePolynomial extends ThrottleDeadbanded {
    */
   @JsonCreator
   public ThrottlePolynomial(
-      @NotNull @JsonProperty(required = true) MappedJoystick stick,
+      @NotNull @JsonProperty(required = true) GenericHID stick,
       @JsonProperty(required = true) int axis,
       double deadband,
       @Nullable Double smoothingTimeSecs,

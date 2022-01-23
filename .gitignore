@@ -26,10 +26,6 @@ build
 *.ipr
 *.iws
 
-# But do include certain IntelliJ run configurations
-!.idea/runConfigurations/deploy.xml
-!.idea/runConfigurations/test.xml
-
 # GradleRIO files
 robot2017.iml
 robot2017.ipr
