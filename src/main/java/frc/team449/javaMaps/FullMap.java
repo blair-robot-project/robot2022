@@ -48,8 +48,7 @@ public class FullMap {
   // Button numbers
   public static final int INTAKE_NORMAL_BUTTON = 1,
       INTAKE_REVERSE_BUTTON = 3,
-      SPIT_BUTTON = 2,
-      STOP_INTAKE_BUTTON = 4;
+      SPIT_BUTTON = 2;
   // Speeds
   public static final double INTAKE_SPEED = 0.1, SPITTER_SPEED = 0.1;
 
@@ -198,9 +197,6 @@ public class FullMap {
     new SimpleButton(mechanismsJoystick, SPIT_BUTTON)
         .whileHeld(cargo::spit, cargo)
         .whenReleased(cargo::stop, cargo);
-    // Stop all motors in intake
-    new SimpleButton(mechanismsJoystick, STOP_INTAKE_BUTTON)
-        .whenPressed(cargo::runIntake, cargo);
 
     List<Command> robotStartupCommands = List.of();
 
