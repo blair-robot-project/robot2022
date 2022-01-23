@@ -9,6 +9,7 @@ import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
+import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
@@ -169,7 +170,7 @@ public class FullMap {
 
     var autoStartupCommands =
         List.<Command>of(
-            // TODO AUTO
+                new DriveAtSpeed<>(drive, /*velocity*/, /*time*/)
             );
 
     var teleopStartupCommands = List.<Command>of();
