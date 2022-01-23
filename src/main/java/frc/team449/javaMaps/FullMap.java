@@ -1,6 +1,7 @@
 package frc.team449.javaMaps;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -9,6 +10,7 @@ import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
+import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
@@ -19,7 +21,6 @@ import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
-import frc.team449.oi.buttons.CommandButton;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
@@ -51,7 +52,7 @@ public class FullMap {
 
     var mechanismsJoystick = new MappedJoystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new MappedJoystick(DRIVE_JOYSTICK_PORT);
-    var joysticks = List.of(mechanismsJoystick, driveJoystick);
+    List<GenericHID> joysticks = List.of(mechanismsJoystick, driveJoystick);
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
 
@@ -162,25 +163,21 @@ public class FullMap {
 
     var defaultCommands = List.of(defaultDriveCommand);
 
-    var buttons =
-        List.<CommandButton>of(
-            // TODO BUTTON BINDINGS HERE
-            );
+    // TODO BUTTON BINDINGS HERE
 
-    var robotStartupCommands = List.<Command>of();
+    List<Command> robotStartupCommands = List.of();
 
     var autoStartupCommands =
         List.<Command>of(
-            // TODO AUTO
+                new DriveAtSpeed<>(drive, /*velocity*/, /*time*/)
             );
 
-    var teleopStartupCommands = List.<Command>of();
+    List<Command> teleopStartupCommands = List.of();
 
-    var testStartupCommands = List.<Command>of();
+    List<Command> testStartupCommands = List.of();
     var allCommands =
         new CommandContainer(
             defaultCommands,
-            buttons,
             robotStartupCommands,
             autoStartupCommands,
             teleopStartupCommands,
