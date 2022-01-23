@@ -1,2 +1,2 @@
-# frc season 2022
-The 2022 FRC season code!
+# FRC season 2022
+Our code for the FRC 2022 game Rapid React!
