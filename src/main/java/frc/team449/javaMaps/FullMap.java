@@ -20,7 +20,6 @@ import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.CommandButton;
-import frc.team449.oi.throttles.Throttle;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
@@ -30,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class FullMap {
   // Motor IDs
@@ -98,24 +98,28 @@ public class FullMap {
             .axis(0)
             .deadband(0.08)
             .inverted(false)
-            .polynomial(new Polynomial(Map.of(1., 0.009, 2., 0.002), null))
+            .polynomial(
+                new Polynomial(
+                    Map.of(
+                        1., 0.009,
+                        2., 0.002),
+                    null))
             .build();
     var fwdThrottle =
         new ThrottleSum(
-            new Throttle[] {
-              throttlePrototype
-                  .axis(3)
-                  .deadband(0.05)
-                  .inverted(true)
-                  .polynomial(
-                      new Polynomial(
-                          Map.of(
-                              1., 0.01, // 0.06 * x^2 + 0.01 * x^1
-                              2., 0.06),
-                          null))
-                  .build(),
-              throttlePrototype.axis(2).inverted(false).build()
-            });
+            Set.of(
+                throttlePrototype
+                    .axis(3)
+                    .deadband(0.05)
+                    .inverted(true)
+                    .polynomial(
+                        new Polynomial(
+                            Map.of(
+                                1., 0.01,
+                                2., 0.06),
+                            null))
+                    .build(),
+                throttlePrototype.axis(2).inverted(false).build()));
     var oi =
         new OIArcadeWithDPad(
             rotThrottle,
@@ -153,8 +157,6 @@ public class FullMap {
 
     var subsystems =
         List.<Subsystem>of(drive); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
-    
-    var spitter = new Spitter();
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
