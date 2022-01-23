@@ -7,15 +7,16 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
+
 /** A Throttle that sums any number of other Throttles. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ThrottleSum implements Throttle {
 
   /** The throttles to sum. */
-  @NotNull protected final Throttle[] throttles;
-
+  @NotNull private final Set<Throttle> throttles;
   /** The cached output. */
-  protected double cachedValue;
+  private double cachedValue;
 
   /**
    * Default constructor.
@@ -23,31 +24,15 @@ public class ThrottleSum implements Throttle {
    * @param throttles The throttles to sum.
    */
   @JsonCreator
-  public ThrottleSum(@NotNull @JsonProperty(required = true) Throttle[] throttles) {
+  public ThrottleSum(@NotNull @JsonProperty(required = true) Set<Throttle> throttles) {
     this.throttles = throttles;
   }
 
-  /**
-   * Sums the throttles and returns their output
-   *
-   * @return The summed outputs, clipped to [-1, 1].
-   */
-  @Log
+  /** Sums the throttles and returns their output */
+  @Override
   public double getValue() {
-    // sum throttles
-    double sum = 0;
-    for (Throttle throttle : throttles) {
-      sum += throttle.getValue();
-    }
-
-    // clip to [-1, 1]
-    if (sum >= 1) {
-      return 1;
-    } else if (sum <= -1) {
-      return -1;
-    } else {
-      return sum;
-    }
+    var sum = throttles.stream().mapToDouble(Throttle::getValue).sum();
+    return sum / throttles.size();
   }
 
   /**

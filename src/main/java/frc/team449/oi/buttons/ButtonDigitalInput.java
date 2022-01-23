@@ -21,8 +21,7 @@ public class ButtonDigitalInput extends Button {
    * @param input The input to read from.
    */
   @JsonCreator
-  public ButtonDigitalInput(
-      @NotNull @JsonProperty(required = true) final DigitalInput input) {
+  public ButtonDigitalInput(@NotNull @JsonProperty(required = true) final DigitalInput input) {
     this.input = input;
   }
 
