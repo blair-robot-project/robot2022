@@ -163,10 +163,10 @@ public class FullMap {
 
     List<Command> robotStartupCommands = List.of();
 
-    var autoStartupCommands =
-        List.<Command>of(
-                new DriveAtSpeed<>(drive, /*velocity*/, /*time*/)
-            );
+    List<Command> autoStartupCommands =
+        List.of(
+            // todo tune this and ultimately replace with a more sophisticated command
+            new DriveAtSpeed<>(drive, 0.1, 1.5));
 
     List<Command> teleopStartupCommands = List.of();
 
