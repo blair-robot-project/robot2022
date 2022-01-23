@@ -3,11 +3,12 @@ package frc.team449.generalInterfaces.doubleUnaryOperator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /** A polynomial of a single variable. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -65,13 +66,11 @@ public class Polynomial implements DoubleUnaryOperator {
    * @param scaleTo The number to scale the sum of coefficients to.
    */
   public void scaleCoefficientSum(double scaleTo) {
-    double coefficientSum = 0;
-    for (Map.Entry<Double, Double> power : powerToCoefficientMap.entrySet()) {
-      coefficientSum += power.getValue();
-    }
+    double coefficientSum =
+        powerToCoefficientMap.values().stream().mapToDouble(Double::doubleValue).sum();
     double scaleFactor = scaleTo / coefficientSum;
-    for (Map.Entry<Double, Double> power : powerToCoefficientMap.entrySet()) {
-      powerToCoefficientMap.replace(power.getKey(), power.getValue() * scaleFactor);
+    for (var powerCoef : powerToCoefficientMap.entrySet()) {
+      powerToCoefficientMap.replace(powerCoef.getKey(), powerCoef.getValue() * scaleFactor);
     }
   }
 
