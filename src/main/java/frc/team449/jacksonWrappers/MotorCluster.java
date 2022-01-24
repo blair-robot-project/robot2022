@@ -1,7 +1,8 @@
-package frc.team449.generalInterfaces.simpleMotor;
+package frc.team449.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -10,13 +11,13 @@ import java.util.List;
  * A cluster of simple motors that act as a single simple motor. Don't use this for talons, use
  * master-slave instead.
  */
-public class SimpleMotorCluster implements SimpleMotor {
+public class MotorCluster implements MotorController {
 
   /**
    * The motors in this cluster. Contains at least 1 element.
    */
   @NotNull
-  private final List<SimpleMotor> motors;
+  private final List<MotorController> motors;
 
   /**
    * Whether or not the cluster is inverted. Individual motors could be inverted on top of that
@@ -29,7 +30,7 @@ public class SimpleMotorCluster implements SimpleMotor {
    * @param motors The motors in this cluster. Must have at least 1 element.
    */
   @JsonCreator
-  public SimpleMotorCluster(@JsonProperty(required = true) @NotNull List<SimpleMotor> motors) {
+  public MotorCluster(@JsonProperty(required = true) @NotNull List<MotorController> motors) {
     if (motors.isEmpty()) {
       throw new IllegalArgumentException("motors must have at least 1 element!");
     }
@@ -42,19 +43,9 @@ public class SimpleMotorCluster implements SimpleMotor {
    * @param velocity the desired velocity, on [-1, 1].
    */
   @Override
-  public void setVelocity(double velocity) {
-    for (SimpleMotor motor : motors) {
-      motor.setVelocity(velocity);
-    }
-  }
-
-  /**
-   * Enables the motor, if applicable.
-   */
-  @Override
-  public void enable() {
-    for (SimpleMotor motor : motors) {
-      motor.enable();
+  public void set(double velocity) {
+    for (var motor : motors) {
+      motor.set(velocity);
     }
   }
 

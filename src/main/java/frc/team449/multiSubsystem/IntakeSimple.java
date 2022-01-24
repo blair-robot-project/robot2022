@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.generalInterfaces.simpleMotor.SimpleMotor;
 import frc.team449.other.InjectiveDependencyHelper;
 import frc.team449.other.Util;
 import io.github.oblarg.oblog.Loggable;
@@ -20,7 +19,7 @@ public class IntakeSimple extends SubsystemBase
     implements SubsystemIntake, MotorController, Loggable {
 
   /** The motor this subsystem controls. */
-  @NotNull private final SimpleMotor motor;
+  @NotNull private final MotorController motor;
 
   /**
    * The velocities for the motor to go at for each of the modes, on [-1, 1]. Can be null to
@@ -40,7 +39,7 @@ public class IntakeSimple extends SubsystemBase
    */
   @JsonCreator
   public IntakeSimple(
-      @NotNull @JsonProperty(required = true) final SimpleMotor motor,
+      @NotNull @JsonProperty(required = true) final MotorController motor,
       @NotNull @JsonProperty(required = true) final Map<IntakeMode, Double> velocities) {
 
     InjectiveDependencyHelper.assertInjective(this, motor);
@@ -78,12 +77,11 @@ public class IntakeSimple extends SubsystemBase
 
     if (mode == IntakeMode.OFF) {
       this.mode = IntakeMode.OFF;
-      motor.setVelocity(0);
+      motor.set(0);
       motor.disable();
     } else if (this.velocities.containsKey(mode)) {
       this.mode = mode;
-      this.motor.enable();
-      this.motor.setVelocity(this.velocities.get(mode));
+      this.motor.set(this.velocities.get(mode));
     } else {
       DriverStation.reportError("Mode not defined for instance: " + mode, false);
     }
@@ -96,7 +94,7 @@ public class IntakeSimple extends SubsystemBase
    */
   @Override
   public void set(final double input) {
-    this.motor.setVelocity(input);
+    this.motor.set(input);
   }
 
   @Override

@@ -24,7 +24,6 @@ import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
-import frc.team449.other.DefaultCommand;
 import frc.team449.other.Updater;
 import org.jetbrains.annotations.NotNull;
 
@@ -136,32 +135,28 @@ public class FullMap {
             0.7,
             true);
 
-    var defaultDriveCommand =
-        new DefaultCommand(
+    drive.setDefaultCommand(
+        new UnidirectionalNavXDefaultDrive<>(
+            0,
+            new Debouncer(1.5),
+            0,
+            1.0,
+            null,
+            2,
+            3.0,
+            false,
+            0,
+            0,
+            0,
+            new Debouncer(0.15),
             drive,
-            new UnidirectionalNavXDefaultDrive<>(
-                0,
-                new Debouncer(1.5),
-                0,
-                1.0,
-                null,
-                2,
-                3.0,
-                false,
-                0,
-                0,
-                0,
-                new Debouncer(0.15),
-                drive,
-                oi,
-                new RampComponent(2.0, 2.0)));
+            oi,
+            new RampComponent(2.0, 2.0)));
 
     var subsystems =
         List.<Subsystem>of(drive); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
-
-    var defaultCommands = List.of(defaultDriveCommand);
 
     // TODO BUTTON BINDINGS HERE
 
@@ -177,7 +172,6 @@ public class FullMap {
     List<Command> testStartupCommands = List.of();
     var allCommands =
         new CommandContainer(
-            defaultCommands,
             robotStartupCommands,
             autoStartupCommands,
             teleopStartupCommands,
