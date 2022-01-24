@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.generalInterfaces.simpleMotor.SimpleMotor;
 import frc.team449.other.InjectiveDependencyHelper;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 /** A simple intake subsystem that relies on a single motor to rotate some part of it. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class IntakeSimple extends SubsystemBase
-    implements SubsystemIntake, SubsystemAnalogMotor, Loggable {
+    implements SubsystemIntake, MotorController, Loggable {
 
   /** The motor this subsystem controls. */
   @NotNull private final SimpleMotor motor;
@@ -98,9 +99,29 @@ public class IntakeSimple extends SubsystemBase
     this.motor.setVelocity(input);
   }
 
+  @Override
+  public double get() {
+    return this.motor.get();
+  }
+
+  @Override
+  public void setInverted(boolean isInverted) {
+    this.motor.setInverted(isInverted);
+  }
+
+  @Override
+  public boolean getInverted() {
+    return this.motor.getInverted();
+  }
+
   /** Disable the motor. */
   @Override
   public void disable() {
     this.motor.disable();
+  }
+
+  @Override
+  public void stopMotor() {
+    this.motor.stopMotor();
   }
 }

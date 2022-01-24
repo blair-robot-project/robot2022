@@ -16,7 +16,11 @@ public abstract class WrappedEncoder {
    */
   private final double postEncoderGearing;
 
-  /** @param unitPerRotation Meters traveled per rotation of the motor */
+  /**
+   * @param encoderCPR Counts per rotation of the encoder
+   * @param unitPerRotation Meters traveled per rotation of the motor
+   * @param postEncoderGearing The factor the output changes by after being measured by the encoder
+   */
   public WrappedEncoder(int encoderCPR, double unitPerRotation, double postEncoderGearing) {
     this.unitPerRotation = unitPerRotation;
     this.encoderCPR = encoderCPR;

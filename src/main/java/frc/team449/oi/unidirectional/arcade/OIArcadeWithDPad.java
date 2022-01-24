@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.GenericHID;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
-import frc.team449.jacksonWrappers.MappedJoystick;
 import frc.team449.oi.throttles.Throttle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +27,7 @@ public class OIArcadeWithDPad extends OIArcade {
   @NotNull private final Throttle fwdThrottle;
 
   /** The controller with the D-pad. Can be null if not using D-pad. */
-  @Nullable private final Joystick gamepad;
+  @Nullable private final GenericHID gamepad;
 
   /**
    * The polynomial to scale the forwards throttle output by before using it to scale the rotational
@@ -62,7 +61,7 @@ public class OIArcadeWithDPad extends OIArcade {
       @NotNull @JsonProperty(required = true) Throttle fwdThrottle,
       double dPadShift,
       boolean invertDPad,
-      @Nullable MappedJoystick gamepad,
+      @Nullable GenericHID gamepad,
       @Nullable Polynomial scaleRotByFwdPoly,
       @JsonProperty(required = true) double turnInPlaceRotScale,
       boolean rescaleOutputs) {

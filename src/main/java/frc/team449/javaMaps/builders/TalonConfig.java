@@ -1,16 +1,13 @@
 package frc.team449.javaMaps.builders;
 
-import com.ctre.phoenix.motorcontrol.ControlFrame;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import frc.team449.jacksonWrappers.SlaveTalon;
-import frc.team449.jacksonWrappers.SlaveVictor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
+import frc.team449.jacksonWrappers.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
 
 /** Motor controller configuration, along with Talon-specific stuff */
 public class TalonConfig extends MotorConfig<TalonConfig> {
@@ -108,5 +105,177 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
     copy.slaveVictors.addAll(this.getSlaveVictors());
 
     return copy;
+  }
+
+  @Override
+  public WrappedMotor createReal() {
+    var motor = new WPI_TalonSRX(this.getPort());
+    var externalEncoder = this.getExternalEncoder();
+    var wrappedEnc =
+        externalEncoder == null
+            ? new WrappedEncoder.TalonEncoder(
+                motor,
+                this.getEncoderCPR(),
+                this.getUnitPerRotation(),
+                this.getPostEncoderGearing())
+            : new WrappedEncoder.WPIEncoder(
+                externalEncoder,
+                this.getEncoderCPR(),
+                this.getUnitPerRotation(),
+                this.getPostEncoderGearing());
+
+    // todo do only slaves need to be inverted?
+    motor.setInverted(this.isReverseOutput());
+    // Set brake mode
+    motor.setNeutralMode(this.isEnableBrakeMode() ? NeutralMode.Brake : NeutralMode.Coast);
+
+    this.getControlFrameRatesMillis().forEach(motor::setControlFramePeriod);
+    this.getStatusFrameRatesMillis().forEach(motor::setStatusFramePeriod);
+
+    // Only enable the limit switches if it was specified if they're normally open or closed.
+    if (this.getFwdLimitSwitchNormallyOpen() != null) {
+      if (this.getRemoteLimitSwitchID() != null) {
+        motor.configForwardLimitSwitchSource(
+            RemoteLimitSwitchSource.RemoteTalonSRX,
+            this.getFwdLimitSwitchNormallyOpen()
+                ? LimitSwitchNormal.NormallyOpen
+                : LimitSwitchNormal.NormallyClosed,
+            this.getRemoteLimitSwitchID(),
+            0);
+      } else {
+        motor.configForwardLimitSwitchSource(
+            LimitSwitchSource.FeedbackConnector,
+            this.getFwdLimitSwitchNormallyOpen()
+                ? LimitSwitchNormal.NormallyOpen
+                : LimitSwitchNormal.NormallyClosed,
+            0);
+      }
+    } else {
+      motor.configForwardLimitSwitchSource(
+          LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+    }
+    if (this.getRevLimitSwitchNormallyOpen() != null) {
+      if (this.getRemoteLimitSwitchID() != null) {
+        motor.configReverseLimitSwitchSource(
+            RemoteLimitSwitchSource.RemoteTalonSRX,
+            this.getRevLimitSwitchNormallyOpen()
+                ? LimitSwitchNormal.NormallyOpen
+                : LimitSwitchNormal.NormallyClosed,
+            this.getRemoteLimitSwitchID(),
+            0);
+      } else {
+        motor.configReverseLimitSwitchSource(
+            LimitSwitchSource.FeedbackConnector,
+            this.getRevLimitSwitchNormallyOpen()
+                ? LimitSwitchNormal.NormallyOpen
+                : LimitSwitchNormal.NormallyClosed,
+            0);
+      }
+    } else {
+      motor.configReverseLimitSwitchSource(
+          LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+    }
+
+    // Setup feedback device if it exists
+    var feedbackDevice = this.getFeedbackDevice();
+    if (feedbackDevice != null) {
+      // CTRE encoder use RPM instead of native units, and can be used as QuadEncoders, so we switch
+      // them to avoid
+      // having to support RPM.
+      if (feedbackDevice == FeedbackDevice.CTRE_MagEncoder_Absolute
+          || feedbackDevice == FeedbackDevice.CTRE_MagEncoder_Relative) {
+        motor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+      } else {
+        motor.configSelectedFeedbackSensor(feedbackDevice, 0, 0);
+      }
+      motor.setSensorPhase(this.getReverseSensor());
+
+      // Only enable the software limits if they were given a value and there's an encoder.
+      if (this.getFwdSoftLimit() != null) {
+        motor.configForwardSoftLimitEnable(true, 0);
+        motor.configForwardSoftLimitThreshold(
+            (int) wrappedEnc.unitToEncoder(this.getFwdSoftLimit()), 0);
+      } else {
+        motor.configForwardSoftLimitEnable(false, 0);
+      }
+      if (this.getRevSoftLimit() != null) {
+        motor.configReverseSoftLimitEnable(true, 0);
+        motor.configReverseSoftLimitThreshold(
+            (int) wrappedEnc.unitToEncoder(this.getRevSoftLimit()), 0);
+      } else {
+        motor.configReverseSoftLimitEnable(false, 0);
+      }
+    } else {
+      motor.configSelectedFeedbackSensor(FeedbackDevice.None, 0, 0);
+    }
+
+    // Set the current limit if it was given
+    if (this.getCurrentLimit() != null) {
+      motor.configContinuousCurrentLimit(this.getCurrentLimit(), 0);
+      motor.configPeakCurrentDuration(0, 0);
+      motor.configPeakCurrentLimit(0, 0); // No duration
+      motor.enableCurrentLimit(true);
+    } else {
+      // If we don't have a current limit, disable current limiting.
+      motor.enableCurrentLimit(false);
+    }
+
+    // Enable or disable voltage comp
+    if (this.isEnableVoltageComp()) {
+      motor.enableVoltageCompensation(true);
+      motor.configVoltageCompSaturation(12, 0);
+    }
+    motor.configVoltageMeasurementFilter(this.getVoltageCompSamples(), 0);
+
+    // Use slot 0
+    motor.selectProfileSlot(0, 0);
+
+    // Set up slaves.
+    for (final SlaveTalon slave : this.getSlaveTalons()) {
+      slave.setMaster(
+          this.getPort(),
+          this.isEnableBrakeMode(),
+          this.getCurrentLimit(),
+          this.isEnableVoltageComp() ? this.getVoltageCompSamples() : null);
+    }
+
+    for (final SlaveVictor slave : this.getSlaveVictors()) {
+      slave.setMaster(
+          motor,
+          this.isEnableBrakeMode(),
+          this.isEnableVoltageComp() ? this.getVoltageCompSamples() : null);
+    }
+
+    for (final SlaveSparkMax slave : this.getSlaveSparks()) {
+      slave.setMasterPhoenix(this.getPort(), this.isEnableBrakeMode());
+    }
+
+    motor.configVelocityMeasurementPeriod(SensorVelocityMeasPeriod.Period_10Ms);
+    motor.configVelocityMeasurementWindow(10);
+
+    // todo figure out how to get fwdPeakOutputVoltage and friends here
+    // Set max voltage
+    // motor.configPeakOutputForward(this.currentGearSettings.fwdPeakOutputVoltage / 12., 0);
+    // motor.configPeakOutputReverse(this.currentGearSettings.revPeakOutputVoltage / 12., 0);
+    motor.configPeakOutputForward(1.0, 0);
+    motor.configPeakOutputReverse(1.0, 0);
+
+    // Set min voltage
+    // motor.configNominalOutputForward(this.currentGearSettings.fwdNominalOutputVoltage / 12., 0);
+    // motor.configNominalOutputReverse(this.currentGearSettings.revNominalOutputVoltage / 12., 0);
+    motor.configNominalOutputForward(0.0, 0);
+    motor.configNominalOutputReverse(0.0, 0);
+
+    if (this.getRampRate() != null) {
+      // Set ramp rate, converting from volts/sec to seconds until 12 volts.
+      motor.configClosedloopRamp(12.0 / this.getRampRate(), 0);
+      motor.configOpenloopRamp(12.0 / this.getRampRate(), 0);
+    } else {
+      motor.configClosedloopRamp(0, 0);
+      motor.configOpenloopRamp(0, 0);
+    }
+
+    return new WrappedMotor(
+        Objects.requireNonNullElse(this.getName(), "talon_" + this.getPort()), motor, wrappedEnc);
   }
 }
