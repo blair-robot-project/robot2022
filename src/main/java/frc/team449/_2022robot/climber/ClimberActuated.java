@@ -69,13 +69,11 @@ public class ClimberActuated extends ProfiledPIDSubsystem {
     pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kReverse);
   }
 
-  @Override
-  protected void useOutput(double output, TrapezoidProfile.State setpoint) {
+  protected void useOutput(double output, TrapezoidProfile.@NotNull State setpoint) {
     double feedForward = feedforward.calculate(setpoint.position, setpoint.velocity);
     telescopingArmWinch.setVoltage(output + feedForward);
   }
 
-  @Override
   protected double getMeasurement() {
     return telescopingArmWinch.encoder.getPosition();
   }
