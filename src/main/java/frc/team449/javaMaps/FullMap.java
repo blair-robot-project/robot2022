@@ -14,12 +14,10 @@ import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
-import frc.team449.jacksonWrappers.MappedAHRS;
-import frc.team449.jacksonWrappers.MappedJoystick;
-import frc.team449.jacksonWrappers.PDP;
-import frc.team449.jacksonWrappers.SlaveSparkMax;
+import frc.team449.jacksonWrappers.*;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
+import frc.team449.javaMaps.builders.TalonConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
@@ -32,12 +30,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.ctre.phoenix.motorcontrol.InvertType.InvertMotorOutput;
+import static com.ctre.phoenix.motorcontrol.InvertType.None;
+
 public class FullMap {
   // Motor IDs
-  public static final int RIGHT_LEADER_PORT = 2,
-      RIGHT_LEADER_FOLLOWER_1_PORT = 3,
+  public static final int RIGHT_LEADER_PORT = 4,
+      RIGHT_LEADER_FOLLOWER_1_PORT = 5,
+      RIGHT_LEADER_FOLLOWER_2_PORT = 6,
       LEFT_LEADER_PORT = 1,
-      LEFT_LEADER_FOLLOWER_1_PORT = 4;
+      LEFT_LEADER_FOLLOWER_1_PORT = 2,
+      LEFT_LEADER_FOLLOWER_2_PORT = 3;
   // Controller ports
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
 
@@ -57,7 +60,7 @@ public class FullMap {
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
 
     var driveMasterPrototype =
-        new SparkMaxConfig()
+        new TalonConfig()
             .setEnableBrakeMode(true)
             .setUnitPerRotation(0.4787787204060999)
             .setCurrentLimit(50)
@@ -68,7 +71,8 @@ public class FullMap {
             .setName("right")
             .setPort(RIGHT_LEADER_PORT)
             .setReverseOutput(false)
-            .setSlaveSparks(List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false)))
+            .addSlaveTalon(new SlaveTalon(RIGHT_LEADER_FOLLOWER_1_PORT, None))
+            .addSlaveTalon(new SlaveTalon(RIGHT_LEADER_FOLLOWER_2_PORT, None))
             .createReal();
     var leftMaster =
         driveMasterPrototype
@@ -76,7 +80,8 @@ public class FullMap {
             .setPort(LEFT_LEADER_PORT)
             .setName("left")
             .setReverseOutput(true)
-            .setSlaveSparks(List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false)))
+            .addSlaveTalon(new SlaveTalon(LEFT_LEADER_FOLLOWER_1_PORT, InvertMotorOutput))
+            .addSlaveTalon(new SlaveTalon(LEFT_LEADER_FOLLOWER_2_PORT, InvertMotorOutput))
             .createReal();
 
     var drive =
@@ -87,10 +92,10 @@ public class FullMap {
             new DriveSettingsBuilder()
                 .postEncoderGearing(1 / 20.45)
                 .maxSpeed(2.3)
-                .leftFeedforward(new SimpleMotorFeedforward(0.24453, 5.4511, 0.7127))
+                .leftFeedforward(new SimpleMotorFeedforward(0.797588, 1.32498443423, 0.12919953323))
                 .rightFeedforward(new SimpleMotorFeedforward(0.2691, 5.3099, 0.51261))
                 .build(),
-            0.61755);
+            0.63);
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
@@ -102,8 +107,8 @@ public class FullMap {
             .polynomial(
                 new Polynomial(
                     Map.of(
-                        1., 0.009,
-                        2., 0.002),
+                        1., 1.,
+                        3., 3.),
                     null))
             .build();
     var fwdThrottle =
@@ -116,8 +121,8 @@ public class FullMap {
                     .polynomial(
                         new Polynomial(
                             Map.of(
-                                1., 0.01,
-                                2., 0.06),
+                                1., 2.,
+                                3., 1.),
                             null))
                     .build(),
                 throttlePrototype.axis(2).inverted(false).build()));
@@ -141,20 +146,20 @@ public class FullMap {
             drive,
             new UnidirectionalNavXDefaultDrive<>(
                 0,
-                new Debouncer(1.5),
+                new Debouncer(.15),
                 0,
                 1.0,
                 null,
                 2,
-                3.0,
+                15.0,
                 false,
+                0.0075,
                 0,
-                0,
-                0,
+                0.03,
                 new Debouncer(0.15),
                 drive,
                 oi,
-                new RampComponent(2.0, 2.0)));
+                new RampComponent(3.0, 3.0)));
 
     var subsystems =
         List.<Subsystem>of(drive); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
