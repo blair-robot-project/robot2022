@@ -10,13 +10,11 @@ import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.jacksonWrappers.*;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
-import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.TalonConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.throttles.ThrottleSum;
@@ -33,7 +31,7 @@ import java.util.Set;
 import static com.ctre.phoenix.motorcontrol.InvertType.InvertMotorOutput;
 import static com.ctre.phoenix.motorcontrol.InvertType.None;
 
-public class FullMap {
+public class TestbedMap {
   // Motor IDs
   public static final int RIGHT_LEADER_PORT = 4,
       RIGHT_LEADER_FOLLOWER_1_PORT = 5,
@@ -46,7 +44,7 @@ public class FullMap {
 
   // TODO PUT ADDITIONAL CONSTANTS HERE
 
-  private FullMap() {}
+  private TestbedMap() {}
 
   @NotNull
   public static RobotMap createRobotMap() {
@@ -161,8 +159,7 @@ public class FullMap {
                 oi,
                 new RampComponent(3.0, 3.0)));
 
-    var subsystems =
-        List.<Subsystem>of(drive); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
+    var subsystems = List.<Subsystem>of(drive); // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
@@ -172,10 +169,7 @@ public class FullMap {
 
     List<Command> robotStartupCommands = List.of();
 
-    List<Command> autoStartupCommands =
-        List.of(
-            // todo tune this and ultimately replace with a more sophisticated command
-            new DriveAtSpeed<>(drive, 0.1, 1.5));
+    List<Command> autoStartupCommands = List.of();
 
     List<Command> teleopStartupCommands = List.of();
 
