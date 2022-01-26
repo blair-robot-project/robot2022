@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
+import frc.team449._2022robot.cargo.Cargo2022;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
@@ -21,6 +22,7 @@ import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
+import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
@@ -37,11 +39,18 @@ public class FullMap {
   public static final int RIGHT_LEADER_PORT = 2,
       RIGHT_LEADER_FOLLOWER_1_PORT = 3,
       LEFT_LEADER_PORT = 1,
-      LEFT_LEADER_FOLLOWER_1_PORT = 4;
+      LEFT_LEADER_FOLLOWER_1_PORT = 4,
+      INTAKE_LEADER_PORT = 5,
+      INTAKE_FOLLOWER_PORT = 6,
+      SPITTER_PORT = 7;
   // Controller ports
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
-
-  // TODO PUT ADDITIONAL CONSTANTS HERE
+  // Button numbers
+  public static final int INTAKE_NORMAL_BUTTON = 1,
+      INTAKE_REVERSE_BUTTON = 3,
+      SPIT_BUTTON = 2;
+  // Speeds
+  public static final double INTAKE_SPEED = 0.1, SPITTER_SPEED = 0.1;
 
   private FullMap() {}
 
@@ -68,7 +77,7 @@ public class FullMap {
             .setName("right")
             .setPort(RIGHT_LEADER_PORT)
             .setReverseOutput(false)
-            .setSlaveSparks(List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false)))
+            .setSlaveSparks(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false))
             .createReal();
     var leftMaster =
         driveMasterPrototype
@@ -76,7 +85,7 @@ public class FullMap {
             .setPort(LEFT_LEADER_PORT)
             .setName("left")
             .setReverseOutput(true)
-            .setSlaveSparks(List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false)))
+            .setSlaveSparks(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false))
             .createReal();
 
     var drive =
@@ -156,14 +165,38 @@ public class FullMap {
                 oi,
                 new RampComponent(2.0, 2.0)));
 
-    var subsystems =
-        List.<Subsystem>of(drive); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
+    var cargo =
+        new Cargo2022(
+            new SparkMaxConfig()
+                .setName("intakeMotor")
+                .setPort(INTAKE_LEADER_PORT)
+                .setSlaveSparks(new SlaveSparkMax(INTAKE_FOLLOWER_PORT, false))
+                .createReal(),
+            new SparkMaxConfig().setName("spitterMotor").setPort(SPITTER_PORT).createReal(),
+            INTAKE_SPEED,
+            SPITTER_SPEED);
+
+    // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
+    List<Subsystem> subsystems = List.of(drive, cargo);
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
     var defaultCommands = List.of(defaultDriveCommand);
 
-    // TODO BUTTON BINDINGS HERE
+    // Button bindings here
+
+    // Take in balls but don't shoot
+    new SimpleButton(mechanismsJoystick, INTAKE_NORMAL_BUTTON)
+        .whileHeld(cargo::runIntake, cargo)
+        .whenReleased(cargo::stop, cargo);
+    // Run intake backwards so human can feed balls
+    new SimpleButton(mechanismsJoystick, INTAKE_REVERSE_BUTTON)
+        .whileHeld(cargo::runIntakeReverse, cargo)
+        .whenReleased(cargo::stop, cargo);
+    // Run all motors in intake to spit balls out
+    new SimpleButton(mechanismsJoystick, SPIT_BUTTON)
+        .whileHeld(cargo::spit, cargo)
+        .whenReleased(cargo::stop, cargo);
 
     List<Command> robotStartupCommands = List.of();
 
