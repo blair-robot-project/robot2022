@@ -1,13 +1,8 @@
 package frc.team449;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.team449.other.DefaultCommand;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -16,8 +11,6 @@ import java.util.List;
  * that they all appear under the same tab on the dashboard.
  */
 public class CommandContainer implements Loggable {
-  @Log.Include private final List<DefaultCommand> defaultCommands;
-
   private final List<Command> robotStartupCommand;
 
   private final List<Command> autoStartupCommand;
@@ -28,13 +21,10 @@ public class CommandContainer implements Loggable {
 
   @JsonCreator
   public CommandContainer(
-      // TODO Figure out why this doesn't work @JsonInclude(JsonInclude.Include.NON_NULL)
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<DefaultCommand> defaultCommands,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> robotStartupCommand,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> autoStartupCommand,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> teleopStartupCommand,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> testStartupCommand) {
-    this.defaultCommands = defaultCommands;
+      List<Command> robotStartupCommand,
+      List<Command> autoStartupCommand,
+      List<Command> teleopStartupCommand,
+      List<Command> testStartupCommand) {
     this.robotStartupCommand = robotStartupCommand;
     this.autoStartupCommand = autoStartupCommand;
     this.teleopStartupCommand = teleopStartupCommand;
