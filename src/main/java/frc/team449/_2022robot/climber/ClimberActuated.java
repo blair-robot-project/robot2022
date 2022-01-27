@@ -37,7 +37,9 @@ public class ClimberActuated extends ProfiledPIDSubsystem {
             kI,
             kD,
             new TrapezoidProfile.Constraints(
-                telescopingArmMaxVelocity, telescopingArmMaxAcceleration)));
+                    telescopingArmMaxVelocity,
+                    telescopingArmMaxAcceleration
+            )));
     this.telescopingArmWinch = telescopingArmWinch;
     this.pivotingTelescopingArm = pivotingTelescopingArm;
     this.maxDistanceTelescope = maxDistanceTelescope;
@@ -48,17 +50,20 @@ public class ClimberActuated extends ProfiledPIDSubsystem {
   }
 
   public void extendTelescopingArm() {
-    // todo use a lower velocity than the max velocity
-    telescopingArmWinch.set(telescopingArmMaxVel);
-    while (!topLimitSwitch.get()) {}
-    telescopingArmWinch.set(0);
+    if (!topLimitSwitch.get()) {
+        setGoal(getMeasurement());
+    }else{
+        setGoal(1000); // some high number so that the motor can reach the max velocity set in the motion profile
+    }
   }
 
   public void retractTelescopingArm() {
-    // todo use a lower velocity than the max velocity
-    telescopingArmWinch.set(-telescopingArmMaxVel);
-    while (!bottomLimitSwitch.get()) {}
-    telescopingArmWinch.set(0);
+    if (!bottomLimitSwitch.get())
+    {
+        setGoal(getMeasurement());
+    }else{
+        setGoal(-1000);
+    }
   }
 
   public void pivotTelescopingArmOut() {
