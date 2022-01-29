@@ -1,13 +1,17 @@
 package frc.team449.javaMaps;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
+import frc.team449._2022robot.climber.PivotingTelescopingClimber;
+import frc.team449._2022robot.climber.commands.ExtendTelescopingArm;
+import frc.team449._2022robot.climber.commands.RetractTelescopingArm;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
@@ -21,6 +25,7 @@ import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
+import frc.team449.multiSubsystem.SolenoidSimple;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
@@ -56,121 +61,41 @@ public class FullMap {
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
 
-    var driveMasterPrototype =
+    var SparkPrototype =
         new SparkMaxConfig()
             .setEnableBrakeMode(true)
-            .setUnitPerRotation(0.4787787204060999)
+            .setUnitPerRotation(1)
             .setCurrentLimit(50)
             .setEnableVoltageComp(true);
-    var rightMaster =
-        driveMasterPrototype
-            .copy()
-            .setName("right")
-            .setPort(RIGHT_LEADER_PORT)
-            .setReverseOutput(false)
-            .setSlaveSparks(List.of(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false)))
-            .createReal();
-    var leftMaster =
-        driveMasterPrototype
-            .copy()
-            .setPort(LEFT_LEADER_PORT)
-            .setName("left")
-            .setReverseOutput(true)
-            .setSlaveSparks(List.of(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false)))
-            .createReal();
 
-    var drive =
-        new DriveUnidirectionalWithGyro(
-            leftMaster,
-            rightMaster,
-            navx,
-            new DriveSettingsBuilder()
-                .postEncoderGearing(1 / 20.45)
-                .maxSpeed(2.3)
-                .leftFeedforward(new SimpleMotorFeedforward(0.24453, 5.4511, 0.7127))
-                .rightFeedforward(new SimpleMotorFeedforward(0.2691, 5.3099, 0.51261))
-                .build(),
-            0.61755);
-
-    var throttlePrototype =
-        new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
-    var rotThrottle =
-        throttlePrototype
-            .axis(0)
-            .deadband(0.08)
-            .inverted(false)
-            .polynomial(
-                new Polynomial(
-                    Map.of(
-                        1., 0.009,
-                        2., 0.002),
-                    null))
-            .build();
-    var fwdThrottle =
-        new ThrottleSum(
-            Set.of(
-                throttlePrototype
-                    .axis(3)
-                    .deadband(0.05)
-                    .inverted(true)
-                    .polynomial(
-                        new Polynomial(
-                            Map.of(
-                                1., 0.01,
-                                2., 0.06),
-                            null))
-                    .build(),
-                throttlePrototype.axis(2).inverted(false).build()));
-    var oi =
-        new OIArcadeWithDPad(
-            rotThrottle,
-            fwdThrottle,
-            0.1,
-            false,
-            driveJoystick,
-            new Polynomial(
-                Map.of(
-                    0.5, 0.4,
-                    0., 0.2),
-                null),
-            0.7,
-            true);
-
-    var defaultDriveCommand =
-        new DefaultCommand(
-            drive,
-            new UnidirectionalNavXDefaultDrive<>(
-                0,
-                new Debouncer(1.5),
-                0,
-                1.0,
-                null,
-                2,
-                3.0,
-                false,
-                0,
-                0,
-                0,
-                new Debouncer(0.15),
-                drive,
-                oi,
-                new RampComponent(2.0, 2.0)));
-
+    var climber = new PivotingTelescopingClimber(
+            SparkPrototype.copy().setName("climber_motor").createReal(),
+            new SolenoidSimple(new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1)),
+            new DigitalInput(0),
+            new DigitalInput(1),
+            new ElevatorFeedforward(0,0,0,0),
+            1,
+            0,
+            0,
+            1, // 1 m/s max vel
+            .01, // 1 cm/s^2
+            1.2 //meters
+    );
     var subsystems =
-        List.<Subsystem>of(drive); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
+        List.<Subsystem>of(climber); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
 
-    var updater = new Updater(List.of(pdp, oi, navx, drive));
+    var updater = new Updater(List.of(pdp, navx));
 
-    var defaultCommands = List.of(defaultDriveCommand);
+    var defaultCommands = List.<DefaultCommand>of();
 
     // TODO BUTTON BINDINGS HERE
+    new JoystickButton(mechanismsJoystick, 1).whenPressed(new ExtendTelescopingArm(climber));
+    new JoystickButton(mechanismsJoystick, 2).whenPressed(new RetractTelescopingArm(climber));
 
     List<Command> robotStartupCommands = List.of();
 
     List<Command> autoStartupCommands =
-        List.of(
-            // todo tune this and ultimately replace with a more sophisticated command
-            new DriveAtSpeed<>(drive, 0.1, 1.5));
+        List.of();
 
     List<Command> teleopStartupCommands = List.of();
 
