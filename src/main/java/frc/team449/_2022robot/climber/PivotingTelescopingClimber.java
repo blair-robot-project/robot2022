@@ -11,43 +11,38 @@ import frc.team449.multiSubsystem.SolenoidSimple;
 import org.jetbrains.annotations.NotNull;
 
 public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
+  public final double distanceTopBottom;
   private final WrappedMotor telescopingArmWinch;
-  private final double telescopingArmMaxVel;
   private final SolenoidSimple pivotingTelescopingArm;
   private final ElevatorFeedforward feedforward;
   private final DigitalInput topLimitSwitch;
   private final DigitalInput bottomLimitSwitch;
-  public final double DISTANCE_TOP_BOTTOM;
 
   public PivotingTelescopingClimber(
-          @NotNull WrappedMotor telescopingArmWinch,
-          @NotNull SolenoidSimple pivotingTelescopingArm,
-          @NotNull DigitalInput topLimitSwitch,
-          @NotNull DigitalInput bottomLimitSwitch,
-          @NotNull ElevatorFeedforward feedforward,
-          double kP,
-          double kI,
-          double kD,
-          double telescopingArmMaxVelocity,
-          double telescopingArmMaxAcceleration,
-          double distance_top_bottom) {
+      @NotNull WrappedMotor telescopingArmWinch,
+      @NotNull SolenoidSimple pivotingTelescopingArm,
+      @NotNull DigitalInput topLimitSwitch,
+      @NotNull DigitalInput bottomLimitSwitch,
+      @NotNull ElevatorFeedforward feedforward,
+      double kP,
+      double kI,
+      double kD,
+      double telescopingArmMaxVelocity,
+      double telescopingArmMaxAcceleration,
+      double distanceTopBottom) {
     super(
         new ProfiledPIDController(
             kP,
             kI,
             kD,
             new TrapezoidProfile.Constraints(
-                    telescopingArmMaxVelocity,
-                    telescopingArmMaxAcceleration
-            ))
-    );
+                telescopingArmMaxVelocity, telescopingArmMaxAcceleration)));
     this.telescopingArmWinch = telescopingArmWinch;
     this.pivotingTelescopingArm = pivotingTelescopingArm;
     this.feedforward = feedforward;
     this.topLimitSwitch = topLimitSwitch;
     this.bottomLimitSwitch = bottomLimitSwitch;
-    this.telescopingArmMaxVel = telescopingArmMaxVelocity;
-    DISTANCE_TOP_BOTTOM = distance_top_bottom;
+    this.distanceTopBottom = distanceTopBottom;
     enable();
     setGoal(getMeasurement());
   }
@@ -59,6 +54,7 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
   public boolean bottomLimitSwitchTriggered() {
     return bottomLimitSwitch.get();
   }
+
   public void pivotTelescopingArmOut() {
     pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kForward);
   }
