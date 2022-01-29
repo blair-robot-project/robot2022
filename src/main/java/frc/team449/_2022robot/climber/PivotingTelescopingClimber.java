@@ -10,27 +10,27 @@ import frc.team449.jacksonWrappers.WrappedMotor;
 import frc.team449.multiSubsystem.SolenoidSimple;
 import org.jetbrains.annotations.NotNull;
 
-public class ClimberActuated extends ProfiledPIDSubsystem {
+public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
   private final WrappedMotor telescopingArmWinch;
-  private final double maxDistanceTelescope;
   private final double telescopingArmMaxVel;
   private final SolenoidSimple pivotingTelescopingArm;
   private final ElevatorFeedforward feedforward;
   private final DigitalInput topLimitSwitch;
   private final DigitalInput bottomLimitSwitch;
+  public final double DISTANCE_TOP_BOTTOM;
 
-  public ClimberActuated(
-      @NotNull WrappedMotor telescopingArmWinch,
-      @NotNull SolenoidSimple pivotingTelescopingArm,
-      @NotNull DigitalInput topLimitSwitch,
-      @NotNull DigitalInput bottomLimitSwitch,
-      double maxDistanceTelescope,
-      @NotNull ElevatorFeedforward feedforward,
-      double kP,
-      double kI,
-      double kD,
-      double telescopingArmMaxVelocity,
-      double telescopingArmMaxAcceleration) {
+  public PivotingTelescopingClimber(
+          @NotNull WrappedMotor telescopingArmWinch,
+          @NotNull SolenoidSimple pivotingTelescopingArm,
+          @NotNull DigitalInput topLimitSwitch,
+          @NotNull DigitalInput bottomLimitSwitch,
+          @NotNull ElevatorFeedforward feedforward,
+          double kP,
+          double kI,
+          double kD,
+          double telescopingArmMaxVelocity,
+          double telescopingArmMaxAcceleration,
+          double distance_top_bottom) {
     super(
         new ProfiledPIDController(
             kP,
@@ -39,33 +39,26 @@ public class ClimberActuated extends ProfiledPIDSubsystem {
             new TrapezoidProfile.Constraints(
                     telescopingArmMaxVelocity,
                     telescopingArmMaxAcceleration
-            )));
+            ))
+    );
     this.telescopingArmWinch = telescopingArmWinch;
     this.pivotingTelescopingArm = pivotingTelescopingArm;
-    this.maxDistanceTelescope = maxDistanceTelescope;
     this.feedforward = feedforward;
     this.topLimitSwitch = topLimitSwitch;
     this.bottomLimitSwitch = bottomLimitSwitch;
     this.telescopingArmMaxVel = telescopingArmMaxVelocity;
+    DISTANCE_TOP_BOTTOM = distance_top_bottom;
+    enable();
+    setGoal(getMeasurement());
   }
 
-  public void extendTelescopingArm() {
-    if (!topLimitSwitch.get()) {
-        setGoal(getMeasurement());
-    }else{
-        setGoal(1000); // some high number so that the motor can reach the max velocity set in the motion profile
-    }
+  public boolean topLimitSwitchTriggered() {
+    return topLimitSwitch.get();
   }
 
-  public void retractTelescopingArm() {
-    if (!bottomLimitSwitch.get())
-    {
-        setGoal(getMeasurement());
-    }else{
-        setGoal(-1000);
-    }
+  public boolean bottomLimitSwitchTriggered() {
+    return bottomLimitSwitch.get();
   }
-
   public void pivotTelescopingArmOut() {
     pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kForward);
   }
@@ -79,7 +72,7 @@ public class ClimberActuated extends ProfiledPIDSubsystem {
     telescopingArmWinch.setVoltage(output + feedForward);
   }
 
-  protected double getMeasurement() {
+  public double getMeasurement() {
     return telescopingArmWinch.encoder.getPosition();
   }
 }
