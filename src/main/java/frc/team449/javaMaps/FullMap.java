@@ -178,8 +178,6 @@ public class FullMap {
 
     var updater = new Updater(List.of(pdp, oi, navx, drive));
 
-    var defaultCommands = List.of(defaultDriveCommand);
-
     // Button bindings here
 
     // Take in balls but don't shoot
