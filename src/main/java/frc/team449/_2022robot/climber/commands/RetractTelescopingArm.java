@@ -18,7 +18,10 @@ public class RetractTelescopingArm extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    if (!interrupted) System.out.println("Successfully retracted climber!");
+    if (!interrupted){
+        System.out.println("Successfully retracted climber!");
+        climber.extended = false;
+    }
     climber.setGoal(climber.getMeasurement());
   }
 

@@ -19,7 +19,10 @@ public class ExtendTelescopingArm extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    if (!interrupted) System.out.println("Successfully extended climber!");
+    if (!interrupted) {
+        System.out.println("Successfully extended climber!");
+        climber.extended = true;
+    }
     climber.setGoal(climber.getMeasurement());
   }
 
