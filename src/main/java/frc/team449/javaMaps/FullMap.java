@@ -28,7 +28,8 @@ public class FullMap {
   public static final int RIGHT_LEADER_PORT = 2,
       RIGHT_LEADER_FOLLOWER_1_PORT = 3,
       LEFT_LEADER_PORT = 1,
-      LEFT_LEADER_FOLLOWER_1_PORT = 4;
+      LEFT_LEADER_FOLLOWER_1_PORT = 4,
+      CLIMBER_MOTOR_PORT = 5;
   // Controller ports
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
 
@@ -43,30 +44,30 @@ public class FullMap {
 
     var mechanismsJoystick = new MappedJoystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new MappedJoystick(DRIVE_JOYSTICK_PORT);
-    List<GenericHID> joysticks = List.of(mechanismsJoystick, driveJoystick);
+    var joysticks = List.<GenericHID>of(mechanismsJoystick, driveJoystick);
 
     var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
 
     var SparkPrototype =
         new SparkMaxConfig()
             .setEnableBrakeMode(true)
-            .setUnitPerRotation(1)
+            .setUnitPerRotation(1) // 2 * pi * radius of winch in meters
             .setCurrentLimit(50)
             .setEnableVoltageComp(true);
 
     var climber =
         new PivotingTelescopingClimber(
-            SparkPrototype.copy().setName("climber_motor").createReal(),
-            new SolenoidSimple(new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1)),
+            SparkPrototype.copy().setName("climber_motor").setPort(CLIMBER_MOTOR_PORT).createReal(),
+            /*new SolenoidSimple(new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1))*/ null,
             new DigitalInput(0),
             new DigitalInput(1),
             new ElevatorFeedforward(0, 0, 0, 0),
             1,
             0,
             0,
-            1, // 1 m/s max vel
-            .01, // 1 cm/s^2
-            1.2 // meters
+            5, // 1 rot/s max vel,
+            .5, // .5 rot/s^2
+            40 // rotations
             );
     var subsystems =
         List.<Subsystem>of(climber); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
@@ -80,10 +81,10 @@ public class FullMap {
         .whenPressed(new ExtendTelescopingArm(climber));
     new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)
         .whenPressed(new RetractTelescopingArm(climber));
-    new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
-        .whenPressed(climber::pivotTelescopingArmIn, climber);
-    new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
-        .whenPressed(climber::pivotTelescopingArmOut, climber);
+//    new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
+//        .whenPressed(climber::pivotTelescopingArmIn, climber);
+//    new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
+//        .whenPressed(climber::pivotTelescopingArmOut, climber);
 
     List<Command> robotStartupCommands = List.of();
 

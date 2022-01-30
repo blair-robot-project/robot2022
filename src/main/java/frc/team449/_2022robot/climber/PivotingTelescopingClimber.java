@@ -17,10 +17,11 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
   private final ElevatorFeedforward feedforward;
   private final DigitalInput topLimitSwitch;
   private final DigitalInput bottomLimitSwitch;
+  public boolean extended;
 
   public PivotingTelescopingClimber(
       @NotNull WrappedMotor telescopingArmWinch,
-      @NotNull SolenoidSimple pivotingTelescopingArm,
+      SolenoidSimple pivotingTelescopingArm,
       @NotNull DigitalInput topLimitSwitch,
       @NotNull DigitalInput bottomLimitSwitch,
       @NotNull ElevatorFeedforward feedforward,
@@ -43,8 +44,8 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
     this.topLimitSwitch = topLimitSwitch;
     this.bottomLimitSwitch = bottomLimitSwitch;
     this.distanceTopBottom = distanceTopBottom;
+    extended = false; /** Start arm retracted */
     enable();
-    setGoal(getMeasurement());
   }
 
   public boolean topLimitSwitchTriggered() {

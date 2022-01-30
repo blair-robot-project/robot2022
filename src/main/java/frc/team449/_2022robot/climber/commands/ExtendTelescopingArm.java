@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449._2022robot.climber.PivotingTelescopingClimber;
 
 public class ExtendTelescopingArm extends CommandBase {
+
   private final PivotingTelescopingClimber climber;
 
   public ExtendTelescopingArm(PivotingTelescopingClimber climber) {
@@ -13,7 +14,7 @@ public class ExtendTelescopingArm extends CommandBase {
 
   @Override
   public void initialize() {
-    climber.setGoal(climber.getMeasurement() + climber.distanceTopBottom);
+    if(!climber.extended) climber.setGoal(climber.getMeasurement() + climber.distanceTopBottom);
   }
 
   @Override
@@ -24,6 +25,6 @@ public class ExtendTelescopingArm extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return climber.topLimitSwitchTriggered();
+    return climber.topLimitSwitchTriggered() || climber.getController().atGoal();
   }
 }

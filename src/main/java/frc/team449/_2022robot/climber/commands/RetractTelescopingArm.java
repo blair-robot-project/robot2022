@@ -13,7 +13,7 @@ public class RetractTelescopingArm extends CommandBase {
 
   @Override
   public void initialize() {
-    climber.setGoal(climber.getMeasurement() - climber.distanceTopBottom);
+    if(climber.extended) climber.setGoal(climber.getMeasurement() - climber.distanceTopBottom);
   }
 
   @Override
@@ -24,6 +24,6 @@ public class RetractTelescopingArm extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return climber.bottomLimitSwitchTriggered();
+    return climber.bottomLimitSwitchTriggered() || climber.getController().atGoal();
   }
 }
