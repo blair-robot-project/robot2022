@@ -58,11 +58,17 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
       throw new HalHandleException("Motor could not be constructed on port " + this.getPort());
     }
     var externalEncoder = this.getExternalEncoder();
+    var encoderName =
+        this.getName() != null ? this.getName() + "_enc" : "spark_enc_" + this.getPort();
     var wrappedEnc =
         externalEncoder == null
             ? new WrappedEncoder.SparkEncoder(
-                motor.getEncoder(), this.getUnitPerRotation(), this.getPostEncoderGearing())
+                encoderName,
+                motor.getEncoder(),
+                this.getUnitPerRotation(),
+                this.getPostEncoderGearing())
             : new WrappedEncoder.WPIEncoder(
+                encoderName,
                 externalEncoder,
                 this.getEncoderCPR(),
                 this.getUnitPerRotation(),

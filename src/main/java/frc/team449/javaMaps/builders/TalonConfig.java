@@ -111,14 +111,18 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
   public WrappedMotor createReal() {
     var motor = new WPI_TalonSRX(this.getPort());
     var externalEncoder = this.getExternalEncoder();
+    var encoderName =
+        this.getName() != null ? this.getName() + "_enc" : "talon_enc_" + this.getPort();
     var wrappedEnc =
         externalEncoder == null
             ? new WrappedEncoder.TalonEncoder(
+                encoderName,
                 motor,
                 this.getEncoderCPR(),
                 this.getUnitPerRotation(),
                 this.getPostEncoderGearing())
             : new WrappedEncoder.WPIEncoder(
+                encoderName,
                 externalEncoder,
                 this.getEncoderCPR(),
                 this.getUnitPerRotation(),

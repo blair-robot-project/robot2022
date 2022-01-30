@@ -38,7 +38,7 @@ public class OneMotorPulleyElevator extends SubsystemBase {
 
   /** @return velocity of the elevator motor */
   public double getVelocity() {
-    return encoder.getVelocity();
+    return encoder.getVelocityNative();
   }
 
   /** @return the current position of the elevator */
@@ -81,7 +81,7 @@ public class OneMotorPulleyElevator extends SubsystemBase {
    */
   public void setVelocityUPS(double newVelocity) {
     pulleyMotor.setVoltage(
-        pidController.calculate(encoder.getVelocity(), encoder.upsToEncoder(newVelocity))
+        pidController.calculate(encoder.getVelocityNative(), encoder.upsToEncoder(newVelocity))
             + feedforward.calculate(newVelocity));
   }
 

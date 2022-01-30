@@ -3,11 +3,14 @@ package frc.team449.jacksonWrappers;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.Encoder;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class WrappedEncoder {
+public abstract class WrappedEncoder implements Loggable {
   /** Counts per rotation of the encoder */
   protected final int encoderCPR;
+  private final String name;
   /** Meters traveled per rotation of the motor */
   private final double unitPerRotation;
   /**
@@ -21,7 +24,9 @@ public abstract class WrappedEncoder {
    * @param unitPerRotation Meters traveled per rotation of the motor
    * @param postEncoderGearing The factor the output changes by after being measured by the encoder
    */
-  public WrappedEncoder(int encoderCPR, double unitPerRotation, double postEncoderGearing) {
+  public WrappedEncoder(
+      @NotNull String name, int encoderCPR, double unitPerRotation, double postEncoderGearing) {
+    this.name = name;
     this.unitPerRotation = unitPerRotation;
     this.encoderCPR = encoderCPR;
     this.postEncoderGearing = postEncoderGearing;
@@ -35,14 +40,16 @@ public abstract class WrappedEncoder {
    *
    * @see WrappedEncoder#getPositionUnits()
    */
-  public abstract double getPosition();
+  @Log
+  public abstract double getPositionNative();
 
   /**
    * Current velocity in encoder's units
    *
    * @see WrappedEncoder#getVelocityUnits()
    */
-  public abstract double getVelocity();
+  @Log
+  public abstract double getVelocityNative();
 
   /**
    * Convert encoder units to our units (meters)
@@ -107,24 +114,32 @@ public abstract class WrappedEncoder {
   }
 
   /** Current position in meters */
+  @Log
   public final double getPositionUnits() {
-    return this.encoderToUnit(this.getPosition());
+    return this.encoderToUnit(this.getPositionNative());
   }
 
   /** Current velocity in meters */
+  @Log
   public final double getVelocityUnits() {
-    return this.encoderToUnit(this.getVelocity());
+    return this.encoderToUnit(this.getVelocityNative());
+  }
+
+  @Override
+  public String configureLogName() {
+    return this.name;
   }
 
   public static class WPIEncoder extends WrappedEncoder {
     private final Encoder encoder;
 
     public WPIEncoder(
+        @NotNull String name,
         @NotNull Encoder encoder,
         int encoderCPR,
         double unitPerRotation,
         double postEncoderGearing) {
-      super(1, unitPerRotation, postEncoderGearing);
+      super(name, 1, unitPerRotation, postEncoderGearing);
       // Set field encoderCPR to 1 because the WPI encoder handles it itself
       encoder.setDistancePerPulse(1.0 / encoderCPR);
       encoder.setSamplesToAverage(5);
@@ -133,12 +148,12 @@ public abstract class WrappedEncoder {
     }
 
     @Override
-    public double getPosition() {
+    public double getPositionNative() {
       return encoder.getDistance();
     }
 
     @Override
-    public double getVelocity() {
+    public double getVelocityNative() {
       return encoder.getRate();
     }
 
@@ -162,19 +177,22 @@ public abstract class WrappedEncoder {
     private final RelativeEncoder encoder;
 
     public SparkEncoder(
-        @NotNull RelativeEncoder encoder, double unitPerRotation, double postEncoderGearing) {
-      super(1, unitPerRotation, postEncoderGearing);
+        @NotNull String name,
+        @NotNull RelativeEncoder encoder,
+        double unitPerRotation,
+        double postEncoderGearing) {
+      super(name, 1, unitPerRotation, postEncoderGearing);
       this.encoder = encoder;
       this.resetPosition();
     }
 
     @Override
-    public double getPosition() {
+    public double getPositionNative() {
       return encoder.getPosition();
     }
 
     @Override
-    public double getVelocity() {
+    public double getVelocityNative() {
       return encoder.getVelocity();
     }
 
@@ -198,23 +216,24 @@ public abstract class WrappedEncoder {
     private final TalonSRX talon;
 
     public TalonEncoder(
+        @NotNull String name,
         @NotNull TalonSRX talon,
         int encoderCPR,
         double unitPerRotation,
         double postEncoderGearing) {
       // The Talon multiplies its encoder count by 4
-      super(encoderCPR * 4, unitPerRotation, postEncoderGearing);
+      super(name, encoderCPR * 4, unitPerRotation, postEncoderGearing);
       this.talon = talon;
       this.resetPosition();
     }
 
     @Override
-    public double getPosition() {
+    public double getPositionNative() {
       return this.talon.getSelectedSensorPosition(0);
     }
 
     @Override
-    public double getVelocity() {
+    public double getVelocityNative() {
       return this.talon.getSelectedSensorVelocity(0);
     }
 
