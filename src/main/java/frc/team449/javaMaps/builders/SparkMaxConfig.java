@@ -5,7 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.hal.util.HalHandleException;
-import frc.team449.jacksonWrappers.WrappedEncoder;
+import frc.team449.jacksonWrappers.Encoder;
 import frc.team449.jacksonWrappers.WrappedMotor;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,9 +60,9 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
     var externalEncoder = this.getExternalEncoder();
     var wrappedEnc =
         externalEncoder == null
-            ? new WrappedEncoder.SparkEncoder(
+            ? new Encoder.SparkEncoder(
                 motor.getEncoder(), this.getUnitPerRotation(), this.getPostEncoderGearing())
-            : new WrappedEncoder.WPIEncoder(
+            : new Encoder.WPIEncoder(
                 externalEncoder,
                 this.getEncoderCPR(),
                 this.getUnitPerRotation(),

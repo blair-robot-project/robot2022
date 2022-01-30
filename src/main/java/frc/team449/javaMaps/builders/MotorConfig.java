@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.jacksonWrappers.WrappedMotor;
 import frc.team449.jacksonWrappers.simulated.DummyMotorController;
-import frc.team449.jacksonWrappers.simulated.DummyWrappedEncoder;
+import frc.team449.jacksonWrappers.simulated.DummyEncoder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -234,7 +234,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     return new WrappedMotor(
         "sim_" + port,
         new DummyMotorController(),
-        new DummyWrappedEncoder(encoderCPR, unitPerRotation, postEncoderGearing));
+        new DummyEncoder(encoderCPR, unitPerRotation, postEncoderGearing));
   }
 
   /** Try creating a real motor, and if that fails, create a simulated one */

@@ -1,7 +1,5 @@
 package frc.team449.jacksonWrappers;
 
-import static frc.team449.other.Util.getLogPrefix;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,12 +9,14 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.team449.generalInterfaces.rumbleable.Rumbleable;
 import frc.team449.jacksonWrappers.simulated.JoystickSimulated;
 
+import static frc.team449.other.Util.getLogPrefix;
+
 /** A Jackson-compatible wrapper on a {@link Joystick}. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedJoystick extends Joystick implements Rumbleable {
+public class RumbleableJoystick extends Joystick implements Rumbleable {
   /**
-   * Whether to construct instances of {@link JoystickSimulated} instead of {@link MappedJoystick}
-   * when the robot is running in a simulation.
+   * Whether to construct instances of {@link JoystickSimulated} instead of {@link
+   * RumbleableJoystick} when the robot is running in a simulation.
    */
   private static final boolean SIMULATE = true;
 
@@ -25,7 +25,7 @@ public class MappedJoystick extends Joystick implements Rumbleable {
    *
    * @param port The USB port of this joystick, on [0, 5].
    */
-  public MappedJoystick(@JsonProperty(required = true) final int port) {
+  public RumbleableJoystick(@JsonProperty(required = true) final int port) {
     super(port);
   }
 
@@ -35,13 +35,13 @@ public class MappedJoystick extends Joystick implements Rumbleable {
    * @param port The USB port of this joystick, on [0, 5].
    */
   @JsonCreator
-  public static MappedJoystick create(@JsonProperty(required = true) final int port) {
+  public static RumbleableJoystick create(@JsonProperty(required = true) final int port) {
     if (!SIMULATE || RobotBase.isReal()) {
-      return new MappedJoystick(port);
+      return new RumbleableJoystick(port);
     }
 
     System.out.println(
-        getLogPrefix(MappedJoystick.class) + "Creating simulated joystick on port " + port);
+        getLogPrefix(RumbleableJoystick.class) + "Creating simulated joystick on port " + port);
     return new JoystickSimulated(port);
   }
 

@@ -1,7 +1,7 @@
 package frc.team449.jacksonWrappers.simulated;
 
 import frc.team449.Robot;
-import frc.team449.jacksonWrappers.MappedJoystick;
+import frc.team449.jacksonWrappers.RumbleableJoystick;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -11,11 +11,11 @@ import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Class that extends {@link MappedJoystick} that does not rely on the existence of actual hardware.
+ * Class that extends {@link RumbleableJoystick} that does not rely on the existence of actual hardware.
  * This class is automatically instantiated by the MappedJoystick factory method when the robot is
  * running in a simulation and should not be otherwise referenced in code.
  */
-public class JoystickSimulated extends MappedJoystick {
+public class JoystickSimulated extends RumbleableJoystick {
   @NotNull private final Map<String, Boolean> keyStates = new ConcurrentHashMap<>();
   @NotNull private final String logName;
   @NotNull private final String logPrefix;

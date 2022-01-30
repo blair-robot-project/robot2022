@@ -1,9 +1,13 @@
 package frc.team449.javaMaps.builders;
 
 import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import frc.team449.jacksonWrappers.*;
+import frc.team449.other.SlaveTalonUtils;
+import frc.team449.other.SlaveVictorUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,8 +18,8 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
 
   private final Map<ControlFrame, Integer> controlFrameRatesMillis = new HashMap<>();
   private final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis = new HashMap<>();
-  private final List<SlaveTalon> slaveTalons = new ArrayList<>();
-  private final List<SlaveVictor> slaveVictors = new ArrayList<>();
+  private final List<TalonSRX> slaveTalons = new ArrayList<>();
+  private final List<VictorSPX> slaveVictors = new ArrayList<>();
   private int voltageCompSamples = 32;
   private @Nullable FeedbackDevice feedbackDevice;
   private boolean reverseSensor = false;
@@ -70,21 +74,21 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
   }
 
   @NotNull
-  public List<SlaveTalon> getSlaveTalons() {
+  public List<TalonSRX> getSlaveTalons() {
     return new ArrayList<>(slaveTalons);
   }
 
-  public TalonConfig addSlaveTalon(@NotNull SlaveTalon slaveTalon) {
+  public TalonConfig addSlaveTalon(@NotNull TalonSRX slaveTalon) {
     this.slaveTalons.add(slaveTalon);
     return this;
   }
 
   @NotNull
-  public List<SlaveVictor> getSlaveVictors() {
+  public List<VictorSPX> getSlaveVictors() {
     return new ArrayList<>(slaveVictors);
   }
 
-  public TalonConfig addSlaveVictor(@NotNull SlaveVictor slaveVictor) {
+  public TalonConfig addSlaveVictor(@NotNull VictorSPX slaveVictor) {
     this.slaveVictors.add(slaveVictor);
     return this;
   }
@@ -113,12 +117,12 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
     var externalEncoder = this.getExternalEncoder();
     var wrappedEnc =
         externalEncoder == null
-            ? new WrappedEncoder.TalonEncoder(
+            ? new Encoder.TalonEncoder(
                 motor,
                 this.getEncoderCPR(),
                 this.getUnitPerRotation(),
                 this.getPostEncoderGearing())
-            : new WrappedEncoder.WPIEncoder(
+            : new Encoder.WPIEncoder(
                 externalEncoder,
                 this.getEncoderCPR(),
                 this.getUnitPerRotation(),
@@ -231,16 +235,18 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
     motor.selectProfileSlot(0, 0);
 
     // Set up slaves.
-    for (final SlaveTalon slave : this.getSlaveTalons()) {
-      slave.setMaster(
+    for (final TalonSRX slave : this.getSlaveTalons()) {
+      SlaveTalonUtils.setMaster(
+          slave,
           this.getPort(),
           this.isEnableBrakeMode(),
           this.getCurrentLimit(),
           this.isEnableVoltageComp() ? this.getVoltageCompSamples() : null);
     }
 
-    for (final SlaveVictor slave : this.getSlaveVictors()) {
-      slave.setMaster(
+    for (var slave : this.getSlaveVictors()) {
+      SlaveVictorUtils.setMaster(
+          slave,
           motor,
           this.isEnableBrakeMode(),
           this.isEnableVoltageComp() ? this.getVoltageCompSamples() : null);

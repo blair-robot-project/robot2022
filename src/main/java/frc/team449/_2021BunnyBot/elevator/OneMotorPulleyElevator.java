@@ -5,13 +5,13 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.jacksonWrappers.WrappedEncoder;
+import frc.team449.jacksonWrappers.Encoder;
 import frc.team449.jacksonWrappers.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 
 public class OneMotorPulleyElevator extends SubsystemBase {
   @NotNull private final WrappedMotor pulleyMotor;
-  @NotNull private final WrappedEncoder encoder;
+  @NotNull private final Encoder encoder;
   @NotNull private final ElevatorPosition position;
   @NotNull private final ElevatorFeedforward feedforward;
   @NotNull private final TrapezoidProfile.Constraints constraints;

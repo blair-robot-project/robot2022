@@ -12,7 +12,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import frc.team449.generalInterfaces.DriveSettings;
 import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
-import frc.team449.jacksonWrappers.MappedAHRS;
+import frc.team449.jacksonWrappers.AHRS;
 import frc.team449.jacksonWrappers.WrappedMotor;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase implements SubsystemAHRS {
   /** The NavX gyro */
-  @NotNull private final MappedAHRS ahrs;
+  @NotNull private final AHRS ahrs;
 
   /** Drivetrain kinematics processor for measuring individual wheel speeds */
   private final DifferentialDriveKinematics driveKinematics;
@@ -47,7 +47,7 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
   public DriveUnidirectionalWithGyro(
       @NotNull WrappedMotor leftMaster,
       @NotNull WrappedMotor rightMaster,
-      @NotNull MappedAHRS ahrs,
+      @NotNull AHRS ahrs,
       @NotNull DriveSettings driveSettings,
       double trackWidthMeters) {
     super(leftMaster, rightMaster, driveSettings);

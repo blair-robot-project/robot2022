@@ -2,10 +2,9 @@ package frc.team449.jacksonWrappers;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.RelativeEncoder;
-import edu.wpi.first.wpilibj.Encoder;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class WrappedEncoder {
+public abstract class Encoder {
   /** Counts per rotation of the encoder */
   protected final int encoderCPR;
   /** Meters traveled per rotation of the motor */
@@ -21,7 +20,7 @@ public abstract class WrappedEncoder {
    * @param unitPerRotation Meters traveled per rotation of the motor
    * @param postEncoderGearing The factor the output changes by after being measured by the encoder
    */
-  public WrappedEncoder(int encoderCPR, double unitPerRotation, double postEncoderGearing) {
+  public Encoder(int encoderCPR, double unitPerRotation, double postEncoderGearing) {
     this.unitPerRotation = unitPerRotation;
     this.encoderCPR = encoderCPR;
     this.postEncoderGearing = postEncoderGearing;
@@ -33,14 +32,14 @@ public abstract class WrappedEncoder {
   /**
    * Current position in encoder's units
    *
-   * @see WrappedEncoder#getPositionUnits()
+   * @see Encoder#getPositionUnits()
    */
   public abstract double getPosition();
 
   /**
    * Current velocity in encoder's units
    *
-   * @see WrappedEncoder#getVelocityUnits()
+   * @see Encoder#getVelocityUnits()
    */
   public abstract double getVelocity();
 
@@ -116,11 +115,11 @@ public abstract class WrappedEncoder {
     return this.encoderToUnit(this.getVelocity());
   }
 
-  public static class WPIEncoder extends WrappedEncoder {
-    private final Encoder encoder;
+  public static class WPIEncoder extends Encoder {
+    private final edu.wpi.first.wpilibj.Encoder encoder;
 
     public WPIEncoder(
-        @NotNull Encoder encoder,
+        @NotNull edu.wpi.first.wpilibj.Encoder encoder,
         int encoderCPR,
         double unitPerRotation,
         double postEncoderGearing) {
@@ -158,7 +157,7 @@ public abstract class WrappedEncoder {
     }
   }
 
-  public static class SparkEncoder extends WrappedEncoder {
+  public static class SparkEncoder extends Encoder {
     private final RelativeEncoder encoder;
 
     public SparkEncoder(
@@ -194,7 +193,7 @@ public abstract class WrappedEncoder {
     }
   }
 
-  public static class TalonEncoder extends WrappedEncoder {
+  public static class TalonEncoder extends Encoder {
     private final TalonSRX talon;
 
     public TalonEncoder(

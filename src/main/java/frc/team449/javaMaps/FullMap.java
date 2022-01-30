@@ -15,8 +15,8 @@ import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
-import frc.team449.jacksonWrappers.MappedAHRS;
-import frc.team449.jacksonWrappers.MappedJoystick;
+import frc.team449.jacksonWrappers.AHRS;
+import frc.team449.jacksonWrappers.RumbleableJoystick;
 import frc.team449.jacksonWrappers.PDP;
 import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
@@ -58,11 +58,11 @@ public class FullMap {
 
     var pdp = new PDP(1, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
 
-    var mechanismsJoystick = new MappedJoystick(MECHANISMS_JOYSTICK_PORT);
-    var driveJoystick = new MappedJoystick(DRIVE_JOYSTICK_PORT);
+    var mechanismsJoystick = new RumbleableJoystick(MECHANISMS_JOYSTICK_PORT);
+    var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
     List<GenericHID> joysticks = List.of(mechanismsJoystick, driveJoystick);
 
-    var navx = new MappedAHRS(SerialPort.Port.kMXP, true);
+    var navx = new AHRS(SerialPort.Port.kMXP, true);
 
     var driveMasterPrototype =
         new SparkMaxConfig()
