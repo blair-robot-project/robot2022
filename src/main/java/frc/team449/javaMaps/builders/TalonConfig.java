@@ -252,10 +252,6 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
           this.isEnableVoltageComp() ? this.getVoltageCompSamples() : null);
     }
 
-    for (final SlaveSparkMax slave : this.getSlaveSparks()) {
-      slave.setMasterPhoenix(this.getPort(), this.isEnableBrakeMode());
-    }
-
     motor.configVelocityMeasurementPeriod(SensorVelocityMeasPeriod.Period_10Ms);
     motor.configVelocityMeasurementWindow(10);
 

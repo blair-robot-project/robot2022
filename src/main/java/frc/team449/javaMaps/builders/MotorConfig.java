@@ -40,7 +40,6 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
   private @Nullable Double rampRate;
   private @Nullable Integer currentLimit;
   private boolean enableVoltageComp;
-  private @NotNull List<SlaveSparkMax> slaveSparks = new ArrayList<>();
   private @Nullable Encoder externalEncoder;
 
   public int getPort() {
@@ -181,15 +180,6 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     return (Self) this;
   }
 
-  public @NotNull List<SlaveSparkMax> getSlaveSparks() {
-    return slaveSparks;
-  }
-
-  public Self setSlaveSparks(@NotNull SlaveSparkMax... slaveSparks) {
-    this.slaveSparks = Arrays.asList(slaveSparks);
-    return (Self) this;
-  }
-
   /**
    * Return the external encoder, if it exists. Returns {@code null} if the integrated encoder is to
    * be used.
@@ -206,7 +196,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
   }
 
   /** Copy properties from this config to another config */
-  protected void copyTo(MotorConfig<?> other) {
+  protected final void copyTo(MotorConfig<?> other) {
     other
         .setPort(port)
         .setEnableBrakeMode(enableBrakeMode)
@@ -221,8 +211,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
         .setUnitPerRotation(unitPerRotation)
         .setRampRate(rampRate)
         .setCurrentLimit(currentLimit)
-        .setEnableVoltageComp(enableVoltageComp)
-        .setSlaveSparks(slaveSparks.toArray(new SlaveSparkMax[]{}));
+        .setEnableVoltageComp(enableVoltageComp);
 
     if (this.name != null) other.setName(name);
     if (this.externalEncoder != null) other.setExternalEncoder(externalEncoder);

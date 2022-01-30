@@ -76,7 +76,7 @@ public class FullMap {
             .setName("right")
             .setPort(RIGHT_LEADER_PORT)
             .setReverseOutput(false)
-            .setSlaveSparks(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false))
+            .addSlaveSpark(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false))
             .createReal();
     var leftMaster =
         driveMasterPrototype
@@ -84,7 +84,7 @@ public class FullMap {
             .setPort(LEFT_LEADER_PORT)
             .setName("left")
             .setReverseOutput(true)
-            .setSlaveSparks(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false))
+            .addSlaveSpark(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false))
             .createReal();
 
     var drive =
@@ -167,7 +167,7 @@ public class FullMap {
             new SparkMaxConfig()
                 .setName("intakeMotor")
                 .setPort(INTAKE_LEADER_PORT)
-                .setSlaveSparks(new SlaveSparkMax(INTAKE_FOLLOWER_PORT, false))
+                .addSlaveSpark(new SlaveSparkMax(INTAKE_FOLLOWER_PORT, false))
                 .createReal(),
             new SparkMaxConfig().setName("spitterMotor").setPort(SPITTER_PORT).createReal(),
             INTAKE_SPEED,

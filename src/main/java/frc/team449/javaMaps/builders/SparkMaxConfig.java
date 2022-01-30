@@ -6,16 +6,17 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.hal.util.HalHandleException;
 import frc.team449.jacksonWrappers.Encoder;
+import frc.team449.jacksonWrappers.SlaveSparkMax;
 import frc.team449.jacksonWrappers.WrappedMotor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /** Motor controller configuration, along with some Spark-specific stuff */
 public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
   private final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis = new HashMap<>();
+  private final @NotNull List<SlaveSparkMax> slaveSparks = new ArrayList<>();
   private @Nullable Integer controlFrameRateMillis;
 
   @Nullable
@@ -38,6 +39,15 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
     return this;
   }
 
+  public @NotNull List<SlaveSparkMax> getSlaveSparks() {
+    return slaveSparks;
+  }
+
+  public SparkMaxConfig addSlaveSpark(@NotNull SlaveSparkMax slaveSpark) {
+    this.slaveSparks.add(slaveSpark);
+    return this;
+  }
+
   public SparkMaxConfig copy() {
     var copy = new SparkMaxConfig();
     this.copyTo(copy);
@@ -47,6 +57,10 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
     }
 
     copy.statusFrameRatesMillis.putAll(this.getStatusFrameRatesMillis());
+
+    for (var slave : slaveSparks) {
+      copy.addSlaveSpark(slave);
+    }
 
     return copy;
   }

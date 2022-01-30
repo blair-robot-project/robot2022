@@ -41,13 +41,6 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
         brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
   }
 
-  public void setMasterPhoenix(final int masterPort, final boolean brakeMode) {
-    this.slaveSpark.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, masterPort);
-    this.slaveSpark.setIdleMode(
-        brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
-    this.slaveSpark.setInverted(this.inverted);
-  }
-
   @Log
   public double getOutputCurrent() {
     return this.slaveSpark.getOutputCurrent();
