@@ -1,24 +1,22 @@
 package frc.team449.javaMaps;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449._2022robot.cargo.Cargo2022;
+import frc.team449._2022robot.climber.PivotingTelescopingClimber;
+import frc.team449._2022robot.climber.commands.ExtendTelescopingArm;
+import frc.team449._2022robot.climber.commands.RetractTelescopingArm;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
-import frc.team449.other.FollowerUtils;
-import frc.team449.wrappers.AHRS;
-import frc.team449.wrappers.RumbleableJoystick;
-import frc.team449.wrappers.PDP;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
@@ -26,7 +24,12 @@ import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
+import frc.team449.other.DefaultCommand;
+import frc.team449.other.FollowerUtils;
 import frc.team449.other.Updater;
+import frc.team449.wrappers.AHRS;
+import frc.team449.wrappers.PDP;
+import frc.team449.wrappers.RumbleableJoystick;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -41,13 +44,13 @@ public class FullMap {
       LEFT_LEADER_FOLLOWER_1_PORT = 4,
       INTAKE_LEADER_PORT = 5,
       INTAKE_FOLLOWER_PORT = 6,
-      SPITTER_PORT = 7;
+      SPITTER_PORT = 7,
+      CLIMBER_MOTOR_PORT = 8;
+
   // Controller ports
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
   // Button numbers
-  public static final int INTAKE_NORMAL_BUTTON = 1,
-      INTAKE_REVERSE_BUTTON = 3,
-      SPIT_BUTTON = 2;
+  public static final int INTAKE_NORMAL_BUTTON = 1, INTAKE_REVERSE_BUTTON = 3, SPIT_BUTTON = 2;
   // Speeds
   public static final double INTAKE_SPEED = 0.1, SPITTER_SPEED = 0.1;
 
@@ -173,10 +176,30 @@ public class FullMap {
             INTAKE_SPEED,
             SPITTER_SPEED);
 
-    // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
-    List<Subsystem> subsystems = List.of(drive, cargo);
+    var climber =
+        new PivotingTelescopingClimber(
+            driveMasterPrototype
+                .copy()
+                .setName("climber_motor")
+                .setPort(CLIMBER_MOTOR_PORT)
+                .setUnitPerRotation(1)
+                .createReal(),
+            /*new SolenoidSimple(new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1))*/ null,
+            new DigitalInput(0),
+            new DigitalInput(1),
+            new ElevatorFeedforward(0, 0, 0, 0),
+            1,
+            0,
+            0,
+            5, // 1 rot/s max vel,
+            .5, // .5 rot/s^2
+            40 // rotations
+            );
 
-    var updater = new Updater(List.of(pdp, oi, navx, drive));
+    // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
+    var subsystems = List.<Subsystem>of(drive, cargo, climber);
+
+    var updater = new Updater(List.of(pdp, navx));
 
     // Button bindings here
 
@@ -193,22 +216,28 @@ public class FullMap {
         .whileHeld(cargo::spit, cargo)
         .whenReleased(cargo::stop, cargo);
 
+    var defaultCommands = List.<DefaultCommand>of();
+
+    // TODO BUTTON BINDINGS HERE
+    new JoystickButton(mechanismsJoystick, XboxController.Button.kY.value)
+        .whenPressed(new ExtendTelescopingArm(climber));
+    new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)
+        .whenPressed(new RetractTelescopingArm(climber));
+    //    new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
+    //        .whenPressed(climber::pivotTelescopingArmIn, climber);
+    //    new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
+    //        .whenPressed(climber::pivotTelescopingArmOut, climber);
+
     List<Command> robotStartupCommands = List.of();
 
-    List<Command> autoStartupCommands =
-        List.of(
-            // todo tune this and ultimately replace with a more sophisticated command
-            new DriveAtSpeed<>(drive, 0.1, 1.5));
+    List<Command> autoStartupCommands = List.of();
 
     List<Command> teleopStartupCommands = List.of();
 
     List<Command> testStartupCommands = List.of();
     var allCommands =
         new CommandContainer(
-            robotStartupCommands,
-            autoStartupCommands,
-            teleopStartupCommands,
-            testStartupCommands);
+            robotStartupCommands, autoStartupCommands, teleopStartupCommands, testStartupCommands);
 
     return new RobotMap(subsystems, pdp, updater, allCommands, joysticks, false);
   }
