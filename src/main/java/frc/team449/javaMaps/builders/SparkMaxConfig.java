@@ -5,8 +5,8 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.hal.util.HalHandleException;
+import frc.team449.other.FollowerUtils;
 import frc.team449.wrappers.Encoder;
-import frc.team449.other.SlaveSparkMaxUtil;
 import frc.team449.wrappers.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -131,9 +131,10 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
       motor.disableVoltageCompensation();
     }
 
+    var brakeMode =
+        this.isEnableBrakeMode() ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast;
     this.slaveSparks.forEach(
-        (slave, inverted) ->
-            SlaveSparkMaxUtil.setMasterSpark(slave, motor, this.isEnableBrakeMode(), inverted));
+        (slave, inverted) -> FollowerUtils.setMasterForSpark(slave, motor, brakeMode, inverted));
 
     if (this.getRampRate() != null) {
       // Set ramp rate, converting from volts/sec to seconds until 12 volts.

@@ -1,15 +1,15 @@
-package frc.team449.wrappers;
+package frc.team449.javaMaps.builders;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cscore.UsbCamera;
 import org.jetbrains.annotations.NotNull;
 
-/** A Jackson-compatible wrapper on the {@link UsbCamera}. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedUsbCamera extends UsbCamera {
+/** A utility class to make {@link UsbCamera}'s. */
+public final class UsbCameraCreator {
+
+  private UsbCameraCreator() {}
 
   /**
    * Default constructor
@@ -25,17 +25,15 @@ public class MappedUsbCamera extends UsbCamera {
    *     this that WPILib won't let us go below, but I don't know what it is.
    */
   @JsonCreator
-  public MappedUsbCamera(
-      @NotNull @JsonProperty(required = true) String name,
-      @JsonProperty(required = true) int devAddress,
-      @JsonProperty(required = true) int width,
-      @JsonProperty(required = true) int height,
-      @JsonProperty(required = true) int fps) {
-    super(name, devAddress);
-    setResolution(width, height);
-    setFPS(fps);
+  public static UsbCamera createUsbCamera(
+      @NotNull String name, int devAddress, int width, int height, int fps) {
+    var camera = new UsbCamera(name, devAddress);
+    camera.setResolution(width, height);
+    camera.setFPS(fps);
 
     // If we don't have the exposure be automatic, the camera will be super laggy. No idea why.
-    setExposureAuto();
+    camera.setExposureAuto();
+
+    return camera;
   }
 }

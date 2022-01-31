@@ -5,9 +5,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
+import frc.team449.other.FollowerUtils;
 import frc.team449.wrappers.*;
-import frc.team449.other.SlaveTalonUtils;
-import frc.team449.other.SlaveVictorUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -236,7 +235,7 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
 
     // Set up slaves.
     for (final TalonSRX slave : this.getSlaveTalons()) {
-      SlaveTalonUtils.setMaster(
+      FollowerUtils.setMasterForTalon(
           slave,
           this.getPort(),
           this.isEnableBrakeMode(),
@@ -245,7 +244,7 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
     }
 
     for (var slave : this.getSlaveVictors()) {
-      SlaveVictorUtils.setMaster(
+      FollowerUtils.setMasterForVictor(
           slave,
           motor,
           this.isEnableBrakeMode(),

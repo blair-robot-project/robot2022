@@ -1,4 +1,4 @@
-package frc.team449.other;
+package frc.team449.javaMaps.builders;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
@@ -7,11 +7,12 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
-import frc.team449.other.SlaveVictorUtils;
+import frc.team449.other.FollowerUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+//todo turn this into a builder like SparkMaxConfig
 /** A helper static class to create {@link VictorSP}'s and {@link WPI_VictorSPX}'s. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public final class VictorCreator {
@@ -44,7 +45,7 @@ public final class VictorCreator {
 
     if (slaveVictors != null) {
       for (var slave : slaveVictors) {
-        SlaveVictorUtils.setMaster(
+        FollowerUtils.setMasterForVictor(
             slave, victorSPX, brakeMode, enableVoltageComp ? voltComp : null);
       }
     }
