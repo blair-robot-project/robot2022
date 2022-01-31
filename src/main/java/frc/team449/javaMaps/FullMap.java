@@ -18,7 +18,7 @@ import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.jacksonWrappers.AHRS;
 import frc.team449.jacksonWrappers.RumbleableJoystick;
 import frc.team449.jacksonWrappers.PDP;
-import frc.team449.jacksonWrappers.SlaveSparkMax;
+import frc.team449.other.SlaveSparkMaxUtil;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
@@ -76,7 +76,7 @@ public class FullMap {
             .setName("right")
             .setPort(RIGHT_LEADER_PORT)
             .setReverseOutput(false)
-            .addSlaveSpark(new SlaveSparkMax(RIGHT_LEADER_FOLLOWER_1_PORT, false))
+            .addSlaveSpark(SlaveSparkMaxUtil.createSlaveSpark(RIGHT_LEADER_FOLLOWER_1_PORT), false)
             .createReal();
     var leftMaster =
         driveMasterPrototype
@@ -84,7 +84,7 @@ public class FullMap {
             .setPort(LEFT_LEADER_PORT)
             .setName("left")
             .setReverseOutput(true)
-            .addSlaveSpark(new SlaveSparkMax(LEFT_LEADER_FOLLOWER_1_PORT, false))
+            .addSlaveSpark(SlaveSparkMaxUtil.createSlaveSpark(LEFT_LEADER_FOLLOWER_1_PORT), false)
             .createReal();
 
     var drive =
@@ -167,7 +167,7 @@ public class FullMap {
             new SparkMaxConfig()
                 .setName("intakeMotor")
                 .setPort(INTAKE_LEADER_PORT)
-                .addSlaveSpark(new SlaveSparkMax(INTAKE_FOLLOWER_PORT, false))
+                .addSlaveSpark(SlaveSparkMaxUtil.createSlaveSpark(INTAKE_FOLLOWER_PORT), false)
                 .createReal(),
             new SparkMaxConfig().setName("spitterMotor").setPort(SPITTER_PORT).createReal(),
             INTAKE_SPEED,

@@ -6,17 +6,19 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.hal.util.HalHandleException;
 import frc.team449.jacksonWrappers.Encoder;
-import frc.team449.jacksonWrappers.SlaveSparkMax;
+import frc.team449.other.SlaveSparkMaxUtil;
 import frc.team449.jacksonWrappers.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /** Motor controller configuration, along with some Spark-specific stuff */
 public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
   private final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis = new HashMap<>();
-  private final @NotNull List<SlaveSparkMax> slaveSparks = new ArrayList<>();
+  private final @NotNull Map<CANSparkMax, Boolean> slaveSparks = new HashMap<>();
   private @Nullable Integer controlFrameRateMillis;
 
   @Nullable
@@ -39,12 +41,17 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
     return this;
   }
 
-  public @NotNull List<SlaveSparkMax> getSlaveSparks() {
+  public @NotNull Map<CANSparkMax, Boolean> getSlaveSparks() {
     return slaveSparks;
   }
 
-  public SparkMaxConfig addSlaveSpark(@NotNull SlaveSparkMax slaveSpark) {
-    this.slaveSparks.add(slaveSpark);
+  /**
+   * Add a slave spark
+   *
+   * @param inverted Whether or not it's inverted
+   */
+  public SparkMaxConfig addSlaveSpark(@NotNull CANSparkMax slaveSpark, boolean inverted) {
+    this.slaveSparks.put(slaveSpark, inverted);
     return this;
   }
 
@@ -58,9 +65,7 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
 
     copy.statusFrameRatesMillis.putAll(this.getStatusFrameRatesMillis());
 
-    for (var slave : slaveSparks) {
-      copy.addSlaveSpark(slave);
-    }
+    slaveSparks.forEach(copy::addSlaveSpark);
 
     return copy;
   }
@@ -126,9 +131,9 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
       motor.disableVoltageCompensation();
     }
 
-    for (var slave : this.getSlaveSparks()) {
-      slave.setMasterSpark(motor, this.isEnableBrakeMode());
-    }
+    this.slaveSparks.forEach(
+        (slave, inverted) ->
+            SlaveSparkMaxUtil.setMasterSpark(slave, motor, this.isEnableBrakeMode(), inverted));
 
     if (this.getRampRate() != null) {
       // Set ramp rate, converting from volts/sec to seconds until 12 volts.
