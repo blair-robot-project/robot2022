@@ -2,15 +2,11 @@ package frc.team449.javaMaps.builders;
 
 import edu.wpi.first.hal.util.HalHandleException;
 import edu.wpi.first.wpilibj.Encoder;
-import frc.team449.jacksonWrappers.SlaveSparkMax;
-import frc.team449.jacksonWrappers.WrappedMotor;
-import frc.team449.jacksonWrappers.simulated.DummyMotorController;
-import frc.team449.jacksonWrappers.simulated.DummyWrappedEncoder;
+import frc.team449.wrappers.WrappedMotor;
+import frc.team449.wrappers.simulated.DummyMotorController;
+import frc.team449.wrappers.simulated.DummyEncoder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The constructor for SmartMotors was hell so this will help resolve that.
@@ -20,7 +16,7 @@ import java.util.List;
  * <p>todo find a better way to make the subclass the return type than F-bounds
  *
  * @param <Self> The type of the "current" subclass of {@link MotorConfig}
- * @see frc.team449.jacksonWrappers.WrappedMotor
+ * @see frc.team449.wrappers.WrappedMotor
  */
 @SuppressWarnings({"unchecked", "UnusedReturnValue"})
 public abstract class MotorConfig<Self extends MotorConfig<Self>> {
@@ -39,7 +35,6 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
   private @Nullable Double rampRate;
   private @Nullable Integer currentLimit;
   private boolean enableVoltageComp;
-  private @NotNull List<SlaveSparkMax> slaveSparks = new ArrayList<>();
   private @Nullable Encoder externalEncoder;
 
   public int getPort() {
@@ -180,15 +175,6 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     return (Self) this;
   }
 
-  public @NotNull List<SlaveSparkMax> getSlaveSparks() {
-    return slaveSparks;
-  }
-
-  public Self setSlaveSparks(@NotNull List<SlaveSparkMax> slaveSparks) {
-    this.slaveSparks = slaveSparks;
-    return (Self) this;
-  }
-
   /**
    * Return the external encoder, if it exists. Returns {@code null} if the integrated encoder is to
    * be used.
@@ -205,7 +191,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
   }
 
   /** Copy properties from this config to another config */
-  protected void copyTo(MotorConfig<?> other) {
+  protected final void copyTo(MotorConfig<?> other) {
     other
         .setPort(port)
         .setEnableBrakeMode(enableBrakeMode)
@@ -220,8 +206,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
         .setUnitPerRotation(unitPerRotation)
         .setRampRate(rampRate)
         .setCurrentLimit(currentLimit)
-        .setEnableVoltageComp(enableVoltageComp)
-        .setSlaveSparks(slaveSparks);
+        .setEnableVoltageComp(enableVoltageComp);
 
     if (this.name != null) other.setName(name);
     if (this.externalEncoder != null) other.setExternalEncoder(externalEncoder);
@@ -233,7 +218,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     return new WrappedMotor(
         "sim_" + port,
         new DummyMotorController(),
-        new DummyWrappedEncoder(encoderCPR, unitPerRotation, postEncoderGearing));
+        new DummyEncoder(encoderCPR, unitPerRotation, postEncoderGearing));
   }
 
   /** Try creating a real motor, and if that fails, create a simulated one */

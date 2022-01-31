@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.generalInterfaces.simpleMotor.SimpleMotor;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,10 +16,10 @@ public class DriveUnidirectionalSimple extends SubsystemBase
     implements DriveUnidirectional, Loggable {
 
   /** The motor for the left side of the drive. */
-  @NotNull private final SimpleMotor leftMotor;
+  @NotNull private final MotorController leftMotor;
 
   /** The motor for the right side of the drive. */
-  @NotNull private final SimpleMotor rightMotor;
+  @NotNull private final MotorController rightMotor;
 
   /**
    * Default constructor
@@ -29,8 +29,8 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @JsonCreator
   public DriveUnidirectionalSimple(
-      @NotNull @JsonProperty(required = true) final SimpleMotor leftMotor,
-      @NotNull @JsonProperty(required = true) final SimpleMotor rightMotor) {
+      @NotNull @JsonProperty(required = true) final MotorController leftMotor,
+      @NotNull @JsonProperty(required = true) final MotorController rightMotor) {
     this.leftMotor = leftMotor;
     this.rightMotor = rightMotor;
   }
@@ -43,8 +43,8 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @Override
   public void setOutput(final double left, final double right) {
-    leftMotor.setVelocity(left);
-    rightMotor.setVelocity(right);
+    leftMotor.set(left);
+    rightMotor.set(right);
   }
 
   /**
@@ -138,16 +138,13 @@ public class DriveUnidirectionalSimple extends SubsystemBase
   /** Completely stop the robot by setting the voltage to each side to be 0. */
   @Override
   public void fullStop() {
-    leftMotor.setVelocity(0);
-    rightMotor.setVelocity(0);
+    leftMotor.set(0);
+    rightMotor.set(0);
   }
 
   /** If this drive uses motors that can be disabled, enable them. */
   @Override
-  public void enableMotors() {
-    leftMotor.enable();
-    rightMotor.enable();
-  }
+  public void enableMotors() {}
 
   /** Reset the position of the drive if it has encoders. */
   @Override

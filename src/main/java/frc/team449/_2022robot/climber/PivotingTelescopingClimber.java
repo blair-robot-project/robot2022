@@ -6,8 +6,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
-import frc.team449.jacksonWrappers.WrappedMotor;
 import frc.team449.multiSubsystem.SolenoidSimple;
+import frc.team449.wrappers.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 
 public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
@@ -70,6 +70,6 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
   }
 
   public double getMeasurement() {
-    return telescopingArmWinch.encoder.getPosition();
+    return telescopingArmWinch.encoder.getPositionUnits();
   }
 }
