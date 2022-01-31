@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -185,8 +184,8 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     return slaveSparks;
   }
 
-  public Self setSlaveSparks(@NotNull SlaveSparkMax... slaveSparks) {
-    this.slaveSparks = Arrays.asList(slaveSparks);
+  public Self addSlaveSpark(@NotNull SlaveSparkMax slaveSpark) {
+    this.slaveSparks.add(slaveSpark);
     return (Self) this;
   }
 
@@ -221,8 +220,11 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
         .setUnitPerRotation(unitPerRotation)
         .setRampRate(rampRate)
         .setCurrentLimit(currentLimit)
-        .setEnableVoltageComp(enableVoltageComp)
-        .setSlaveSparks(slaveSparks.toArray(new SlaveSparkMax[]{}));
+        .setEnableVoltageComp(enableVoltageComp);
+
+    for (var slave : this.slaveSparks) {
+      other.addSlaveSpark(slave);
+    }
 
     if (this.name != null) other.setName(name);
     if (this.externalEncoder != null) other.setExternalEncoder(externalEncoder);
