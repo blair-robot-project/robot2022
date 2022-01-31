@@ -1,19 +1,23 @@
-package frc.team449.jacksonWrappers;
+package frc.team449.javaMaps.builders;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
-import frc.team449.jacksonWrappers.SlaveVictor;
+import frc.team449.other.FollowerUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+//todo turn this into a builder like SparkMaxConfig
 /** A helper static class to create {@link VictorSP}'s and {@link WPI_VictorSPX}'s. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public final class VictorCreator {
+  private VictorCreator() {}
+
   public static MotorController createVictorSP(int port, boolean inverted) {
     var victorSP = new VictorSP(port);
     victorSP.setInverted(inverted);
@@ -28,7 +32,7 @@ public final class VictorCreator {
       @Nullable Double peakVoltageForward,
       @Nullable Double peakVoltageRev,
       @Nullable Integer voltageCompSamples,
-      @Nullable List<SlaveVictor> slaveVictors) {
+      @Nullable List<VictorSPX> slaveVictors) {
     var victorSPX = new WPI_VictorSPX(port);
     int voltComp = voltageCompSamples != null ? voltageCompSamples : 32;
     victorSPX.setInverted(inverted);
@@ -41,11 +45,10 @@ public final class VictorCreator {
 
     if (slaveVictors != null) {
       for (var slave : slaveVictors) {
-        slave.setMaster(victorSPX, brakeMode, enableVoltageComp ? voltComp : null);
+        FollowerUtils.setMasterForVictor(
+            slave, victorSPX, brakeMode, enableVoltageComp ? voltComp : null);
       }
     }
     return victorSPX;
   }
-
-  private VictorCreator() {}
 }

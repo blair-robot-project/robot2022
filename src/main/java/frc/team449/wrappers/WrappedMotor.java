@@ -1,4 +1,4 @@
-package frc.team449.jacksonWrappers;
+package frc.team449.wrappers;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.team449.generalInterfaces.MotorContainer;
@@ -6,13 +6,13 @@ import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 
 public final class WrappedMotor implements MotorController, Loggable {
-  public final @NotNull WrappedEncoder encoder;
+  public final @NotNull Encoder encoder;
   private final @NotNull MotorController motor;
   /** Name for logging */
   private final @NotNull String name;
 
   public WrappedMotor(
-      @NotNull String name, @NotNull MotorController motor, @NotNull WrappedEncoder encoder) {
+      @NotNull String name, @NotNull MotorController motor, @NotNull Encoder encoder) {
     this.motor = motor;
     this.encoder = encoder;
     this.name = name;

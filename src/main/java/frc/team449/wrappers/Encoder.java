@@ -1,13 +1,12 @@
-package frc.team449.jacksonWrappers;
+package frc.team449.wrappers;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.RelativeEncoder;
-import edu.wpi.first.wpilibj.Encoder;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class WrappedEncoder implements Loggable {
+public abstract class Encoder implements Loggable {
   /** Counts per rotation of the encoder */
   protected final int encoderCPR;
   private final String name;
@@ -24,7 +23,7 @@ public abstract class WrappedEncoder implements Loggable {
    * @param unitPerRotation Meters traveled per rotation of the motor
    * @param postEncoderGearing The factor the output changes by after being measured by the encoder
    */
-  public WrappedEncoder(
+  public Encoder(
       @NotNull String name, int encoderCPR, double unitPerRotation, double postEncoderGearing) {
     this.name = name;
     this.unitPerRotation = unitPerRotation;
@@ -38,7 +37,7 @@ public abstract class WrappedEncoder implements Loggable {
   /**
    * Current position in encoder's units
    *
-   * @see WrappedEncoder#getPositionUnits()
+   * @see Encoder#getPositionUnits()
    */
   @Log
   public abstract double getPositionNative();
@@ -46,7 +45,7 @@ public abstract class WrappedEncoder implements Loggable {
   /**
    * Current velocity in encoder's units
    *
-   * @see WrappedEncoder#getVelocityUnits()
+   * @see Encoder#getVelocityUnits()
    */
   @Log
   public abstract double getVelocityNative();
@@ -130,12 +129,12 @@ public abstract class WrappedEncoder implements Loggable {
     return this.name;
   }
 
-  public static class WPIEncoder extends WrappedEncoder {
-    private final Encoder encoder;
+  public static class WPIEncoder extends Encoder {
+    private final edu.wpi.first.wpilibj.Encoder encoder;
 
     public WPIEncoder(
         @NotNull String name,
-        @NotNull Encoder encoder,
+        @NotNull edu.wpi.first.wpilibj.Encoder encoder,
         int encoderCPR,
         double unitPerRotation,
         double postEncoderGearing) {
@@ -173,7 +172,7 @@ public abstract class WrappedEncoder implements Loggable {
     }
   }
 
-  public static class SparkEncoder extends WrappedEncoder {
+  public static class SparkEncoder extends Encoder {
     private final RelativeEncoder encoder;
 
     public SparkEncoder(
@@ -212,7 +211,7 @@ public abstract class WrappedEncoder implements Loggable {
     }
   }
 
-  public static class TalonEncoder extends WrappedEncoder {
+  public static class TalonEncoder extends Encoder {
     private final TalonSRX talon;
 
     public TalonEncoder(

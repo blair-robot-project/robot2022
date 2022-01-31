@@ -1,4 +1,4 @@
-package frc.team449.jacksonWrappers;
+package frc.team449.wrappers;
 
 import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
 
@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
 import frc.team449.generalInterfaces.updatable.Updatable;
@@ -14,12 +13,12 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 
-/** A Jackson-compatible, invertible wrapper for the NavX. */
+/** An invertible wrapper for the NavX. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedAHRS implements Updatable, Loggable {
+public class AHRS implements Updatable, Loggable {
 
   /** The AHRS this class is a wrapper on. */
-  protected final AHRS ahrs;
+  protected final com.kauailabs.navx.frc.AHRS ahrs;
 
   /** A multiplier for the yaw angle. -1 to invert, 1 to not. */
   protected final int invertYaw;
@@ -40,12 +39,12 @@ public class MappedAHRS implements Updatable, Loggable {
    * @param invertYaw Whether or not to invert the yaw axis. Defaults to true.
    */
   @JsonCreator
-  public MappedAHRS(
+  public AHRS(
       @JsonProperty(required = true) final SerialPort.Port port, final Boolean invertYaw) {
     if (port.equals(SerialPort.Port.kMXP)) {
-      this.ahrs = new AHRS(SPI.Port.kMXP);
+      this.ahrs = new com.kauailabs.navx.frc.AHRS(SPI.Port.kMXP);
     } else {
-      this.ahrs = new AHRS(port, kProcessedData, (byte) 100);
+      this.ahrs = new com.kauailabs.navx.frc.AHRS(port, kProcessedData, (byte) 100);
     }
     setHeading(0);
     if (invertYaw == null || invertYaw) {
