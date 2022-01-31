@@ -4,6 +4,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Spitter extends SubsystemBase {
 
-  //define motor/solenoid/etc. we will be using
+  //defin motor/solenoid/etc. we will be using
 
 }

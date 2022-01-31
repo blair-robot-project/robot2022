@@ -53,7 +53,7 @@ public class FullMap {
   @NotNull
   public static RobotMap createRobotMap() {
 
-    var pdp = new PDP(1, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
+    var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
 
     var mechanismsJoystick = new MappedJoystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new MappedJoystick(DRIVE_JOYSTICK_PORT);
@@ -69,17 +69,17 @@ public class FullMap {
             .setEnableVoltageComp(true);
 
     var climber = new PivotingTelescopingClimber(
-            SparkPrototype.copy().setName("climber_motor").createReal(),
-            new SolenoidSimple(new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1)),
-            new DigitalInput(0),
-            new DigitalInput(1),
+            SparkPrototype.copy().setName("climber_motor").setPort(5).createReal(),
+            null,
+            null,
+            null,
             new ElevatorFeedforward(0,0,0,0),
             1,
             0,
             0,
-            1, // 1 m/s max vel
-            .01, // 1 cm/s^2
-            1.2 //meters
+            3, // 1 m/s max vel
+            .1, // 1 cm/s^2
+            32 //rotations
     );
     var subsystems =
         List.<Subsystem>of(climber); // TODO PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT

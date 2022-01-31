@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.team449.jacksonWrappers.WrappedMotor;
 import frc.team449.multiSubsystem.SolenoidSimple;
+mport io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
@@ -21,9 +22,9 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
 
   public PivotingTelescopingClimber(
           @NotNull WrappedMotor telescopingArmWinch,
-          @NotNull SolenoidSimple pivotingTelescopingArm,
-          @NotNull DigitalInput topLimitSwitch,
-          @NotNull DigitalInput bottomLimitSwitch,
+          SolenoidSimple pivotingTelescopingArm,
+          DigitalInput topLimitSwitch,
+          DigitalInput bottomLimitSwitch,
           @NotNull ElevatorFeedforward feedforward,
           double kP,
           double kI,
@@ -49,7 +50,6 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
     this.telescopingArmMaxVel = telescopingArmMaxVelocity;
     DISTANCE_TOP_BOTTOM = distance_top_bottom;
     enable();
-    setGoal(getMeasurement());
   }
 
   public boolean topLimitSwitchTriggered() {
@@ -59,10 +59,12 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
   public boolean bottomLimitSwitchTriggered() {
     return bottomLimitSwitch.get();
   }
+
+
   public void pivotTelescopingArmOut() {
     pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kForward);
   }
-
+//Assign button
   public void pivotTelescopingArmIn() {
     pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kReverse);
   }
@@ -72,7 +74,9 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
     telescopingArmWinch.setVoltage(output + feedForward);
   }
 
+  @Log
   public double getMeasurement() {
-    return telescopingArmWinch.encoder.getPosition();
+    return telescopingArmWinch.getPosition();
   }
 }
+

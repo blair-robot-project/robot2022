@@ -25,6 +25,6 @@ public class ExtendTelescopingArm extends CommandBase {
 
     @Override
     public boolean isFinished(){
-        return climber.topLimitSwitchTriggered();
+        return climber.getController().atSetpoint();
     }
 }

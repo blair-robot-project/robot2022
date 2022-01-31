@@ -3,6 +3,7 @@ package frc.team449.jacksonWrappers;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.Encoder;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class WrappedEncoder {
@@ -35,6 +36,7 @@ public abstract class WrappedEncoder {
    *
    * @see WrappedEncoder#getPositionUnits()
    */
+  @Log
   public abstract double getPosition();
 
   /**
@@ -42,6 +44,7 @@ public abstract class WrappedEncoder {
    *
    * @see WrappedEncoder#getVelocityUnits()
    */
+  @Log
   public abstract double getVelocity();
 
   /**
@@ -107,6 +110,7 @@ public abstract class WrappedEncoder {
   }
 
   /** Current position in meters */
+  @Log
   public final double getPositionUnits() {
     return this.encoderToUnit(this.getPosition());
   }
