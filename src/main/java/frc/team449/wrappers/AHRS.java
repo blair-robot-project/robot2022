@@ -1,4 +1,4 @@
-package frc.team449.jacksonWrappers;
+package frc.team449.wrappers;
 
 import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
 

@@ -12,8 +12,8 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import frc.team449.generalInterfaces.DriveSettings;
 import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
-import frc.team449.jacksonWrappers.AHRS;
-import frc.team449.jacksonWrappers.WrappedMotor;
+import frc.team449.wrappers.AHRS;
+import frc.team449.wrappers.WrappedMotor;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 

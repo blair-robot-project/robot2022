@@ -1,4 +1,4 @@
-package frc.team449.jacksonWrappers;
+package frc.team449.wrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.team449.generalInterfaces.rumbleable.Rumbleable;
-import frc.team449.jacksonWrappers.simulated.JoystickSimulated;
+import frc.team449.wrappers.simulated.JoystickSimulated;
 
 import static frc.team449.other.Util.getLogPrefix;
 

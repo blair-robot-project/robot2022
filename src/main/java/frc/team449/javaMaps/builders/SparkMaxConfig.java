@@ -5,9 +5,9 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.hal.util.HalHandleException;
-import frc.team449.jacksonWrappers.Encoder;
+import frc.team449.wrappers.Encoder;
 import frc.team449.other.SlaveSparkMaxUtil;
-import frc.team449.jacksonWrappers.WrappedMotor;
+import frc.team449.wrappers.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

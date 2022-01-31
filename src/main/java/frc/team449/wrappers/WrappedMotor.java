@@ -1,4 +1,4 @@
-package frc.team449.jacksonWrappers;
+package frc.team449.wrappers;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.team449.generalInterfaces.MotorContainer;

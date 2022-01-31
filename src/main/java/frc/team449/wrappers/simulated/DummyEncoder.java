@@ -1,6 +1,6 @@
-package frc.team449.jacksonWrappers.simulated;
+package frc.team449.wrappers.simulated;
 
-import frc.team449.jacksonWrappers.Encoder;
+import frc.team449.wrappers.Encoder;
 
 public class DummyEncoder extends Encoder {
   public DummyEncoder(int encoderCPR, double unitPerRotation, double postEncoderGearing) {

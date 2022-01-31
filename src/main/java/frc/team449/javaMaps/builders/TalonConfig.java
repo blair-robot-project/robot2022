@@ -5,7 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
-import frc.team449.jacksonWrappers.*;
+import frc.team449.wrappers.*;
 import frc.team449.other.SlaveTalonUtils;
 import frc.team449.other.SlaveVictorUtils;
 import org.jetbrains.annotations.NotNull;

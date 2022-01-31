@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.generalInterfaces.rumbleable.Rumbleable;
-import frc.team449.jacksonWrappers.AHRS;
+import frc.team449.wrappers.AHRS;
 import frc.team449.other.Clock;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
