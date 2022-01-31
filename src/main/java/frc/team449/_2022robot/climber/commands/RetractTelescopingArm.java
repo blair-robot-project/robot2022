@@ -13,14 +13,18 @@ public class RetractTelescopingArm extends CommandBase {
 
   @Override
   public void initialize() {
-    if (climber.extended) climber.setGoal(climber.getMeasurement() - climber.distanceTopBottom);
+    if (climber.getState() != PivotingTelescopingClimber.ClimberState.RETRACTED) {
+      climber.setGoal(-climber.getMeasurement());
+    }
   }
 
   @Override
   public void end(boolean interrupted) {
     if (!interrupted) {
       System.out.println("Successfully retracted climber!");
-      climber.extended = false;
+      climber.setState(PivotingTelescopingClimber.ClimberState.RETRACTED);
+    } else {
+      climber.setState(PivotingTelescopingClimber.ClimberState.MIDDLE);
     }
     climber.setGoal(climber.getMeasurement());
   }

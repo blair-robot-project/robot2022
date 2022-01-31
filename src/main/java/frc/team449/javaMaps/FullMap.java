@@ -3,6 +3,7 @@ package frc.team449.javaMaps;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
@@ -30,7 +31,7 @@ public class FullMap {
       INTAKE_LEADER_PORT = 5,
       INTAKE_FOLLOWER_PORT = 6,
       SPITTER_PORT = 7,
-      CLIMBER_MOTOR_PORT = 8;
+      CLIMBER_MOTOR_PORT = 5;
 
   // Controller ports
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
@@ -46,7 +47,7 @@ public class FullMap {
 
     var pdp = new PDP(0, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
 
-    var mechanismsJoystick = new RumbleableJoystick(MECHANISMS_JOYSTICK_PORT);
+    var mechanismsJoystick = new Joystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
     List<GenericHID> joysticks = List.of(mechanismsJoystick, driveJoystick);
 
@@ -59,6 +60,23 @@ public class FullMap {
             .setCurrentLimit(50)
             .setEnableVoltageComp(true);
 
+    class DummyDigitalInput extends DigitalInput {
+
+      /**
+       * Create an instance of a Digital Input class. Creates a digital input given a channel.
+       *
+       * @param channel the DIO channel for the digital input 0-9 are on-board, 10-25 are on the MXP
+       */
+      public DummyDigitalInput(int channel) {
+        super(channel);
+      }
+
+      @Override
+      public boolean get() {
+        return false;
+      }
+    }
+
     var climber =
         new PivotingTelescopingClimber(
             sparkPrototype
@@ -68,15 +86,15 @@ public class FullMap {
                 .setUnitPerRotation(1)
                 .createReal(),
             /*new SolenoidSimple(new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1))*/ null,
-            new DigitalInput(0),
-            new DigitalInput(1),
+            new DummyDigitalInput(0),
+            new DummyDigitalInput(1),
             new ElevatorFeedforward(0, 0, 0, 0),
             1,
             0,
             0,
             5, // 1 rot/s max vel,
             .5, // .5 rot/s^2
-            40 // rotations
+            20 // rotations
             );
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
