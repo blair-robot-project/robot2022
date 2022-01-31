@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.generalInterfaces.rumbleable.Rumbleable;
-import frc.team449.jacksonWrappers.MappedAHRS;
+import frc.team449.wrappers.AHRS;
 import frc.team449.other.Clock;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class AHRSRumbleComponent implements Runnable {
 
   /** The NavX to get jerk measurements from. */
-  @NotNull private final MappedAHRS ahrs;
+  @NotNull private final AHRS ahrs;
 
   /** The things to rumble. */
   @NotNull private final List<Rumbleable> rumbleables;
@@ -58,7 +58,7 @@ public class AHRSRumbleComponent implements Runnable {
    */
   @JsonCreator
   public AHRSRumbleComponent(
-      @NotNull @JsonProperty(required = true) final MappedAHRS ahrs,
+      @NotNull @JsonProperty(required = true) final AHRS ahrs,
       @NotNull @JsonProperty(required = true) final List<Rumbleable> rumbleables,
       @JsonProperty(required = true) final double minJerk,
       @JsonProperty(required = true) final double maxJerk,

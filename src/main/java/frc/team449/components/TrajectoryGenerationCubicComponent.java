@@ -3,6 +3,8 @@ package frc.team449.components;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -10,8 +12,10 @@ import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstrain
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.jacksonWrappers.MappedTranslationSet;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,
@@ -27,12 +31,14 @@ public class TrajectoryGenerationCubicComponent implements TrajectoryGenerationC
 
   @JsonCreator
   public TrajectoryGenerationCubicComponent(
-      @JsonProperty(required = true) final DriveUnidirectionalWithGyro drivetrain,
-      @JsonProperty(required = true) final double maxSpeedMeters,
-      @JsonProperty(required = true) final double maxAccelMeters,
-      @JsonProperty(required = true) final MappedTranslationSet waypoints,
+      @NotNull DriveUnidirectionalWithGyro drivetrain,
+      double maxSpeedMeters,
+      double maxAccelMeters,
       @Nullable Double maxCentripetalAcceleration,
-      boolean reversed) {
+      boolean reversed,
+      @NotNull Pose2d startingPose,
+      @NotNull List<Translation2d> translations,
+      @NotNull Pose2d endingPose) {
 
     this.drivetrain = drivetrain;
     this.maxAccelMeters = maxAccelMeters;
@@ -57,10 +63,7 @@ public class TrajectoryGenerationCubicComponent implements TrajectoryGenerationC
 
     trajectory =
         TrajectoryGenerator.generateTrajectory(
-            waypoints.getStartingPose(),
-            waypoints.getTranslations(),
-            waypoints.getEndingPose(),
-            configuration);
+            startingPose, translations, endingPose, configuration);
   }
 
   @Override

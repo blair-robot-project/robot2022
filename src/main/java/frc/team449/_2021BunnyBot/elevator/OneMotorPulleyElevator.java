@@ -5,13 +5,13 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.jacksonWrappers.WrappedEncoder;
-import frc.team449.jacksonWrappers.WrappedMotor;
+import frc.team449.wrappers.Encoder;
+import frc.team449.wrappers.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 
 public class OneMotorPulleyElevator extends SubsystemBase {
   @NotNull private final WrappedMotor pulleyMotor;
-  @NotNull private final WrappedEncoder encoder;
+  @NotNull private final Encoder encoder;
   @NotNull private final ElevatorPosition position;
   @NotNull private final ElevatorFeedforward feedforward;
   @NotNull private final TrapezoidProfile.Constraints constraints;
@@ -38,7 +38,7 @@ public class OneMotorPulleyElevator extends SubsystemBase {
 
   /** @return velocity of the elevator motor */
   public double getVelocity() {
-    return encoder.getVelocity();
+    return encoder.getVelocityNative();
   }
 
   /** @return the current position of the elevator */
@@ -81,7 +81,7 @@ public class OneMotorPulleyElevator extends SubsystemBase {
    */
   public void setVelocityUPS(double newVelocity) {
     pulleyMotor.setVoltage(
-        pidController.calculate(encoder.getVelocity(), encoder.upsToEncoder(newVelocity))
+        pidController.calculate(encoder.getVelocityNative(), encoder.upsToEncoder(newVelocity))
             + feedforward.calculate(newVelocity));
   }
 

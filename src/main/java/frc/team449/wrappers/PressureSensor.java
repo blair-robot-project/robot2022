@@ -1,4 +1,4 @@
-package frc.team449.jacksonWrappers;
+package frc.team449.wrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;

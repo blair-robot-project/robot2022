@@ -6,49 +6,47 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
-import frc.team449.jacksonWrappers.WrappedMotor;
 import frc.team449.multiSubsystem.SolenoidSimple;
-mport io.github.oblarg.oblog.annotations.Log;
+import frc.team449.wrappers.WrappedMotor;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
+  public final double distanceTopBottom;
   private final WrappedMotor telescopingArmWinch;
-  private final double telescopingArmMaxVel;
   private final SolenoidSimple pivotingTelescopingArm;
   private final ElevatorFeedforward feedforward;
   private final DigitalInput topLimitSwitch;
   private final DigitalInput bottomLimitSwitch;
-  public final double DISTANCE_TOP_BOTTOM;
+  public boolean extended;
 
   public PivotingTelescopingClimber(
-          @NotNull WrappedMotor telescopingArmWinch,
-          SolenoidSimple pivotingTelescopingArm,
-          DigitalInput topLimitSwitch,
-          DigitalInput bottomLimitSwitch,
-          @NotNull ElevatorFeedforward feedforward,
-          double kP,
-          double kI,
-          double kD,
-          double telescopingArmMaxVelocity,
-          double telescopingArmMaxAcceleration,
-          double distance_top_bottom) {
+      @NotNull WrappedMotor telescopingArmWinch,
+      SolenoidSimple pivotingTelescopingArm,
+      @NotNull DigitalInput topLimitSwitch,
+      @NotNull DigitalInput bottomLimitSwitch,
+      @NotNull ElevatorFeedforward feedforward,
+      double kP,
+      double kI,
+      double kD,
+      double telescopingArmMaxVelocity,
+      double telescopingArmMaxAcceleration,
+      double distanceTopBottom) {
     super(
         new ProfiledPIDController(
             kP,
             kI,
             kD,
             new TrapezoidProfile.Constraints(
-                    telescopingArmMaxVelocity,
-                    telescopingArmMaxAcceleration
-            ))
-    );
+                telescopingArmMaxVelocity, telescopingArmMaxAcceleration)));
     this.telescopingArmWinch = telescopingArmWinch;
     this.pivotingTelescopingArm = pivotingTelescopingArm;
     this.feedforward = feedforward;
     this.topLimitSwitch = topLimitSwitch;
     this.bottomLimitSwitch = bottomLimitSwitch;
-    this.telescopingArmMaxVel = telescopingArmMaxVelocity;
-    DISTANCE_TOP_BOTTOM = distance_top_bottom;
+    this.distanceTopBottom = distanceTopBottom;
+    extended = false;
+    /** Start arm retracted */
     enable();
   }
 
@@ -60,11 +58,10 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
     return bottomLimitSwitch.get();
   }
 
-
   public void pivotTelescopingArmOut() {
     pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kForward);
   }
-//Assign button
+  // Assign button
   public void pivotTelescopingArmIn() {
     pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kReverse);
   }
@@ -76,7 +73,7 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
 
   @Log
   public double getMeasurement() {
-    return telescopingArmWinch.getPosition();
+
+    return telescopingArmWinch.encoder.getPositionUnits();
   }
 }
-

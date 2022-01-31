@@ -6,56 +6,76 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import java.util.Objects;
-import java.util.function.BooleanSupplier;
+import frc.team449.multiSubsystem.BooleanSupplierUpdatable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 /**
  * Whenever it is executed, either continues running a command that it is already running or begins
  * running one of the two given commands based on the current state of the given condition.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ConditionalPerpetualCommand extends ConditionalCommand {
+public final class ConditionalPerpetualCommand {
   /**
-   * Default constructor
+   * Create a conditional command that, whenever it is executed, either continues running a command
+   * that it is already running or begins running one of the two given commands based on the current
+   * state of the given condition.
    *
-   * @param onTrue The Command to execute if BooleanSupplier returns true.
-   * @param onFalse The Command to execute if BooleanSupplier returns false.
-   * @param booleanSupplier A method for determining which command to run.
+   * @param onTrue The command to execute when the condition is true
+   * @param onFalse The command to execute when the condition is false
+   * @param booleanSupplier Supplies the condition
    */
-  @JsonCreator
-  public ConditionalPerpetualCommand(
-      @Nullable final Command onTrue,
-      @Nullable final Command onFalse,
-      @NotNull @JsonProperty(required = true) final BooleanSupplier booleanSupplier) {
-    super(
-        Objects.requireNonNullElse(onTrue, PlaceholderCommand.getInstance()),
-        Objects.requireNonNullElse(onFalse, PlaceholderCommand.getInstance()),
-        booleanSupplier);
+  public static Command createConditionalPerpetualCommand(
+      @Nullable Command onTrue,
+      @Nullable Command onFalse,
+      @NotNull BooleanSupplier booleanSupplier) {
+    // todo test if perpetually() works properly here
+    return new ConditionalCommand(
+            Objects.requireNonNullElse(onTrue, PlaceholderCommand.getInstance()),
+            Objects.requireNonNullElse(onFalse, PlaceholderCommand.getInstance()),
+            booleanSupplier)
+        .perpetually();
   }
 
   /**
-   * Calls {@link ConditionalCommand#initialize()} (which queries the condition) and then {@link
-   * ConditionalCommand#execute()}.
+   * Create a {@link ConditionalPerpetualCommand} that only runs a command when the specified
+   * condition changes.
+   *
+   * <p>The condition is not monitored while a command is being run as a result of a change.
    */
-  @Override
-  public void execute() {
-    // TODO This might be janky.
-    if (super.isFinished()) {
-      super.end(false);
-      super.initialize();
-    }
-    super.execute();
+  public static Command createConditionalPerpetualCommandChangeBased(
+      @NotNull BooleanSupplierUpdatable booleanSupplier,
+      @Nullable Command afterBecomingTrue,
+      @Nullable Command afterBecomingFalse) {
+    // The command to run when the condition changes.
+    var cmd =
+        new ConditionalCommand(
+            Objects.requireNonNullElse(afterBecomingTrue, PlaceholderCommand.getInstance()),
+            Objects.requireNonNullElse(afterBecomingFalse, PlaceholderCommand.getInstance()),
+            booleanSupplier);
+
+    // A supplier that tests for whether the condition has changed.
+    var supplier =
+        new BooleanSupplier() {
+          private boolean lastState;
+
+          @Override
+          public boolean getAsBoolean() {
+            booleanSupplier.update();
+
+            boolean current = booleanSupplier.getAsBoolean();
+            boolean stateChanged = current != this.lastState;
+            this.lastState = current;
+            return stateChanged;
+          }
+        };
+
+    // Don't do anything when the condition isn't changing.
+    return ConditionalPerpetualCommand.createConditionalPerpetualCommand(cmd, null, supplier);
   }
 
-  /**
-   * Returns {@code false}
-   *
-   * @return {@code false}
-   */
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+  private ConditionalPerpetualCommand() {}
 }

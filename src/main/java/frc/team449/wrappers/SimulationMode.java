@@ -1,4 +1,4 @@
-package frc.team449.jacksonWrappers;
+package frc.team449.wrappers;
 
 /** When to construct simulated hardware component instances. */
 public enum SimulationMode {

@@ -50,3 +50,4 @@ logs/
 
 # GUI layout configuration for Robot Simulation GUI
 imgui.ini
+simgui*.json
