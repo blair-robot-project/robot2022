@@ -15,7 +15,7 @@ public class ExtendTelescopingArm extends CommandBase {
   @Override
   public void initialize() {
     if (climber.getState() != PivotingTelescopingClimber.ClimberState.EXTENDED) {
-      climber.setGoal(climber.distanceTopBottom - climber.getMeasurement());
+      climber.setGoal(climber.distanceTopBottom);
     }
   }
 
@@ -27,7 +27,7 @@ public class ExtendTelescopingArm extends CommandBase {
     } else {
       climber.setState(PivotingTelescopingClimber.ClimberState.MIDDLE);
     }
-    climber.setGoal(0);
+    climber.getController().reset(climber.getMeasurement());
   }
 
   @Override
