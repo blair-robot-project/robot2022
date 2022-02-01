@@ -8,16 +8,18 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.team449.multiSubsystem.SolenoidSimple;
 import frc.team449.wrappers.WrappedMotor;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
+public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements Loggable {
   public final double distanceTopBottom;
   private final WrappedMotor telescopingArmWinch;
   private final SolenoidSimple pivotingTelescopingArm;
   private final ElevatorFeedforward feedforward;
   private final DigitalInput topLimitSwitch;
   private final DigitalInput bottomLimitSwitch;
-  public boolean extended;
+  private ClimberState state;
 
   public PivotingTelescopingClimber(
       @NotNull WrappedMotor telescopingArmWinch,
@@ -44,8 +46,17 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
     this.topLimitSwitch = topLimitSwitch;
     this.bottomLimitSwitch = bottomLimitSwitch;
     this.distanceTopBottom = distanceTopBottom;
-    extended = false; /** Start arm retracted */
+    // Start arm retracted
+    this.state = ClimberState.RETRACTED;
     enable();
+  }
+
+  public ClimberState getState() {
+    return state;
+  }
+
+  public void setState(ClimberState state) {
+    this.state = state;
   }
 
   public boolean topLimitSwitchTriggered() {
@@ -69,7 +80,14 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem {
     telescopingArmWinch.setVoltage(output + feedForward);
   }
 
+  @Log
   public double getMeasurement() {
     return telescopingArmWinch.encoder.getPositionUnits();
+  }
+
+  public enum ClimberState {
+    EXTENDED,
+    RETRACTED,
+    MIDDLE
   }
 }

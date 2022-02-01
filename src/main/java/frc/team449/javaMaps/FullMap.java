@@ -21,6 +21,7 @@ import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.SimpleButton;
+import frc.team449.oi.throttles.ThrottlePolynomial;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
@@ -141,8 +142,7 @@ public class FullMap {
             driveJoystick,
             new Polynomial(
                 Map.of(
-                    0.5, 0.4,
-                    0., 0.2),
+                    1., 1.), // Curvature
                 null),
             0.7,
             true);
@@ -176,28 +176,28 @@ public class FullMap {
             INTAKE_SPEED,
             SPITTER_SPEED);
 
-    var climber =
-        new PivotingTelescopingClimber(
-            driveMasterPrototype
-                .copy()
-                .setName("climber_motor")
-                .setPort(CLIMBER_MOTOR_PORT)
-                .setUnitPerRotation(1)
-                .createReal(),
-            /*new SolenoidSimple(new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1))*/ null,
-            new DigitalInput(0),
-            new DigitalInput(1),
-            new ElevatorFeedforward(0, 0, 0, 0),
-            1,
-            0,
-            0,
-            5, // 1 rot/s max vel,
-            .5, // .5 rot/s^2
-            40 // rotations
-            );
+//    var climber =
+//        new PivotingTelescopingClimber(
+//            driveMasterPrototype
+//                .copy()
+//                .setName("climber_motor")
+//                .setPort(CLIMBER_MOTOR_PORT)
+//                .setUnitPerRotation(1)
+//                .createReal(),
+//            /*new SolenoidSimple(new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1))*/ null,
+//            new DigitalInput(0),
+//            new DigitalInput(1),
+//            new ElevatorFeedforward(0, 0, 0, 0),
+//            1,
+//            0,
+//            0,
+//            5, // 1 rot/s max vel,
+//            .5, // .5 rot/s^2
+//            40 // rotations
+//            );
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
-    var subsystems = List.<Subsystem>of(drive, cargo, climber);
+    var subsystems = List.<Subsystem>of(drive, cargo/**, climber*/);
 
     var updater = new Updater(List.of(pdp, navx));
 
@@ -219,14 +219,16 @@ public class FullMap {
     var defaultCommands = List.<DefaultCommand>of();
 
     // TODO BUTTON BINDINGS HERE
+      /**
     new JoystickButton(mechanismsJoystick, XboxController.Button.kY.value)
         .whenPressed(new ExtendTelescopingArm(climber));
     new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)
         .whenPressed(new RetractTelescopingArm(climber));
-    //    new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
-    //        .whenPressed(climber::pivotTelescopingArmIn, climber);
-    //    new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
-    //        .whenPressed(climber::pivotTelescopingArmOut, climber);
+        new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
+            .whenPressed(climber::pivotTelescopingArmIn, climber);
+        new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
+            .whenPressed(climber::pivotTelescopingArmOut, climber);
+     */
 
     List<Command> robotStartupCommands = List.of();
 

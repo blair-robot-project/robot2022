@@ -14,20 +14,24 @@ public class ExtendTelescopingArm extends CommandBase {
 
   @Override
   public void initialize() {
-    if(!climber.extended) climber.setGoal(climber.getMeasurement() + climber.distanceTopBottom);
+    if (climber.getState() != PivotingTelescopingClimber.ClimberState.EXTENDED) {
+      climber.setGoal(climber.distanceTopBottom);
+    }
   }
 
   @Override
   public void end(boolean interrupted) {
     if (!interrupted) {
-        System.out.println("Successfully extended climber!");
-        climber.extended = true;
+      System.out.println("Successfully extended climber!");
+      climber.setState(PivotingTelescopingClimber.ClimberState.EXTENDED);
+    } else {
+      climber.setState(PivotingTelescopingClimber.ClimberState.MIDDLE);
     }
-    climber.setGoal(climber.getMeasurement());
+    climber.getController().reset(climber.getMeasurement());
   }
 
   @Override
   public boolean isFinished() {
-    return climber.topLimitSwitchTriggered() || climber.getController().atGoal();
+    return climber.getController().atGoal();
   }
 }
