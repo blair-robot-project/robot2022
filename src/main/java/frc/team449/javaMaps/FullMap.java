@@ -60,23 +60,6 @@ public class FullMap {
             .setCurrentLimit(50)
             .setEnableVoltageComp(true);
 
-    class DummyDigitalInput extends DigitalInput {
-
-      /**
-       * Create an instance of a Digital Input class. Creates a digital input given a channel.
-       *
-       * @param channel the DIO channel for the digital input 0-9 are on-board, 10-25 are on the MXP
-       */
-      public DummyDigitalInput(int channel) {
-        super(channel);
-      }
-
-      @Override
-      public boolean get() {
-        return false;
-      }
-    }
-
     var climber =
         new PivotingTelescopingClimber(
             sparkPrototype
@@ -86,8 +69,8 @@ public class FullMap {
                 .setUnitPerRotation(1)
                 .createReal(),
             /*new SolenoidSimple(new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1))*/ null,
-            new DummyDigitalInput(0),
-            new DummyDigitalInput(1),
+            new DigitalInput(0),
+            new DigitalInput(1),
             new ElevatorFeedforward(0, 0, 0, 0),
             1,
             0,

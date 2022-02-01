@@ -26,7 +26,7 @@ public class RetractTelescopingArm extends CommandBase {
     } else {
       climber.setState(PivotingTelescopingClimber.ClimberState.MIDDLE);
     }
-    climber.setGoal(climber.getMeasurement());
+    climber.setGoal(0);
   }
 
   @Override
