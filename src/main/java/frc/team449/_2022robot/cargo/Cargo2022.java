@@ -26,12 +26,12 @@ public class Cargo2022 extends SubsystemBase {
 
   public void runIntake() {
     intakeMotor.set(intakeSpeed);
-    spitterMotor.set(-spitterSpeed);
+    spitterMotor.set(0);
   }
 
   public void runIntakeReverse() {
     intakeMotor.set(-intakeSpeed);
-    spitterMotor.set(-spitterSpeed);
+    spitterMotor.set(0);
   }
 
   public void spit() {
