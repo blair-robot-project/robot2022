@@ -171,6 +171,7 @@ public class UnidirectionalNavXDefaultDrive<
       leftOutput = this.leftRamp.applyAsDouble(leftOutput);
       rightOutput = this.rightRamp.applyAsDouble(rightOutput);
     }
+    System.out.println(leftOutput + " and " + rightOutput);
 
     // If we're driving straight..
     double processedOutput;

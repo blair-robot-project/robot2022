@@ -31,8 +31,20 @@ public class ThrottleSum implements Throttle {
   /** Sums the throttles and returns their output */
   @Override
   public double getValue() {
-    var sum = throttles.stream().mapToDouble(Throttle::getValue).sum();
-    return sum / throttles.size();
+    // sum throttles
+    double sum = 0;
+    for (Throttle throttle : throttles) {
+      sum += throttle.getValue();
+    }
+
+    // clip to [-1, 1]
+    if (sum >= 1) {
+      return 1;
+    } else if (sum <= -1) {
+      return -1;
+    } else {
+      return sum;
+    }
   }
 
   /**

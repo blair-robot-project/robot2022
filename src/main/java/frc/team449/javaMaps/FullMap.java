@@ -55,7 +55,7 @@ public class FullMap {
   // Button numbers
   public static final int INTAKE_NORMAL_BUTTON = 1, INTAKE_REVERSE_BUTTON = 3, SPIT_BUTTON = 2;
   // Speeds
-  public static final double INTAKE_SPEED = 0.5, SPITTER_SPEED = 0.5;
+  public static final double INTAKE_SPEED = 0.3, SPITTER_SPEED = 0.4;
 
   private FullMap() {}
 
@@ -73,9 +73,9 @@ public class FullMap {
     var driveMasterPrototype =
         new SparkMaxConfig()
             .setEnableBrakeMode(true)
-            .setUnitPerRotation(2 * Math.PI * 0.0508)
-                    .setCurrentLimit(50)
-                    .setEnableVoltageComp(true);
+            .setUnitPerRotation(0.31918) // 2 * Math.PI * 0.0508
+            .setCurrentLimit(50)
+            .setEnableVoltageComp(true);
     var rightMaster =
             driveMasterPrototype
                     .copy()
@@ -96,17 +96,17 @@ public class FullMap {
                     .createReal();
 
     var drive =
-            new DriveUnidirectionalWithGyro(
-                    leftMaster,
-                    rightMaster,
-                    navx,
-                    new DriveSettingsBuilder()
-                            .postEncoderGearing(1 / 20.45)
+        new DriveUnidirectionalWithGyro(
+            leftMaster,
+            rightMaster,
+            navx,
+            new DriveSettingsBuilder()
+                .postEncoderGearing(1 / 5.86)
                 .maxSpeed(2.3)
-                .leftFeedforward(new SimpleMotorFeedforward(0.24453, 5.4511, 0.7127))
-                .rightFeedforward(new SimpleMotorFeedforward(0.2691, 5.3099, 0.51261))
+                .leftFeedforward(new SimpleMotorFeedforward(0.20767, 2.2623, 0.1517))
+                .rightFeedforward(new SimpleMotorFeedforward(0.20767, 2.2623, 0.1517))
                 .build(),
-  0.6492875);
+            0.6492875);
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
@@ -174,7 +174,7 @@ public class FullMap {
             new SparkMaxConfig()
                 .setName("intakeMotor")
                 .setPort(INTAKE_LEADER_PORT)
-                .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), false)
+                .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), true)
                 .createReal(),
             new SparkMaxConfig().setName("spitterMotor").setPort(SPITTER_PORT).createReal(),
             INTAKE_SPEED,
@@ -206,7 +206,6 @@ public class FullMap {
     var updater = new Updater(List.of(pdp, navx));
 
     // Button bindings here
-
     // Take in balls but don't shoot
     new SimpleButton(mechanismsJoystick, INTAKE_NORMAL_BUTTON)
         .whileHeld(cargo::runIntake, cargo)
@@ -220,16 +219,17 @@ public class FullMap {
         .whileHeld(cargo::spit, cargo)
         .whenReleased(cargo::stop, cargo);
 
-    /** IMPORTANT : ON BLOCK TESTING*/
-    new SimpleButton(driveJoystick, 3)
-            .whenPressed(new InstantCommand(() -> leftMaster.set(6), drive));
-    new SimpleButton(driveJoystick, 4)
-            .whenPressed(new InstantCommand(() -> rightMaster.set(6), drive));
-    new SimpleButton(driveJoystick, 3)
-            .whenPressed(new InstantCommand(() -> leftMaster.set(0), drive));
-    new SimpleButton(driveJoystick, 4)
-            .whenPressed(new InstantCommand(() -> rightMaster.set(0), drive));
-
+    /** IMPORTANT : ON BLOCK TESTING */
+    //    new SimpleButton(driveJoystick, 3)
+    //            .whenPressed(new InstantCommand(() -> leftMaster.setVoltage(2), drive))
+    //            .whenReleased(() -> leftMaster.setVoltage(0), drive);
+    //    new SimpleButton(driveJoystick, 4)
+    //            .whenPressed(new InstantCommand(() -> rightMaster.setVoltage(2), drive))
+    //            .whenReleased(() -> rightMaster.setVoltage(0), drive);;
+    //    new SimpleButton(driveJoystick, 3)
+    //            .whenPressed(new InstantCommand(() -> leftMaster.set(0), drive));
+    //    new SimpleButton(driveJoystick, 4)
+    //            .whenPressed(new InstantCommand(() -> rightMaster.set(0), drive));
 
     var defaultCommands = List.<DefaultCommand>of();
 
