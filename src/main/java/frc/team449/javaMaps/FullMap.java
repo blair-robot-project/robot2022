@@ -203,7 +203,7 @@ public class FullMap {
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo/**, climber*/);
 
-    var updater = new Updater(List.of(pdp, navx));
+    var updater = new Updater(List.of(pdp, navx, oi));
 
     // Button bindings here
     // Take in balls but don't shoot

@@ -91,7 +91,7 @@ public abstract class OIArcade implements OIUnidirectional {
   @Override
   public double @NotNull [] getLeftRightOutputCached() {
     if (leftRightOutputCached == null) {
-      this.update();
+      this.leftRightOutputCached = this.getLeftRightOutput();
     }
     return leftRightOutputCached;
   }
@@ -105,7 +105,7 @@ public abstract class OIArcade implements OIUnidirectional {
   @Override
   public double @NotNull [] getFwdRotOutputCached() {
     if (fwdRotOutputCached == null) {
-      this.update();
+      this.fwdRotOutputCached = this.getFwdRotOutput();
     }
     return fwdRotOutputCached;
   }
