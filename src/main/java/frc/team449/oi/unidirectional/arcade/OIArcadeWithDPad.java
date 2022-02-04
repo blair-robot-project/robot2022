@@ -83,18 +83,23 @@ public class OIArcadeWithDPad extends OIArcade {
   @Override
   public double[] getFwdRotOutput() {
     double fwd = fwdThrottle.getValue();
+    System.out.print("OIArcadeWithDPad.getFwdRotOutput: fwd=" + fwd + ", rot=");
 
     // If the gamepad is being pushed to the left or right
     if (gamepad != null && !(gamepad.getPOV() == -1 || gamepad.getPOV() % 180 == 0)) {
       // Output the shift value
+      System.out.println("N/A");
       return new double[] {fwd, gamepad.getPOV() < 180 ? dPadShift : -dPadShift};
     } else if (fwd == 0) { // Turning in place
+      System.out.println(rotThrottle.getValue() * turnInPlaceRotScale);
       return new double[] {fwd, rotThrottle.getValue() * turnInPlaceRotScale};
     } else if (scaleRotByFwdPoly != null) { // If we're using Cheezy Drive
+      System.out.println(rotThrottle.getValue() * scaleRotByFwdPoly.applyAsDouble(Math.abs(fwd)));
       return new double[] {
         fwd, rotThrottle.getValue() * scaleRotByFwdPoly.applyAsDouble(Math.abs(fwd))
       };
     } else { // Plain and simple
+      System.out.println(rotThrottle.getValue());
       return new double[] {fwd, rotThrottle.getValue()};
     }
   }
