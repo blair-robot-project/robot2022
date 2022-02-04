@@ -1,5 +1,6 @@
 package frc.team449.javaMaps;
 
+import com.fasterxml.jackson.databind.ser.impl.FailingSerializer;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.*;
@@ -176,7 +177,7 @@ public class FullMap {
                 .setPort(INTAKE_LEADER_PORT)
                 .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), true)
                 .createReal(),
-            new SparkMaxConfig().setName("spitterMotor").setPort(SPITTER_PORT).createReal(),
+            new SparkMaxConfig().setName("spitterMotor").setPort(SPITTER_PORT).setEnableBrakeMode(false).createReal(),
             INTAKE_SPEED,
             SPITTER_SPEED);
 
