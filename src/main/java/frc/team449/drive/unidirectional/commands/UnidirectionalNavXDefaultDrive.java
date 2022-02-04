@@ -134,6 +134,7 @@ public class UnidirectionalNavXDefaultDrive<
         this.getClass().getSimpleName(),
         EventImportance.kNormal);
     // Logger.addEvent("UnidirectionalNavXArcadeDrive init.", this.getClass());
+    System.out.println("Unidirectionalnavxdefaultdriveinit");
 
     // Initial assignment
     this.drivingStraight = false;
@@ -166,12 +167,17 @@ public class UnidirectionalNavXDefaultDrive<
     double leftOutput = this.oi.getLeftRightOutputCached()[0];
     double rightOutput = this.oi.getLeftRightOutputCached()[1];
 
+//    System.out.println("OI leftRightCached: " + leftOutput + ", " + rightOutput);
+
     // Ramp if it exists
     if (this.leftRamp != null && this.rightRamp != null) {
       leftOutput = this.leftRamp.applyAsDouble(leftOutput);
       rightOutput = this.rightRamp.applyAsDouble(rightOutput);
     }
-    System.out.println(leftOutput + " and " + rightOutput);
+
+    if (leftOutput != 0 || rightOutput != 0) {
+      System.out.println("unidirramped=" + leftOutput + " and " + rightOutput);
+    }
 
     // If we're driving straight..
     double processedOutput;

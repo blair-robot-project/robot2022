@@ -84,7 +84,7 @@ public class FullMap {
                     .setReverseOutput(false)
                     .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_1_PORT), false)
                     .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
-                    .createReal();
+                    .createSim();
     var leftMaster =
             driveMasterPrototype
                     .copy()
