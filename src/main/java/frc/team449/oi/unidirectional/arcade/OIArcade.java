@@ -51,11 +51,13 @@ public abstract class OIArcade implements OIUnidirectional {
    */
   @Override
   public double @NotNull [] getLeftRightOutput() {
-    fwdRotOutputCached = getFwdRotOutput();
+    this.fwdRotOutputCached = getFwdRotOutput();
 
     // Unscaled, unclipped values for left and right output.
     final double tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
     final double tmpRight = fwdRotOutputCached[0] - fwdRotOutputCached[1];
+
+    System.out.println("OIArcade.getLeftRightOutput: " + tmpLeft + ", " + tmpRight);
 
     // If left is too large
     if (Math.abs(tmpLeft) > 1) {
@@ -88,9 +90,10 @@ public abstract class OIArcade implements OIUnidirectional {
    */
   @Override
   public double @NotNull [] getLeftRightOutputCached() {
-    return leftRightOutputCached != null
-        ? leftRightOutputCached
-        : (leftRightOutputCached = getLeftRightOutput()); // TODO assignment inside expression?
+    if (leftRightOutputCached == null) {
+      this.update();
+    }
+    return leftRightOutputCached;
   }
 
   /**
@@ -101,9 +104,10 @@ public abstract class OIArcade implements OIUnidirectional {
    */
   @Override
   public double @NotNull [] getFwdRotOutputCached() {
-    return fwdRotOutputCached != null
-        ? fwdRotOutputCached
-        : (fwdRotOutputCached = getFwdRotOutput()); // TODO assignment inside expression?
+    if (fwdRotOutputCached == null) {
+      this.update();
+    }
+    return fwdRotOutputCached;
   }
 
   /** Updates all cached values with current ones. */
