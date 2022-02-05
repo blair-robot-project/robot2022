@@ -63,7 +63,6 @@ public class FullMap {
 
     var mechanismsJoystick = new RumbleableJoystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
-    List<GenericHID> joysticks = List.of(mechanismsJoystick, driveJoystick);
 
     var navx = new AHRS(SerialPort.Port.kMXP, true);
 
@@ -239,6 +238,6 @@ public class FullMap {
         new CommandContainer(
             robotStartupCommands, autoStartupCommands, teleopStartupCommands, testStartupCommands);
 
-    return new RobotMap(subsystems, pdp, updater, allCommands, joysticks, false);
+    return new RobotMap(subsystems, pdp, updater, allCommands, false);
   }
 }
