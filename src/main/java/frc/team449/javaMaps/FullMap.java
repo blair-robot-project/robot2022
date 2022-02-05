@@ -114,13 +114,12 @@ public class FullMap {
     var rotThrottle =
         throttlePrototype
             .axis(0)
-            .deadband(0.08)
+            .deadband(0.05)
             .inverted(false)
             .polynomial(
                 new Polynomial(
                     Map.of(
-                        1., 0.009,
-                        2., 0.002),
+                        1., 1.),
                     null))
             .build();
     var fwdThrottle =
@@ -133,8 +132,7 @@ public class FullMap {
                     .polynomial(
                         new Polynomial(
                             Map.of(
-                                1., 0.01,
-                                2., 0.06),
+                                1., 1.),
                             null))
                     .build(),
                 throttlePrototype.axis(2).inverted(false).build()));
