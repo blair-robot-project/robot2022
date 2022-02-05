@@ -47,7 +47,6 @@ public class RobotMap {
           final List<Subsystem> subsystems,
       @NotNull @JsonProperty(required = true) final PDP pdp,
       @NotNull @JsonProperty(required = true) final CommandContainer commands,
-      @Nullable final List<GenericHID> joysticks,
       final boolean useCameraServer) {
     this.pdp = pdp;
     this.useCameraServer = useCameraServer;
