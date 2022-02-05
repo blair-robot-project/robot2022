@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +27,7 @@ public class ThrottleSum implements Throttle {
   @JsonCreator
   public ThrottleSum(@NotNull @JsonProperty(required = true) Set<Throttle> throttles) {
     this.throttles = throttles;
+    Updater.subscribe(this);
   }
 
   /** Sums the throttles and returns their output */

@@ -1,54 +1,30 @@
 package frc.team449.other;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.generalInterfaces.updatable.Updatable;
-import java.util.ArrayList;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-/** A Runnable for updating cached variables. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class Updater implements Runnable {
+import java.util.HashSet;
+import java.util.Set;
 
-  /** Default instance that is run whenever any instance is run. */
-  private static final Updater defaultInstance = new Updater(new ArrayList<>());
+/**
+ * A class for updating cached variables. Run the {@link Updater#run()} method in {@link
+ * frc.team449.Robot#teleopPeriodic()}
+ */
+public final class Updater {
+
   /** The objects to update. */
-  @NotNull private final List<Updatable> updatables;
+  @NotNull private static final Set<Updatable> updatables = new HashSet<>();
 
-  /**
-   * Default constructor
-   *
-   * @param updatables The objects to update.
-   */
-  public Updater(@NotNull @JsonProperty(required = true) final List<Updatable> updatables) {
-    this.updatables = updatables;
-  }
+  private Updater() {}
 
-  /** Subscribes the specified updatable to being updated. */
-  public static void subscribe(final Updatable updatable) {
-    defaultInstance.updatables.add(updatable);
-  }
-
-  /**
-   * Constructs an updatable that also calls {@link Updater#run()} on the default updatable instance
-   * whenever it is run.
-   *
-   * @param updatables The objects to update.
-   */
-  @JsonCreator
-  public static Updater subscribe(
-      @NotNull @JsonProperty(required = true) final List<Updatable> updatables) {
-    defaultInstance.updatables.addAll(updatables);
-    return defaultInstance;
+  /** Subscribes the specified updatables to being updated. */
+  public static void subscribe(Updatable updatable) {
+    updatables.add(updatable);
   }
 
   /** Update all the updatables. */
-  @Override
-  public void run() {
-    for (final Updatable updatable : this.updatables) {
+  public static void run() {
+    for (var updatable : updatables) {
       updatable.update();
     }
   }

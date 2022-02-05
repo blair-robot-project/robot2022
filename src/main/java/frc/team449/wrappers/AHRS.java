@@ -1,17 +1,16 @@
 package frc.team449.wrappers;
 
-import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
 import frc.team449.generalInterfaces.updatable.Updatable;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
+
+import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
 
 /** An invertible wrapper for the NavX. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -38,9 +37,7 @@ public class AHRS implements Updatable, Loggable {
    *     works.
    * @param invertYaw Whether or not to invert the yaw axis. Defaults to true.
    */
-  @JsonCreator
-  public AHRS(
-      @JsonProperty(required = true) final SerialPort.Port port, final Boolean invertYaw) {
+  public AHRS(SerialPort.Port port, final Boolean invertYaw) {
     if (port.equals(SerialPort.Port.kMXP)) {
       this.ahrs = new com.kauailabs.navx.frc.AHRS(SPI.Port.kMXP);
     } else {
@@ -52,6 +49,7 @@ public class AHRS implements Updatable, Loggable {
     } else {
       this.invertYaw = 1;
     }
+    Updater.subscribe(this);
   }
 
   /**

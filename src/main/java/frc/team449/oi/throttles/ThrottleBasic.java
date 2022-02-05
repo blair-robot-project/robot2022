@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.GenericHID;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,6 +40,7 @@ public class ThrottleBasic implements Throttle {
     this.stick = stick;
     this.axis = axis;
     this.inverted = inverted;
+    Updater.subscribe(this);
   }
 
   /**

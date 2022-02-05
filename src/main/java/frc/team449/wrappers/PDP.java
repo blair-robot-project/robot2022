@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.generalInterfaces.updatable.Updatable;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +48,7 @@ public class PDP implements Loggable, Updatable {
     this.temperature = 0;
     this.resistance = 0;
     this.unloadedVoltage = 0;
+    Updater.subscribe(this);
   }
 
   /**

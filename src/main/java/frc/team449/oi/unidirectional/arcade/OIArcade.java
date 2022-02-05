@@ -3,6 +3,7 @@ package frc.team449.oi.unidirectional.arcade;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.oi.unidirectional.OIUnidirectional;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +31,7 @@ public abstract class OIArcade implements OIUnidirectional {
   @JsonCreator
   protected OIArcade(final boolean rescaleOutputs) {
     this.rescaleOutputs = rescaleOutputs;
+    Updater.subscribe(this);
   }
 
   /**

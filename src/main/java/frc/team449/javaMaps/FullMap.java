@@ -26,7 +26,6 @@ import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
 import frc.team449.other.DefaultCommand;
 import frc.team449.other.FollowerUtils;
-import frc.team449.other.Updater;
 import frc.team449.wrappers.AHRS;
 import frc.team449.wrappers.PDP;
 import frc.team449.wrappers.RumbleableJoystick;
@@ -199,8 +198,6 @@ public class FullMap {
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo, climber);
 
-    var updater = new Updater(List.of(pdp, navx));
-
     // Button bindings here
 
     // Take in balls but don't shoot
@@ -239,6 +236,6 @@ public class FullMap {
         new CommandContainer(
             robotStartupCommands, autoStartupCommands, teleopStartupCommands, testStartupCommands);
 
-    return new RobotMap(subsystems, pdp, updater, allCommands, joysticks, false);
+    return new RobotMap(subsystems, pdp, allCommands, joysticks, false);
   }
 }
