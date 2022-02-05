@@ -49,6 +49,9 @@ public class ThrottleSum implements Throttle {
   /** Updates all cached values with current ones. */
   @Override
   public void update() {
+    for (var throttle : throttles) {
+      throttle.update();
+    }
     cachedValue = getValue();
   }
 }
