@@ -1,19 +1,14 @@
 package frc.team449.javaMaps;
 
-import com.fasterxml.jackson.databind.ser.impl.FailingSerializer;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449._2022robot.cargo.Cargo2022;
-import frc.team449._2022robot.climber.PivotingTelescopingClimber;
-import frc.team449._2022robot.climber.commands.ExtendTelescopingArm;
-import frc.team449._2022robot.climber.commands.RetractTelescopingArm;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
@@ -23,8 +18,8 @@ import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.SimpleButton;
-import frc.team449.oi.throttles.ThrottlePolynomial;
 import frc.team449.oi.throttles.ThrottleSum;
+import frc.team449.oi.throttles.ThrottleWithRamp;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
 import frc.team449.other.DefaultCommand;
@@ -123,19 +118,17 @@ public class FullMap {
                     null))
             .build();
     var fwdThrottle =
-        new ThrottleSum(
-            Set.of(
-                throttlePrototype
-                    .axis(3)
-                    .deadband(0.05)
-                    .inverted(true)
-                    .polynomial(
-                        new Polynomial(
-                            Map.of(
-                                1., 1.),
-                            null))
-                    .build(),
-                throttlePrototype.axis(2).inverted(false).build()));
+        new ThrottleWithRamp(
+            new ThrottleSum(
+                Set.of(
+                    throttlePrototype
+                        .axis(3)
+                        .deadband(0.05)
+                        .inverted(true)
+                        .polynomial(new Polynomial(Map.of(1., 1.), null))
+                        .build(),
+                    throttlePrototype.axis(2).inverted(false).build())),
+            new RampComponent(2.0, 1.5));
     var oi =
         new OIArcadeWithDPad(
             rotThrottle,
@@ -144,8 +137,7 @@ public class FullMap {
             false,
             driveJoystick,
             new Polynomial(
-                Map.of(
-                    1., 1.), // Curvature
+                Map.of(1., 1.), // Curvature
                 null),
             0.7,
             true);
@@ -166,7 +158,7 @@ public class FullMap {
             new Debouncer(0.15),
             drive,
             oi,
-            new RampComponent(2.0, 2.0)));
+            new RampComponent(2.0)));
 
     var cargo =
         new Cargo2022(
@@ -200,7 +192,7 @@ public class FullMap {
 //            );
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
-    var subsystems = List.<Subsystem>of(drive, cargo/**, climber*/);
+    var subsystems = List.<Subsystem>of(drive, cargo/*, climber*/);
 
     var updater = new Updater(List.of(pdp, navx, oi));
 
@@ -218,7 +210,7 @@ public class FullMap {
         .whileHeld(cargo::spit, cargo)
         .whenReleased(cargo::stop, cargo);
 
-    /** IMPORTANT : ON BLOCK TESTING */
+    /* IMPORTANT : ON BLOCK TESTING */
     //    new SimpleButton(driveJoystick, 3)
     //            .whenPressed(new InstantCommand(() -> leftMaster.setVoltage(2), drive))
     //            .whenReleased(() -> leftMaster.setVoltage(0), drive);
@@ -233,7 +225,7 @@ public class FullMap {
     var defaultCommands = List.<DefaultCommand>of();
 
     // TODO BUTTON BINDINGS HERE
-      /**
+      /*
     new JoystickButton(mechanismsJoystick, XboxController.Button.kY.value)
         .whenPressed(new ExtendTelescopingArm(climber));
     new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)

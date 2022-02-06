@@ -11,12 +11,10 @@ import java.util.Set;
 
 /** A Throttle that sums any number of other Throttles. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ThrottleSum implements Throttle {
+public class ThrottleSum extends Throttle {
 
   /** The throttles to sum. */
   @NotNull private final Set<Throttle> throttles;
-  /** The cached output. */
-  private double cachedValue;
 
   /**
    * Default constructor.
@@ -47,20 +45,12 @@ public class ThrottleSum implements Throttle {
     }
   }
 
-  /**
-   * Get the cached output of the throttle this object represents.
-   *
-   * @return The output from [-1, 1].
-   */
-  @Override
-  @Log
-  public double getValueCached() {
-    return cachedValue;
-  }
-
   /** Updates all cached values with current ones. */
   @Override
   public void update() {
-    cachedValue = getValue();
+    for (var throttle : this.throttles) {
+      throttle.update();
+    }
+    super.update();
   }
 }
