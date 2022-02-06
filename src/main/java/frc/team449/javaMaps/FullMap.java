@@ -31,8 +31,8 @@ import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.SimpleButton;
-import frc.team449.oi.throttles.ThrottlePolynomial;
 import frc.team449.oi.throttles.ThrottleSum;
+import frc.team449.oi.throttles.ThrottleWithRamp;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
 import frc.team449.other.DefaultCommand;
@@ -207,7 +207,7 @@ public class FullMap {
 //            );
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
-    var subsystems = List.<Subsystem>of(drive, cargo/**, climber*/);
+    var subsystems = List.<Subsystem>of(drive, cargo/*, climber*/);
 
     var updater = new Updater(List.of(pdp, navx, oi));
 
@@ -225,7 +225,7 @@ public class FullMap {
         .whileHeld(cargo::spit, cargo)
         .whenReleased(cargo::stop, cargo);
 
-    /** IMPORTANT : ON BLOCK TESTING */
+    /* IMPORTANT : ON BLOCK TESTING */
     //    new SimpleButton(driveJoystick, 3)
     //            .whenPressed(new InstantCommand(() -> leftMaster.setVoltage(2), drive))
     //            .whenReleased(() -> leftMaster.setVoltage(0), drive);
@@ -240,7 +240,7 @@ public class FullMap {
     var defaultCommands = List.<DefaultCommand>of();
 
     // TODO BUTTON BINDINGS HERE
-      /**
+      /*
     new JoystickButton(mechanismsJoystick, XboxController.Button.kY.value)
         .whenPressed(new ExtendTelescopingArm(climber));
     new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)
