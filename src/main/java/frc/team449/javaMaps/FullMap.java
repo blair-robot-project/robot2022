@@ -2,11 +2,16 @@ package frc.team449.javaMaps;
 
 import com.fasterxml.jackson.databind.ser.impl.FailingSerializer;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
@@ -16,7 +21,10 @@ import frc.team449._2022robot.climber.commands.ExtendTelescopingArm;
 import frc.team449._2022robot.climber.commands.RetractTelescopingArm;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
+import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
+import frc.team449.drive.unidirectional.commands.DriveStraight;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
+import frc.team449.drive.unidirectional.commands.motionprofiling.RamseteControllerCommands;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
@@ -56,7 +64,7 @@ public class FullMap {
   // Button numbers
   public static final int INTAKE_NORMAL_BUTTON = 1, INTAKE_REVERSE_BUTTON = 3, SPIT_BUTTON = 2;
   // Speeds
-  public static final double INTAKE_SPEED = 0.3, SPITTER_SPEED = 0.4;
+  public static final double INTAKE_SPEED = 0.4, SPITTER_SPEED = 0.5;
 
   private FullMap() {}
 
@@ -85,7 +93,7 @@ public class FullMap {
                     .setReverseOutput(false)
                     .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_1_PORT), false)
                     .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
-                    .createSim();
+                    .createReal();
     var leftMaster =
             driveMasterPrototype
                     .copy()
@@ -103,25 +111,23 @@ public class FullMap {
             navx,
             new DriveSettingsBuilder()
                 .postEncoderGearing(1 / 5.86)
-                .maxSpeed(2.3)
                 .leftFeedforward(new SimpleMotorFeedforward(0.20767, 2.2623, 0.1517))
                 .rightFeedforward(new SimpleMotorFeedforward(0.20767, 2.2623, 0.1517))
                 .build(),
             0.6492875);
 
     var throttlePrototype =
-        new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.04).scale(0.7);
+        new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.06);
     var rotThrottle =
         throttlePrototype
             .axis(0)
-            .deadband(0.08)
-            .inverted(false)
+            .deadband(0.05)
+            .inverted(true)
             .polynomial(
                 new Polynomial(
                     Map.of(
-                        1., 0.009,
-                        2., 0.002),
-                    null))
+                        2., 1.),
+                        null))
             .build();
     var fwdThrottle =
         new ThrottleSum(
@@ -133,9 +139,8 @@ public class FullMap {
                     .polynomial(
                         new Polynomial(
                             Map.of(
-                                1., 0.01,
-                                2., 0.06),
-                            null))
+                                2., 1.),
+                                null))
                     .build(),
                 throttlePrototype.axis(2).inverted(false).build()));
     var oi =
@@ -147,28 +152,28 @@ public class FullMap {
             driveJoystick,
             new Polynomial(
                 Map.of(
-                    1., 1.), // Curvature
+                    2., 1.), // Curvature
                 null),
-            0.7,
-            true);
+                .3,
+            false);
 
     drive.setDefaultCommand(
         new UnidirectionalNavXDefaultDrive<>(
             0,
             new Debouncer(1.5),
             0,
-            1.0,
+            0.6,
             null,
             2,
             3.0,
-            false,
+            true,
+            .01,
             0,
-            0,
-            0,
+            0.03,
             new Debouncer(0.15),
             drive,
             oi,
-            new RampComponent(2.0, 2.0)));
+            null));
 
     var cargo =
         new Cargo2022(
@@ -245,10 +250,24 @@ public class FullMap {
         new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
             .whenPressed(climber::pivotTelescopingArmOut, climber);
      */
+//    var ramsete = RamseteControllerCommands.goToPosition(
+//            drive,
+//            .001,
+//            .001,
+//            .001,
+//            new PIDController(.03,0,0),
+//            new PIDController(.03,0,0),
+//            new Pose2d(new Translation2d(5.0,5.0), new Rotation2d(0.06)),
+//            List.<Translation2d>of(new Translation2d(2,2)),
+//            false
+//    );
 
     List<Command> robotStartupCommands = List.of();
 
-    List<Command> autoStartupCommands = List.of();
+    List<Command> autoStartupCommands = List.of(
+        /*ramsete*/
+    );
+
 
     List<Command> teleopStartupCommands = List.of();
 

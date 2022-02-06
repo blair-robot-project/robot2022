@@ -56,8 +56,8 @@ public abstract class OIArcade implements OIUnidirectional {
     // Unscaled, unclipped values for left and right output.
     final double tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
     final double tmpRight = fwdRotOutputCached[0] - fwdRotOutputCached[1];
-
-    System.out.println("OIArcade.getLeftRightOutput: " + tmpLeft + ", " + tmpRight);
+//    System.out.println("Left : " + tmpLeft + " Right : " + tmpRight);
+//    if (tmpLeft != 0 || tmpRight != 0) System.out.println("tmpleft=" + tmpLeft + ", tmpRight=" + tmpRight);
 
     // If left is too large
     if (Math.abs(tmpLeft) > 1) {
@@ -115,5 +115,6 @@ public abstract class OIArcade implements OIUnidirectional {
   public void update() {
     fwdRotOutputCached = getFwdRotOutput();
     leftRightOutputCached = getLeftRightOutput();
+//    if (leftRightOutputCached[0] != 0) System.out.println("leftrightoutputc=" + leftRightOutputCached[0] + ", " + leftRightOutputCached[1]);
   }
 }

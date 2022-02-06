@@ -164,19 +164,12 @@ public class UnidirectionalNavXDefaultDrive<
 
     // Get the outputs
     double rawOutput = this.getRawOutput();
-    double leftOutput = this.oi.getLeftRightOutputCached()[0];
-    double rightOutput = this.oi.getLeftRightOutputCached()[1];
-
-//    System.out.println("OI leftRightCached: " + leftOutput + ", " + rightOutput);
-
+    double leftOutput = this.oi.getLeftRightOutput()[0];
+    double rightOutput = this.oi.getLeftRightOutput()[1];
     // Ramp if it exists
     if (this.leftRamp != null && this.rightRamp != null) {
       leftOutput = this.leftRamp.applyAsDouble(leftOutput);
       rightOutput = this.rightRamp.applyAsDouble(rightOutput);
-    }
-
-    if (leftOutput != 0 || rightOutput != 0) {
-      System.out.println("unidirramped=" + leftOutput + " and " + rightOutput);
     }
 
     // If we're driving straight..
