@@ -15,17 +15,11 @@ import org.jetbrains.annotations.NotNull;
 public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements Loggable {
   public final double distanceTopBottom;
   private final WrappedMotor telescopingArmWinch;
-  private final SolenoidSimple pivotingTelescopingArm;
   private final ElevatorFeedforward feedforward;
-  private final DigitalInput topLimitSwitch;
-  private final DigitalInput bottomLimitSwitch;
   private ClimberState state;
 
   public PivotingTelescopingClimber(
       @NotNull WrappedMotor telescopingArmWinch,
-      SolenoidSimple pivotingTelescopingArm,
-      @NotNull DigitalInput topLimitSwitch,
-      @NotNull DigitalInput bottomLimitSwitch,
       @NotNull ElevatorFeedforward feedforward,
       double kP,
       double kI,
@@ -41,14 +35,11 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
             new TrapezoidProfile.Constraints(
                 telescopingArmMaxVelocity, telescopingArmMaxAcceleration)));
     this.telescopingArmWinch = telescopingArmWinch;
-    this.pivotingTelescopingArm = pivotingTelescopingArm;
     this.feedforward = feedforward;
-    this.topLimitSwitch = topLimitSwitch;
-    this.bottomLimitSwitch = bottomLimitSwitch;
     this.distanceTopBottom = distanceTopBottom;
     // Start arm retracted
     this.state = ClimberState.RETRACTED;
-    enable();
+//    enable();
   }
 
   public ClimberState getState() {
@@ -59,22 +50,16 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
     this.state = state;
   }
 
-  public boolean topLimitSwitchTriggered() {
-    return topLimitSwitch.get();
+//  public void pivotTelescopingArmOut() {
+//    pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kForward);
+//  }
+//
+//  public void pivotTelescopingArmIn() {
+//    pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kReverse);
+//  }
+  public void set(double velocity) {
+    telescopingArmWinch.set(velocity);
   }
-
-  public boolean bottomLimitSwitchTriggered() {
-    return bottomLimitSwitch.get();
-  }
-
-  public void pivotTelescopingArmOut() {
-    pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kForward);
-  }
-
-  public void pivotTelescopingArmIn() {
-    pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kReverse);
-  }
-
   protected void useOutput(double output, TrapezoidProfile.@NotNull State setpoint) {
     double feedForward = feedforward.calculate(setpoint.position, setpoint.velocity);
     telescopingArmWinch.setVoltage(output + feedForward);
@@ -89,5 +74,6 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
     EXTENDED,
     RETRACTED,
     MIDDLE
+
   }
 }

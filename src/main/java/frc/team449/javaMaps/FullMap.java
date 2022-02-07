@@ -57,7 +57,9 @@ public class FullMap {
       LEFT_LEADER_FOLLOWER_2_PORT = 3,
       INTAKE_LEADER_PORT = 8,
       INTAKE_FOLLOWER_PORT = 9,
-      SPITTER_PORT = 10;
+      SPITTER_PORT = 10,
+      CLIMBER_MOTOR_PORT = 6,
+      CLIMBER_FOLLOWER_MOTOR_PORT = 12;
 
   // Controller ports
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
@@ -186,25 +188,23 @@ public class FullMap {
             INTAKE_SPEED,
             SPITTER_SPEED);
 
-//    var climber =
-//        new PivotingTelescopingClimber(
-//            driveMasterPrototype
-//                .copy()
-//                .setName("climber_motor")
-//                .setPort(CLIMBER_MOTOR_PORT)
-//                .setUnitPerRotation(1)
-//                .createReal(),
-//            /*new SolenoidSimple(new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1))*/ null,
-//            new DigitalInput(0),
-//            new DigitalInput(1),
-//            new ElevatorFeedforward(0, 0, 0, 0),
-//            1,
-//            0,
-//            0,
-//            5, // 1 rot/s max vel,
-//            .5, // .5 rot/s^2
-//            40 // rotations
-//            );
+    var climber =
+        new PivotingTelescopingClimber(
+            driveMasterPrototype
+                .copy()
+                .setName("climber_motor")
+                .setPort(CLIMBER_MOTOR_PORT)
+                .setUnitPerRotation(0.3191858136)
+                .setPostEncoderGearing(1/10)
+                .createReal(),
+            new ElevatorFeedforward(0, 0, 0, 0),
+            1,
+            0,
+            0,
+            5, // 1 rot/s max vel,
+            .5, // .5 rot/s^2
+            40 // rotations
+            );
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo/*, climber*/);
@@ -213,17 +213,17 @@ public class FullMap {
 
     // Button bindings here
     // Take in balls but don't shoot
-    new SimpleButton(mechanismsJoystick, INTAKE_NORMAL_BUTTON)
-        .whileHeld(cargo::runIntake, cargo)
-        .whenReleased(cargo::stop, cargo);
-    // Run intake backwards so human can feed balls
-    new SimpleButton(mechanismsJoystick, INTAKE_REVERSE_BUTTON)
-        .whileHeld(cargo::runIntakeReverse, cargo)
-        .whenReleased(cargo::stop, cargo);
-    // Run all motors in intake to spit balls out
-    new SimpleButton(mechanismsJoystick, SPIT_BUTTON)
-        .whileHeld(cargo::spit, cargo)
-        .whenReleased(cargo::stop, cargo);
+//    new SimpleButton(mechanismsJoystick, INTAKE_NORMAL_BUTTON)
+//        .whileHeld(cargo::runIntake, cargo)
+//        .whenReleased(cargo::stop, cargo);
+//    // Run intake backwards so human can feed balls
+//    new SimpleButton(mechanismsJoystick, INTAKE_REVERSE_BUTTON)
+//        .whileHeld(cargo::runIntakeReverse, cargo)
+//        .whenReleased(cargo::stop, cargo);
+//    // Run all motors in intake to spit balls out
+//    new SimpleButton(mechanismsJoystick, SPIT_BUTTON)
+//        .whileHeld(cargo::spit, cargo)
+//        .whenReleased(cargo::stop, cargo);
 
     /* IMPORTANT : ON BLOCK TESTING */
     //    new SimpleButton(driveJoystick, 3)
@@ -240,16 +240,16 @@ public class FullMap {
     var defaultCommands = List.<DefaultCommand>of();
 
     // TODO BUTTON BINDINGS HERE
-      /*
+
     new JoystickButton(mechanismsJoystick, XboxController.Button.kY.value)
-        .whenPressed(new ExtendTelescopingArm(climber));
-    new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)
-        .whenPressed(new RetractTelescopingArm(climber));
-        new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
-            .whenPressed(climber::pivotTelescopingArmIn, climber);
-        new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
-            .whenPressed(climber::pivotTelescopingArmOut, climber);
-     */
+        .whenPressed(new InstantCommand(()->climber.set(0.1), climber));
+    new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
+        .whenPressed(new InstantCommand(()->climber.set(-0.1), climber));
+//        new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
+//            .whenPressed(climber::pivotTelescopingArmIn, climber);
+//        new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
+//            .whenPressed(climber::pivotTelescopingArmOut, climber);
+
 //    var ramsete = RamseteControllerCommands.goToPosition(
 //            drive,
 //            .001,
