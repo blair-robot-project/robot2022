@@ -154,7 +154,8 @@ public class FullMap {
                 Map.of(
                     2., 1.), // Curvature
                 null),
-                .3,
+            new RampComponent(2.0, 0.95),
+            .3,
             false);
 
     drive.setDefaultCommand(

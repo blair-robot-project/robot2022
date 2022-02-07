@@ -4,9 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.oi.throttles.Throttle;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.DoubleUnaryOperator;
 
 /** A simple, two-stick arcade drive OI. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -28,10 +31,11 @@ public class OIArcadeSimple extends OIArcade {
    */
   @JsonCreator
   public OIArcadeSimple(
-      @NotNull @JsonProperty(required = true) final Throttle rotThrottle,
-      @NotNull @JsonProperty(required = true) final Throttle velThrottle,
+      @NotNull Throttle rotThrottle,
+      @NotNull Throttle velThrottle,
+      @NotNull RampComponent fwdRamp,
       final boolean rescaleOutputs) {
-    super(rescaleOutputs);
+    super(fwdRamp, rescaleOutputs);
     this.rotThrottle = rotThrottle;
     this.velThrottle = velThrottle;
   }
@@ -44,7 +48,7 @@ public class OIArcadeSimple extends OIArcade {
    */
   @Override
   @Log
-  public double[] getFwdRotOutput() {
+  public double @NotNull [] getFwdRotOutputUnramped() {
     return new double[] {velThrottle.getValue(), rotThrottle.getValue()};
   }
 }

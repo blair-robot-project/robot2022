@@ -2,6 +2,7 @@ package frc.team449.oi.unidirectional.arcade;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.oi.unidirectional.OIUnidirectional;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +21,8 @@ public abstract class OIArcade implements OIUnidirectional {
   private double @Nullable [] fwdRotOutputCached;
   /** Cached left-right output values */
   private double @Nullable [] leftRightOutputCached;
+  /** {@link RampComponent} only for the forward throttle */
+  private final RampComponent fwdRamp;
 
   /**
    * Default constructor.
@@ -28,7 +31,8 @@ public abstract class OIArcade implements OIUnidirectional {
    *     1. Defaults to false.
    */
   @JsonCreator
-  protected OIArcade(final boolean rescaleOutputs) {
+  public OIArcade(RampComponent fwdRamp, boolean rescaleOutputs) {
+    this.fwdRamp = fwdRamp;
     this.rescaleOutputs = rescaleOutputs;
   }
 
@@ -56,8 +60,6 @@ public abstract class OIArcade implements OIUnidirectional {
     // Unscaled, unclipped values for left and right output.
     final double tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
     final double tmpRight = fwdRotOutputCached[0] - fwdRotOutputCached[1];
-//    System.out.println("Left : " + tmpLeft + " Right : " + tmpRight);
-//    if (tmpLeft != 0 || tmpRight != 0) System.out.println("tmpleft=" + tmpLeft + ", tmpRight=" + tmpRight);
 
     // If left is too large
     if (Math.abs(tmpLeft) > 1) {
@@ -97,6 +99,27 @@ public abstract class OIArcade implements OIUnidirectional {
   }
 
   /**
+   * The forwards and rotational movement given to the drive, before ramping is applied.
+   *
+   * @return An array of length 2, where the first element is the forwards output and the second is
+   *     the rotational, both from [-1, 1]
+   * @see OIArcade#getFwdRotOutput()
+   */
+  public abstract double @NotNull [] getFwdRotOutputUnramped();
+
+  /**
+   * The forwards and rotational movement given to the drive, with ramping applied.
+   *
+   * @return An array of length 2, where the first element is the forwards output and the second is
+   *     the rotational, both from [-1, 1]
+   */
+  @Override
+  public final double @NotNull [] getFwdRotOutput() {
+    var fwdRot = getFwdRotOutputUnramped();
+    return new double[] {fwdRamp.applyAsDouble(fwdRot[0]), fwdRot[1]};
+  }
+
+  /**
    * The cached forwards and rotational movement given to the drive.
    *
    * @return An array of length 2, where the first element is the forwards output and the second is
@@ -115,6 +138,5 @@ public abstract class OIArcade implements OIUnidirectional {
   public void update() {
     fwdRotOutputCached = getFwdRotOutput();
     leftRightOutputCached = getLeftRightOutput();
-//    if (leftRightOutputCached[0] != 0) System.out.println("leftrightoutputc=" + leftRightOutputCached[0] + ", " + leftRightOutputCached[1]);
   }
 }
