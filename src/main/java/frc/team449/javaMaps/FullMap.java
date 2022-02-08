@@ -128,23 +128,28 @@ public class FullMap {
             .polynomial(
                 new Polynomial(
                     Map.of(
-                        2., 1.),
+                        1., 1.),
                         null))
             .build();
     var fwdThrottle =
-        new ThrottleSum(
-            Set.of(
-                throttlePrototype
-                    .axis(3)
-                    .deadband(0.05)
-                    .inverted(true)
-                    .polynomial(
-                        new Polynomial(
-                            Map.of(
-                                2., 1.),
-                                null))
-                    .build(),
-                throttlePrototype.axis(2).inverted(false).build()));
+            new ThrottleWithRamp(
+                    new ThrottleSum(
+                        Set.of(
+                                throttlePrototype
+                                        .axis(3)
+                                        .deadband(0.05)
+                                        .inverted(true)
+                                        .polynomial(
+                                                new Polynomial(
+                                                        Map.of(
+                                                                1., 1.),
+                                                        null))
+                                        .build(),
+                                throttlePrototype.axis(2).inverted(false).build()
+                        )
+                    ),
+                    new RampComponent(2, .9))
+        ;
     var oi =
         new OIArcadeWithDPad(
             rotThrottle,
@@ -154,7 +159,7 @@ public class FullMap {
             driveJoystick,
             new Polynomial(
                 Map.of(
-                    2., 1.), // Curvature
+                    1., 1.), // Curvature
                 null),
                 .3,
             false);
