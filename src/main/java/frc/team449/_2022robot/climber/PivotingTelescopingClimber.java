@@ -57,6 +57,7 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
 //  public void pivotTelescopingArmIn() {
 //    pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kReverse);
 //  }
+
   public void set(double velocity) {
     telescopingArmWinch.set(velocity);
   }
@@ -74,6 +75,5 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
     EXTENDED,
     RETRACTED,
     MIDDLE
-
   }
 }

@@ -194,48 +194,33 @@ public class FullMap {
                 .copy()
                 .setName("climber_motor")
                 .setPort(CLIMBER_MOTOR_PORT)
-                .setUnitPerRotation(0.3191858136)
+                .setUnitPerRotation(0.3191858136/2)
                 .setPostEncoderGearing(1/10)
+                .addSlaveSpark(FollowerUtils.createFollowerSpark(CLIMBER_FOLLOWER_MOTOR_PORT), false)
                 .createReal(),
             new ElevatorFeedforward(0, 0, 0, 0),
             1,
             0,
             0,
-            5, // 1 rot/s max vel,
-            .5, // .5 rot/s^2
-            40 // rotations
+            1, //m/s
+            .5, //m/s^2
+            4 //m
             );
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
-    var subsystems = List.<Subsystem>of(drive, cargo/*, climber*/);
+    var subsystems = List.<Subsystem>of(drive, cargo, climber);
 
     var updater = new Updater(List.of(pdp, navx, oi));
 
     // Button bindings here
     // Take in balls but don't shoot
-//    new SimpleButton(mechanismsJoystick, INTAKE_NORMAL_BUTTON)
-//        .whileHeld(cargo::runIntake, cargo)
-//        .whenReleased(cargo::stop, cargo);
-//    // Run intake backwards so human can feed balls
-//    new SimpleButton(mechanismsJoystick, INTAKE_REVERSE_BUTTON)
-//        .whileHeld(cargo::runIntakeReverse, cargo)
-//        .whenReleased(cargo::stop, cargo);
-//    // Run all motors in intake to spit balls out
-//    new SimpleButton(mechanismsJoystick, SPIT_BUTTON)
-//        .whileHeld(cargo::spit, cargo)
-//        .whenReleased(cargo::stop, cargo);
-
-    /* IMPORTANT : ON BLOCK TESTING */
-    //    new SimpleButton(driveJoystick, 3)
-    //            .whenPressed(new InstantCommand(() -> leftMaster.setVoltage(2), drive))
-    //            .whenReleased(() -> leftMaster.setVoltage(0), drive);
-    //    new SimpleButton(driveJoystick, 4)
-    //            .whenPressed(new InstantCommand(() -> rightMaster.setVoltage(2), drive))
-    //            .whenReleased(() -> rightMaster.setVoltage(0), drive);;
-    //    new SimpleButton(driveJoystick, 3)
-    //            .whenPressed(new InstantCommand(() -> leftMaster.set(0), drive));
-    //    new SimpleButton(driveJoystick, 4)
-    //            .whenPressed(new InstantCommand(() -> rightMaster.set(0), drive));
+    new SimpleButton(mechanismsJoystick, XboxController.Button.kA.value)
+        .whileHeld(cargo::runIntake, cargo)
+        .whenReleased(cargo::stop, cargo);
+    // Run all motors in intake to spit balls out
+    new SimpleButton(mechanismsJoystick, XboxController.Button.kB.value)
+        .whileHeld(cargo::spit, cargo)
+        .whenReleased(cargo::stop, cargo);
 
     var defaultCommands = List.<DefaultCommand>of();
 
