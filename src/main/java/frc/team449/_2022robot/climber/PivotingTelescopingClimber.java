@@ -38,8 +38,8 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
     this.feedforward = feedforward;
     this.distanceTopBottom = distanceTopBottom;
     // Start arm retracted
-    this.state = ClimberState.RETRACTED;
-//    enable();
+    this.state = ClimberState.EXTENDED;
+    enable();
   }
 
   public ClimberState getState() {
@@ -61,6 +61,7 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
   public void set(double velocity) {
     telescopingArmWinch.set(velocity);
   }
+
   protected void useOutput(double output, TrapezoidProfile.@NotNull State setpoint) {
     double feedForward = feedforward.calculate(setpoint.position, setpoint.velocity);
     telescopingArmWinch.setVoltage(output + feedForward);

@@ -1,6 +1,5 @@
 package frc.team449.javaMaps;
 
-import com.fasterxml.jackson.databind.ser.impl.FailingSerializer;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -112,7 +111,7 @@ public class FullMap {
             rightMaster,
             navx,
             new DriveSettingsBuilder()
-                .postEncoderGearing(1 / 5.86)
+                .postEncoderGearing(5.86)
                 .leftFeedforward(new SimpleMotorFeedforward(0.20767, 2.2623, 0.1517))
                 .rightFeedforward(new SimpleMotorFeedforward(0.20767, 2.2623, 0.1517))
                 .build(),
@@ -200,7 +199,7 @@ public class FullMap {
                 .setName("climber_motor")
                 .setPort(CLIMBER_MOTOR_PORT)
                 .setUnitPerRotation(0.3191858136/2)
-                .setPostEncoderGearing(1/10)
+                .setPostEncoderGearing(10)
                 .addSlaveSpark(FollowerUtils.createFollowerSpark(CLIMBER_FOLLOWER_MOTOR_PORT), false)
                 .createReal(),
             new ElevatorFeedforward(0, 0, 0, 0),
@@ -209,7 +208,7 @@ public class FullMap {
             0,
             1, //m/s
             .5, //m/s^2
-            4 //m
+                .5 //m
             );
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
@@ -232,9 +231,9 @@ public class FullMap {
     // TODO BUTTON BINDINGS HERE
 
     new JoystickButton(mechanismsJoystick, XboxController.Button.kY.value)
-        .whenPressed(new InstantCommand(()->climber.set(0.1), climber));
+        .whenPressed(new ExtendTelescopingArm(climber));
     new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
-        .whenPressed(new InstantCommand(()->climber.set(-0.1), climber));
+        .whenPressed(new RetractTelescopingArm(climber));
 //        new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
 //            .whenPressed(climber::pivotTelescopingArmIn, climber);
 //        new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
