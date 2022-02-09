@@ -191,7 +191,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
   }
 
   /** Copy properties from this config to another config */
-  protected final void copyTo(MotorConfig<?> other) {
+  protected final void copyTo(@NotNull MotorConfig<?> other) {
     other
         .setPort(port)
         .setEnableBrakeMode(enableBrakeMode)

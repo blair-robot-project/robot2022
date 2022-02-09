@@ -5,14 +5,20 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.oi.throttles.Throttle;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 /** An arcade OI with an option to use the D-pad for turning. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class OIArcadeWithDPad extends OIArcade {
+public class OIArcadeWithDPad extends OIArcade  {
 
   /**
    * How much the D-pad moves the robot rotationally on a 0 to 1 scale, equivalent to pushing the
@@ -83,19 +89,26 @@ public class OIArcadeWithDPad extends OIArcade {
   @Override
   public double[] getFwdRotOutput() {
     double fwd = fwdThrottle.getValue();
-
+//    System.out.print("OIArcadeWithDPad.getFwdRotOutput: fwd=" + fwd + ", rot=");
+//    System.out.println(("Rotation"+ rotThrottle.getValue()));
+//    System.out.println("Forward" + fwd);
     // If the gamepad is being pushed to the left or right
     if (gamepad != null && !(gamepad.getPOV() == -1 || gamepad.getPOV() % 180 == 0)) {
       // Output the shift value
+//      System.out.println("N/A");
       return new double[] {fwd, gamepad.getPOV() < 180 ? dPadShift : -dPadShift};
     } else if (fwd == 0) { // Turning in place
+//      System.out.println(rotThrottle.getValue() * turnInPlaceRotScale);
       return new double[] {fwd, rotThrottle.getValue() * turnInPlaceRotScale};
     } else if (scaleRotByFwdPoly != null) { // If we're using Cheezy Drive
+//      System.out.println(rotThrottle.getValue() * scaleRotByFwdPoly.applyAsDouble(Math.abs(fwd)));
       return new double[] {
         fwd, rotThrottle.getValue() * scaleRotByFwdPoly.applyAsDouble(Math.abs(fwd))
       };
     } else { // Plain and simple
+
       return new double[] {fwd, rotThrottle.getValue()};
     }
+
   }
 }

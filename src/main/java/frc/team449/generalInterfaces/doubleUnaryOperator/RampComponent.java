@@ -20,7 +20,6 @@ public class RampComponent implements DoubleUnaryOperator {
   private long lastTime;
 
   /**
-   * Default constructor.
    *
    * @param maxIncreasePerSecond The maximum allowed increase in the value per second.
    * @param maxDecreasePerSecond The maximum allowed decrease in the value per second. Should be
@@ -28,11 +27,20 @@ public class RampComponent implements DoubleUnaryOperator {
    */
   @JsonCreator
   public RampComponent(
-      @JsonProperty(required = true) double maxIncreasePerSecond,
-      @Nullable Double maxDecreasePerSecond) {
+      double maxIncreasePerSecond,
+      double maxDecreasePerSecond) {
     this.maxIncreasePerMillis = maxIncreasePerSecond / 1000.;
-    this.maxDecreasePerMillis =
-        maxDecreasePerSecond != null ? maxDecreasePerSecond / 1000. : maxIncreasePerMillis;
+    this.maxDecreasePerMillis = maxDecreasePerSecond / 1000.;
+  }
+
+  /**
+   * {@link RampComponent#maxDecreasePerMillis} is taken to be the same as {@link RampComponent#maxIncreasePerMillis}
+   *
+   * @param maxChangePerSecond The maximum allowed increase/decrease in the value per second.
+   */
+  @JsonCreator
+  public RampComponent(double maxChangePerSecond) {
+    this(maxChangePerSecond, maxChangePerSecond);
   }
 
   /**

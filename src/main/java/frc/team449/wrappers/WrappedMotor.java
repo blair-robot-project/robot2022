@@ -3,6 +3,7 @@ package frc.team449.wrappers;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.team449.generalInterfaces.MotorContainer;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 public final class WrappedMotor implements MotorController, Loggable {
@@ -29,9 +30,15 @@ public final class WrappedMotor implements MotorController, Loggable {
     motor.setVoltage(outputVolts);
   }
 
+  @Log
   @Override
   public double get() {
     return motor.get();
+  }
+
+  @Log
+  public double getPositionNative(){
+    return encoder.getPositionNative();
   }
 
   @Override

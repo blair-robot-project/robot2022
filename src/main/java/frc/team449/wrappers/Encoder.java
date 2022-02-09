@@ -57,7 +57,7 @@ public abstract class Encoder implements Loggable {
    * @return The encoder distance converted to meters
    */
   public final double encoderToUnit(double revs) {
-    return revs * unitPerRotation * postEncoderGearing / encoderCPR;
+    return revs * unitPerRotation / postEncoderGearing / encoderCPR;
   }
 
   /**
@@ -67,7 +67,7 @@ public abstract class Encoder implements Loggable {
    * @return A distance in encoder units
    */
   public final double unitToEncoder(double meters) {
-    return meters * encoderCPR / unitPerRotation / postEncoderGearing;
+    return meters * encoderCPR * postEncoderGearing / unitPerRotation;
   }
 
   /**
@@ -97,7 +97,7 @@ public abstract class Encoder implements Loggable {
    *     no encoder CPR was given.
    */
   public double encoderToUPS(final double encoderReading) {
-    return nativeToRPS(encoderReading) * postEncoderGearing * unitPerRotation;
+    return nativeToRPS(encoderReading) * unitPerRotation / postEncoderGearing;
   }
 
   /**
@@ -109,7 +109,7 @@ public abstract class Encoder implements Loggable {
    *     given.
    */
   public double upsToEncoder(final double MPS) {
-    return rpsToNative((MPS / postEncoderGearing) / unitPerRotation);
+    return rpsToNative((MPS * postEncoderGearing) / unitPerRotation);
   }
 
   /** Current position in meters */
@@ -175,6 +175,14 @@ public abstract class Encoder implements Loggable {
   public static class SparkEncoder extends Encoder {
     private final RelativeEncoder encoder;
 
+    /**
+     *
+     * @param name Motor name used for logging
+     * @param encoder Actual encoder to wrap
+     * @param unitPerRotation Meters per rotation
+     * @param postEncoderGearing Factor output is multiplied by after encoders.
+     *                           NOTE: This should be >1, not a reciprocal
+     */
     public SparkEncoder(
         @NotNull String name,
         @NotNull RelativeEncoder encoder,
