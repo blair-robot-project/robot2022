@@ -17,7 +17,6 @@ public final class DriveSettingsBuilder {
   private PIDController rightVelPID;
   private Double rampRate;
   private Double maxSpeed;
-  private Double postEncoderGearing;
 
   public DriveSettingsBuilder copy() {
     return new DriveSettingsBuilder()
@@ -32,8 +31,7 @@ public final class DriveSettingsBuilder {
         .leftVelPID(leftVelPID)
         .rightVelPID(rightVelPID)
         .rampRate(rampRate)
-        .maxSpeed(maxSpeed)
-        .postEncoderGearing(postEncoderGearing);
+        .maxSpeed(maxSpeed);
   }
 
   public DriveSettings build() {
@@ -45,8 +43,7 @@ public final class DriveSettingsBuilder {
         leftVelPID,
         rightVelPID,
         rampRate,
-        maxSpeed,
-        postEncoderGearing);
+        maxSpeed);
   }
 
   public DriveSettingsBuilder fwdPeakOutputVoltage(Double fwdPeakOutputVoltage) {
@@ -106,11 +103,6 @@ public final class DriveSettingsBuilder {
 
   public DriveSettingsBuilder maxSpeed(Double maxSpeed) {
     this.maxSpeed = maxSpeed;
-    return this;
-  }
-
-  public DriveSettingsBuilder postEncoderGearing(Double postEncoderGearing) {
-    this.postEncoderGearing = postEncoderGearing;
     return this;
   }
 }

@@ -17,6 +17,9 @@ public class RetractTelescopingArm extends CommandBase {
 //      climber.setGoal(-climber.getMeasurement());
       climber.setGoal(0);
     }
+    else {
+      climber.getController().reset(climber.getMeasurement());
+    }
   }
 
   @Override

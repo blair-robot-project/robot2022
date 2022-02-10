@@ -58,7 +58,7 @@ public class FullMap {
       INTAKE_FOLLOWER_PORT = 9,
       SPITTER_PORT = 10,
       CLIMBER_MOTOR_PORT = 6,
-      CLIMBER_FOLLOWER_MOTOR_PORT = 12;
+      CLIMBER_FOLLOWER_MOTOR_PORT = 5;
 
   // Controller ports
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
@@ -84,6 +84,7 @@ public class FullMap {
             .setEnableBrakeMode(true)
             .setUnitPerRotation(0.31918) // 2 * Math.PI * 0.0508
             .setCurrentLimit(50)
+            .setPostEncoderGearing(5.86)
             .setEnableVoltageComp(true);
     var rightMaster =
             driveMasterPrototype
@@ -110,7 +111,6 @@ public class FullMap {
             rightMaster,
             navx,
             new DriveSettingsBuilder()
-                .postEncoderGearing(5.86)
                 .leftFeedforward(new SimpleMotorFeedforward(0.20767, 2.2623, 0.1517))
                 .rightFeedforward(new SimpleMotorFeedforward(0.20767, 2.2623, 0.1517))
                 .build(),
@@ -197,17 +197,18 @@ public class FullMap {
                 .copy()
                 .setName("climber_motor")
                 .setPort(CLIMBER_MOTOR_PORT)
-                .setUnitPerRotation(0.3191858136/2)
+                .setUnitPerRotation(0.3191858136 / 2)
                 .setPostEncoderGearing(10)
-                .addSlaveSpark(FollowerUtils.createFollowerSpark(CLIMBER_FOLLOWER_MOTOR_PORT), false)
+                .addSlaveSpark(
+                    FollowerUtils.createFollowerSpark(CLIMBER_FOLLOWER_MOTOR_PORT), true)
                 .createReal(),
             new ElevatorFeedforward(0, 0, 0, 0),
             1,
             0,
             0,
-            1, //m/s
-            .5, //m/s^2
-                .5 //m
+            1, // m/s
+            .5, // m/s^2
+            .3 // m
             );
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT

@@ -15,11 +15,6 @@ public class DriveSettings {
   @Nullable public final Double rampRate;
   /** The maximum speed of the motor in this gear, in MPS. Used for throttle scaling. */
   @Nullable public final Double maxSpeed;
-  /**
-   * The coefficient the output changes by after being measured by the encoder, e.g. this would be
-   * 1/70 if there was a 70:1 gearing between the encoder and the final output.
-   */
-  public final double postEncoderGearing;
   /** Feedforward calculator for left side */
   public final SimpleMotorFeedforward leftFeedforward;
   /** Feedforward calculator for right side */
@@ -46,8 +41,6 @@ public class DriveSettings {
    * @param rightVelPID Right velocity PID controller
    * @param rampRate The ramp rate, in volts/sec. Can be null, and if it is, no ramp rate is used.
    * @param maxSpeed The maximum speed of the motor in this gear, in MPS. Used for throttle scaling.
-   * @param postEncoderGearing The coefficient the output changes by after being measured by the
-   *     encoder
    */
   @JsonCreator
   public DriveSettings(
@@ -58,8 +51,7 @@ public class DriveSettings {
       @NotNull PIDController leftVelPID,
       @NotNull PIDController rightVelPID,
       @Nullable Double rampRate,
-      @Nullable Double maxSpeed,
-      double postEncoderGearing) {
+      @Nullable Double maxSpeed) {
     this.leftFeedforward = leftFeedforward;
     this.rightFeedforward = rightFeedforward;
     this.leftPosPID = leftPosPID;
@@ -67,7 +59,6 @@ public class DriveSettings {
     this.leftVelPID = leftVelPID;
     this.rightVelPID = rightVelPID;
     this.rampRate = rampRate;
-    this.postEncoderGearing = postEncoderGearing;
     this.maxSpeed = maxSpeed;
   }
 
@@ -81,7 +72,6 @@ public class DriveSettings {
         new PIDController(0, 0, 0),
         new PIDController(0, 0, 0),
         null,
-        null,
-        1.0);
+        null);
   }
 }

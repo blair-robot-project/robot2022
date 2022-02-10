@@ -38,16 +38,22 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
     this.feedforward = feedforward;
     this.distanceTopBottom = distanceTopBottom;
     // Start arm retracted
-    this.state = ClimberState.EXTENDED;
+    this.state = ClimberState.RETRACTED;
     enable();
   }
 
+  @Log.ToString
   public ClimberState getState() {
     return state;
   }
 
   public void setState(ClimberState state) {
     this.state = state;
+  }
+
+  @Log.ToString
+  public TrapezoidProfile.State getSetpoint() {
+    return this.getController().getSetpoint();
   }
 
 //  public void pivotTelescopingArmOut() {
