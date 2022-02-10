@@ -195,18 +195,25 @@ public class FullMap {
         new PivotingTelescopingClimber(
             driveMasterPrototype
                 .copy()
-                .setName("climber_motor")
+                .setName("climber_right")
                 .setPort(CLIMBER_MOTOR_PORT)
                 .setUnitPerRotation(0.3191858136 / 2)
                 .setPostEncoderGearing(10)
-                .addSlaveSpark(
-                    FollowerUtils.createFollowerSpark(CLIMBER_FOLLOWER_MOTOR_PORT), true)
+                .setReverseOutput(false)
+                .createReal(),
+            driveMasterPrototype
+                .copy()
+                .setName("climber_left")
+                .setPort(CLIMBER_FOLLOWER_MOTOR_PORT)
+                .setUnitPerRotation(0.3191858136 / 2)
+                .setPostEncoderGearing(10)
+                .setReverseOutput(true)
                 .createReal(),
             new ElevatorFeedforward(0, 0, 0, 0),
             1,
             0,
             0,
-            1, // m/s
+            .5, // m/s
             .5, // m/s^2
             .3 // m
             );
@@ -218,38 +225,59 @@ public class FullMap {
 
     // Button bindings here
     // Take in balls but don't shoot
-    new SimpleButton(mechanismsJoystick, XboxController.Button.kA.value)
-        .whileHeld(cargo::runIntake, cargo)
-        .whenReleased(cargo::stop, cargo);
+    //    new SimpleButton(mechanismsJoystick, XboxController.Button.kA.value)
+    //        .whileHeld(cargo::runIntake, cargo)
+    //        .whenReleased(cargo::stop, cargo);
     // Run all motors in intake to spit balls out
-    new SimpleButton(mechanismsJoystick, XboxController.Button.kB.value)
-        .whileHeld(cargo::spit, cargo)
-        .whenReleased(cargo::stop, cargo);
+    //    new SimpleButton(mechanismsJoystick, XboxController.Button.kB.value)
+    //        .whileHeld(cargo::spit, cargo)
+    //        .whenReleased(cargo::stop, cargo);
 
     var defaultCommands = List.<DefaultCommand>of();
 
     // TODO BUTTON BINDINGS HERE
-
+    new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)
+        .whenPressed(
+            () -> {
+              climber.disable();
+              climber.leftArm.set(0.1);
+            });
+    new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
+        .whenPressed(
+            () -> {
+              climber.disable();
+              climber.leftArm.set(-0.1);
+            });
     new JoystickButton(mechanismsJoystick, XboxController.Button.kY.value)
         .whenPressed(new ExtendTelescopingArm(climber));
+    //        .whenPressed(
+    //            () -> {
+    //              climber.disable();
+    //              climber.leftArm.set(0.1);
+    //            });
     new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
+        //        .whenPressed(
+        //            () -> {
+        //              climber.disable();
+        //              climber.leftArm.set(-0.1);
+        //            });
         .whenPressed(new RetractTelescopingArm(climber));
-//        new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
-//            .whenPressed(climber::pivotTelescopingArmIn, climber);
-//        new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
-//            .whenPressed(climber::pivotTelescopingArmOut, climber);
+    //        new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
+    //            .whenPressed(climber::pivotTelescopingArmIn, climber);
+    //        new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
+    //            .whenPressed(climber::pivotTelescopingArmOut, climber);
 
-//    var ramsete = RamseteControllerCommands.goToPosition(
-//            drive,
-//            .001,
-//            .001,
-//            .001,
-//            new PIDController(.03,0,0),
-//            new PIDController(.03,0,0),
-//            new Pose2d(new Translation2d(5.0,5.0), new Rotation2d(0.06)),
-//            List.<Translation2d>of(new Translation2d(2,2)),
-//            false
-//    );
+    //    var ramsete = RamseteControllerCommands.goToPosition(
+    //            drive,
+    //            .001,
+    //            .001,
+    //            .001,
+    //            new PIDController(.03,0,0),
+    //            new PIDController(.03,0,0),
+    //            new Pose2d(new Translation2d(5.0,5.0), new Rotation2d(0.06)),
+    //            List.<Translation2d>of(new Translation2d(2,2)),
+    //            false
+    //    );
 
     List<Command> robotStartupCommands = List.of();
 
@@ -257,8 +285,7 @@ public class FullMap {
         /*ramsete*/
     );
 
-
-    List<Command> teleopStartupCommands = List.of();
+    List<Command> teleopStartupCommands = List.of(new InstantCommand(climber::reset));
 
     List<Command> testStartupCommands = List.of();
     var allCommands =

@@ -14,12 +14,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements Loggable {
   public final double distanceTopBottom;
-  private final WrappedMotor telescopingArmWinch;
+  public final WrappedMotor leftArm, rightArm;
   private final ElevatorFeedforward feedforward;
   private ClimberState state;
 
   public PivotingTelescopingClimber(
-      @NotNull WrappedMotor telescopingArmWinch,
+      @NotNull WrappedMotor rightArm,
+      @NotNull WrappedMotor leftArm,
       @NotNull ElevatorFeedforward feedforward,
       double kP,
       double kI,
@@ -34,7 +35,8 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
             kD,
             new TrapezoidProfile.Constraints(
                 telescopingArmMaxVelocity, telescopingArmMaxAcceleration)));
-    this.telescopingArmWinch = telescopingArmWinch;
+    this.rightArm = rightArm;
+    this.leftArm = leftArm;
     this.feedforward = feedforward;
     this.distanceTopBottom = distanceTopBottom;
     // Start arm retracted
@@ -51,9 +53,24 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
     this.state = state;
   }
 
-  @Log.ToString
-  public TrapezoidProfile.State getSetpoint() {
-    return this.getController().getSetpoint();
+  @Log
+  public double getSetpoint() {
+    return this.getController().getSetpoint().position;
+  }
+
+  @Log
+  public double getError() {
+    return this.getController().getPositionError();
+  }
+
+  @Log
+  public double getGoal() {
+    return this.getController().getGoal().position;
+  }
+
+  @Log
+  public boolean atGoal() {
+    return this.getController().atGoal();
   }
 
 //  public void pivotTelescopingArmOut() {
@@ -65,17 +82,37 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
 //  }
 
   public void set(double velocity) {
-    telescopingArmWinch.set(velocity);
+    leftArm.set(velocity);
+    rightArm.set(velocity);
   }
 
-  protected void useOutput(double output, TrapezoidProfile.@NotNull State setpoint) {
+  public void reset() {
+    this.leftArm.disable();
+    this.rightArm.disable();
+    this.leftArm.encoder.resetPosition();
+    this.rightArm.encoder.resetPosition();
+    this.disable();
+  }
+
+  public void resetController() {
+    this.getController().reset(this.getMeasurement());
+  }
+
+  public void useOutput(double output, TrapezoidProfile.@NotNull State setpoint) {
     double feedForward = feedforward.calculate(setpoint.position, setpoint.velocity);
-    telescopingArmWinch.setVoltage(output + feedForward);
+    leftArm.setVoltage(output + feedForward);
+    rightArm.setVoltage(output + feedForward);
   }
 
   @Log
+  @Override
   public double getMeasurement() {
-    return telescopingArmWinch.encoder.getPositionUnits();
+    return leftArm.encoder.getPositionUnits();
+  }
+
+  @Log
+  public double getRightMeasurement() {
+    return rightArm.encoder.getPositionUnits();
   }
 
   public enum ClimberState {

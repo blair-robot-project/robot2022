@@ -5,6 +5,9 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.hal.util.HalHandleException;
+import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team449.other.FollowerUtils;
 import frc.team449.wrappers.Encoder;
 import frc.team449.wrappers.WrappedMotor;
@@ -140,7 +143,13 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
     var brakeMode =
         this.isEnableBrakeMode() ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast;
     this.slaveSparks.forEach(
-        (slave, inverted) -> FollowerUtils.setMasterForSpark(slave, motor, brakeMode, inverted));
+        (slave, inverted) -> {
+          SmartDashboard.putData(
+                  (builder) -> {
+                    builder.addDoubleProperty("slave_pos", () -> slave.getEncoder().getPosition(), x -> {});
+                  });
+          FollowerUtils.setMasterForSpark(slave, motor, brakeMode, inverted);
+        });
 
     if (this.getRampRate() != null) {
       // Set ramp rate, converting from volts/sec to seconds until 12 volts.

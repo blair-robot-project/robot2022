@@ -1,6 +1,7 @@
 package frc.team449._2022robot.climber.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.team449._2022robot.climber.PivotingTelescopingClimber;
 
 public class RetractTelescopingArm extends CommandBase {
@@ -13,12 +14,10 @@ public class RetractTelescopingArm extends CommandBase {
 
   @Override
   public void initialize() {
+    climber.resetController();
+    climber.enable();
     if (climber.getState() != PivotingTelescopingClimber.ClimberState.RETRACTED) {
-//      climber.setGoal(-climber.getMeasurement());
       climber.setGoal(0);
-    }
-    else {
-      climber.getController().reset(climber.getMeasurement());
     }
   }
 
@@ -30,7 +29,7 @@ public class RetractTelescopingArm extends CommandBase {
     } else {
       climber.setState(PivotingTelescopingClimber.ClimberState.MIDDLE);
     }
-    climber.getController().reset(climber.getMeasurement());
+    climber.resetController();
   }
 
   @Override
