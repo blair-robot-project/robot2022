@@ -9,6 +9,8 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -52,6 +54,8 @@ public class RamseteControllerCommands {
     // create trajectory from the current place where the robot is
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
                               drivetrain.getCurrentPose(), translations, endingPose, config);
+    var cnt = new RamseteController();
+    cnt.atReference();
     var cmd = new RamseteCommand(
         trajectory,
         drivetrain::getCurrentPose,
@@ -64,6 +68,11 @@ public class RamseteControllerCommands {
         drivetrain::setVoltage,
         drivetrain);
     drivetrain.resetOdometry(trajectory.getInitialPose());
+
+    SmartDashboard.putData("ramsete", builder -> {
+      builder.addBooleanProperty("atref", cnt::atReference, x -> {});
+      builder.addBooleanProperty("fin", () -> cmd.isFinished(), x -> {});
+    });
     return cmd.andThen(() -> drivetrain.setVoltage(0,0));
   }
 

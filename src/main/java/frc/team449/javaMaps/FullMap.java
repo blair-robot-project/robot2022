@@ -130,24 +130,17 @@ public class FullMap {
                         null))
             .build();
     var fwdThrottle =
-            new ThrottleWithRamp(
-                    new ThrottleSum(
-                        Set.of(
-                                throttlePrototype
-                                        .axis(3)
-                                        .deadband(0.05)
-                                        .inverted(true)
-                                        .polynomial(
-                                                new Polynomial(
-                                                        Map.of(
-                                                                1., 1.),
-                                                        null))
-                                        .build(),
-                                throttlePrototype.axis(2).inverted(false).build()
-                        )
-                    ),
-                    new RampComponent(2, .9))
-        ;
+        new ThrottleWithRamp(
+            new ThrottleSum(
+                Set.of(
+                    throttlePrototype
+                        .axis(3)
+                        .deadband(0.05)
+                        .inverted(true)
+                        .polynomial(new Polynomial(Map.of(1., 1.), null))
+                        .build(),
+                    throttlePrototype.axis(2).inverted(false).build())),
+            new RampComponent(1.5, .5));
     var oi =
         new OIArcadeWithDPad(
             rotThrottle,
@@ -162,23 +155,23 @@ public class FullMap {
                 .3,
             false);
 
-    drive.setDefaultCommand(
-        new UnidirectionalNavXDefaultDrive<>(
-            0,
-            new Debouncer(1.5),
-            0,
-            0.6,
-            null,
-            2,
-            3.0,
-            true,
-            .01,
-            0,
-            0.03,
-            new Debouncer(0.15),
-            drive,
-            oi,
-            null));
+      drive.setDefaultCommand(
+              new UnidirectionalNavXDefaultDrive<>(
+                      0,
+                      new Debouncer(1.5),
+                      0,
+                      0.6,
+                      null,
+                      2,
+                      3.0,
+                      true,
+                      .01,
+                      0,
+                      0.03,
+                      new Debouncer(0.15),
+                      drive,
+                      oi,
+                      null));
 
     var cargo =
         new Cargo2022(
@@ -234,8 +227,6 @@ public class FullMap {
     //        .whileHeld(cargo::spit, cargo)
     //        .whenReleased(cargo::stop, cargo);
 
-    var defaultCommands = List.<DefaultCommand>of();
-
     // TODO BUTTON BINDINGS HERE
     new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)
         .whenPressed(
@@ -283,25 +274,27 @@ public class FullMap {
     //        new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
     //            .whenPressed(climber::pivotTelescopingArmOut, climber);
 
-    //    var ramsete = RamseteControllerCommands.goToPosition(
-    //            drive,
-    //            .001,
-    //            .001,
-    //            .001,
-    //            new PIDController(.03,0,0),
-    //            new PIDController(.03,0,0),
-    //            new Pose2d(new Translation2d(5.0,5.0), new Rotation2d(0.06)),
-    //            List.<Translation2d>of(new Translation2d(2,2)),
-    //            false
-    //    );
+    var ramsete =
+        RamseteControllerCommands.goToPosition(
+            drive,
+            .009,
+            .009,
+            .001,
+            new PIDController(.001, 0, 0),
+            new PIDController(.001, 0, 0),
+            new Pose2d(new Translation2d(0.0, 1), new Rotation2d(0.0)),
+            List.of(),
+            false);
 
     List<Command> robotStartupCommands = List.of();
 
     List<Command> autoStartupCommands = List.of(
-        /*ramsete*/
-    );
+            new InstantCommand(drive::resetPosition),
+            ramsete);
 
-    List<Command> teleopStartupCommands = List.of(new InstantCommand(climber::reset));
+    List<Command> teleopStartupCommands =
+        List.of(
+            new InstantCommand(climber::reset));
 
     List<Command> testStartupCommands = List.of();
     var allCommands =
