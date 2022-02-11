@@ -1,7 +1,6 @@
 package frc.team449._2022robot.climber.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.team449._2022robot.climber.PivotingTelescopingClimber;
 
 public class RetractTelescopingArm extends CommandBase {

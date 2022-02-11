@@ -143,13 +143,7 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
     var brakeMode =
         this.isEnableBrakeMode() ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast;
     this.slaveSparks.forEach(
-        (slave, inverted) -> {
-          SmartDashboard.putData(
-                  (builder) -> {
-                    builder.addDoubleProperty("slave_pos", () -> slave.getEncoder().getPosition(), x -> {});
-                  });
-          FollowerUtils.setMasterForSpark(slave, motor, brakeMode, inverted);
-        });
+        (slave, inverted) -> FollowerUtils.setMasterForSpark(slave, motor, brakeMode, inverted));
 
     if (this.getRampRate() != null) {
       // Set ramp rate, converting from volts/sec to seconds until 12 volts.

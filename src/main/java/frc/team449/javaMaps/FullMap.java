@@ -57,8 +57,8 @@ public class FullMap {
       INTAKE_LEADER_PORT = 8,
       INTAKE_FOLLOWER_PORT = 9,
       SPITTER_PORT = 10,
-      CLIMBER_MOTOR_PORT = 6,
-      CLIMBER_FOLLOWER_MOTOR_PORT = 5;
+      RIGHT_CLIMBER_MOTOR_PORT = 6,
+      LEFT_CLIMBER_MOTOR_PORT = 5;
 
   // Controller ports
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
@@ -196,7 +196,8 @@ public class FullMap {
             driveMasterPrototype
                 .copy()
                 .setName("climber_right")
-                .setPort(CLIMBER_MOTOR_PORT)
+                .setPort(RIGHT_CLIMBER_MOTOR_PORT)
+                .setEnableBrakeMode(true)
                 .setUnitPerRotation(0.3191858136 / 2)
                 .setPostEncoderGearing(10)
                 .setReverseOutput(false)
@@ -204,13 +205,13 @@ public class FullMap {
             driveMasterPrototype
                 .copy()
                 .setName("climber_left")
-                .setPort(CLIMBER_FOLLOWER_MOTOR_PORT)
-                .setUnitPerRotation(0.3191858136 / 2)
+                .setPort(LEFT_CLIMBER_MOTOR_PORT)
+                .setEnableBrakeMode(true)
+                .setUnitPerRotation(0.1949)
                 .setPostEncoderGearing(10)
                 .setReverseOutput(true)
                 .createReal(),
-            new ElevatorFeedforward(0, 0, 0, 0),
-            1,
+            12,
             0,
             0,
             .5, // m/s
@@ -241,27 +242,42 @@ public class FullMap {
             () -> {
               climber.disable();
               climber.leftArm.set(0.1);
+              climber.rightArm.set(0.1);
+            })
+        .whenReleased(
+            () -> {
+              climber.enable();
+              climber.resetController();
+              climber.setGoal(climber.getMeasurement());
             });
+
     new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
         .whenPressed(
             () -> {
               climber.disable();
-              climber.leftArm.set(-0.1);
+              climber.leftArm.set(-0.2);
+              climber.rightArm.set(-0.2);
+            })
+        .whenReleased(
+            () -> {
+              climber.enable();
+              climber.resetController();
+              climber.setGoal(climber.getMeasurement());
             });
-    new JoystickButton(mechanismsJoystick, XboxController.Button.kY.value)
-        .whenPressed(new ExtendTelescopingArm(climber));
+    // new JoystickButton(mechanismsJoystick, XboxController.Button.kY.value)
+    //  .whenPressed(new ExtendTelescopingArm(climber));
     //        .whenPressed(
     //            () -> {
     //              climber.disable();
     //              climber.leftArm.set(0.1);
     //            });
-    new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
-        //        .whenPressed(
-        //            () -> {
-        //              climber.disable();
-        //              climber.leftArm.set(-0.1);
-        //            });
-        .whenPressed(new RetractTelescopingArm(climber));
+    // new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
+    //                .whenPressed(
+    //                    () -> {
+    //                      climber.disable();
+    //                      climber.leftArm.set(-0.1);
+    //                    });
+    // .whenPressed(new RetractTelescopingArm(climber));
     //        new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
     //            .whenPressed(climber::pivotTelescopingArmIn, climber);
     //        new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)

@@ -15,13 +15,11 @@ import org.jetbrains.annotations.NotNull;
 public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements Loggable {
   public final double distanceTopBottom;
   public final WrappedMotor leftArm, rightArm;
-  private final ElevatorFeedforward feedforward;
   private ClimberState state;
 
   public PivotingTelescopingClimber(
       @NotNull WrappedMotor rightArm,
       @NotNull WrappedMotor leftArm,
-      @NotNull ElevatorFeedforward feedforward,
       double kP,
       double kI,
       double kD,
@@ -37,7 +35,6 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
                 telescopingArmMaxVelocity, telescopingArmMaxAcceleration)));
     this.rightArm = rightArm;
     this.leftArm = leftArm;
-    this.feedforward = feedforward;
     this.distanceTopBottom = distanceTopBottom;
     // Start arm retracted
     this.state = ClimberState.RETRACTED;
@@ -98,10 +95,10 @@ public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements 
     this.getController().reset(this.getMeasurement());
   }
 
+  @Override
   public void useOutput(double output, TrapezoidProfile.@NotNull State setpoint) {
-    double feedForward = feedforward.calculate(setpoint.position, setpoint.velocity);
-    leftArm.setVoltage(output + feedForward);
-    rightArm.setVoltage(output + feedForward);
+    leftArm.setVoltage(output);
+    rightArm.setVoltage(output);
   }
 
   @Log
