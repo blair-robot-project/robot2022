@@ -1,6 +1,5 @@
 package frc.team449.javaMaps;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -9,10 +8,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
@@ -77,6 +76,9 @@ public class FullMap {
     var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
 
     var navx = new AHRS(SerialPort.Port.kMXP, true);
+
+    // Widget to show robot pose+trajectory in Glass
+    var field = new Field2d();
 
     var driveMasterPrototype =
         new SparkMaxConfig()
@@ -217,7 +219,8 @@ public class FullMap {
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo, climber);
 
-    var updater = new Updater(List.of(pdp, navx, oi));
+    var updater =
+        new Updater(List.of(pdp, navx, oi, () -> field.setRobotPose(drive.getCurrentPose())));
 
     // Button bindings here
     // Take in balls but don't shoot
@@ -249,7 +252,8 @@ public class FullMap {
             new PIDController(.001, 0, 0),
             new Pose2d(new Translation2d(0.0, 1), new Rotation2d(0.0)),
             List.of(),
-            false);
+            false,
+            field);
 
     List<Command> robotStartupCommands = List.of();
 
