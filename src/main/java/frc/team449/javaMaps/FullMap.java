@@ -191,7 +191,7 @@ public class FullMap {
                 .setName("climber_right")
                 .setPort(RIGHT_CLIMBER_MOTOR_PORT)
                 .setEnableBrakeMode(true)
-                .setUnitPerRotation(0.3191858136 / 2)
+                .setUnitPerRotation(0.1949)
                 .setPostEncoderGearing(10)
                 .setReverseOutput(false)
                 .createReal(),
