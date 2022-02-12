@@ -6,7 +6,9 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -15,13 +17,10 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449._2022robot.cargo.Cargo2022;
+import frc.team449._2022robot.climber.ClimberArm;
 import frc.team449._2022robot.climber.PivotingTelescopingClimber;
-import frc.team449._2022robot.climber.commands.ExtendTelescopingArm;
-import frc.team449._2022robot.climber.commands.RetractTelescopingArm;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
-import frc.team449.drive.unidirectional.commands.DriveStraight;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.drive.unidirectional.commands.motionprofiling.RamseteControllerCommands;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
@@ -29,12 +28,10 @@ import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
-import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.throttles.ThrottleWithRamp;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
-import frc.team449.other.DefaultCommand;
 import frc.team449.other.FollowerUtils;
 import frc.team449.other.Updater;
 import frc.team449.wrappers.AHRS;
@@ -66,6 +63,8 @@ public class FullMap {
   public static final int INTAKE_NORMAL_BUTTON = 1, INTAKE_REVERSE_BUTTON = 3, SPIT_BUTTON = 2;
   // Speeds
   public static final double INTAKE_SPEED = 0.4, SPITTER_SPEED = 0.5;
+  // Other constants
+  public static final double CLIMBER_DISTANCE = 0.5;
 
   private FullMap() {}
 
@@ -184,33 +183,36 @@ public class FullMap {
             INTAKE_SPEED,
             SPITTER_SPEED);
 
-    var climber =
-        new PivotingTelescopingClimber(
+    var armPrototype =
+        driveMasterPrototype
+            .copy()
+            .setRevSoftLimit(0.)
+            .setFwdSoftLimit(CLIMBER_DISTANCE)
+            .setUnitPerRotation(0.1949)
+            .setEnableBrakeMode(true);
+    var leftArm =
+        new ClimberArm(
+            armPrototype
+                .copy()
+                .setName("climber_left")
+                .setPort(LEFT_CLIMBER_MOTOR_PORT)
+                .setPostEncoderGearing(10)
+                .setReverseOutput(true)
+                .createReal(),
+            new PIDController(12, 0, 0),
+            new ElevatorFeedforward(0, 0, 0));
+    var rightArm =
+        new ClimberArm(
             driveMasterPrototype
                 .copy()
                 .setName("climber_right")
                 .setPort(RIGHT_CLIMBER_MOTOR_PORT)
-                .setEnableBrakeMode(true)
-                .setUnitPerRotation(0.1949)
                 .setPostEncoderGearing(10)
                 .setReverseOutput(false)
                 .createReal(),
-            driveMasterPrototype
-                .copy()
-                .setName("climber_left")
-                .setPort(LEFT_CLIMBER_MOTOR_PORT)
-                .setEnableBrakeMode(true)
-                .setUnitPerRotation(0.1949)
-                .setPostEncoderGearing(10)
-                .setReverseOutput(true)
-                .createReal(),
-            12,
-            0,
-            0,
-            .5, // m/s
-            .5, // m/s^2
-            .3 // m
-            );
+            new PIDController(12, 0, 0),
+            new ElevatorFeedforward(0, 0, 0));
+    var climber = new PivotingTelescopingClimber(leftArm, rightArm, CLIMBER_DISTANCE);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo, climber);
@@ -229,50 +231,13 @@ public class FullMap {
 
     // TODO BUTTON BINDINGS HERE
     new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)
-        .whenPressed(
-            () -> {
-              climber.disable();
-              climber.leftArm.set(0.1);
-              climber.rightArm.set(0.1);
-            })
-        .whenReleased(
-            () -> {
-              climber.enable();
-              climber.resetController();
-              climber.setGoal(climber.getMeasurement());
-            });
-
+        .whileActiveContinuous(
+            new WaitCommand(0.01)
+                .andThen(() -> climber.setSetpoint(climber.getSetpoint() + 0.01), climber));
     new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
-        .whenPressed(
-            () -> {
-              climber.disable();
-              climber.leftArm.set(-0.2);
-              climber.rightArm.set(-0.2);
-            })
-        .whenReleased(
-            () -> {
-              climber.enable();
-              climber.resetController();
-              climber.setGoal(climber.getMeasurement());
-            });
-    // new JoystickButton(mechanismsJoystick, XboxController.Button.kY.value)
-    //  .whenPressed(new ExtendTelescopingArm(climber));
-    //        .whenPressed(
-    //            () -> {
-    //              climber.disable();
-    //              climber.leftArm.set(0.1);
-    //            });
-    // new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
-    //                .whenPressed(
-    //                    () -> {
-    //                      climber.disable();
-    //                      climber.leftArm.set(-0.1);
-    //                    });
-    // .whenPressed(new RetractTelescopingArm(climber));
-    //        new JoystickButton(mechanismsJoystick, XboxController.Button.kX.value)
-    //            .whenPressed(climber::pivotTelescopingArmIn, climber);
-    //        new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
-    //            .whenPressed(climber::pivotTelescopingArmOut, climber);
+        .whileActiveContinuous(
+            new WaitCommand(0.01)
+                .andThen(() -> climber.setSetpoint(climber.getSetpoint() - 0.01), climber));
 
     var ramsete =
         RamseteControllerCommands.goToPosition(
@@ -292,9 +257,7 @@ public class FullMap {
             new InstantCommand(drive::resetPosition),
             ramsete);
 
-    List<Command> teleopStartupCommands =
-        List.of(
-            new InstantCommand(climber::reset));
+    List<Command> teleopStartupCommands = List.of(new InstantCommand(climber::enable));
 
     List<Command> testStartupCommands = List.of();
     var allCommands =

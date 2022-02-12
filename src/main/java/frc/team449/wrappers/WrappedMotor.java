@@ -36,9 +36,8 @@ public final class WrappedMotor implements MotorController, Loggable {
     return motor.get();
   }
 
-  @Log
-  public double getPositionNative(){
-    return encoder.getPositionNative();
+  public double getPositionUnits(){
+    return encoder.getPositionUnits();
   }
 
   @Override
