@@ -284,7 +284,7 @@ public class FullMap {
             new Pose2d(new Translation2d(0.0, 1), new Rotation2d(0.0)),
             List.of(),
             false);
-    
+
 
     List<Command> robotStartupCommands = List.of();
 
