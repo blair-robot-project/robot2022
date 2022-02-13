@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449._2022robot.cargo.Cargo2022;
+import frc.team449._2022robot.climber.ClimberSim;
 import frc.team449._2022robot.climber.PivotingTelescopingClimber;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
@@ -28,6 +30,7 @@ import frc.team449.generalInterfaces.limelight.Limelight;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
+import frc.team449.javaMaps.builders.UsbCameraCreator;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.throttles.ThrottleWithRamp;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
@@ -43,8 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class FullMap {
-  // Motor IDs
+public class SimMap {
+  /*// Motor IDs
   public static final int RIGHT_LEADER_PORT = 1,
       RIGHT_LEADER_FOLLOWER_1_PORT = 11,
       RIGHT_LEADER_FOLLOWER_2_PORT = 7,
@@ -65,8 +68,10 @@ public class FullMap {
   public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
   // Speeds
   public static final double INTAKE_SPEED = 0.4, SPITTER_SPEED = 0.5;
+  // Climber
+  public static final double CLIMBER_DISTANCE = 0.3;
 
-  private FullMap() {}
+  private SimMap() {}
 
   @NotNull
   public static RobotMap createRobotMap() {
@@ -94,7 +99,7 @@ public class FullMap {
             .copy()
             .setPort(LEFT_LEADER_PORT)
             .setName("left")
-            .setReverseOutput(false)
+            .setReverseOutput(true)
             .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_1_PORT), false)
             .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_2_PORT), false)
             .createReal();
@@ -103,7 +108,7 @@ public class FullMap {
             .copy()
             .setName("right")
             .setPort(RIGHT_LEADER_PORT)
-            .setReverseOutput(true)
+            .setReverseOutput(false)
             .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_1_PORT), false)
             .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
             .createReal();
@@ -125,7 +130,7 @@ public class FullMap {
         throttlePrototype
             .axis(0)
             .deadband(0.05)
-            .inverted(false)
+            .inverted(true)
             .polynomial(new Polynomial(Map.of(1., 1.), null))
             .build();
     var fwdThrottle =
@@ -133,12 +138,12 @@ public class FullMap {
             new ThrottleSum(
                 Set.of(
                     throttlePrototype
-                        .axis(2)
+                        .axis(3)
                         .deadband(0.05)
                         .inverted(true)
                         .polynomial(new Polynomial(Map.of(1., 1.), null))
                         .build(),
-                    throttlePrototype.axis(3).inverted(false).build())),
+                    throttlePrototype.axis(2).inverted(false).build())),
             new RampComponent(1.3, .5));
     var oi =
         new OIArcadeWithDPad(
@@ -162,7 +167,7 @@ public class FullMap {
             null,
             2,
             3.0,
-            false,
+            true,
             .01,
             0,
             0.03,
@@ -186,6 +191,7 @@ public class FullMap {
             INTAKE_SPEED,
             SPITTER_SPEED);
 
+    var climberSim = new ClimberSim();
     var climber =
         new PivotingTelescopingClimber(
             driveMasterPrototype
@@ -258,7 +264,6 @@ public class FullMap {
               climber.resetController();
               climber.setGoal(climber.getMeasurement());
             });
-
     // new JoystickButton(mechanismsJoystick, XboxController.Button.kY.value)
     //  .whenPressed(new ExtendTelescopingArm(climber));
     //        .whenPressed(
@@ -281,18 +286,15 @@ public class FullMap {
     var ramsete =
         RamseteControllerCommands.goToPosition(
             drive,
-            .2,
-            .1,
-            .05,
-            new PIDController(.01, 0, 0),
-            new PIDController(.01, 0, 0),
-            new Pose2d(new Translation2d(2, 1), Rotation2d.fromDegrees(0)),
+            .02,
+            .01,
+            .001,
+            new PIDController(.0001, 0, 0),
+            new PIDController(.0001, 0, 0),
+            new Pose2d(new Translation2d(3, 3), Rotation2d.fromDegrees(0)),
             List.of(),
             false,
             field);
-
-    SmartDashboard.putData(
-        "Reset odometry", new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive));
 
     List<Command> robotStartupCommands = List.of();
 
@@ -306,5 +308,5 @@ public class FullMap {
             robotStartupCommands, autoStartupCommands, teleopStartupCommands, testStartupCommands);
 
     return new RobotMap(subsystems, pdp, updater, allCommands, false);
-  }
+  }*/
 }
