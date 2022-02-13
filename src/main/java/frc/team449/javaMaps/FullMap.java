@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -71,9 +73,7 @@ public class FullMap {
 
   @NotNull
   public static RobotMap createRobotMap() {
-
     var pdp = new PDP(1, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
-
     var mechanismsJoystick = new RumbleableJoystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
 
@@ -86,24 +86,24 @@ public class FullMap {
             .setCurrentLimit(50)
             .setPostEncoderGearing(5.86)
             .setEnableVoltageComp(true);
-    var rightMaster =
-            driveMasterPrototype
-                    .copy()
-                    .setName("right")
-                    .setPort(RIGHT_LEADER_PORT)
-                    .setReverseOutput(false)
-                    .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_1_PORT), false)
-                    .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
-                    .createReal();
     var leftMaster =
-            driveMasterPrototype
-                    .copy()
-                    .setPort(LEFT_LEADER_PORT)
-                    .setName("left")
-                    .setReverseOutput(true)
-                    .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_1_PORT), false)
-                    .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_2_PORT), false)
-                    .createReal();
+        driveMasterPrototype
+            .copy()
+            .setPort(LEFT_LEADER_PORT)
+            .setName("left")
+            .setReverseOutput(true)
+            .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_1_PORT), false)
+            .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_2_PORT), false)
+            .createReal();
+    var rightMaster =
+        driveMasterPrototype
+            .copy()
+            .setName("right")
+            .setPort(RIGHT_LEADER_PORT)
+            .setReverseOutput(false)
+            .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_1_PORT), false)
+            .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
+            .createReal();
 
     var drive =
         new DriveUnidirectionalWithGyro(
@@ -123,11 +123,7 @@ public class FullMap {
             .axis(0)
             .deadband(0.05)
             .inverted(true)
-            .polynomial(
-                new Polynomial(
-                    Map.of(
-                        1., 1.),
-                        null))
+            .polynomial(new Polynomial(Map.of(1., 1.), null))
             .build();
     var fwdThrottle =
         new ThrottleWithRamp(
@@ -149,29 +145,28 @@ public class FullMap {
             false,
             driveJoystick,
             new Polynomial(
-                Map.of(
-                    1., 1.), // Curvature
+                Map.of(1., 1.), // Curvature
                 null),
-                .3,
+            .3,
             false);
 
-      drive.setDefaultCommand(
-              new UnidirectionalNavXDefaultDrive<>(
-                      0,
-                      new Debouncer(1.5),
-                      0,
-                      0.6,
-                      null,
-                      2,
-                      3.0,
-                      true,
-                      .01,
-                      0,
-                      0.03,
-                      new Debouncer(0.15),
-                      drive,
-                      oi,
-                      null));
+    drive.setDefaultCommand(
+        new UnidirectionalNavXDefaultDrive<>(
+            0,
+            new Debouncer(1.5),
+            0,
+            0.6,
+            null,
+            2,
+            3.0,
+            true,
+            .01,
+            0,
+            0.03,
+            new Debouncer(0.15),
+            drive,
+            oi,
+            null));
 
     var cargo =
         new Cargo2022(
@@ -180,7 +175,11 @@ public class FullMap {
                 .setPort(INTAKE_LEADER_PORT)
                 .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), true)
                 .createReal(),
-            new SparkMaxConfig().setName("spitterMotor").setPort(SPITTER_PORT).setEnableBrakeMode(false).createReal(),
+            new SparkMaxConfig()
+                .setName("spitterMotor")
+                .setPort(SPITTER_PORT)
+                .setEnableBrakeMode(false)
+                .createReal(),
             INTAKE_SPEED,
             SPITTER_SPEED);
 
@@ -285,16 +284,13 @@ public class FullMap {
             new Pose2d(new Translation2d(0.0, 1), new Rotation2d(0.0)),
             List.of(),
             false);
+    
 
     List<Command> robotStartupCommands = List.of();
 
-    List<Command> autoStartupCommands = List.of(
-            new InstantCommand(drive::resetPosition),
-            ramsete);
+    List<Command> autoStartupCommands = List.of(new InstantCommand(drive::resetPosition), ramsete);
 
-    List<Command> teleopStartupCommands =
-        List.of(
-            new InstantCommand(climber::reset));
+    List<Command> teleopStartupCommands = List.of(new InstantCommand(climber::reset));
 
     List<Command> testStartupCommands = List.of();
     var allCommands =
