@@ -1,29 +1,27 @@
 package frc.team449.javaMaps;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449._2022robot.cargo.Cargo2022;
 import frc.team449._2022robot.climber.PivotingTelescopingClimber;
-import frc.team449._2022robot.climber.commands.ExtendTelescopingArm;
-import frc.team449._2022robot.climber.commands.RetractTelescopingArm;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
-import frc.team449.drive.unidirectional.commands.DriveStraight;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.drive.unidirectional.commands.motionprofiling.RamseteControllerCommands;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
@@ -31,12 +29,10 @@ import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
-import frc.team449.oi.buttons.SimpleButton;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.throttles.ThrottleWithRamp;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
-import frc.team449.other.DefaultCommand;
 import frc.team449.other.FollowerUtils;
 import frc.team449.other.Updater;
 import frc.team449.wrappers.AHRS;
@@ -78,6 +74,9 @@ public class FullMap {
     var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
 
     var navx = new AHRS(SerialPort.Port.kMXP, true);
+
+    // Widget to show robot pose+trajectory in Glass
+    var field = new Field2d();
 
     var driveMasterPrototype =
         new SparkMaxConfig()
@@ -190,7 +189,7 @@ public class FullMap {
                 .setName("climber_right")
                 .setPort(RIGHT_CLIMBER_MOTOR_PORT)
                 .setEnableBrakeMode(true)
-                .setUnitPerRotation(0.3191858136 / 2)
+                .setUnitPerRotation(0.1949)
                 .setPostEncoderGearing(10)
                 .setReverseOutput(false)
                 .createReal(),
@@ -214,7 +213,8 @@ public class FullMap {
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo, climber);
 
-    var updater = new Updater(List.of(pdp, navx, oi));
+    var updater =
+        new Updater(List.of(pdp, navx, oi, () -> field.setRobotPose(drive.getCurrentPose())));
 
     // Button bindings here
     // Take in balls but don't shoot
@@ -283,7 +283,8 @@ public class FullMap {
             new PIDController(.001, 0, 0),
             new Pose2d(new Translation2d(0.0, 1), new Rotation2d(0.0)),
             List.of(),
-            false);
+            false,
+            field);
 
 
     List<Command> robotStartupCommands = List.of();

@@ -14,7 +14,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class PivotingTelescopingClimber extends ProfiledPIDSubsystem implements Loggable {
   public final double distanceTopBottom;
-  public final WrappedMotor leftArm, rightArm;
+  public final WrappedMotor leftArm;
+  public final WrappedMotor rightArm;
   private ClimberState state;
 
   public PivotingTelescopingClimber(
