@@ -60,10 +60,10 @@ public class FullMap {
       RIGHT_CLIMBER_MOTOR_PORT = 6,
       LEFT_CLIMBER_MOTOR_PORT = 5;
 
+  // Other CAN IDs
+  public static final int PDP_CAN = 1;
   // Controller ports
   public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
-  // Button numbers
-  public static final int INTAKE_NORMAL_BUTTON = 1, INTAKE_REVERSE_BUTTON = 3, SPIT_BUTTON = 2;
   // Limelight
   public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
   // Speeds
@@ -75,7 +75,7 @@ public class FullMap {
 
   @NotNull
   public static RobotMap createRobotMap() {
-    var pdp = new PDP(1, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
+    var pdp = new PDP(PDP_CAN, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
     var mechanismsJoystick = new RumbleableJoystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
 
@@ -128,7 +128,7 @@ public class FullMap {
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.06);
     var rotThrottle =
         throttlePrototype
-            .axis(0)
+            .axis(XboxController.Axis.kLeftX.value)
             .deadband(0.05)
             .inverted(false)
             .polynomial(new Polynomial(Map.of(1., 1.), null))
@@ -138,12 +138,15 @@ public class FullMap {
             new ThrottleSum(
                 Set.of(
                     throttlePrototype
-                        .axis(2)
+                        .axis(XboxController.Axis.kLeftTrigger.value)
                         .deadband(0.05)
                         .inverted(true)
                         .polynomial(new Polynomial(Map.of(1., 1.), null))
                         .build(),
-                    throttlePrototype.axis(3).inverted(false).build())),
+                    throttlePrototype
+                        .axis(XboxController.Axis.kRightTrigger.value)
+                        .inverted(false)
+                        .build())),
             new RampComponent(1.3, .5));
     var oi =
         new OIArcadeWithDPad(
