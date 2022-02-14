@@ -133,8 +133,6 @@ public class UnidirectionalNavXDefaultDrive<
         "UnidirectionalNavXArcadeDrive init.",
         this.getClass().getSimpleName(),
         EventImportance.kNormal);
-    // Logger.addEvent("UnidirectionalNavXArcadeDrive init.", this.getClass());
-    System.out.println("Unidirectionalnavxdefaultdriveinit");
 
     // Initial assignment
     this.drivingStraight = false;

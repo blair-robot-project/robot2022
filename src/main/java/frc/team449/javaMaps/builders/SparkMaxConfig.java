@@ -5,9 +5,6 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.hal.util.HalHandleException;
-import edu.wpi.first.wpilibj.Sendable;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team449.other.FollowerUtils;
 import frc.team449.wrappers.Encoder;
 import frc.team449.wrappers.WrappedMotor;
@@ -122,11 +119,13 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
 
     if (this.getFwdSoftLimit() != null) {
       motor.setSoftLimit(
-          CANSparkMax.SoftLimitDirection.kForward, this.getFwdSoftLimit().floatValue());
+          CANSparkMax.SoftLimitDirection.kForward,
+          (float) wrappedEnc.unitToEncoder(this.getFwdSoftLimit()));
     }
     if (this.getRevSoftLimit() != null) {
       motor.setSoftLimit(
-          CANSparkMax.SoftLimitDirection.kReverse, this.getRevSoftLimit().floatValue());
+          CANSparkMax.SoftLimitDirection.kReverse,
+          (float) wrappedEnc.unitToEncoder(this.getRevSoftLimit()));
     }
 
     // Set the current limit if it was given
