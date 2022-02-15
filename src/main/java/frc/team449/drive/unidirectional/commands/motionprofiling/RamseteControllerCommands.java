@@ -40,10 +40,12 @@ public class RamseteControllerCommands {
       @Nullable Double maxCentripetalAcceleration,
       @NotNull PIDController leftPidController,
       @NotNull PIDController rightPidController,
+      @Nullable Pose2d initialPose,
       @NotNull Pose2d endingPose,
       @NotNull List<Translation2d> translations,
       boolean reversed,
       @Nullable Field2d field) {
+    initialPose = initialPose == null ? drivetrain.getCurrentPose() : initialPose;
     // Create config for trajectory
     var config =
         new TrajectoryConfig(maxSpeedMeters, maxAccelMeters)
@@ -61,7 +63,7 @@ public class RamseteControllerCommands {
     // create trajectory from the current place where the robot is
     var traj =
         TrajectoryGenerator.generateTrajectory(
-            drivetrain.getCurrentPose(), translations, endingPose, config);
+            initialPose, translations, endingPose, config);
     if (field != null) field.getObject("traj").setTrajectory(traj);
 
     var cmd =
@@ -78,7 +80,7 @@ public class RamseteControllerCommands {
             drivetrain);
     // todo this feels redundant when the trajectory also knows
     //   the drive's initial pose
-    drivetrain.resetOdometry(traj.getInitialPose());
+    drivetrain.resetOdometry(initialPose);
 
     return cmd.andThen(() -> drivetrain.setVoltage(0,0));
   }
@@ -91,10 +93,12 @@ public class RamseteControllerCommands {
       double waitSeconds,
       @NotNull PIDController leftPidController,
       @NotNull PIDController rightPidController,
+      @Nullable Pose2d initialPose,
       @NotNull List<Pose2d> poses,
       boolean reversed,
       @Nullable Field2d field) {
     var cmd = new SequentialCommandGroup();
+    var lastPose = initialPose == null ? drivetrain.getCurrentPose() : initialPose;
     for (var pose : poses) {
       cmd.addCommands(
           RamseteControllerCommands.goToPosition(
@@ -104,11 +108,13 @@ public class RamseteControllerCommands {
               maxCentripetalAcceleration,
               leftPidController,
               rightPidController,
+              lastPose,
               pose,
               Collections.emptyList(),
               reversed,
               field),
           new WaitCommand(waitSeconds));
+      lastPose = pose;
     }
     return cmd;
   }

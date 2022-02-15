@@ -70,8 +70,8 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
    * @param right The voltage output for the right side of the drive from [-12, 12]
    */
   public void setVoltage(final double left, final double right) {
-    leftMaster.setVoltage(left);
-    rightMaster.setVoltage(right);
+    leftMaster.setVoltage(left + settings.leftFeedforward.calculate(left));
+    rightMaster.setVoltage(right + settings.rightFeedforward.calculate(right));
   }
 
   /**

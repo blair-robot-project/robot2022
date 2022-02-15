@@ -63,8 +63,9 @@ public class DriveUnidirectionalBase extends SubsystemBase
 
   @Override
   public void setOutput(double left, double right) {
-    this.leftMaster.set(left);// + settings.leftFeedforward.calculate(left));
-    this.rightMaster.set(right);// + settings.rightFeedforward.calculate(right));
+    //todo add feedforward
+    this.leftMaster.set(left);
+    this.rightMaster.set(right);
   }
 
   /**

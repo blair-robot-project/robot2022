@@ -70,6 +70,12 @@ public class FullMap {
   public static final double INTAKE_SPEED = 0.4, SPITTER_SPEED = 0.5;
   // Other constants
   public static final double CLIMBER_DISTANCE = 0.5;
+  public static final double DRIVE_KP_VEL = 0.00904,
+      DRIVE_KP_POS = 45.269,
+      DRIVE_KD_POS = 3264.2,
+      DRIVE_FF_KS = 0.15084,
+      DRIVE_FF_KV = 2.4303,
+      DRIVE_FF_KA = 0.5323;
 
   private FullMap() {}
 
@@ -119,8 +125,8 @@ public class FullMap {
             rightMaster,
             navx,
             new DriveSettingsBuilder()
-                .leftFeedforward(new SimpleMotorFeedforward(0.20767, 2.2623, 0.1517))
-                .rightFeedforward(new SimpleMotorFeedforward(0.20767, 2.2623, 0.1517))
+                .leftFeedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
+                .rightFeedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
                 .build(),
             0.6492875);
 
@@ -147,7 +153,7 @@ public class FullMap {
                         .axis(XboxController.Axis.kRightTrigger.value)
                         .inverted(false)
                         .build())),
-            new RampComponent(1.3, .5));
+            new RampComponent(.8, .50));
     var oi =
         new OIArcadeWithDPad(
             rotThrottle,
@@ -251,25 +257,52 @@ public class FullMap {
             new WaitCommand(0.01)
                 .andThen(() -> climber.setSetpoint(climber.getSetpoint() - 0.01), climber));
 
+    var ballPos = new Pose2d(new Translation2d(2, .8), Rotation2d.fromDegrees(0));
     var ramsete =
         RamseteControllerCommands.goToPosition(
             drive,
+            .5,
             .2,
-            .1,
-            .05,
-            new PIDController(.01, 0, 0),
-            new PIDController(.01, 0, 0),
-            new Pose2d(new Translation2d(2, 1), Rotation2d.fromDegrees(0)),
-            List.of(),
+            .2,
+            new PIDController(DRIVE_KP_VEL, 0, 0),
+            new PIDController(DRIVE_KP_VEL, 0, 0),
+            null,
+            ballPos,
+            List.of(),//new Translation2d(1.05, .5)),
             false,
             field);
+
+    var ramseteback =
+            RamseteControllerCommands.goToPosition(
+                    drive,
+                    .5,
+                    .2,
+                    .2,
+                    new PIDController(DRIVE_KP_VEL, 0, 0),
+                    new PIDController(DRIVE_KP_VEL, 0, 0),
+                    ballPos,
+                    new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)),
+                    List.of(),//new Translation2d(1.05, .5)),
+                    true,
+                    field);
 
     SmartDashboard.putData(
         "Reset odometry", new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive));
 
     List<Command> robotStartupCommands = List.of();
 
-    List<Command> autoStartupCommands = List.of(new InstantCommand(drive::resetPosition), ramsete);
+    List<Command> autoStartupCommands =
+        List.of(
+            new InstantCommand(() -> drive.resetOdometry(new Pose2d()))
+                .andThen(cargo::runIntake)
+                .andThen(ramsete)
+                .andThen(new WaitCommand(2))
+                .andThen(cargo::stop)
+                .andThen(ramseteback)
+                .andThen(cargo::spit)
+                .andThen(new WaitCommand(2))
+                .andThen(cargo::stop)
+                .andThen(new WaitCommand(1)));
 
     List<Command> teleopStartupCommands = List.of(new InstantCommand(climber::enable));
 
