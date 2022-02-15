@@ -194,6 +194,7 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
 
   /** @return Current estimated pose based on odometry tracker data */
   @Log.ToString
+  @NotNull
   public Pose2d getCurrentPose() {
     return this.driveOdometry.getPoseMeters() != null
         ? this.driveOdometry.getPoseMeters()
