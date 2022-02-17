@@ -4,15 +4,12 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.spline.SplineParameterizer;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrajectoryParameterizer;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import org.jetbrains.annotations.NotNull;
@@ -27,14 +24,14 @@ public final class RamseteBuilder {
   private @Nullable DriveUnidirectionalWithGyro drivetrain;
   private @Nullable PIDController leftPidController;
   private @Nullable PIDController rightPidController;
-  private @Nullable Pose2d expectedInitialPose;
+  private @Nullable Pose2d initialPose;
   private @Nullable Pose2d endingPose;
   private @Nullable List<Translation2d> translations;
   private final @NotNull List<TrajectoryConstraint> constraints = new ArrayList<>();
   private @Nullable Field2d field;
-  private @Nullable Double maxSpeed;
-  private @Nullable Double maxAccel;
-  private boolean reversed = false;
+  private double maxSpeed;
+  private double maxAccel;
+  private boolean reversed;
 
   /** Set the drive subsystem which is to be controlled */
   public RamseteBuilder drivetrain(DriveUnidirectionalWithGyro drivetrain) {
@@ -51,23 +48,6 @@ public final class RamseteBuilder {
   /** Set the PID controller for the right side. Uses velocity control. */
   public RamseteBuilder rightPidController(PIDController rightPidController) {
     this.rightPidController = rightPidController;
-    return this;
-  }
-
-  /**
-   * Set the expected initial pose for the trajectory. Uses {@link
-   * DriveUnidirectionalWithGyro#getCurrentPose()} as the expected initial pose by default. NOTE:
-   * The actual initial pose is the drivetrain's current pose, gotten right before the command is to
-   * be executed.
-   */
-  public RamseteBuilder expectedInitialPose(Pose2d expectedInitialPose) {
-    this.expectedInitialPose = expectedInitialPose;
-    return this;
-  }
-
-  /** Set the ending pose for the trajectory. */
-  public RamseteBuilder endingPose(Pose2d endingPose) {
-    this.endingPose = endingPose;
     return this;
   }
 
@@ -95,14 +75,18 @@ public final class RamseteBuilder {
     return this;
   }
 
-  /** Set max speed in m/s */
-  public RamseteBuilder maxSpeed(Double maxSpeed) {
+  /**
+   * Set max speed in m/s
+   */
+  public RamseteBuilder maxSpeed(double maxSpeed) {
     this.maxSpeed = maxSpeed;
     return this;
   }
 
-  /** Set max acceleration in m/s^2 */
-  public RamseteBuilder maxAccel(Double maxAccel) {
+  /**
+   * Set max acceleration in m/s^2
+   */
+  public RamseteBuilder maxAccel(double maxAccel) {
     this.maxAccel = maxAccel;
     return this;
   }
@@ -117,39 +101,17 @@ public final class RamseteBuilder {
     return this;
   }
 
-  public RamseteBuilder copy() {
-    var builder =
-        new RamseteBuilder()
-            .drivetrain(this.drivetrain)
-            .leftPidController(this.leftPidController)
-            .rightPidController(this.rightPidController)
-            .expectedInitialPose(this.expectedInitialPose)
-            .endingPose(this.endingPose)
-            .maxSpeed(this.maxSpeed)
-            .maxAccel(this.maxAccel)
-            .reversed(this.reversed);
-    if (this.translations != null) {
-      builder.translations(this.translations.toArray(new Translation2d[] {}));
-    }
-    for (var constraint : this.constraints) {
-      builder.addConstraint(constraint);
-    }
-    return builder;
-  }
-
   public Command build() {
     assert drivetrain != null : "Drivetrain must not be null";
     assert leftPidController != null : "Left PID controller must not be null";
     assert rightPidController != null : "Right PID controller must not be null";
     assert endingPose != null : "Ending pose must not be null";
-    assert maxSpeed != null : "Max speed must not be null";
-    assert maxAccel != null : "Max accel must not be null";
 
     if (this.translations == null) {
       this.translations = List.of();
     }
-    if (this.expectedInitialPose == null) {
-      this.expectedInitialPose = drivetrain.getCurrentPose();
+    if (this.initialPose == null) {
+      this.initialPose = drivetrain.getCurrentPose();
     }
 
     // Create config for trajectory
@@ -159,67 +121,35 @@ public final class RamseteBuilder {
             .setReversed(reversed)
             .addConstraint(
                 new DifferentialDriveVoltageConstraint(
-                    drivetrain.getFeedforward(), drivetrain.getDriveKinematics(), 12));
+                    drivetrain.getLeftFeedforwardCalculator(),
+                    drivetrain.getDriveKinematics(),
+                    12));
 
     for (var constraint : this.constraints) {
       config.addConstraint(constraint);
     }
 
-    // create trajectory from the expected initial pose of the robot for validation
-    try {
-      var validationTraj =
-          TrajectoryGenerator.generateTrajectory(
-              this.expectedInitialPose, this.translations, this.endingPose, config);
-      if (field != null) field.getObject("traj").setTrajectory(validationTraj);
-    } catch (SplineParameterizer.MalformedSplineException
-        | TrajectoryParameterizer.TrajectoryGenerationException e) {
-      throw new Error("Error while generating trajectory: ", e);
-    }
+    // create trajectory from the current place where the robot is
+    var traj =
+        TrajectoryGenerator.generateTrajectory(this.initialPose, this.translations, this.endingPose, config);
+    if (field != null) field.getObject("traj").setTrajectory(traj);
 
     var cmd =
-        new CommandBase() {
-          private RamseteCommand ramseteCmd;
-
-          @Override
-          public void initialize() {
-            // Generate a new trajectory based on the actual initial pose
-            var traj =
-                TrajectoryGenerator.generateTrajectory(
-                    drivetrain.getCurrentPose(),
-                    RamseteBuilder.this.translations,
-                    RamseteBuilder.this.endingPose,
-                    config);
-            this.ramseteCmd =
-                new RamseteCommand(
-                    traj,
-                    drivetrain::getCurrentPose,
-                    new RamseteController(),
-                    drivetrain.getFeedforward(),
-                    drivetrain.getDriveKinematics(),
-                    drivetrain::getWheelSpeeds,
-                    leftPidController,
-                    rightPidController,
-                    drivetrain::setVoltage,
-                    drivetrain);
-            this.ramseteCmd.initialize();
-          }
-
-          @Override
-          public void execute() {
-            this.ramseteCmd.execute();
-          }
-
-          @Override
-          public void end(boolean interrupted) {
-            this.ramseteCmd.end(interrupted);
-          }
-
-          @Override
-          public boolean isFinished() {
-            return this.ramseteCmd.isFinished();
-          }
-        };
+        new RamseteCommand(
+            traj,
+            drivetrain::getCurrentPose,
+            new RamseteController(),
+            drivetrain.getLeftFeedforwardCalculator(),
+            drivetrain.getDriveKinematics(),
+            drivetrain::getWheelSpeeds,
+            leftPidController,
+            rightPidController,
+            drivetrain::setVoltage,
+            drivetrain);
+    drivetrain.resetOdometry(initialPose);
 
     return cmd.andThen(() -> drivetrain.setVoltage(0, 0));
   }
+
+  private RamseteBuilder() {}
 }

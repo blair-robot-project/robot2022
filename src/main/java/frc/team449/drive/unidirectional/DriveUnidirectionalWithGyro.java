@@ -28,7 +28,7 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
   @NotNull private final AHRS ahrs;
 
   /** Drivetrain kinematics processor for measuring individual wheel speeds */
-  @NotNull private final DifferentialDriveKinematics driveKinematics;
+  private final DifferentialDriveKinematics driveKinematics;
 
   /** Drivetrain odometry tracker for tracking position */
   private final DifferentialDriveOdometry driveOdometry;
@@ -70,8 +70,8 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
    * @param right The voltage output for the right side of the drive from [-12, 12]
    */
   public void setVoltage(final double left, final double right) {
-    leftMaster.setVoltage(left + settings.feedforward.calculate(left));
-    rightMaster.setVoltage(right + settings.feedforward.calculate(right));
+    leftMaster.setVoltage(left + settings.leftFeedforward.calculate(left));
+    rightMaster.setVoltage(right + settings.rightFeedforward.calculate(right));
   }
 
   /**
@@ -208,7 +208,6 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
   }
 
   /** @return Kinematics processor for wheel speeds */
-  @NotNull
   public DifferentialDriveKinematics getDriveKinematics() {
     return this.driveKinematics;
   }

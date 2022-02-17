@@ -6,7 +6,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.XboxController;
@@ -25,11 +24,11 @@ import frc.team449._2022robot.climber.PivotingTelescopingClimber;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
+import frc.team449.drive.unidirectional.commands.motionprofiling.RamseteControllerCommands;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.generalInterfaces.limelight.Limelight;
 import frc.team449.javaMaps.builders.DriveSettingsBuilder;
-import frc.team449.javaMaps.builders.RamseteBuilder;
 import frc.team449.javaMaps.builders.SparkMaxConfig;
 import frc.team449.javaMaps.builders.ThrottlePolynomialBuilder;
 import frc.team449.oi.throttles.ThrottleSum;
@@ -126,7 +125,8 @@ public class FullMap {
             rightMaster,
             navx,
             new DriveSettingsBuilder()
-                .feedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
+                .leftFeedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
+                .rightFeedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
                 .build(),
             0.6492875);
 
@@ -257,26 +257,34 @@ public class FullMap {
             new WaitCommand(0.01)
                 .andThen(() -> climber.setSetpoint(climber.getSetpoint() - 0.01), climber));
 
-    var ramsetePrototype =
-        new RamseteBuilder()
-            .drivetrain(drive)
-            .maxSpeed(.5)
-            .maxAccel(.2)
-            .leftPidController(new PIDController(DRIVE_KP_VEL, 0, 0))
-            .rightPidController(new PIDController(DRIVE_KP_VEL, 0, 0))
-            .addConstraint(new CentripetalAccelerationConstraint(.2))
-            .field(field);
     var ballPos = new Pose2d(new Translation2d(2, .8), Rotation2d.fromDegrees(0));
     var ramsete =
-        ramsetePrototype.copy().reversed(false).endingPose(ballPos).build();
+        RamseteControllerCommands.goToPosition(
+            drive,
+            .5,
+            .2,
+            .2,
+            new PIDController(DRIVE_KP_VEL, 0, 0),
+            new PIDController(DRIVE_KP_VEL, 0, 0),
+            null,
+            ballPos,
+            List.of(),//new Translation2d(1.05, .5)),
+            false,
+            field);
 
     var ramseteback =
-        ramsetePrototype
-            .copy()
-            .expectedInitialPose(ballPos)
-            .endingPose(new Pose2d())
-            .reversed(true)
-            .build();
+            RamseteControllerCommands.goToPosition(
+                    drive,
+                    .5,
+                    .2,
+                    .2,
+                    new PIDController(DRIVE_KP_VEL, 0, 0),
+                    new PIDController(DRIVE_KP_VEL, 0, 0),
+                    ballPos,
+                    new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)),
+                    List.of(),//new Translation2d(1.05, .5)),
+                    true,
+                    field);
 
     SmartDashboard.putData(
         "Reset odometry", new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive));
