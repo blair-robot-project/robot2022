@@ -3,7 +3,6 @@ package frc.team449.generalInterfaces;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,10 +15,8 @@ public class DriveSettings {
   @Nullable public final Double rampRate;
   /** The maximum speed of the motor in this gear, in MPS. Used for throttle scaling. */
   @Nullable public final Double maxSpeed;
-  /** Feedforward calculator for left side */
-  public final SimpleMotorFeedforward leftFeedforward;
-  /** Feedforward calculator for right side */
-  public final SimpleMotorFeedforward rightFeedforward;
+  /** Feedforward calculator */
+  public final SimpleMotorFeedforward feedforward;
   /** Position PID controller for left side */
   public final PIDController leftPosPID;
   /** Position PID controller for right side */
@@ -32,9 +29,7 @@ public class DriveSettings {
   /**
    * Default constructor.
    *
-   * @param leftFeedforward The component for calculating feedforwards for the left side in
-   *     closed-loop control modes.
-   * @param rightFeedforward The component for calculating feedforwards for the right side in
+   * @param feedforward The component for calculating feedforwards for the left side in
    *     closed-loop control modes.
    * @param leftPosPID Left position PID controller
    * @param rightPosPID Right position PID controller
@@ -45,16 +40,14 @@ public class DriveSettings {
    */
   @JsonCreator
   public DriveSettings(
-      @NotNull SimpleMotorFeedforward leftFeedforward,
-      @NotNull SimpleMotorFeedforward rightFeedforward,
+      @NotNull SimpleMotorFeedforward feedforward,
       @NotNull PIDController leftPosPID,
       @NotNull PIDController rightPosPID,
       @NotNull PIDController leftVelPID,
       @NotNull PIDController rightVelPID,
       @Nullable Double rampRate,
       @Nullable Double maxSpeed) {
-    this.leftFeedforward = leftFeedforward;
-    this.rightFeedforward = rightFeedforward;
+    this.feedforward = feedforward;
     this.leftPosPID = leftPosPID;
     this.rightPosPID = rightPosPID;
     this.leftVelPID = leftVelPID;
@@ -66,7 +59,6 @@ public class DriveSettings {
   /** Empty constructor that uses all default options. */
   public DriveSettings() {
     this(
-        new SimpleMotorFeedforward(0, 0),
         new SimpleMotorFeedforward(0, 0),
         new PIDController(0, 0, 0),
         new PIDController(0, 0, 0),

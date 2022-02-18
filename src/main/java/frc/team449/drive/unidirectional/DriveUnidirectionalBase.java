@@ -153,13 +153,8 @@ public class DriveUnidirectionalBase extends SubsystemBase
   }
 
   /** @return The feedforward calculator for left motors */
-  public SimpleMotorFeedforward getLeftFeedforwardCalculator() {
-    return settings.leftFeedforward;
-  }
-
-  /** @return The feedforward calculator for right motors */
-  public SimpleMotorFeedforward getRightFeedforwardCalculator() {
-    return settings.rightFeedforward;
+  public SimpleMotorFeedforward getFeedforward() {
+    return settings.feedforward;
   }
 
   /** Updates all cached values with current ones. */

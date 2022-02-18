@@ -9,8 +9,7 @@ public final class DriveSettingsBuilder {
   private Double revPeakOutputVoltage;
   private Double fwdNominalOutputVoltage;
   private Double revNominalOutputVoltage;
-  private SimpleMotorFeedforward leftFeedforward;
-  private SimpleMotorFeedforward rightFeedforward;
+  private SimpleMotorFeedforward feedforward;
   private PIDController leftPosPID;
   private PIDController rightPosPID;
   private PIDController leftVelPID;
@@ -24,8 +23,7 @@ public final class DriveSettingsBuilder {
         .revPeakOutputVoltage(revPeakOutputVoltage)
         .fwdNominalOutputVoltage(fwdNominalOutputVoltage)
         .revNominalOutputVoltage(revNominalOutputVoltage)
-        .leftFeedforward(leftFeedforward)
-        .rightFeedforward(rightFeedforward)
+        .feedforward(feedforward)
         .leftPosPID(leftPosPID)
         .rightPosPID(rightPosPID)
         .leftVelPID(leftVelPID)
@@ -36,8 +34,7 @@ public final class DriveSettingsBuilder {
 
   public DriveSettings build() {
     return new DriveSettings(
-        leftFeedforward,
-        rightFeedforward,
+        feedforward,
         leftPosPID,
         rightPosPID,
         leftVelPID,
@@ -66,13 +63,8 @@ public final class DriveSettingsBuilder {
     return this;
   }
 
-  public DriveSettingsBuilder leftFeedforward(SimpleMotorFeedforward leftFeedforward) {
-    this.leftFeedforward = leftFeedforward;
-    return this;
-  }
-
-  public DriveSettingsBuilder rightFeedforward(SimpleMotorFeedforward rightFeedforward) {
-    this.rightFeedforward = rightFeedforward;
+  public DriveSettingsBuilder feedforward(SimpleMotorFeedforward feedforward) {
+    this.feedforward = feedforward;
     return this;
   }
 

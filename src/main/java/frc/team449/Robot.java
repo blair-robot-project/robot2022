@@ -1,6 +1,7 @@
 package frc.team449;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -62,6 +63,11 @@ public class Robot extends TimedRobot {
 
     // Yes this should be a print statement, it's useful to know that robotInit started.
     System.out.println("Started robotInit.");
+
+    if (RobotBase.isSimulation()) {
+      // Don't complain about joysticks if there aren't going to be any
+      DriverStation.silenceJoystickConnectionWarning(true);
+    }
 
     if (this.robotMap.useCameraServer()) {
       CameraServer.startAutomaticCapture();
