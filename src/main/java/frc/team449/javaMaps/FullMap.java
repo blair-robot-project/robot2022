@@ -70,7 +70,7 @@ public class FullMap {
   public static final double INTAKE_SPEED = 0.4, SPITTER_SPEED = 0.5;
   // Other constants
   public static final double CLIMBER_DISTANCE = 0.5;
-  public static final double DRIVE_KP_VEL = 0.00904,
+  public static final double DRIVE_KP_VEL = 0.02,
       DRIVE_KP_POS = 45.269,
       DRIVE_KD_POS = 3264.2,
       DRIVE_FF_KS = 0.15084,
@@ -127,7 +127,8 @@ public class FullMap {
             new DriveSettingsBuilder()
                 .feedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
                 .build(),
-            0.6492875);
+                .6492875); // old value from measuring from the outside of the wheel: 0.6492875
+    // measuring from the inside of the wheel : .57785
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.06);
@@ -259,13 +260,13 @@ public class FullMap {
     var ramsetePrototype =
         new RamseteBuilder()
             .drivetrain(drive)
-            .maxSpeed(1)
-            .maxAccel(.5)
+            .maxSpeed(1.22)
+            .maxAccel(.2)
             .leftPidController(new PIDController(DRIVE_KP_VEL, 0, 0))
-            .rightPidController(new PIDController(DRIVE_KP_VEL, 0, 0))
+            .rightPidController(new PIDController(DRIVE_KP_VEL , 0, 0))
             .field(field);
 
-    var ballPos = new Pose2d(new Translation2d(1.7, .8), Rotation2d.fromDegrees(0));
+    var ballPos = new Pose2d(new Translation2d(1.5, .4), Rotation2d.fromDegrees(0));
 
     SmartDashboard.putData(
         "Reset odometry", new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive));
@@ -303,7 +304,8 @@ public class FullMap {
     List<Command> teleopStartupCommands =
         List.of(
             new InstantCommand(climber::enable),
-            new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)));
+            new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
+            new InstantCommand(cargo::stop));
 
     List<Command> testStartupCommands = List.of();
     var allCommands =
