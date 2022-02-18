@@ -6,7 +6,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.XboxController;
@@ -167,7 +166,7 @@ public class FullMap {
             .3,
             false);
 
-    drive.setDefaultCommand(
+    var driveDefaultCmd =
         new UnidirectionalNavXDefaultDrive<>(
             0,
             new Debouncer(1.5),
@@ -183,7 +182,7 @@ public class FullMap {
             new Debouncer(0.15),
             drive,
             oi,
-            null));
+            null);
 
     var cargo =
         new Cargo2022(
@@ -260,23 +259,13 @@ public class FullMap {
     var ramsetePrototype =
         new RamseteBuilder()
             .drivetrain(drive)
-            .maxSpeed(.5)
-            .maxAccel(.2)
+            .maxSpeed(1)
+            .maxAccel(.5)
             .leftPidController(new PIDController(DRIVE_KP_VEL, 0, 0))
             .rightPidController(new PIDController(DRIVE_KP_VEL, 0, 0))
-            .addConstraint(new CentripetalAccelerationConstraint(.2))
             .field(field);
-    var ballPos = new Pose2d(new Translation2d(2, .8), Rotation2d.fromDegrees(0));
-    var ramsete =
-        ramsetePrototype.copy().reversed(false).endingPose(ballPos).build();
 
-    var ramseteback =
-        ramsetePrototype
-            .copy()
-            .expectedInitialPose(ballPos)
-            .endingPose(new Pose2d())
-            .reversed(true)
-            .build();
+    var ballPos = new Pose2d(new Translation2d(1.7, .8), Rotation2d.fromDegrees(0));
 
     SmartDashboard.putData(
         "Reset odometry", new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive));
@@ -286,17 +275,35 @@ public class FullMap {
     List<Command> autoStartupCommands =
         List.of(
             new InstantCommand(() -> drive.resetOdometry(new Pose2d()))
+                .andThen(cargo::spit)
+                .andThen(new WaitCommand(1))
                 .andThen(cargo::runIntake)
-                .andThen(ramsete)
+                .andThen(
+                    ramsetePrototype
+                        .copy()
+                        .name("RamseteFwd")
+                        .reversed(false)
+                        .endingPose(ballPos)
+                        .build())
                 .andThen(new WaitCommand(2))
                 .andThen(cargo::stop)
-                .andThen(ramseteback)
+                .andThen(
+                    ramsetePrototype
+                        .copy()
+                        .name("RamseteBack")
+                        .expectedInitialPose(ballPos)
+                        .endingPose(new Pose2d())
+                        .reversed(true)
+                        .build())
                 .andThen(cargo::spit)
                 .andThen(new WaitCommand(2))
                 .andThen(cargo::stop)
                 .andThen(new WaitCommand(1)));
 
-    List<Command> teleopStartupCommands = List.of(new InstantCommand(climber::enable));
+    List<Command> teleopStartupCommands =
+        List.of(
+            new InstantCommand(climber::enable),
+            new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)));
 
     List<Command> testStartupCommands = List.of();
     var allCommands =

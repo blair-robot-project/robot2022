@@ -4,23 +4,22 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.spline.SplineParameterizer;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrajectoryParameterizer;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
+import frc.team449.multiSubsystem.commands.LazyCommand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public final class RamseteBuilder {
 
@@ -32,6 +31,7 @@ public final class RamseteBuilder {
   private @Nullable List<Translation2d> translations;
   private final @NotNull List<TrajectoryConstraint> constraints = new ArrayList<>();
   private @Nullable Field2d field;
+  private @Nullable String name;
   private @Nullable Double maxSpeed;
   private @Nullable Double maxAccel;
   private boolean reversed = false;
@@ -95,14 +95,20 @@ public final class RamseteBuilder {
     return this;
   }
 
+  /** Set the name to be displayed for this command and its trajectory if the field is given */
+  public RamseteBuilder name(String name) {
+    this.name = name;
+    return this;
+  }
+
   /** Set max speed in m/s */
-  public RamseteBuilder maxSpeed(Double maxSpeed) {
+  public RamseteBuilder maxSpeed(double maxSpeed) {
     this.maxSpeed = maxSpeed;
     return this;
   }
 
   /** Set max acceleration in m/s^2 */
-  public RamseteBuilder maxAccel(Double maxAccel) {
+  public RamseteBuilder maxAccel(double maxAccel) {
     this.maxAccel = maxAccel;
     return this;
   }
@@ -125,9 +131,13 @@ public final class RamseteBuilder {
             .rightPidController(this.rightPidController)
             .expectedInitialPose(this.expectedInitialPose)
             .endingPose(this.endingPose)
-            .maxSpeed(this.maxSpeed)
-            .maxAccel(this.maxAccel)
             .reversed(this.reversed);
+    if (this.maxSpeed != null) {
+      builder.maxSpeed(this.maxSpeed);
+    }
+    if (this.maxAccel != null) {
+      builder.maxAccel(this.maxAccel);
+    }
     if (this.translations != null) {
       builder.translations(this.translations.toArray(new Translation2d[] {}));
     }
@@ -166,60 +176,38 @@ public final class RamseteBuilder {
     }
 
     // create trajectory from the expected initial pose of the robot for validation
-    try {
-      var validationTraj =
-          TrajectoryGenerator.generateTrajectory(
-              this.expectedInitialPose, this.translations, this.endingPose, config);
-      if (field != null) field.getObject("traj").setTrajectory(validationTraj);
-    } catch (SplineParameterizer.MalformedSplineException
-        | TrajectoryParameterizer.TrajectoryGenerationException e) {
-      throw new Error("Error while generating trajectory: ", e);
-    }
+    var validationTraj =
+        TrajectoryGenerator.generateTrajectory(
+            this.expectedInitialPose, this.translations, this.endingPose, config);
+    if (field != null)
+      field.getObject(Objects.requireNonNullElse(this.name, "traj")).setTrajectory(validationTraj);
 
     var cmd =
-        new CommandBase() {
-          private RamseteCommand ramseteCmd;
-
-          @Override
-          public void initialize() {
-            // Generate a new trajectory based on the actual initial pose
-            var traj =
-                TrajectoryGenerator.generateTrajectory(
-                    drivetrain.getCurrentPose(),
-                    RamseteBuilder.this.translations,
-                    RamseteBuilder.this.endingPose,
-                    config);
-            this.ramseteCmd =
-                new RamseteCommand(
-                    traj,
-                    drivetrain::getCurrentPose,
-                    new RamseteController(),
-                    drivetrain.getFeedforward(),
-                    drivetrain.getDriveKinematics(),
-                    drivetrain::getWheelSpeeds,
-                    leftPidController,
-                    rightPidController,
-                    drivetrain::setVoltage,
-                    drivetrain);
-            this.ramseteCmd.initialize();
-          }
-
-          @Override
-          public void execute() {
-            this.ramseteCmd.execute();
-          }
-
-          @Override
-          public void end(boolean interrupted) {
-            this.ramseteCmd.end(interrupted);
-          }
-
-          @Override
-          public boolean isFinished() {
-            return this.ramseteCmd.isFinished();
-          }
-        };
-
+        new LazyCommand(
+            () -> {
+              // Generate a new trajectory based on the actual initial pose
+              var traj =
+                  TrajectoryGenerator.generateTrajectory(
+                      drivetrain.getCurrentPose(),
+                      RamseteBuilder.this.translations,
+                      RamseteBuilder.this.endingPose,
+                      config);
+              return new RamseteCommand(
+                  traj,
+                  drivetrain::getCurrentPose,
+                  new RamseteController(),
+                  drivetrain.getFeedforward(),
+                  drivetrain.getDriveKinematics(),
+                  drivetrain::getWheelSpeeds,
+                  leftPidController,
+                  rightPidController,
+                  drivetrain::setVoltage,
+                  drivetrain);
+            },
+            drivetrain);
+    if (this.name != null) {
+      cmd.setName(this.name);
+    }
     return cmd.andThen(() -> drivetrain.setVoltage(0, 0));
   }
 }
