@@ -74,10 +74,10 @@ public class FullMap {
   public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
   // Speeds
   public static final double INTAKE_SPEED = 0.4, SPITTER_SPEED = 0.5;
-  public static final double AUTO_MAX_SPEED = 1.22, AUTO_MAX_ACCEL = .2;
+  public static final double AUTO_MAX_SPEED = 1.8, AUTO_MAX_ACCEL = .35;
   // Other constants
   public static final double CLIMBER_DISTANCE = 0.5;
-  public static final double DRIVE_KP_VEL = 0.02,
+  public static final double DRIVE_KP_VEL = 0.001,
       DRIVE_KP_POS = 45.269,
       DRIVE_KD_POS = 3264.2,
       DRIVE_FF_KS = 0.15084,
@@ -160,7 +160,7 @@ public class FullMap {
                         .axis(XboxController.Axis.kRightTrigger.value)
                         .inverted(false)
                         .build())),
-            new RampComponent(.8, .50));
+            new RampComponent(.7, .50));
     var oi =
         new OIArcadeWithDPad(
             rotThrottle,
@@ -192,8 +192,9 @@ public class FullMap {
             oi,
             null);
 
-    var resetDriveOdometry = new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive);
-    SmartDashboard.putData("Reset odometry", resetDriveOdometry);
+    Supplier<InstantCommand> resetDriveOdometry =
+        () -> new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive);
+    SmartDashboard.putData("Reset odometry", resetDriveOdometry.get());
 
     var cargo =
         new Cargo2022(
@@ -282,51 +283,44 @@ public class FullMap {
             .leftPidController(new PIDController(DRIVE_KP_VEL, 0, 0))
             .rightPidController(new PIDController(DRIVE_KP_VEL, 0, 0))
             .field(field);
-
-    var sCurve =
-        spit.get()
-            .andThen(
-                ramsetePrototype
-                    .copy()
-                    .name("scurvetraj")
-                    .traj(sCurveTraj(drive))
-                    .build()
-                    .alongWith(new WaitCommand(5).andThen(runIntake.get())))
-            .andThen(spit.get());
+    //
+    //    var sCurve =
+    //        spit.get()
+    //            .andThen(cargo::runIntake, cargo)
+    //
+    // .andThen(ramsetePrototype.copy().name("scurvetraj").traj(sCurveTraj(drive)).build())
+    //            .andThen(spit.get());
 
     // (assume blue alliance)
     // Start at bottom next to hub, shoot preloaded ball, then get the two balls in that region and
     // score those
     var scoreThenGetTwoThenScore =
-        spit.get()
+        new InstantCommand(cargo::runIntake, cargo)
             .andThen(
                 ramsetePrototype
                     .copy()
                     .name("1-2ballbluebottom")
-                    .traj(loadPathPlannerTraj("1-2ball blue bottom"))
-                    .build()
-                    .alongWith(new WaitCommand(5).andThen(runIntake.get())))
+                    .traj(loadPathPlannerTraj("New Path"))
+                    .build())
             .andThen(spit.get());
 
     // (assume blue alliance)
     // Start at bottom on edge of tape, get one ball, score that and the preloaded one, go back for
     // another ball, then score that
-    var getOneThenScoreThenGetAnotherThenScore =
-        ramsetePrototype
-            .copy()
-            .name("2-1ballbluebottom")
-            .traj(loadPathPlannerTraj("2-1ball blue bottom"))
-            .build()
-            .alongWith(
-                new WaitCommand(5)
-                    .andThen(runIntake.get())
-                    .andThen(new WaitCommand(5))
-                    .andThen(spit.get())
-                    .andThen(new WaitCommand(6))
-                    .andThen(runIntake.get()))
-            .andThen(spit.get());
+    //    var getOneThenScoreThenGetAnotherThenScore =
+    //        new InstantCommand(cargo::runIntake, cargo)
+    //            .andThen(
+    //                ramsetePrototype
+    //                    .copy()
+    //                    .name("2-1ballbluebottom")
+    //                    .traj(loadPathPlannerTraj("2-1ball blue bottom"))
+    //                    .build()
+    //                    .alongWith(
+    //                        new WaitCommand(10).andThen(spit.get()).andThen(cargo::runIntake,
+    // cargo)))
+    //            .andThen(spit.get());
 
-    List<Command> autoStartupCommands = List.of(resetDriveOdometry, sCurve);
+    List<Command> autoStartupCommands = List.of(resetDriveOdometry.get(), scoreThenGetTwoThenScore);
 
     List<Command> robotStartupCommands = List.of();
 
@@ -347,20 +341,31 @@ public class FullMap {
   /** Generate a trajectory for the S-shaped curve we're using to test */
   @NotNull
   private static Trajectory sCurveTraj(@NotNull DriveUnidirectionalWithGyro drive) {
-    var trajConfig =
-        new TrajectoryConfig(AUTO_MAX_SPEED, AUTO_MAX_ACCEL)
-            .setKinematics(drive.getDriveKinematics())
-            .addConstraint(
-                new DifferentialDriveVoltageConstraint(
-                    drive.getFeedforward(), drive.getDriveKinematics(), 12));
-    var ballPos = new Pose2d(new Translation2d(1.5, .4), Rotation2d.fromDegrees(0));
+    var ballPos = new Pose2d(new Translation2d(2, 0), Rotation2d.fromDegrees(0));
     var fwdTraj =
         TrajectoryGenerator.generateTrajectory(
-            new Pose2d(), List.of(), ballPos, trajConfig.setReversed(false));
+            new Pose2d(), List.of(), ballPos, trajConfig(drive).setReversed(false));
     var revTraj =
         TrajectoryGenerator.generateTrajectory(
-            ballPos, List.of(), new Pose2d(), trajConfig.setReversed(true));
+            ballPos, List.of(), new Pose2d(), trajConfig(drive).setReversed(true));
     return fwdTraj.concatenate(revTraj);
+  }
+
+  private static Trajectory testTraj(@NotNull DriveUnidirectionalWithGyro drive) {
+    return TrajectoryGenerator.generateTrajectory(
+        new Pose2d(new Translation2d(7.68, 2.82), Rotation2d.fromDegrees(-111.63)),
+        List.of(),
+        new Pose2d(new Translation2d(6.4, 1.37), Rotation2d.fromDegrees(-143.13)),
+        trajConfig(drive));
+  }
+
+  @NotNull
+  private static TrajectoryConfig trajConfig(@NotNull DriveUnidirectionalWithGyro drive) {
+    return new TrajectoryConfig(AUTO_MAX_SPEED, AUTO_MAX_ACCEL)
+        .setKinematics(drive.getDriveKinematics())
+        .addConstraint(
+            new DifferentialDriveVoltageConstraint(
+                drive.getFeedforward(), drive.getDriveKinematics(), 12));
   }
 
   @NotNull

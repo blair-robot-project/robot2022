@@ -1,5 +1,6 @@
 package frc.team449._2022robot.climber;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -10,9 +11,10 @@ import org.jetbrains.annotations.NotNull;
 public class PivotingTelescopingClimber extends SubsystemBase implements Loggable {
   /** Distance the climber can travel, in meters */
   public final double distanceTopBottom;
-  private final ClimberArm rightArm;
-  private ClimberState state;
-  private final ClimberArm leftArm;
+  private final @NotNull ClimberArm rightArm;
+  private @NotNull ClimberState state;
+  private final @NotNull ClimberArm leftArm;
+  private final @NotNull DoubleSolenoid pivotPiston;
   /** The current setpoint, which constantly moves */
   private double setpoint;
 
@@ -20,6 +22,7 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
       @NotNull ClimberArm leftArm, @NotNull ClimberArm rightArm, double distanceTopBottom) {
     this.leftArm = leftArm;
     this.rightArm = rightArm;
+    this.pivotPiston = null;
     this.distanceTopBottom = distanceTopBottom;
     // Start arm retracted
     this.state = ClimberState.RETRACTED;
@@ -56,13 +59,13 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
     this.rightArm.setSetpoint(setpoint);
   }
 
-  //  public void pivotTelescopingArmOut() {
-  //    pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kForward);
-  //  }
-  //
-  //  public void pivotTelescopingArmIn() {
-  //    pivotingTelescopingArm.setSolenoid(DoubleSolenoid.Value.kReverse);
-  //  }
+  public void pivotTelescopingArmOut() {
+    pivotPiston.set(DoubleSolenoid.Value.kReverse);
+  }
+
+  public void pivotTelescopingArmIn() {
+    pivotPiston.set(DoubleSolenoid.Value.kForward);
+  }
 
   /** Only for testing/debugging */
   @Deprecated
