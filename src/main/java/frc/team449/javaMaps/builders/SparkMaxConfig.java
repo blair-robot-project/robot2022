@@ -85,13 +85,15 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
                 encoderName,
                 motor.getEncoder(),
                 this.getUnitPerRotation(),
-                this.getPostEncoderGearing())
+                this.getPostEncoderGearing(),
+                this.getCalculateVel())
             : new Encoder.WPIEncoder(
                 encoderName,
                 externalEncoder,
                 this.getEncoderCPR(),
                 this.getUnitPerRotation(),
-                this.getPostEncoderGearing());
+                this.getPostEncoderGearing(),
+                this.getCalculateVel());
 
     motor.restoreFactoryDefaults();
 

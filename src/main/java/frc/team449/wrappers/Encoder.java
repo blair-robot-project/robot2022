@@ -2,6 +2,7 @@ package frc.team449.wrappers;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.RelativeEncoder;
+import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -17,18 +18,33 @@ public abstract class Encoder implements Loggable {
    * 1/70 if there was a 70:1 gearing between the encoder and the final output.
    */
   private final double postEncoderGearing;
+  /**
+   * Whether or not to calculate velocity on our own instead of using the encoder's implementation
+   */
+  private final boolean calculateVel;
+  /** The last measured position, in case we're calculating velocity on our own */
+  private double prevPos;
+  /** The time at which the last position was measured */
+  private double prevTime;
 
   /**
    * @param encoderCPR Counts per rotation of the encoder
    * @param unitPerRotation Meters traveled per rotation of the motor
    * @param postEncoderGearing The factor the output changes by after being measured by the encoder
+   * @param calculateVel Whether or not we should calculate velocity ourselves (instead of using the
+   *     encoder's own velocity)
    */
   public Encoder(
-      @NotNull String name, int encoderCPR, double unitPerRotation, double postEncoderGearing) {
+      @NotNull String name,
+      int encoderCPR,
+      double unitPerRotation,
+      double postEncoderGearing,
+      boolean calculateVel) {
     this.name = name;
     this.unitPerRotation = unitPerRotation;
     this.encoderCPR = encoderCPR;
     this.postEncoderGearing = postEncoderGearing;
+    this.calculateVel = calculateVel;
   }
 
   /** Reset position to 0 */
@@ -121,7 +137,17 @@ public abstract class Encoder implements Loggable {
   /** Current velocity in meters */
   @Log
   public final double getVelocityUnits() {
-    return this.encoderToUnit(this.getVelocityNative());
+    if (this.calculateVel) {
+      // If we're calculating velocity ourselves, return change in position / change in time
+      var currPos = this.getPositionUnits();
+      var currTime = Clock.currentTimeMillis();
+      var vel = (currPos - this.prevPos) / (currTime - prevTime);
+      this.prevPos = currPos;
+      this.prevTime = currTime;
+      return vel;
+    } else {
+      return this.encoderToUnit(this.getVelocityNative());
+    }
   }
 
   @Override
@@ -137,8 +163,9 @@ public abstract class Encoder implements Loggable {
         @NotNull edu.wpi.first.wpilibj.Encoder encoder,
         int encoderCPR,
         double unitPerRotation,
-        double postEncoderGearing) {
-      super(name, 1, unitPerRotation, postEncoderGearing);
+        double postEncoderGearing,
+        boolean calculateVel) {
+      super(name, 1, unitPerRotation, postEncoderGearing, calculateVel);
       // Set field encoderCPR to 1 because the WPI encoder handles it itself
       encoder.setDistancePerPulse(1.0 / encoderCPR);
       encoder.setSamplesToAverage(5);
@@ -176,19 +203,19 @@ public abstract class Encoder implements Loggable {
     private final RelativeEncoder encoder;
 
     /**
-     *
      * @param name Motor name used for logging
      * @param encoder Actual encoder to wrap
      * @param unitPerRotation Meters per rotation
-     * @param postEncoderGearing Factor output is multiplied by after encoders.
-     *                           NOTE: This should be >1, not a reciprocal
+     * @param postEncoderGearing Factor output is multiplied by after encoders. NOTE: This should be
+     *     >1, not a reciprocal
      */
     public SparkEncoder(
         @NotNull String name,
         @NotNull RelativeEncoder encoder,
         double unitPerRotation,
-        double postEncoderGearing) {
-      super(name, 1, unitPerRotation, postEncoderGearing);
+        double postEncoderGearing,
+        boolean calculateVel) {
+      super(name, 1, unitPerRotation, postEncoderGearing, calculateVel);
       this.encoder = encoder;
       this.resetPosition();
     }
@@ -227,9 +254,10 @@ public abstract class Encoder implements Loggable {
         @NotNull TalonSRX talon,
         int encoderCPR,
         double unitPerRotation,
-        double postEncoderGearing) {
+        double postEncoderGearing,
+        boolean calculateVel) {
       // The Talon multiplies its encoder count by 4
-      super(name, encoderCPR * 4, unitPerRotation, postEncoderGearing);
+      super(name, encoderCPR * 4, unitPerRotation, postEncoderGearing, calculateVel);
       this.talon = talon;
       this.resetPosition();
     }

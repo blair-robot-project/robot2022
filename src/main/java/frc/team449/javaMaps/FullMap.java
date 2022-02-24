@@ -106,7 +106,8 @@ public class FullMap {
             .setUnitPerRotation(0.31918) // 2 * Math.PI * 0.0508
             .setCurrentLimit(50)
             .setPostEncoderGearing(5.86)
-            .setEnableVoltageComp(true);
+            .setEnableVoltageComp(true)
+            .setCalculateVel(true); // TODO remove this as soon as possible
     var leftMaster =
         driveMasterPrototype
             .copy()

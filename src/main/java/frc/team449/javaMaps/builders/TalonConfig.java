@@ -6,7 +6,8 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import frc.team449.other.FollowerUtils;
-import frc.team449.wrappers.*;
+import frc.team449.wrappers.Encoder;
+import frc.team449.wrappers.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,13 +124,15 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
                 motor,
                 this.getEncoderCPR(),
                 this.getUnitPerRotation(),
-                this.getPostEncoderGearing())
+                this.getPostEncoderGearing(),
+                this.getCalculateVel())
             : new Encoder.WPIEncoder(
                 encoderName,
                 externalEncoder,
                 this.getEncoderCPR(),
                 this.getUnitPerRotation(),
-                this.getPostEncoderGearing());
+                this.getPostEncoderGearing(),
+                this.getCalculateVel());
 
     // todo do only slaves need to be inverted?
     motor.setInverted(this.isReverseOutput());
