@@ -1,25 +1,23 @@
 package frc.team449.wrappers;
 
-import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
+import frc.team449.generalInterfaces.ahrs.IAHRS;
 import frc.team449.generalInterfaces.updatable.Updatable;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
+import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
 
 /** An invertible wrapper for the NavX. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class AHRS implements Updatable, Loggable {
+public class AHRS implements IAHRS, Updatable, Loggable {
 
   /** The AHRS this class is a wrapper on. */
   protected final com.kauailabs.navx.frc.AHRS ahrs;
-
   /** A multiplier for the yaw angle. -1 to invert, 1 to not. */
   protected final int invertYaw;
 
@@ -38,31 +36,18 @@ public class AHRS implements Updatable, Loggable {
    *     works.
    * @param invertYaw Whether or not to invert the yaw axis. Defaults to true.
    */
-  @JsonCreator
-  public AHRS(
-      @JsonProperty(required = true) final SerialPort.Port port, final Boolean invertYaw) {
+  public AHRS(SerialPort.@NotNull Port port, boolean invertYaw) {
     if (port.equals(SerialPort.Port.kMXP)) {
       this.ahrs = new com.kauailabs.navx.frc.AHRS(SPI.Port.kMXP);
     } else {
       this.ahrs = new com.kauailabs.navx.frc.AHRS(port, kProcessedData, (byte) 100);
     }
     setHeading(0);
-    if (invertYaw == null || invertYaw) {
+    if (invertYaw) {
       this.invertYaw = -1;
     } else {
       this.invertYaw = 1;
     }
-  }
-
-  /**
-   * Convert from gs (acceleration due to gravity) to meters/(second^2).
-   *
-   * @param accelGs An acceleration in gs.
-   * @return That acceleration in meters/(sec^2)
-   */
-  @Contract(pure = true)
-  protected static double gsToMetersPerSecondSquared(final double accelGs) {
-    return accelGs * 9.80665; // Google said so
   }
 
   /**
@@ -71,7 +56,7 @@ public class AHRS implements Updatable, Loggable {
    * @return The heading, in degrees from [-180, 180]
    */
   public double getHeading() {
-    return invertYaw * ahrs.getYaw();
+    return invertYaw * ahrs.getAngle();
   }
 
   /**
@@ -108,7 +93,7 @@ public class AHRS implements Updatable, Loggable {
    * @return Linear X acceleration, in meters/(sec^2)
    */
   public double getXAccel() {
-    return gsToMetersPerSecondSquared(ahrs.getWorldLinearAccelX());
+    return IAHRS.gsToMetersPerSecondSquared(ahrs.getWorldLinearAccelX());
   }
 
   /**
@@ -117,7 +102,7 @@ public class AHRS implements Updatable, Loggable {
    * @return Linear Y acceleration, in meters/(sec^2)
    */
   public double getYAccel() {
-    return gsToMetersPerSecondSquared(ahrs.getWorldLinearAccelY());
+    return IAHRS.gsToMetersPerSecondSquared(ahrs.getWorldLinearAccelY());
   }
 
   /**

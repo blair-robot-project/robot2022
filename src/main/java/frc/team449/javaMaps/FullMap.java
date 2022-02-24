@@ -11,6 +11,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.XboxController;
@@ -75,9 +76,18 @@ public class FullMap {
   // Speeds
   public static final double INTAKE_SPEED = 0.4, SPITTER_SPEED = 0.5;
   public static final double AUTO_MAX_SPEED = 1.8, AUTO_MAX_ACCEL = .35;
+  // Drive constants
+  public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
+  public static final double DRIVE_GEARING = 5.86;
+  public static final int DRIVE_CURRENT_LIM = 50;
+  // old value from measuring from the outside of the wheel: 0.6492875
+  // measuring from the inside of the wheel : .57785
+  public static final double DRIVE_TRACK_WIDTH = 0.6492875;
+
   // Other constants
   public static final double CLIMBER_DISTANCE = 0.5;
   public static final double DRIVE_KP_VEL = 0.001,
+      DRIVE_KD_VEL = 0.00005,
       DRIVE_KP_POS = 45.269,
       DRIVE_KD_POS = 3264.2,
       DRIVE_FF_KS = 0.15084,
@@ -103,9 +113,9 @@ public class FullMap {
     var driveMasterPrototype =
         new SparkMaxConfig()
             .setEnableBrakeMode(true)
-            .setUnitPerRotation(0.31918) // 2 * Math.PI * 0.0508
-            .setCurrentLimit(50)
-            .setPostEncoderGearing(5.86)
+            .setUnitPerRotation(2 * Math.PI * DRIVE_WHEEL_RADIUS) // = 0.3191858136
+            .setCurrentLimit(DRIVE_CURRENT_LIM)
+            .setPostEncoderGearing(DRIVE_GEARING)
             .setEnableVoltageComp(true)
             .setCalculateVel(true); // TODO remove this as soon as possible
     var leftMaster =
@@ -135,8 +145,7 @@ public class FullMap {
             new DriveSettingsBuilder()
                 .feedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
                 .build(),
-                .6492875); // old value from measuring from the outside of the wheel: 0.6492875
-    // measuring from the inside of the wheel : .57785
+            DRIVE_TRACK_WIDTH);
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.06);
@@ -281,8 +290,8 @@ public class FullMap {
     var ramsetePrototype =
         new RamseteBuilder()
             .drivetrain(drive)
-            .leftPidController(new PIDController(DRIVE_KP_VEL, 0, 0))
-            .rightPidController(new PIDController(DRIVE_KP_VEL, 0, 0))
+            .leftPidController(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
+            .rightPidController(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
             .field(field);
     //
     //    var sCurve =
