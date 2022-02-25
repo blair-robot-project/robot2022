@@ -1,6 +1,8 @@
 package frc.team449.javaMaps;
 
 import com.pathplanner.lib.PathPlanner;
+import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -109,6 +111,10 @@ public class FullMap {
     SmartDashboard.putData(field);
 
     var limelight = new Limelight(DRIVER_PIPELINE);
+    int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
+    SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
+    // NavX expects clockwise positive, but sim outputs clockwise negative
+    angle.set(180);
 
     var driveMasterPrototype =
         new SparkMaxConfig()
