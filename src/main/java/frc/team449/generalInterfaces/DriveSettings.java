@@ -25,6 +25,8 @@ public class DriveSettings {
   public final PIDController leftVelPID;
   /** Velocity PID controller for right side */
   public final PIDController rightVelPID;
+  /** The track width of the robot/distance between left and right wheels in meters */
+  public final double trackWidth;
 
   /**
    * Default constructor.
@@ -37,6 +39,7 @@ public class DriveSettings {
    * @param rightVelPID Right velocity PID controller
    * @param rampRate The ramp rate, in volts/sec. Can be null, and if it is, no ramp rate is used.
    * @param maxSpeed The maximum speed of the motor in this gear, in MPS. Used for throttle scaling.
+   * @param trackWidth The distance between the left and right wheels in meters
    */
   @JsonCreator
   public DriveSettings(
@@ -46,7 +49,8 @@ public class DriveSettings {
       @NotNull PIDController leftVelPID,
       @NotNull PIDController rightVelPID,
       @Nullable Double rampRate,
-      @Nullable Double maxSpeed) {
+      @Nullable Double maxSpeed,
+      double trackWidth) {
     this.feedforward = feedforward;
     this.leftPosPID = leftPosPID;
     this.rightPosPID = rightPosPID;
@@ -54,17 +58,6 @@ public class DriveSettings {
     this.rightVelPID = rightVelPID;
     this.rampRate = rampRate;
     this.maxSpeed = maxSpeed;
-  }
-
-  /** Empty constructor that uses all default options. */
-  public DriveSettings() {
-    this(
-        new SimpleMotorFeedforward(0, 0),
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0),
-        null,
-        null);
+    this.trackWidth = trackWidth;
   }
 }

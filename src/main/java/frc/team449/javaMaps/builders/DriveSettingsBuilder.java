@@ -16,9 +16,10 @@ public final class DriveSettingsBuilder {
   private PIDController rightVelPID;
   private Double rampRate;
   private Double maxSpeed;
+  private Double trackWidth;
 
   public DriveSettingsBuilder copy() {
-    return new DriveSettingsBuilder()
+    var copy = new DriveSettingsBuilder()
         .fwdPeakOutputVoltage(fwdPeakOutputVoltage)
         .revPeakOutputVoltage(revPeakOutputVoltage)
         .fwdNominalOutputVoltage(fwdNominalOutputVoltage)
@@ -30,6 +31,10 @@ public final class DriveSettingsBuilder {
         .rightVelPID(rightVelPID)
         .rampRate(rampRate)
         .maxSpeed(maxSpeed);
+    if (this.trackWidth != null) {
+      copy.trackWidth(this.trackWidth);
+    }
+    return copy;
   }
 
   public DriveSettings build() {
@@ -40,7 +45,8 @@ public final class DriveSettingsBuilder {
         leftVelPID,
         rightVelPID,
         rampRate,
-        maxSpeed);
+        maxSpeed,
+        trackWidth);
   }
 
   public DriveSettingsBuilder fwdPeakOutputVoltage(Double fwdPeakOutputVoltage) {
@@ -95,6 +101,11 @@ public final class DriveSettingsBuilder {
 
   public DriveSettingsBuilder maxSpeed(Double maxSpeed) {
     this.maxSpeed = maxSpeed;
+    return this;
+  }
+
+  public DriveSettingsBuilder trackWidth(double trackWidth) {
+    this.trackWidth = trackWidth;
     return this;
   }
 }

@@ -123,9 +123,8 @@ public final class SimMap {
             ahrs,
             new DriveSettingsBuilder()
                 .feedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
-                .build(),
-            .6492875); // old value from measuring from the outside of the wheel: 0.6492875
-    // measuring from the inside of the wheel : .57785
+                .trackWidth(DRIVE_TRACK_WIDTH)
+                .build());
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.06);

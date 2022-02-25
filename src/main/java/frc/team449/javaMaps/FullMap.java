@@ -144,8 +144,8 @@ public class FullMap {
             navx,
             new DriveSettingsBuilder()
                 .feedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
-                .build(),
-            DRIVE_TRACK_WIDTH);
+                .trackWidth(DRIVE_TRACK_WIDTH)
+                .build());
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.06);

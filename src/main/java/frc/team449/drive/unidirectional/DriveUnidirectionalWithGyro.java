@@ -1,9 +1,5 @@
 package frc.team449.drive.unidirectional;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -17,12 +13,7 @@ import frc.team449.wrappers.WrappedMotor;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-/** A drive with a cluster of any number of CANTalonSRX controlled motors on each side. */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
+/** A drive with a cluster of any number of motors on each side. */
 public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase implements SubsystemAHRS {
   /** The NavX gyro */
   @NotNull private final AHRS ahrs;
@@ -41,20 +32,18 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
    * @param leftMaster The master talon on the left side of the drive.
    * @param rightMaster The master talon on the right side of the drive.
    * @param ahrs The NavX gyro for calculating this drive's heading and angular velocity.
-   * @param trackWidthMeters The width between the left and right wheels in meters
+   * @param driveSettings The settings for this drivetrain
    */
-  @JsonCreator
   public DriveUnidirectionalWithGyro(
       @NotNull WrappedMotor leftMaster,
       @NotNull WrappedMotor rightMaster,
       @NotNull AHRS ahrs,
-      @NotNull DriveSettings driveSettings,
-      double trackWidthMeters) {
+      @NotNull DriveSettings driveSettings) {
     super(leftMaster, rightMaster, driveSettings);
     // Initialize stuff
     this.ahrs = ahrs;
     this.overrideGyro = false;
-    this.driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
+    this.driveKinematics = new DifferentialDriveKinematics(driveSettings.trackWidth);
     this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(this.getHeading()));
   }
 
