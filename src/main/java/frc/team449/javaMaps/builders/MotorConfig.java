@@ -3,8 +3,8 @@ package frc.team449.javaMaps.builders;
 import edu.wpi.first.hal.util.HalHandleException;
 import edu.wpi.first.wpilibj.Encoder;
 import frc.team449.wrappers.WrappedMotor;
+import frc.team449.wrappers.simulated.SimulatedEncoder;
 import frc.team449.wrappers.simulated.DummyMotorController;
-import frc.team449.wrappers.simulated.DummyEncoder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +36,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
   private @Nullable Integer currentLimit;
   private boolean enableVoltageComp;
   private @Nullable Encoder externalEncoder;
+  private boolean calculateVel = false;
 
   public int getPort() {
     return port;
@@ -190,8 +191,20 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     return (Self) this;
   }
 
+  public boolean getCalculateVel() {
+    return this.calculateVel;
+  }
+
+  /**
+   * Whether or not to calculate velocity ourselves instead of using the encoder's builtin method
+   */
+  public Self setCalculateVel(boolean calculateVel) {
+    this.calculateVel = calculateVel;
+    return (Self) this;
+  }
+
   /** Copy properties from this config to another config */
-  protected final void copyTo(MotorConfig<?> other) {
+  protected final void copyTo(@NotNull MotorConfig<?> other) {
     other
         .setPort(port)
         .setEnableBrakeMode(enableBrakeMode)
@@ -206,7 +219,8 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
         .setUnitPerRotation(unitPerRotation)
         .setRampRate(rampRate)
         .setCurrentLimit(currentLimit)
-        .setEnableVoltageComp(enableVoltageComp);
+        .setEnableVoltageComp(enableVoltageComp)
+        .setCalculateVel(calculateVel);
 
     if (this.name != null) other.setName(name);
     if (this.externalEncoder != null) other.setExternalEncoder(externalEncoder);
@@ -218,7 +232,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     return new WrappedMotor(
         "sim_" + port,
         new DummyMotorController(),
-        new DummyEncoder(encoderCPR, unitPerRotation, postEncoderGearing));
+        new SimulatedEncoder(new Encoder(0, 0), encoderCPR, unitPerRotation, postEncoderGearing));
   }
 
   /** Try creating a real motor, and if that fails, create a simulated one */

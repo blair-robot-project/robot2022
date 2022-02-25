@@ -32,7 +32,7 @@ public class TrajectoryGenerationQuinticComponent implements TrajectoryGeneratio
       boolean reversed) {
     this.constraint =
         new DifferentialDriveVoltageConstraint(
-            drivetrain.getLeftFeedforwardCalculator(), drivetrain.getDriveKinematics(), 12);
+            drivetrain.getFeedforward(), drivetrain.getDriveKinematics(), 12);
 
     // Create config for trajectory
     this.configuration =

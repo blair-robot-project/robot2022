@@ -85,13 +85,15 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
                 encoderName,
                 motor.getEncoder(),
                 this.getUnitPerRotation(),
-                this.getPostEncoderGearing())
+                this.getPostEncoderGearing(),
+                this.getCalculateVel())
             : new Encoder.WPIEncoder(
                 encoderName,
                 externalEncoder,
                 this.getEncoderCPR(),
                 this.getUnitPerRotation(),
-                this.getPostEncoderGearing());
+                this.getPostEncoderGearing(),
+                this.getCalculateVel());
 
     motor.restoreFactoryDefaults();
 
@@ -119,11 +121,13 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
 
     if (this.getFwdSoftLimit() != null) {
       motor.setSoftLimit(
-          CANSparkMax.SoftLimitDirection.kForward, this.getFwdSoftLimit().floatValue());
+          CANSparkMax.SoftLimitDirection.kForward,
+          (float) wrappedEnc.unitToEncoder(this.getFwdSoftLimit()));
     }
     if (this.getRevSoftLimit() != null) {
       motor.setSoftLimit(
-          CANSparkMax.SoftLimitDirection.kReverse, this.getRevSoftLimit().floatValue());
+          CANSparkMax.SoftLimitDirection.kReverse,
+          (float) wrappedEnc.unitToEncoder(this.getRevSoftLimit()));
     }
 
     // Set the current limit if it was given

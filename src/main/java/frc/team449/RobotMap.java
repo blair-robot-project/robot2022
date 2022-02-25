@@ -2,9 +2,7 @@ package frc.team449;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.generalInterfaces.MotorContainer;
@@ -47,12 +45,11 @@ public class RobotMap {
    */
   @JsonCreator
   public RobotMap(
-      @NotNull @JsonProperty(required = true) @JsonInclude(content = JsonInclude.Include.NON_NULL)
-          final List<Subsystem> subsystems,
-      @NotNull @JsonProperty(required = true) final PDP pdp,
-      @NotNull @JsonProperty(required = true) final Runnable updater,
-      @NotNull @JsonProperty(required = true) final CommandContainer commands,
-      final boolean useCameraServer) {
+      @NotNull List<Subsystem> subsystems,
+      @NotNull PDP pdp,
+      @NotNull Runnable updater,
+      @NotNull CommandContainer commands,
+      boolean useCameraServer) {
     this.updater = updater;
     this.pdp = pdp;
     this.useCameraServer = useCameraServer;

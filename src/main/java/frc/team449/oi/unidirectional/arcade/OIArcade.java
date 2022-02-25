@@ -51,11 +51,13 @@ public abstract class OIArcade implements OIUnidirectional {
    */
   @Override
   public double @NotNull [] getLeftRightOutput() {
-    fwdRotOutputCached = getFwdRotOutput();
+    this.fwdRotOutputCached = getFwdRotOutput();
 
     // Unscaled, unclipped values for left and right output.
     final double tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
     final double tmpRight = fwdRotOutputCached[0] - fwdRotOutputCached[1];
+//    System.out.println("Left : " + tmpLeft + " Right : " + tmpRight);
+//    if (tmpLeft != 0 || tmpRight != 0) System.out.println("tmpleft=" + tmpLeft + ", tmpRight=" + tmpRight);
 
     // If left is too large
     if (Math.abs(tmpLeft) > 1) {
@@ -88,9 +90,10 @@ public abstract class OIArcade implements OIUnidirectional {
    */
   @Override
   public double @NotNull [] getLeftRightOutputCached() {
-    return leftRightOutputCached != null
-        ? leftRightOutputCached
-        : (leftRightOutputCached = getLeftRightOutput()); // TODO assignment inside expression?
+    if (leftRightOutputCached == null) {
+      this.leftRightOutputCached = this.getLeftRightOutput();
+    }
+    return leftRightOutputCached;
   }
 
   /**
@@ -101,9 +104,10 @@ public abstract class OIArcade implements OIUnidirectional {
    */
   @Override
   public double @NotNull [] getFwdRotOutputCached() {
-    return fwdRotOutputCached != null
-        ? fwdRotOutputCached
-        : (fwdRotOutputCached = getFwdRotOutput()); // TODO assignment inside expression?
+    if (fwdRotOutputCached == null) {
+      this.fwdRotOutputCached = this.getFwdRotOutput();
+    }
+    return fwdRotOutputCached;
   }
 
   /** Updates all cached values with current ones. */
@@ -111,5 +115,6 @@ public abstract class OIArcade implements OIUnidirectional {
   public void update() {
     fwdRotOutputCached = getFwdRotOutput();
     leftRightOutputCached = getLeftRightOutput();
+//    if (leftRightOutputCached[0] != 0) System.out.println("leftrightoutputc=" + leftRightOutputCached[0] + ", " + leftRightOutputCached[1]);
   }
 }

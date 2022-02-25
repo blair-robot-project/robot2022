@@ -1,8 +1,10 @@
 package frc.team449.wrappers;
 
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.team449.generalInterfaces.MotorContainer;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 public final class WrappedMotor implements MotorController, Loggable {
@@ -29,9 +31,14 @@ public final class WrappedMotor implements MotorController, Loggable {
     motor.setVoltage(outputVolts);
   }
 
+  @Log
   @Override
   public double get() {
     return motor.get();
+  }
+
+  public double getPositionUnits(){
+    return encoder.getPositionUnits();
   }
 
   @Override
@@ -52,6 +59,12 @@ public final class WrappedMotor implements MotorController, Loggable {
   @Override
   public void stopMotor() {
     motor.stopMotor();
+  }
+
+  @Deprecated
+  @Log
+  public double getVoltage() {
+    return ((CANSparkMax) motor).getBusVoltage();
   }
 
   @Override

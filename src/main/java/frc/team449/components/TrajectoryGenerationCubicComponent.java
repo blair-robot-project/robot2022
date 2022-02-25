@@ -1,7 +1,6 @@
 package frc.team449.components;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -46,7 +45,7 @@ public class TrajectoryGenerationCubicComponent implements TrajectoryGenerationC
 
     TrajectoryConstraint voltageConstraint =
         new DifferentialDriveVoltageConstraint(
-            drivetrain.getLeftFeedforwardCalculator(), drivetrain.getDriveKinematics(), 12);
+            drivetrain.getFeedforward(), drivetrain.getDriveKinematics(), 12);
 
     // Create config for trajectory
     TrajectoryConfig configuration =

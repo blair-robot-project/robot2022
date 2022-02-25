@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 /** A class representing a single axis on a joystick. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ThrottleBasic implements Throttle {
+public class ThrottleBasic extends Throttle {
 
   /** The stick we're using */
   @NotNull protected final GenericHID stick;
@@ -20,9 +20,6 @@ public class ThrottleBasic implements Throttle {
 
   /** Whether or not the controls should be inverted */
   private final boolean inverted;
-
-  /** The cached value of the output. */
-  protected double cachedOutput;
 
   /**
    * Default constructor.
@@ -50,23 +47,6 @@ public class ThrottleBasic implements Throttle {
   @Override
   public double getValue() {
     return (inverted ? -1 : 1) * stick.getRawAxis(axis);
-  }
-
-  /**
-   * Get the cached output of the throttle this object represents.
-   *
-   * @return The output from [-1, 1].
-   */
-  @Override
-  @Log
-  public double getValueCached() {
-    return cachedOutput;
-  }
-
-  /** Updates all cached values with current ones. */
-  @Override
-  public void update() {
-    cachedOutput = getValue();
   }
 
   /**

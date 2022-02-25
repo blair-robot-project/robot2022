@@ -1,22 +1,23 @@
 package frc.team449.javaMaps;
 
 import com.pathplanner.lib.PathPlanner;
-import edu.wpi.first.hal.SimDouble;
-import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -55,75 +56,36 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class FullMap {
-  // Motor IDs
-  public static final int RIGHT_LEADER_PORT = 1,
-      RIGHT_LEADER_FOLLOWER_1_PORT = 11,
-      RIGHT_LEADER_FOLLOWER_2_PORT = 7,
-      LEFT_LEADER_PORT = 2,
-      LEFT_LEADER_FOLLOWER_1_PORT = 4,
-      LEFT_LEADER_FOLLOWER_2_PORT = 3,
-      INTAKE_LEADER_PORT = 8,
-      INTAKE_FOLLOWER_PORT = 9,
-      SPITTER_PORT = 10,
-      RIGHT_CLIMBER_MOTOR_PORT = 6,
-      LEFT_CLIMBER_MOTOR_PORT = 5;
+import static frc.team449.javaMaps.FullMap.*;
 
-  // Other CAN IDs
-  public static final int PDP_CAN = 1;
-  // Controller ports
-  public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
-  // Limelight
-  public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
-  // Speeds
-  public static final double INTAKE_SPEED = 0.4, SPITTER_SPEED = 0.5;
-  public static final double AUTO_MAX_SPEED = 1.8, AUTO_MAX_ACCEL = .35;
-  // Drive constants
-  public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
-  public static final double DRIVE_GEARING = 5.86;
-  public static final int DRIVE_CURRENT_LIM = 50;
-  // old value from measuring from the outside of the wheel: 0.6492875
-  // measuring from the inside of the wheel : .57785
-  public static final double DRIVE_TRACK_WIDTH = 0.6492875;
+public final class SimMap {
+  public static final double MOMENT_OF_INERTIA = 1;
+  public static final double MASS = 1;
 
-  // Other constants
-  public static final double CLIMBER_DISTANCE = 0.5;
-  public static final double DRIVE_KP_VEL = 0.001,
-      DRIVE_KD_VEL = 0, //0.00005,
-      DRIVE_KP_POS = 45.269,
-      DRIVE_KD_POS = 3264.2,
-      DRIVE_FF_KS = 0.15084,
-      DRIVE_FF_KV = 2.4303,
-      DRIVE_FF_KA = 0.5323;
-
-  private FullMap() {}
+  private SimMap() {}
 
   @NotNull
   public static RobotMap createRobotMap() {
-    var pdp = new PDP(PDP_CAN, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
+    var pdp =
+        new PDP(PDP_CAN, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
     var mechanismsJoystick = new RumbleableJoystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
 
-    var navx = new AHRS(SerialPort.Port.kMXP, true);
+    var ahrs = new AHRS(SerialPort.Port.kMXP, true);
 
     // Widget to show robot pose+trajectory in Glass
     var field = new Field2d();
     SmartDashboard.putData(field);
 
     var limelight = new Limelight(DRIVER_PIPELINE);
-    int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
-    SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
-    // NavX expects clockwise positive, but sim outputs clockwise negative
-    angle.set(180);
 
     var driveMasterPrototype =
         new SparkMaxConfig()
             .setEnableBrakeMode(true)
-            .setUnitPerRotation(2 * Math.PI * DRIVE_WHEEL_RADIUS) // = 0.3191858136
+            .setUnitPerRotation(2 * Math.PI * DRIVE_WHEEL_RADIUS)
             .setCurrentLimit(DRIVE_CURRENT_LIM)
             .setPostEncoderGearing(DRIVE_GEARING)
-            .setEnableVoltageComp(true)
-            .setCalculateVel(true); // TODO remove this as soon as possible
+            .setEnableVoltageComp(true);
     var leftMaster =
         driveMasterPrototype
             .copy()
@@ -143,11 +105,22 @@ public class FullMap {
             .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
             .createReal();
 
+    //todo use sysid gains to make this
+    var driveSim =
+        new DifferentialDrivetrainSim(
+            DCMotor.getNeo550(3),
+            DRIVE_GEARING,
+            MOMENT_OF_INERTIA,
+            MASS,
+            DRIVE_WHEEL_RADIUS,
+            DRIVE_TRACK_WIDTH,
+            VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
+
     var drive =
         new DriveUnidirectionalWithGyro(
             leftMaster,
             rightMaster,
-            navx,
+            ahrs,
             new DriveSettingsBuilder()
                 .feedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
                 .trackWidth(DRIVE_TRACK_WIDTH)
@@ -271,7 +244,7 @@ public class FullMap {
     var subsystems = List.<Subsystem>of(drive, cargo, climber);
 
     var updater =
-        new Updater(List.of(pdp, navx, oi, () -> field.setRobotPose(drive.getCurrentPose())));
+        new Updater(List.of(pdp, ahrs, oi, () -> field.setRobotPose(drive.getCurrentPose())));
 
     // Button bindings here
     // Take in balls but don't shoot

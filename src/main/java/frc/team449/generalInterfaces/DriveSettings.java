@@ -15,15 +15,8 @@ public class DriveSettings {
   @Nullable public final Double rampRate;
   /** The maximum speed of the motor in this gear, in MPS. Used for throttle scaling. */
   @Nullable public final Double maxSpeed;
-  /**
-   * The coefficient the output changes by after being measured by the encoder, e.g. this would be
-   * 1/70 if there was a 70:1 gearing between the encoder and the final output.
-   */
-  public final double postEncoderGearing;
-  /** Feedforward calculator for left side */
-  public final SimpleMotorFeedforward leftFeedforward;
-  /** Feedforward calculator for right side */
-  public final SimpleMotorFeedforward rightFeedforward;
+  /** Feedforward calculator */
+  public final SimpleMotorFeedforward feedforward;
   /** Position PID controller for left side */
   public final PIDController leftPosPID;
   /** Position PID controller for right side */
@@ -32,13 +25,13 @@ public class DriveSettings {
   public final PIDController leftVelPID;
   /** Velocity PID controller for right side */
   public final PIDController rightVelPID;
+  /** The track width of the robot/distance between left and right wheels in meters */
+  public final double trackWidth;
 
   /**
    * Default constructor.
    *
-   * @param leftFeedforward The component for calculating feedforwards for the left side in
-   *     closed-loop control modes.
-   * @param rightFeedforward The component for calculating feedforwards for the right side in
+   * @param feedforward The component for calculating feedforwards for the left side in
    *     closed-loop control modes.
    * @param leftPosPID Left position PID controller
    * @param rightPosPID Right position PID controller
@@ -46,42 +39,25 @@ public class DriveSettings {
    * @param rightVelPID Right velocity PID controller
    * @param rampRate The ramp rate, in volts/sec. Can be null, and if it is, no ramp rate is used.
    * @param maxSpeed The maximum speed of the motor in this gear, in MPS. Used for throttle scaling.
-   * @param postEncoderGearing The coefficient the output changes by after being measured by the
-   *     encoder
+   * @param trackWidth The distance between the left and right wheels in meters
    */
   @JsonCreator
   public DriveSettings(
-      @NotNull SimpleMotorFeedforward leftFeedforward,
-      @NotNull SimpleMotorFeedforward rightFeedforward,
+      @NotNull SimpleMotorFeedforward feedforward,
       @NotNull PIDController leftPosPID,
       @NotNull PIDController rightPosPID,
       @NotNull PIDController leftVelPID,
       @NotNull PIDController rightVelPID,
       @Nullable Double rampRate,
       @Nullable Double maxSpeed,
-      double postEncoderGearing) {
-    this.leftFeedforward = leftFeedforward;
-    this.rightFeedforward = rightFeedforward;
+      double trackWidth) {
+    this.feedforward = feedforward;
     this.leftPosPID = leftPosPID;
     this.rightPosPID = rightPosPID;
     this.leftVelPID = leftVelPID;
     this.rightVelPID = rightVelPID;
     this.rampRate = rampRate;
-    this.postEncoderGearing = postEncoderGearing;
     this.maxSpeed = maxSpeed;
-  }
-
-  /** Empty constructor that uses all default options. */
-  public DriveSettings() {
-    this(
-        new SimpleMotorFeedforward(0, 0),
-        new SimpleMotorFeedforward(0, 0),
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0),
-        null,
-        null,
-        1.0);
+    this.trackWidth = trackWidth;
   }
 }
