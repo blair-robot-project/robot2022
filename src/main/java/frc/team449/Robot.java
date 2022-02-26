@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.team449.javaMaps.FullMap;
-import frc.team449.javaMaps.SimMap;
 import frc.team449.other.Clock;
 import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Logger;
@@ -22,11 +21,7 @@ public class Robot extends TimedRobot {
 
   /** The method that runs when the robot is turned on. Initializes all subsystems from the map. */
   public static @NotNull RobotMap loadMap() {
-    if (RobotBase.isReal()) {
-      return FullMap.createRobotMap();
-    } else {
-      return SimMap.createRobotMap();
-    }
+    return FullMap.createRobotMap();
   }
 
   /**

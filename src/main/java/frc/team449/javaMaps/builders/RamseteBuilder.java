@@ -72,7 +72,7 @@ public final class RamseteBuilder {
   }
 
   /**
-   * Set the zeta tuning parameter for Ramsete (0 rad⁻¹ &lt; zeta &lt; 1 rad⁻¹) for which larger
+   * Set the zeta tuning parameter for Ramsete (0 rad<sup>-1</sup> &lt; zeta &lt; 1 rad<sup>-1</sup>) for which larger
    * values provide more damping in response.
    */
   public RamseteBuilder zeta(double zeta) {

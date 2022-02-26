@@ -6,11 +6,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import frc.team449.generalInterfaces.DriveSettings;
 import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
 import frc.team449.wrappers.AHRS;
 import frc.team449.wrappers.WrappedMotor;
 import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /** A drive with a cluster of any number of motors on each side. */
@@ -45,6 +49,35 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
     this.overrideGyro = false;
     this.driveKinematics = new DifferentialDriveKinematics(driveSettings.trackWidth);
     this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(this.getHeading()));
+  }
+
+  /**
+   * Create a {@link DriveUnidirectionalWithGyro} if not in a simulation, make a {@link
+   * DriveUnidirectionalWithGyroSim} otherwise.
+   *
+   * @param leftMaster The leader motor on the left side of the drive.
+   * @param rightMaster The leader motor on the right side of the drive.
+   * @param ahrs The NavX gyro for calculating this drive's heading and angular velocity.
+   * @param settings The settings for this drivetrain
+   * @param driveSim The drivetrain simulation object, if needed
+   * @param leftEncSim The simulated encoder for the left side, if needed
+   * @param rightEncSim The simulated encoder for the left side, if needed
+   */
+  @Contract("_, _, _, _, _, _, _ -> new")
+  public static @NotNull DriveUnidirectionalWithGyro createRealOrSim(
+      @NotNull WrappedMotor leftMaster,
+      @NotNull WrappedMotor rightMaster,
+      @NotNull AHRS ahrs,
+      @NotNull DriveSettings settings,
+      @NotNull DifferentialDrivetrainSim driveSim,
+      @NotNull EncoderSim leftEncSim,
+      @NotNull EncoderSim rightEncSim) {
+    if (RobotBase.isReal()) {
+      return new DriveUnidirectionalWithGyro(leftMaster, rightMaster, ahrs, settings);
+    } else {
+      return new DriveUnidirectionalWithGyroSim(
+          leftMaster, rightMaster, ahrs, settings, driveSim, leftEncSim, rightEncSim);
+    }
   }
 
   @Override

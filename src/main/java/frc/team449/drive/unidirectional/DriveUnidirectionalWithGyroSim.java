@@ -1,7 +1,6 @@
 package frc.team449.drive.unidirectional;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
@@ -20,13 +19,20 @@ public class DriveUnidirectionalWithGyroSim extends DriveUnidirectionalWithGyro 
   private double lastTime;
 
   /**
-   * Default constructor.
+   * Create a simulated drive object. You may want to use {@link
+   * DriveUnidirectionalWithGyro#createRealOrSim(WrappedMotor, WrappedMotor, AHRS, DriveSettings,
+   * DifferentialDrivetrainSim, EncoderSim, EncoderSim) DriveUnidirectionalWithGyro.createRealOrSim}
+   * instead
    *
-   * @param leftMaster The master talon on the left side of the drive.
-   * @param rightMaster The master talon on the right side of the drive.
+   * @param leftMaster The leader motor on the left side of the drive.
+   * @param rightMaster The leader motor on the right side of the drive.
    * @param ahrs The NavX gyro for calculating this drive's heading and angular velocity.
    * @param settings The settings for this drivetrain
-   * @param driveSim The actual drivetrain simulation object
+   * @param driveSim The drivetrain simulation object, if needed
+   * @param leftEncSim The simulated encoder for the left side, if needed
+   * @param rightEncSim The simulated encoder for the left side, if needed
+   * @see DriveUnidirectionalWithGyro#createRealOrSim(WrappedMotor, WrappedMotor, AHRS,
+   *     DriveSettings, DifferentialDrivetrainSim, EncoderSim, EncoderSim)
    */
   public DriveUnidirectionalWithGyroSim(
       @NotNull WrappedMotor leftMaster,
@@ -46,8 +52,8 @@ public class DriveUnidirectionalWithGyroSim extends DriveUnidirectionalWithGyro 
 
   @Override
   public void setVoltage(double left, double right) {
-    super.setVoltage(left, right);
     driveSim.setInputs(left, right);
+    super.setVoltage(left, right);
   }
 
   @Override
