@@ -2,6 +2,7 @@ package frc.team449.wrappers;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.RelativeEncoder;
+import edu.wpi.first.wpilibj.Timer;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -140,7 +141,7 @@ public abstract class Encoder implements Loggable {
     if (this.calculateVel) {
       // If we're calculating velocity ourselves, return change in position / change in time
       var currPos = this.getPositionUnits();
-      var currTime = Clock.currentTimeMillis();
+      var currTime = Clock.currentTimeSeconds();
       var vel = (currPos - this.prevPos) / (currTime - prevTime);
       this.prevPos = currPos;
       this.prevTime = currTime;
