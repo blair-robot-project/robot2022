@@ -1,49 +1,53 @@
 package frc.team449.wrappers.simulated;
 
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import frc.team449.generalInterfaces.updatable.Updatable;
 import frc.team449.wrappers.Encoder;
 import org.jetbrains.annotations.NotNull;
 
-public class SimulatedEncoder extends Encoder {
-  private final EncoderSim wrapped;
+public final class SimulatedEncoder extends Encoder {
+  public final @NotNull EncoderSim encSim;
 
   public SimulatedEncoder(
       @NotNull String name,
-      @NotNull edu.wpi.first.wpilibj.Encoder encoder,
+      @NotNull EncoderSim encSim,
       int encoderCPR,
       double unitPerRotation,
       double postEncoderGearing) {
-    super(name, encoderCPR, unitPerRotation, postEncoderGearing, false);
-    this.wrapped = new EncoderSim(encoder);
+    super(name, encoderCPR, unitPerRotation, postEncoderGearing, true);
+    this.encSim = encSim;
   }
 
-  public SimulatedEncoder(@NotNull String name,
-                          @NotNull edu.wpi.first.wpilibj.Encoder encoder) {
-    this(name, encoder, 1, 1, 1);
+  public SimulatedEncoder(
+      @NotNull String name,
+      @NotNull EncoderSim encSim,
+      @NotNull DifferentialDrivetrainSim driveSim) {
+    this(name, encSim, 1, 1, 1);
   }
 
   @Override
   public void resetPosition() {
-    wrapped.setReset(true);
+    encSim.setReset(true);
   }
 
   @Override
   public double getPositionNative() {
-    return wrapped.getDistance();
+    return encSim.getDistance();
   }
 
   @Override
   public double getVelocityNative() {
-    return 0;
+    return encSim.getRate();
   }
 
   @Override
   public double nativeToRPS(double nat) {
-    return 0;
+    return nat;
   }
 
   @Override
   public double rpsToNative(double rps) {
-    return 0;
+    return rps;
   }
 }

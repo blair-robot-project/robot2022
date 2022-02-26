@@ -1,6 +1,8 @@
 package frc.team449.javaMaps;
 
 import com.pathplanner.lib.PathPlanner;
+import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,8 +53,7 @@ import frc.team449.other.Updater;
 import frc.team449.wrappers.AHRS;
 import frc.team449.wrappers.PDP;
 import frc.team449.wrappers.RumbleableJoystick;
-import frc.team449.wrappers.WrappedMotor;
-import frc.team449.wrappers.simulated.DummyMotorController;
+import frc.team449.wrappers.simulated.AHRSSim;
 import frc.team449.wrappers.simulated.SimulatedEncoder;
 import org.jetbrains.annotations.NotNull;
 
@@ -75,7 +77,8 @@ public final class SimMap {
     var mechanismsJoystick = new RumbleableJoystick(MECHANISMS_JOYSTICK_PORT);
     var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
 
-    var ahrs = new AHRS(SerialPort.Port.kMXP, true);
+
+    var ahrs = new AHRSSim(SerialPort.Port.kMXP, true);
 
     // Widget to show robot pose+trajectory in Glass
     var field = new Field2d();
@@ -90,10 +93,6 @@ public final class SimMap {
             .setCurrentLimit(DRIVE_CURRENT_LIM)
             .setPostEncoderGearing(DRIVE_GEARING)
             .setEnableVoltageComp(true);
-    var leftEncSim = new SimulatedEncoder("left_enc_sim", new Encoder(0, 1));
-    var rightEncSim = new SimulatedEncoder("right_enc_sim", new Encoder(2, 3));
-    var leftMaster = new WrappedMotor("left_motor", new DummyMotorController(), leftEncSim);
-    var rightMaster = new WrappedMotor("right_motor", new DummyMotorController(), rightEncSim);
 
     // todo use sysid gains to make this
     var driveSim =
@@ -106,6 +105,28 @@ public final class SimMap {
             DRIVE_TRACK_WIDTH,
             VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
 
+    var leftEncSim = new EncoderSim(new Encoder(0, 1));
+    var rightEncSim = new EncoderSim(new Encoder(2, 3));
+
+    var leftMaster =
+        driveMasterPrototype
+            .copy()
+            .setPort(LEFT_LEADER_PORT)
+            .setName("left")
+            .setReverseOutput(false)
+            .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_1_PORT), false)
+            .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_2_PORT), false)
+            .createSim(leftEncSim);
+    var rightMaster =
+        driveMasterPrototype
+            .copy()
+            .setName("right")
+            .setPort(RIGHT_LEADER_PORT)
+            .setReverseOutput(true)
+            .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_1_PORT), false)
+            .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
+            .createSim(rightEncSim);
+
     var drive =
         new DriveUnidirectionalWithGyroSim(
             leftMaster,
@@ -115,7 +136,9 @@ public final class SimMap {
                 .feedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
                 .trackWidth(DRIVE_TRACK_WIDTH)
                 .build(),
-            driveSim);
+            driveSim,
+            leftEncSim,
+            rightEncSim);
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.06);

@@ -1,7 +1,5 @@
 package frc.team449.wrappers;
 
-import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,6 +11,8 @@ import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
+
+import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
 
 /** An invertible wrapper for the NavX. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -86,8 +86,8 @@ public class AHRS implements Updatable, Loggable {
   }
 
   /**
-   * Get the current total angular displacement. Differs from getHeading because it doesn't limit
-   * angle.
+   * NOT supported for simulated AHRS. Get the current total angular displacement. Differs from
+   * getHeading because it doesn't limit angle.
    *
    * @return The angular displacement, in degrees.
    */
@@ -96,7 +96,7 @@ public class AHRS implements Updatable, Loggable {
   }
 
   /**
-   * Get the current angular yaw velocity.
+   * NOT supported for simulated AHRS. Get the current angular yaw velocity.
    *
    * @return The angular yaw velocity, in degrees/sec.
    */

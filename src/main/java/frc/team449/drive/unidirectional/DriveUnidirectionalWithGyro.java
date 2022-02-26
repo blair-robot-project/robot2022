@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 /** A drive with a cluster of any number of motors on each side. */
 public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase implements SubsystemAHRS {
   /** The NavX gyro */
-  @NotNull private final AHRS ahrs;
+  @NotNull protected final AHRS ahrs;
 
   /** Drivetrain kinematics processor for measuring individual wheel speeds */
   @NotNull private final DifferentialDriveKinematics driveKinematics;

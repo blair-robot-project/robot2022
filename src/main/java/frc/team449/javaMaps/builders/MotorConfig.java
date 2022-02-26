@@ -2,11 +2,14 @@ package frc.team449.javaMaps.builders;
 
 import edu.wpi.first.hal.util.HalHandleException;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import frc.team449.wrappers.WrappedMotor;
 import frc.team449.wrappers.simulated.DummyMotorController;
 import frc.team449.wrappers.simulated.SimulatedEncoder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * The constructor for SmartMotors was hell so this will help resolve that.
@@ -226,24 +229,36 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     if (this.externalEncoder != null) other.setExternalEncoder(externalEncoder);
   }
 
-  /** Create a simulated motor */
+  /**
+   * Create a simulated motor
+   *
+   * @param encSim An object used for simulating the encoder (optional)
+   */
   @NotNull
-  public WrappedMotor createSim() {
-    var extEnc = externalEncoder == null ? new Encoder(0, 0) : externalEncoder;
+  public WrappedMotor createSim(@Nullable EncoderSim encSim) {
+    if (encSim == null) {
+      var extEnc = externalEncoder == null ? new Encoder(0, 0) : externalEncoder;
+      encSim = new EncoderSim(extEnc);
+    }
+    var name = Objects.requireNonNullElse(this.name, "" + port);
     return new WrappedMotor(
-        "sim_" + port,
+        "sim_" + name,
         new DummyMotorController(),
         new SimulatedEncoder(
-            "sim_enc_" + port, extEnc, encoderCPR, unitPerRotation, postEncoderGearing));
+            "sim_enc_" + name, encSim, encoderCPR, unitPerRotation, postEncoderGearing));
   }
 
-  /** Try creating a real motor, and if that fails, create a simulated one */
+  /**
+   * Try creating a real motor, and if that fails, create a simulated one
+   *
+   * @param encSim An object used for simulating the encoder (optional)
+   */
   @NotNull
-  public WrappedMotor createRealOrSim() {
+  public WrappedMotor createRealOrSim(@Nullable EncoderSim encSim) {
     try {
       return this.createReal();
     } catch (HalHandleException e) {
-      return this.createSim();
+      return this.createSim(encSim);
     }
   }
 

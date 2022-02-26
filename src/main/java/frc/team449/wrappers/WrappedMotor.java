@@ -61,12 +61,6 @@ public final class WrappedMotor implements MotorController, Loggable {
     motor.stopMotor();
   }
 
-  @Deprecated
-  @Log
-  public double getVoltage() {
-    return ((CANSparkMax) motor).getBusVoltage();
-  }
-
   @Override
   public String configureLogName() {
     return this.name;
