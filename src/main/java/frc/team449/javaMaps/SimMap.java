@@ -1,8 +1,6 @@
 package frc.team449.javaMaps;
 
 import com.pathplanner.lib.PathPlanner;
-import edu.wpi.first.hal.SimDouble;
-import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -50,11 +48,9 @@ import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
 import frc.team449.other.FollowerUtils;
 import frc.team449.other.Updater;
-import frc.team449.wrappers.AHRS;
 import frc.team449.wrappers.PDP;
 import frc.team449.wrappers.RumbleableJoystick;
 import frc.team449.wrappers.simulated.AHRSSim;
-import frc.team449.wrappers.simulated.SimulatedEncoder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -65,8 +61,8 @@ import java.util.function.Supplier;
 import static frc.team449.javaMaps.FullMap.*;
 
 public final class SimMap {
-  public static final double MOMENT_OF_INERTIA = 1;
-  public static final double MASS = 1;
+  public static final double MOMENT_OF_INERTIA = 7.5;
+  public static final double MASS = 60;
 
   private SimMap() {}
 
@@ -287,8 +283,12 @@ public final class SimMap {
     var ramsetePrototype =
         new RamseteBuilder()
             .drivetrain(drive)
-            .leftPidController(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
-            .rightPidController(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
+//            .leftPidController(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
+//            .rightPidController(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
+            .leftPidController(new PIDController(15, 0, 0.))
+            .rightPidController(new PIDController(15, 0, 0.))
+            .b(2.0)
+            .zeta(0.7)
             .field(field);
     //
     //    var sCurve =

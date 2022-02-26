@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -22,6 +21,8 @@ public final class RamseteBuilder {
   private @Nullable Trajectory traj;
   private @Nullable Field2d field;
   private @Nullable String name;
+  private double b = 2;
+  private double zeta = .7;
 
   /** Set the drive subsystem which is to be controlled */
   public RamseteBuilder drivetrain(DriveUnidirectionalWithGyro drivetrain) {
@@ -61,6 +62,24 @@ public final class RamseteBuilder {
     return this;
   }
 
+  /**
+   * Set the b parameter for Ramsete (b &gt; 0 rad²/m²) for which larger values make convergence
+   * more aggressive like a proportional term.
+   */
+  public RamseteBuilder b(double b) {
+    this.b = b;
+    return this;
+  }
+
+  /**
+   * Set the zeta tuning parameter for Ramsete (0 rad⁻¹ &lt; zeta &lt; 1 rad⁻¹) for which larger
+   * values provide more damping in response.
+   */
+  public RamseteBuilder zeta(double zeta) {
+    this.zeta = zeta;
+    return this;
+  }
+
   public RamseteBuilder copy() {
     return new RamseteBuilder()
         .drivetrain(this.drivetrain)
@@ -68,7 +87,9 @@ public final class RamseteBuilder {
         .rightPidController(this.rightPidController)
         .traj(traj)
         .field(field)
-        .name(name);
+        .name(name)
+        .b(b)
+        .zeta(zeta);
   }
 
   public Command build() {
@@ -88,7 +109,7 @@ public final class RamseteBuilder {
         new RamseteCommand(
             this.traj,
             drivetrain::getCurrentPose,
-            new RamseteController(),
+            new RamseteController(b, zeta),
             drivetrain.getFeedforward(),
             drivetrain.getDriveKinematics(),
             drivetrain::getWheelSpeeds,

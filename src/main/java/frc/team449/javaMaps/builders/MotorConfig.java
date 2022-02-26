@@ -1,15 +1,14 @@
 package frc.team449.javaMaps.builders;
 
-import edu.wpi.first.hal.util.HalHandleException;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import frc.team449.wrappers.WrappedMotor;
 import frc.team449.wrappers.simulated.DummyMotorController;
 import frc.team449.wrappers.simulated.SimulatedEncoder;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 /**
  * The constructor for SmartMotors was hell so this will help resolve that.
@@ -240,7 +239,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
       var extEnc = externalEncoder == null ? new Encoder(0, 0) : externalEncoder;
       encSim = new EncoderSim(extEnc);
     }
-    var name = Objects.requireNonNullElse(this.name, "" + port);
+    var name = this.name == null ? "motor_" + port : this.name;
     return new WrappedMotor(
         "sim_" + name,
         new DummyMotorController(),
@@ -249,23 +248,21 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
   }
 
   /**
-   * Try creating a real motor, and if that fails, create a simulated one
+   * Create a real motor if not in a simulation and a simulated motor otherwise.
    *
    * @param encSim An object used for simulating the encoder (optional)
    */
   @NotNull
   public WrappedMotor createRealOrSim(@Nullable EncoderSim encSim) {
-    try {
+    if (RobotBase.isReal()) {
       return this.createReal();
-    } catch (HalHandleException e) {
+    } else {
       return this.createSim(encSim);
     }
   }
 
-  /**
-   * Create a physical motor
-   *
-   * @throws HalHandleException if the motor couldn't be constructed
-   */
+  /** Create a physical motor */
+  @Contract("-> new")
+  @NotNull
   public abstract WrappedMotor createReal();
 }
