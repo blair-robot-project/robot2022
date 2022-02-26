@@ -270,8 +270,7 @@ public class FullMap {
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo, climber);
 
-    var updater =
-        new Updater(List.of(pdp, navx, oi, () -> field.setRobotPose(drive.getCurrentPose())));
+    Updater.subscribe(() -> field.setRobotPose(drive.getCurrentPose()));
 
     // Button bindings here
     // Take in balls but don't shoot
@@ -351,7 +350,7 @@ public class FullMap {
         new CommandContainer(
             robotStartupCommands, autoStartupCommands, teleopStartupCommands, testStartupCommands);
 
-    return new RobotMap(subsystems, pdp, updater, allCommands, false);
+    return new RobotMap(subsystems, pdp, allCommands, false);
   }
 
   /** Generate a trajectory for the S-shaped curve we're using to test */

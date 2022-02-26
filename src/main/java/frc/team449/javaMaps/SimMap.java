@@ -9,11 +9,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.XboxController;
@@ -32,6 +32,7 @@ import frc.team449._2022robot.climber.ClimberArm;
 import frc.team449._2022robot.climber.PivotingTelescopingClimber;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
+import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyroSim;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
@@ -49,6 +50,9 @@ import frc.team449.other.Updater;
 import frc.team449.wrappers.AHRS;
 import frc.team449.wrappers.PDP;
 import frc.team449.wrappers.RumbleableJoystick;
+import frc.team449.wrappers.WrappedMotor;
+import frc.team449.wrappers.simulated.DummyMotorController;
+import frc.team449.wrappers.simulated.SimulatedEncoder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -86,26 +90,12 @@ public final class SimMap {
             .setCurrentLimit(DRIVE_CURRENT_LIM)
             .setPostEncoderGearing(DRIVE_GEARING)
             .setEnableVoltageComp(true);
-    var leftMaster =
-        driveMasterPrototype
-            .copy()
-            .setPort(LEFT_LEADER_PORT)
-            .setName("left")
-            .setReverseOutput(false)
-            .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_1_PORT), false)
-            .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_2_PORT), false)
-            .createReal();
-    var rightMaster =
-        driveMasterPrototype
-            .copy()
-            .setName("right")
-            .setPort(RIGHT_LEADER_PORT)
-            .setReverseOutput(true)
-            .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_1_PORT), false)
-            .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
-            .createReal();
+    var leftEncSim = new SimulatedEncoder("left_enc_sim", new Encoder(0, 1));
+    var rightEncSim = new SimulatedEncoder("right_enc_sim", new Encoder(2, 3));
+    var leftMaster = new WrappedMotor("left_motor", new DummyMotorController(), leftEncSim);
+    var rightMaster = new WrappedMotor("right_motor", new DummyMotorController(), rightEncSim);
 
-    //todo use sysid gains to make this
+    // todo use sysid gains to make this
     var driveSim =
         new DifferentialDrivetrainSim(
             DCMotor.getNeo550(3),
@@ -117,14 +107,15 @@ public final class SimMap {
             VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
 
     var drive =
-        new DriveUnidirectionalWithGyro(
+        new DriveUnidirectionalWithGyroSim(
             leftMaster,
             rightMaster,
             ahrs,
             new DriveSettingsBuilder()
                 .feedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
                 .trackWidth(DRIVE_TRACK_WIDTH)
-                .build());
+                .build(),
+            driveSim);
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.06);
@@ -243,8 +234,12 @@ public final class SimMap {
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo, climber);
 
-    var updater =
-        new Updater(List.of(pdp, ahrs, oi, () -> field.setRobotPose(drive.getCurrentPose())));
+    // Constantly update the simulation
+    Updater.subscribe(
+        () -> {
+          // todo put code here
+        });
+    Updater.subscribe(() -> field.setRobotPose(drive.getCurrentPose()));
 
     // Button bindings here
     // Take in balls but don't shoot
@@ -324,7 +319,7 @@ public final class SimMap {
         new CommandContainer(
             robotStartupCommands, autoStartupCommands, teleopStartupCommands, testStartupCommands);
 
-    return new RobotMap(subsystems, pdp, updater, allCommands, false);
+    return new RobotMap(subsystems, pdp, allCommands, false);
   }
 
   /** Generate a trajectory for the S-shaped curve we're using to test */

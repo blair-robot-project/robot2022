@@ -3,8 +3,8 @@ package frc.team449.javaMaps.builders;
 import edu.wpi.first.hal.util.HalHandleException;
 import edu.wpi.first.wpilibj.Encoder;
 import frc.team449.wrappers.WrappedMotor;
-import frc.team449.wrappers.simulated.SimulatedEncoder;
 import frc.team449.wrappers.simulated.DummyMotorController;
+import frc.team449.wrappers.simulated.SimulatedEncoder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -229,10 +229,12 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
   /** Create a simulated motor */
   @NotNull
   public WrappedMotor createSim() {
+    var extEnc = externalEncoder == null ? new Encoder(0, 0) : externalEncoder;
     return new WrappedMotor(
         "sim_" + port,
         new DummyMotorController(),
-        new SimulatedEncoder(new Encoder(0, 0), encoderCPR, unitPerRotation, postEncoderGearing));
+        new SimulatedEncoder(
+            "sim_enc_" + port, extEnc, encoderCPR, unitPerRotation, postEncoderGearing));
   }
 
   /** Try creating a real motor, and if that fails, create a simulated one */

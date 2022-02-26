@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.team449.javaMaps.FullMap;
+import frc.team449.javaMaps.SimMap;
 import frc.team449.other.Clock;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +22,11 @@ public class Robot extends TimedRobot {
 
   /** The method that runs when the robot is turned on. Initializes all subsystems from the map. */
   public static @NotNull RobotMap loadMap() {
-    return FullMap.createRobotMap();
+    if (RobotBase.isReal()) {
+      return FullMap.createRobotMap();
+    } else {
+      return SimMap.createRobotMap();
+    }
   }
 
   /**
@@ -74,7 +80,7 @@ public class Robot extends TimedRobot {
     }
 
     // Read sensors
-    this.robotMap.getUpdater().run();
+    Updater.run();
 
     Logger.configureLoggingAndConfig(this.robotMap, false);
     Shuffleboard.setRecordingFileNameFormat("log-${time}");
@@ -91,7 +97,7 @@ public class Robot extends TimedRobot {
     // save current time
     Clock.updateTime();
     // Read sensors
-    this.robotMap.getUpdater().run();
+    Updater.run();
     // update shuffleboard
     Logger.updateEntries();
     // Run all commands. This is a WPILib thing you don't really have to worry about.

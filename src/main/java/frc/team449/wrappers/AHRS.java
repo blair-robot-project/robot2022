@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
 import frc.team449.generalInterfaces.updatable.Updatable;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
@@ -52,6 +53,7 @@ public class AHRS implements Updatable, Loggable {
     } else {
       this.invertYaw = 1;
     }
+    Updater.subscribe(this);
   }
 
   /**

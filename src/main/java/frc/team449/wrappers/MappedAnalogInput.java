@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.AnalogInput;
 import frc.team449.generalInterfaces.updatable.Updatable;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -33,6 +34,7 @@ public class MappedAnalogInput extends AnalogInput implements Updatable, Loggabl
     super(port);
     setOversampleBits(oversampleBits);
     setAverageBits(averageBits);
+    Updater.subscribe(this);
   }
 
   /**
