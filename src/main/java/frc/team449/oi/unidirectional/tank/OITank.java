@@ -2,6 +2,7 @@ package frc.team449.oi.unidirectional.tank;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.oi.unidirectional.OIUnidirectional;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 
 /** A tank-style dual joystick OI. */
@@ -16,6 +17,10 @@ public abstract class OITank implements OIUnidirectional {
 
   /** Cached forwards and rotational output. */
   private double[] fwdRotOutputCached;
+
+  protected OITank() {
+    Updater.subscribe(this);
+  }
 
   /**
    * Get the throttle for the left side of the drive.

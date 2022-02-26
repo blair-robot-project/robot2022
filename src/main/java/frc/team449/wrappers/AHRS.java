@@ -1,17 +1,21 @@
 package frc.team449.wrappers;
 
-import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
 import frc.team449.generalInterfaces.updatable.Updatable;
+import frc.team449.other.Updater;
+import frc.team449.wrappers.simulated.AHRSSim;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
+import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
 
 /** An invertible wrapper for the NavX. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -38,19 +42,33 @@ public class AHRS implements Updatable, Loggable {
    *     works.
    * @param invertYaw Whether or not to invert the yaw axis. Defaults to true.
    */
-  @JsonCreator
-  public AHRS(
-      @JsonProperty(required = true) final SerialPort.Port port, final Boolean invertYaw) {
+  public AHRS(SerialPort.@NotNull Port port, boolean invertYaw) {
     if (port.equals(SerialPort.Port.kMXP)) {
       this.ahrs = new com.kauailabs.navx.frc.AHRS(SPI.Port.kMXP);
     } else {
       this.ahrs = new com.kauailabs.navx.frc.AHRS(port, kProcessedData, (byte) 100);
     }
     setHeading(0);
-    if (invertYaw == null || invertYaw) {
+    if (invertYaw) {
       this.invertYaw = -1;
     } else {
       this.invertYaw = 1;
+    }
+    Updater.subscribe(this);
+  }
+
+  /**
+   * If not in a simulation, return a real AHRS, otherwise, return an {@link AHRSSim}
+   *
+   * @param port The port the NavX is plugged into. It seems like only kMXP (the port on the RIO)
+   *     works.
+   * @param invertYaw Whether or not to invert the yaw axis.
+   */
+  public static AHRS createRealOrSim(@NotNull SerialPort.Port port, boolean invertYaw) {
+    if (RobotBase.isReal()) {
+      return new AHRS(port, invertYaw);
+    } else {
+      return new AHRSSim(port, invertYaw);
     }
   }
 
@@ -84,8 +102,8 @@ public class AHRS implements Updatable, Loggable {
   }
 
   /**
-   * Get the current total angular displacement. Differs from getHeading because it doesn't limit
-   * angle.
+   * NOT supported for simulated AHRS. Get the current total angular displacement. Differs from
+   * getHeading because it doesn't limit angle.
    *
    * @return The angular displacement, in degrees.
    */
@@ -94,7 +112,7 @@ public class AHRS implements Updatable, Loggable {
   }
 
   /**
-   * Get the current angular yaw velocity.
+   * NOT supported for simulated AHRS. Get the current angular yaw velocity.
    *
    * @return The angular yaw velocity, in degrees/sec.
    */

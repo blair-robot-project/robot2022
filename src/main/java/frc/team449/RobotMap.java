@@ -22,9 +22,6 @@ public class RobotMap {
 
   @NotNull private final MotorContainer motors = MotorContainer.getInstance();
 
-  /** A runnable that updates cached variables. */
-  @NotNull private final Runnable updater;
-
   @NotNull private final CommandContainer commands;
 
   @SuppressWarnings("FieldCanBeLocal")
@@ -39,7 +36,6 @@ public class RobotMap {
    *
    * @param subsystems The robot's subsystems.
    * @param pdp The PDP
-   * @param updater A runnable that updates cached variables.
    * @param commands A container to hold all of the robot's commands.
    * @param useCameraServer Whether the camera server should be run. Defaults to false.
    */
@@ -47,10 +43,8 @@ public class RobotMap {
   public RobotMap(
       @NotNull List<Subsystem> subsystems,
       @NotNull PDP pdp,
-      @NotNull Runnable updater,
       @NotNull CommandContainer commands,
       boolean useCameraServer) {
-    this.updater = updater;
     this.pdp = pdp;
     this.useCameraServer = useCameraServer;
     this.subsystems = subsystems;
@@ -90,12 +84,6 @@ public class RobotMap {
       return null;
     }
     return this.commands.getRobotStartupCommand().iterator();
-  }
-
-  /** @return A runnable that updates cached variables. */
-  @NotNull
-  public Runnable getUpdater() {
-    return this.updater;
   }
 
   /** @return Whether the camera server should be run. */

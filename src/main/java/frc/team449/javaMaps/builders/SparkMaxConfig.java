@@ -4,10 +4,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
-import edu.wpi.first.hal.util.HalHandleException;
 import frc.team449.other.FollowerUtils;
 import frc.team449.wrappers.Encoder;
 import frc.team449.wrappers.WrappedMotor;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,11 +70,17 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
     return copy;
   }
 
+  @Contract(" -> new")
+  @NotNull
   @Override
   public WrappedMotor createReal() {
     var motor = new CANSparkMax(this.getPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
-    if (motor.getLastError() == REVLibError.kHALError) {
-      throw new HalHandleException("Motor could not be constructed on port " + this.getPort());
+    if (motor.getLastError() != REVLibError.kOk) {
+      throw new Error(
+          "Motor could not be constructed on port "
+              + this.getPort()
+              + " due to error "
+              + motor.getLastError());
     }
     var externalEncoder = this.getExternalEncoder();
     var encoderName =

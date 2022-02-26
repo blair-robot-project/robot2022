@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import frc.team449.generalInterfaces.updatable.Updatable;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
+
+import frc.team449.other.Updater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +26,7 @@ public class BooleanSupplierUpdatable implements BooleanSupplier, Updatable {
       @Nullable final Boolean initialValue) {
     this.source = source;
     this.cachedValue = Objects.requireNonNullElseGet(initialValue, source::getAsBoolean);
+    Updater.subscribe(this);
   }
 
   /**

@@ -2,6 +2,7 @@ package frc.team449.oi.fieldoriented;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.oi.OI;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +18,10 @@ public abstract class OIFieldOriented implements OI {
 
   /** The cached angular setpoint. */
   @Nullable private Double cachedTheta;
+
+  protected OIFieldOriented() {
+    Updater.subscribe(this);
+  }
 
   /**
    * Get the absolute angle for the robot to move towards.

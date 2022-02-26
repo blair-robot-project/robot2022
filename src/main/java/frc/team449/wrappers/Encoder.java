@@ -166,9 +166,9 @@ public abstract class Encoder implements Loggable {
         double unitPerRotation,
         double postEncoderGearing,
         boolean calculateVel) {
-      super(name, 1, unitPerRotation, postEncoderGearing, calculateVel);
-      // Set field encoderCPR to 1 because the WPI encoder handles it itself
-      encoder.setDistancePerPulse(1.0 / encoderCPR);
+      super(name, 1, 1, 1, calculateVel);
+      // Let the WPI encoder handle the distance scaling
+      encoder.setDistancePerPulse(unitPerRotation * postEncoderGearing / encoderCPR);
       encoder.setSamplesToAverage(5);
       this.encoder = encoder;
       this.resetPosition();

@@ -2,6 +2,7 @@ package frc.team449.oi.throttles;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.generalInterfaces.updatable.Updatable;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 
 /** An object representing an axis of a stick on a joystick. */
@@ -11,6 +12,10 @@ import io.github.oblarg.oblog.annotations.Log;
     property = "@class")
 public abstract class Throttle implements Updatable, io.github.oblarg.oblog.Loggable {
   private double cachedValue;
+
+  protected Throttle() {
+    Updater.subscribe(this);
+  }
 
   /**
    * Get the output of the throttle this object represents.
