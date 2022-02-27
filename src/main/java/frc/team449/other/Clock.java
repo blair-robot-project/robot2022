@@ -22,17 +22,21 @@ public class Clock {
   public static synchronized void updateTime() {
     currentTime = Timer.getFPGATimestamp() - startTime;
   }
+
   /** Sets the start time to the current time. */
   public static synchronized void setStartTime() {
     startTime = Clock.currentTimeSeconds();
   }
-  /** @return The time since the start time, in milliseconds. */
+
+  /** The time since the start time, in milliseconds. */
   @Contract(pure = true)
   public static synchronized long currentTimeMillis() {
     return (long)(currentTime * 1000);
   }
 
-  /** @return The time since the start time, in seconds. */
+  /** The time since the start time, in seconds. */
   @Contract(pure = true)
-  public static synchronized double currentTimeSeconds() {return currentTime;}
+  public static synchronized double currentTimeSeconds() {
+    return currentTime;
+  }
 }

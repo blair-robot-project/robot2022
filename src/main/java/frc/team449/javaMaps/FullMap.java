@@ -1,8 +1,6 @@
 package frc.team449.javaMaps;
 
 import com.pathplanner.lib.PathPlanner;
-import edu.wpi.first.hal.SimDouble;
-import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -16,10 +14,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -53,7 +48,6 @@ import frc.team449.other.Updater;
 import frc.team449.wrappers.AHRS;
 import frc.team449.wrappers.PDP;
 import frc.team449.wrappers.RumbleableJoystick;
-import frc.team449.wrappers.simulated.AHRSSim;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -83,7 +77,7 @@ public class FullMap {
   public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
   // Speeds
   public static final double INTAKE_SPEED = 0.4, SPITTER_SPEED = 0.5;
-  public static final double AUTO_MAX_SPEED = 1.8, AUTO_MAX_ACCEL = .35;
+  public static final double AUTO_MAX_SPEED = 1.8, AUTO_MAX_ACCEL = .4;
   // Drive constants
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
   public static final double DRIVE_GEARING = 5.86;
@@ -97,8 +91,8 @@ public class FullMap {
 
   // Other constants
   public static final double CLIMBER_DISTANCE = 0.5;
-  public static final double DRIVE_KP_VEL = 0.001,
-      DRIVE_KD_VEL = 0, //0.00005,
+  public static final double DRIVE_KP_VEL = 20,
+      DRIVE_KD_VEL = 0.00001,
       DRIVE_KP_POS = 45.269,
       DRIVE_KD_POS = 3264.2,
       DRIVE_FF_KS = 0.15084,
@@ -333,14 +327,19 @@ public class FullMap {
     // (assume blue alliance)
     // Start at bottom next to hub, shoot preloaded ball, then get the two balls in that region and
     // score those
-    var scoreThenGetTwoThenScore =
+    //    var scoreThenGetTwoThenScore =
+    //        new InstantCommand(cargo::runIntake, cargo)
+    //            .andThen(
+    //                ramsetePrototype
+    //                    .copy()
+    //                    .name("1-2ballbluebottom")
+    //                    .traj(loadPathPlannerTraj("New Path"))
+    //                    .build())
+    //            .andThen(spit.get());
+
+    var testPath =
         new InstantCommand(cargo::runIntake, cargo)
-            .andThen(
-                ramsetePrototype
-                    .copy()
-                    .name("1-2ballbluebottom")
-                    .traj(loadPathPlannerTraj("New Path"))
-                    .build())
+            .andThen(ramsetePrototype.copy().name("testtraj").traj(testTraj(drive)).build())
             .andThen(spit.get());
 
     // (assume blue alliance)
@@ -359,7 +358,7 @@ public class FullMap {
     // cargo)))
     //            .andThen(spit.get());
 
-    List<Command> autoStartupCommands = List.of(resetDriveOdometry.get(), scoreThenGetTwoThenScore);
+    List<Command> autoStartupCommands = List.of(resetDriveOdometry.get(), testPath);
 
     List<Command> robotStartupCommands = List.of();
 
@@ -391,11 +390,20 @@ public class FullMap {
   }
 
   private static Trajectory testTraj(@NotNull DriveUnidirectionalWithGyro drive) {
-    return TrajectoryGenerator.generateTrajectory(
-        new Pose2d(new Translation2d(7.68, 2.82), Rotation2d.fromDegrees(-111.63)),
-        List.of(),
-        new Pose2d(new Translation2d(6.4, 1.37), Rotation2d.fromDegrees(-143.13)),
-        trajConfig(drive));
+    var ballPos = new Translation2d(2.72, 3.93);
+    var toBall =
+        TrajectoryGenerator.generateTrajectory(
+            new Pose2d(new Translation2d(1, 3), Rotation2d.fromDegrees(0)),
+            List.of(),
+            new Pose2d(ballPos, Rotation2d.fromDegrees(90)),
+            trajConfig(drive));
+   var toEnd =
+       TrajectoryGenerator.generateTrajectory(
+           new Pose2d(ballPos, Rotation2d.fromDegrees(90)),
+           List.of(),
+           new Pose2d(new Translation2d(4.48, 3.03), Rotation2d.fromDegrees(180)),
+           trajConfig(drive).setReversed(true));
+    return toBall.concatenate(toEnd);
   }
 
   @NotNull
@@ -404,7 +412,9 @@ public class FullMap {
         .setKinematics(drive.getDriveKinematics())
         .addConstraint(
             new DifferentialDriveVoltageConstraint(
-                drive.getFeedforward(), drive.getDriveKinematics(), 12));
+                drive.getFeedforward(),
+                drive.getDriveKinematics(),
+                RobotController.getBatteryVoltage()));
   }
 
   @NotNull

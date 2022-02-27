@@ -26,11 +26,6 @@ build
 *.ipr
 *.iws
 
-# GradleRIO files
-robot2017.iml
-robot2017.ipr
-robot2017.iws
-
 # R workspace files
 *.RData
 *.Rhistory
@@ -40,6 +35,7 @@ robot2017.iws
 .DS_Store
 bash.exe.stackdump
 .vscode/
+.wpilib/
 
 #Copied log files
 logs/
