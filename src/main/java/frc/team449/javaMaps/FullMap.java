@@ -138,15 +138,6 @@ public class FullMap {
             DRIVE_WHEEL_RADIUS,
             DRIVE_TRACK_WIDTH,
             VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
-    if (RobotBase.isSimulation()) {
-      //   SmartDashboard.putData("ramsete pid controllers", builder -> {
-      //     builder.addDoubleProperty("driveleftvel", () ->
-      // driveSim.getLeftVelocityMetersPerSecond(), x -> {});
-      //     builder.addDoubleProperty("driverightvel", () ->
-      // driveSim.getRightVelocityMetersPerSecond(), x -> {});
-      //     builder.update();
-      //   });
-    }
 
     var leftEncSim = new EncoderSim(new Encoder(0, 1));
     var rightEncSim = new EncoderSim(new Encoder(2, 3));
@@ -437,9 +428,9 @@ public class FullMap {
                 .setEndVelocity(0.0)
                 // .addConstraint(speedConstraint)
                 .setReversed(true));
-//    return toBall.concatenate(toEnd);
+    return toBall.concatenate(toEnd);
     // return toBall;
-     return toEnd;
+    //     return toEnd;
   }
 
   @NotNull
