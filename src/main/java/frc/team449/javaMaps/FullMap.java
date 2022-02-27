@@ -97,7 +97,7 @@ public class FullMap {
   public static final double CLIMBER_DISTANCE = 0.5;
   public static final double DRIVE_KP_VEL = 27.2,
       DRIVE_KI_VEL = 0.0,
-      DRIVE_KD_VEL = 3,
+      DRIVE_KD_VEL = 0,
       DRIVE_KP_POS = 45.269,
       DRIVE_KD_POS = 3264.2,
       DRIVE_FF_KS = 0.15084,
