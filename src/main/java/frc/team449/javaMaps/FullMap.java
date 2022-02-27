@@ -12,7 +12,10 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.math.trajectory.constraint.EllipticalRegionConstraint;
+import edu.wpi.first.math.trajectory.constraint.MaxVelocityConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
@@ -29,6 +32,7 @@ import frc.team449.RobotMap;
 import frc.team449._2022robot.cargo.Cargo2022;
 import frc.team449._2022robot.climber.ClimberArm;
 import frc.team449._2022robot.climber.PivotingTelescopingClimber;
+import frc.team449.ahrs.PIDAngleControllerBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
@@ -77,7 +81,7 @@ public class FullMap {
   public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
   // Speeds
   public static final double INTAKE_SPEED = 0.4, SPITTER_SPEED = 0.5;
-  public static final double AUTO_MAX_SPEED = 1.8, AUTO_MAX_ACCEL = .4;
+  public static final double AUTO_MAX_SPEED = 1.9, AUTO_MAX_ACCEL = .4;
   // Drive constants
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
   public static final double DRIVE_GEARING = 5.86;
@@ -91,8 +95,9 @@ public class FullMap {
 
   // Other constants
   public static final double CLIMBER_DISTANCE = 0.5;
-  public static final double DRIVE_KP_VEL = 20,
-      DRIVE_KD_VEL = 0.00001,
+  public static final double DRIVE_KP_VEL = 27.2,
+      DRIVE_KI_VEL = 0.0,
+      DRIVE_KD_VEL = 3,
       DRIVE_KP_POS = 45.269,
       DRIVE_KD_POS = 3264.2,
       DRIVE_FF_KS = 0.15084,
@@ -126,13 +131,22 @@ public class FullMap {
     // todo use sysid gains to make this
     var driveSim =
         new DifferentialDrivetrainSim(
-            DCMotor.getNeo550(3),
+            DCMotor.getNEO(3),
             DRIVE_GEARING,
             MOMENT_OF_INERTIA,
             MASS,
             DRIVE_WHEEL_RADIUS,
             DRIVE_TRACK_WIDTH,
             VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
+    if (RobotBase.isSimulation()) {
+      //   SmartDashboard.putData("ramsete pid controllers", builder -> {
+      //     builder.addDoubleProperty("driveleftvel", () ->
+      // driveSim.getLeftVelocityMetersPerSecond(), x -> {});
+      //     builder.addDoubleProperty("driverightvel", () ->
+      // driveSim.getRightVelocityMetersPerSecond(), x -> {});
+      //     builder.update();
+      //   });
+    }
 
     var leftEncSim = new EncoderSim(new Encoder(0, 1));
     var rightEncSim = new EncoderSim(new Encoder(2, 3));
@@ -311,10 +325,22 @@ public class FullMap {
     var ramsetePrototype =
         new RamseteBuilder()
             .drivetrain(drive)
-            .leftPidController(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
-            .rightPidController(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
+            .leftPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
+            .rightPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
             .b(2.0)
             .zeta(0.7)
+            .anglePID(
+                new PIDAngleControllerBuilder()
+                    .absoluteTolerance(0.5)
+                    .onTargetBuffer(null)
+                    .minimumOutput(0)
+                    .maximumOutput(null)
+                    .loopTimeMillis(20)
+                    .deadband(0.05)
+                    .inverted(false)
+                    .pid(0.002, 0, 0)
+                    .build())
+            .angleTimeout(4)
             .field(field);
     //
     //    var sCurve =
@@ -390,20 +416,30 @@ public class FullMap {
   }
 
   private static Trajectory testTraj(@NotNull DriveUnidirectionalWithGyro drive) {
-    var ballPos = new Translation2d(2.72, 3.93);
+    var ballPos = new Translation2d(2.5, 4);
+    var speedConstraint =
+        new EllipticalRegionConstraint(
+            ballPos, 0.5, 0.5, Rotation2d.fromDegrees(0), new MaxVelocityConstraint(1.0));
     var toBall =
         TrajectoryGenerator.generateTrajectory(
             new Pose2d(new Translation2d(1, 3), Rotation2d.fromDegrees(0)),
             List.of(),
             new Pose2d(ballPos, Rotation2d.fromDegrees(90)),
-            trajConfig(drive));
-   var toEnd =
-       TrajectoryGenerator.generateTrajectory(
-           new Pose2d(ballPos, Rotation2d.fromDegrees(90)),
-           List.of(),
-           new Pose2d(new Translation2d(4.48, 3.03), Rotation2d.fromDegrees(180)),
-           trajConfig(drive).setReversed(true));
-    return toBall.concatenate(toEnd);
+            trajConfig(drive)
+            //   .addConstraint(speedConstraint)
+            );
+    var toEnd =
+        TrajectoryGenerator.generateTrajectory(
+            new Pose2d(ballPos, Rotation2d.fromDegrees(90)),
+            List.of(),
+            new Pose2d(new Translation2d(5, 3), Rotation2d.fromDegrees(180)),
+            trajConfig(drive)
+                .setEndVelocity(0.0)
+                // .addConstraint(speedConstraint)
+                .setReversed(true));
+//    return toBall.concatenate(toEnd);
+    // return toBall;
+     return toEnd;
   }
 
   @NotNull
@@ -414,7 +450,8 @@ public class FullMap {
             new DifferentialDriveVoltageConstraint(
                 drive.getFeedforward(),
                 drive.getDriveKinematics(),
-                RobotController.getBatteryVoltage()));
+                RobotController.getBatteryVoltage()))
+        .addConstraint(new CentripetalAccelerationConstraint(0.5));
   }
 
   @NotNull
@@ -424,5 +461,11 @@ public class FullMap {
       throw new Error("Trajectory not found: " + trajName);
     }
     return traj;
+  }
+
+  @NotNull
+  private static Trajectory emptyTraj(
+      @NotNull DriveUnidirectionalWithGyro drive, @NotNull Pose2d pose) {
+    return TrajectoryGenerator.generateTrajectory(pose, List.of(), pose, trajConfig(drive));
   }
 }

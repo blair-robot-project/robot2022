@@ -2,7 +2,6 @@ package frc.team449.wrappers.simulated;
 
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import frc.team449.generalInterfaces.updatable.Updatable;
 import frc.team449.wrappers.Encoder;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +14,7 @@ public final class SimulatedEncoder extends Encoder {
       int encoderCPR,
       double unitPerRotation,
       double postEncoderGearing) {
-    super(name, encoderCPR, unitPerRotation, postEncoderGearing, true);
+    super(name, encoderCPR, unitPerRotation, postEncoderGearing, false);
     this.encSim = encSim;
   }
 

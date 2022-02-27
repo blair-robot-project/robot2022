@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
+import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -16,13 +18,15 @@ import java.util.Objects;
 public final class RamseteBuilder {
 
   private @Nullable DriveUnidirectionalWithGyro drivetrain;
-  private @Nullable PIDController leftPidController;
-  private @Nullable PIDController rightPidController;
+  private @Nullable PIDController leftPid;
+  private @Nullable PIDController rightPid;
   private @Nullable Trajectory traj;
   private @Nullable Field2d field;
   private @Nullable String name;
   private double b = 2;
   private double zeta = .7;
+  private PIDAngleController pidAngleController;
+  private double angleTimeout = 0;
 
   /** Set the drive subsystem which is to be controlled */
   public RamseteBuilder drivetrain(DriveUnidirectionalWithGyro drivetrain) {
@@ -31,14 +35,14 @@ public final class RamseteBuilder {
   }
 
   /** Set the PID controller for the left side. Uses velocity control. */
-  public RamseteBuilder leftPidController(PIDController leftPidController) {
-    this.leftPidController = leftPidController;
+  public RamseteBuilder leftPid(PIDController leftPid) {
+    this.leftPid = leftPid;
     return this;
   }
 
   /** Set the PID controller for the right side. Uses velocity control. */
-  public RamseteBuilder rightPidController(PIDController rightPidController) {
-    this.rightPidController = rightPidController;
+  public RamseteBuilder rightPid(PIDController rightPid) {
+    this.rightPid = rightPid;
     return this;
   }
 
@@ -80,28 +84,53 @@ public final class RamseteBuilder {
     return this;
   }
 
+  /**
+   * Set the PIDAngleController to use when turning the robot in place at the end of the trajectory.
+   * The controller is optional
+   */
+  public RamseteBuilder anglePID(PIDAngleController controller) {
+    this.pidAngleController = controller;
+    return this;
+  }
+
+  /** The number of seconds until the angle command after the actual Ramsete command times out */
+  public RamseteBuilder angleTimeout(double timeout) {
+    this.angleTimeout = timeout;
+    return this;
+  }
+
   public RamseteBuilder copy() {
     return new RamseteBuilder()
         .drivetrain(this.drivetrain)
-        .leftPidController(this.leftPidController)
-        .rightPidController(this.rightPidController)
+        .leftPid(this.leftPid)
+        .rightPid(this.rightPid)
         .traj(traj)
         .field(field)
         .name(name)
         .b(b)
-        .zeta(zeta);
+        .zeta(zeta)
+        .anglePID(pidAngleController)
+        .angleTimeout(angleTimeout);
   }
 
   public Command build() {
     assert drivetrain != null : "Drivetrain must not be null";
-    assert leftPidController != null : "Left PID controller must not be null";
-    assert rightPidController != null : "Right PID controller must not be null";
+    assert leftPid != null : "Left PID controller must not be null";
+    assert rightPid != null : "Right PID controller must not be null";
     assert traj != null : "Trajectory must not be null";
 
-    SmartDashboard.putData("ramsete pid controllers", (builder) -> {
-      builder.addDoubleProperty("leftpid", leftPidController::getSetpoint, x -> {});
-      builder.addDoubleProperty("rightpid", rightPidController::getSetpoint, x -> {});
-    });
+    SmartDashboard.putData(
+        "ramsete pid controllers",
+        (builder) -> {
+          builder.addDoubleProperty("leftpid", leftPid::getSetpoint, x -> {});
+          builder.addDoubleProperty("rightpid", rightPid::getSetpoint, x -> {});
+          builder.addDoubleProperty("lefterr", leftPid::getPositionError, x -> {});
+          builder.addDoubleProperty("righterr", rightPid::getPositionError, x -> {});
+          builder.addDoubleProperty(
+              "leftvel", () -> leftPid.getSetpoint() - leftPid.getPositionError(), x -> {});
+          builder.addDoubleProperty(
+              "rightvel", () -> rightPid.getSetpoint() - rightPid.getPositionError(), x -> {});
+        });
     if (field != null)
       field.getObject(Objects.requireNonNullElse(this.name, "traj")).setTrajectory(traj);
 
@@ -113,15 +142,21 @@ public final class RamseteBuilder {
             drivetrain.getFeedforward(),
             drivetrain.getDriveKinematics(),
             drivetrain::getWheelSpeeds,
-            leftPidController,
-            rightPidController,
+            leftPid,
+            rightPid,
             drivetrain::setVoltage,
             drivetrain);
     if (this.name != null) {
       ramseteCmd.setName(this.name);
     }
+
+    var lastPose = traj.getStates().get(traj.getStates().size() - 1).poseMeters;
+
     return new InstantCommand(() -> drivetrain.resetOdometry(traj.getInitialPose()))
         .andThen(ramseteCmd)
-        .andThen(() -> drivetrain.setVoltage(0, 0));
+        .andThen(() -> drivetrain.setVoltage(0, 0))
+        .andThen(
+            new NavXTurnToAngle<>(
+                lastPose.getRotation().getDegrees(), angleTimeout, drivetrain, pidAngleController));
   }
 }
