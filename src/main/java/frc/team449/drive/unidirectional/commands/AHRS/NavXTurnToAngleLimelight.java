@@ -1,9 +1,5 @@
 package frc.team449.drive.unidirectional.commands.AHRS;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -13,6 +9,7 @@ import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
 import frc.team449.generalInterfaces.limelight.Limelight;
 import frc.team449.other.Clock;
+import frc.team449.other.Util;
 import org.jetbrains.annotations.NotNull;
 
 /** Turn a certain number of degrees from the current heading, based on input from the limelight */
@@ -51,8 +48,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
         "NavXTurnToAngleLimelight init.", this.getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
     // Do math to setup the setpoint.
-    controller.setSetpoint(
-        PIDAngleController.clipTo180(subsystem.getHeadingCached() - limelight.getX()));
+    controller.setSetpoint(Util.clipTo180(subsystem.getHeadingCached() - limelight.getX()));
     // System.out.println("Current setpoint = " + limelight.getX());
     final LimelightDistanceComponent distanceComponent =
         new LimelightDistanceComponent(limelight, 20. / 12., 36, 7.5);

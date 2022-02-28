@@ -1,5 +1,6 @@
 package frc.team449.other;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /** Stuff that doesn't fit anywhere else */
@@ -62,5 +63,16 @@ public class Util {
    */
   public static double clamp(final double value) {
     return clamp(value, 1);
+  }
+
+  /**
+   * Clip a degree number to the NavX's -180 to 180 system.
+   *
+   * @param theta The angle to clip, in degrees.
+   * @return The equivalent of that number, clipped to be between -180 and 180.
+   */
+  @Contract(pure = true)
+  public static double clipTo180(double theta) {
+    return (theta + 180) % 360 - 180;
   }
 }

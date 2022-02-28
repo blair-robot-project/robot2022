@@ -4,12 +4,17 @@ import edu.wpi.first.math.controller.PIDController;
 import frc.team449.other.Debouncer;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A wrapper around {@link edu.wpi.first.math.controller.PIDController PIDController} that can be
+ * used for turning the robot to an angle. <br>
+ * For convenience, you can use a {@link PIDAngleControllerBuilder} to construct controllers.
+ */
 public class PIDAngleController implements Loggable {
   /** On-board PID controller */
-  @Log protected final PIDController pidController;
+  @Log @NotNull protected final PIDController pidController;
 
   /** The minimum the robot should be able to output, to overcome friction. */
   private final double minimumOutput;
@@ -33,7 +38,7 @@ public class PIDAngleController implements Loggable {
    *     considered within tolerance.
    * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
    *     Can be null for no buffer.
-   * @param minimumOutput The minimum output of the loop. Defaults to zero.
+   * @param minimumOutput The minimum output (absolute value) of the loop. Defaults to zero.
    * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
    *     output is used.
    * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
@@ -85,17 +90,6 @@ public class PIDAngleController implements Loggable {
     this.inverted = inverted;
   }
 
-  /**
-   * Clip a degree number to the NavX's -180 to 180 system.
-   *
-   * @param theta The angle to clip, in degrees.
-   * @return The equivalent of that number, clipped to be between -180 and 180.
-   */
-  @Contract(pure = true)
-  public static double clipTo180(final double theta) {
-    return (theta + 180) % 360 - 180;
-  }
-
   @Log
   public double getSetpoint() {
     return pidController.getSetpoint();
@@ -140,7 +134,7 @@ public class PIDAngleController implements Loggable {
    * @param output The output from the WPILib angular PID loop.
    * @return That output after being deadbanded with the map-given deadband.
    */
-  protected double deadbandOutput(final double output) {
+  public double deadbandOutput(double output) {
     return Math.abs(pidController.getPositionError()) > deadband ? output : 0;
   }
 
@@ -158,12 +152,8 @@ public class PIDAngleController implements Loggable {
     }
   }
 
-  /**
-   * Returns the PIDController used by the command.
-   *
-   * @return The PIDController
-   */
-  public PIDController getController() {
-    return this.pidController;
+  /** Reset the error and integral term of the internal PIDController. */
+  public void resetController() {
+    this.pidController.reset();
   }
 }
