@@ -7,6 +7,7 @@ import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
 import frc.team449.other.Clock;
+import frc.team449.other.Util;
 import org.jetbrains.annotations.NotNull;
 
 /** Turn a certain number of degrees from the current heading. */
@@ -36,7 +37,7 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
         "NavXTurnToAngleRelative init.", getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
     // Do math to setup the setpoint.
-    controller.setSetpoint(PIDAngleController.clipTo180(subsystem.getHeadingCached() + setpoint));
+    controller.setSetpoint(Util.clipTo180(subsystem.getHeadingCached() + setpoint));
   }
 
   /** Log when the command ends. */

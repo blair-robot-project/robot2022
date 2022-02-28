@@ -1,20 +1,25 @@
 package frc.team449.drive.unidirectional.commands;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
-import frc.team449.generalInterfaces.ahrs.commands.PIDAngleCommand;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.other.Debouncer;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.function.DoubleUnaryOperator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * Drive with arcade drive setup, and when the driver isn't turning, use a NavX to stabilize the
@@ -27,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class UnidirectionalNavXDefaultDrive<
         T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends PIDAngleCommand implements Loggable {
+    extends CommandBase implements Loggable {
   /** The drive this command is controlling. */
   @NotNull @Log.Exclude protected final T subsystem;
   /** The OI giving the input stick values. */
@@ -48,63 +53,29 @@ public class UnidirectionalNavXDefaultDrive<
   @Nullable private final DoubleUnaryOperator leftRamp, rightRamp;
   /** Whether or not we should be using the NavX to drive straight stably. */
   private boolean drivingStraight;
+  /** Controller to calculate how much to turn */
+  @NotNull private final PIDAngleController controller;
 
   /**
    * Default constructor
    *
-   * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
-   *     Can be null for no buffer.
-   * @param absoluteTolerance The maximum number of degrees off from the target at which we can be
-   *     considered within tolerance.
-   * @param minimumOutput The minimum output of the loop. Defaults to zero.
-   * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
-   *     output is used.
-   * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
-   *     ms.
-   * @param deadband The deadband around the setpoint, in degrees, within which no output is given
-   *     to the motors. Defaults to zero.
    * @param maxAngularVelToEnterLoop The maximum angular velocity, in degrees/sec, at which the loop
    *     will be entered. Defaults to 180.
-   * @param inverted Whether the loop is inverted. Defaults to false.
-   * @param kP Proportional gain. Defaults to zero.
-   * @param kI Integral gain. Defaults to zero.
-   * @param kD Derivative gain. Defaults to zero.
    * @param driveStraightLoopEntryTimer The buffer timer for starting to drive straight.
    * @param subsystem The drive to execute this command on.
    * @param oi The OI controlling the robot.
    * @param rampComponent The acceleration-limiting ramp for the output to the drive. Defaults to no
    *     ramp.
+   * @param controller Controller used to actually turn
    */
   @JsonCreator
   public UnidirectionalNavXDefaultDrive(
-      @JsonProperty(required = true) final double absoluteTolerance,
-      @Nullable final Debouncer onTargetBuffer,
-      final double minimumOutput,
-      @Nullable final Double maximumOutput,
-      @Nullable final Integer loopTimeMillis,
-      final double deadband,
-      @Nullable final Double maxAngularVelToEnterLoop,
-      final boolean inverted,
-      final double kP,
-      final double kI,
-      final double kD,
-      @NotNull @JsonProperty(required = true) final Debouncer driveStraightLoopEntryTimer,
-      @NotNull @JsonProperty(required = true) final T subsystem,
-      @NotNull @JsonProperty(required = true) final OIUnidirectional oi,
-      @Nullable final RampComponent rampComponent) {
-    // Assign stuff
-    super(
-        absoluteTolerance,
-        onTargetBuffer,
-        minimumOutput,
-        maximumOutput,
-        loopTimeMillis,
-        deadband,
-        inverted,
-        subsystem,
-        kP,
-        kI,
-        kD);
+      @Nullable Double maxAngularVelToEnterLoop,
+      @NotNull Debouncer driveStraightLoopEntryTimer,
+      @NotNull T subsystem,
+      @NotNull OIUnidirectional oi,
+      @Nullable RampComponent rampComponent,
+      @NotNull PIDAngleController controller) {
     this.oi = oi;
     this.subsystem = subsystem;
     this.leftRamp = rampComponent;
@@ -115,6 +86,8 @@ public class UnidirectionalNavXDefaultDrive<
     this.driveStraightLoopEntryTimer = driveStraightLoopEntryTimer;
     this.maxAngularVelToEnterLoop =
         maxAngularVelToEnterLoop != null ? maxAngularVelToEnterLoop : 180;
+
+    this.controller = controller;
 
     // Needs a requires because it's a default command.
     this.addRequirements(this.subsystem);
@@ -128,7 +101,7 @@ public class UnidirectionalNavXDefaultDrive<
   @Override
   public void initialize() {
     // Reset all values of the PIDController and enable it.
-    this.getController().reset();
+    controller.resetController();
     Shuffleboard.addEventMarker(
         "UnidirectionalNavXArcadeDrive init.",
         this.getClass().getSimpleName(),
@@ -156,12 +129,14 @@ public class UnidirectionalNavXDefaultDrive<
       // Switch to driving straight
       this.drivingStraight = true;
       // Set the setpoint to the current heading and reset the AHRS
-      this.getController().reset();
-      this.setSetpoint(this.subsystem.getHeadingCached());
+      controller.resetController();
+      controller.setSetpoint(this.subsystem.getHeadingCached());
     }
 
+    // Update the controller with the current heading
+    // Why exactly this line is necessary is beyond me
+    controller.getOutput(subsystem.getHeadingCached());
     // Get the outputs
-    double rawOutput = this.getRawOutput();
     double leftOutput = this.oi.getLeftRightOutput()[0];
     double rightOutput = this.oi.getLeftRightOutput()[1];
     // Ramp if it exists
@@ -175,11 +150,11 @@ public class UnidirectionalNavXDefaultDrive<
     double finalOutput;
     if (this.drivingStraight) {
       // Process the output (minimumOutput, deadband, etc.)
-      processedOutput = this.getOutput();
+      processedOutput = controller.getOutput(subsystem.getHeadingCached());
 
       // Deadband if we're stationary
       if (leftOutput == 0 && rightOutput == 0) {
-        finalOutput = this.deadbandOutput(processedOutput);
+        finalOutput = controller.deadbandOutput(processedOutput);
       } else {
         finalOutput = processedOutput;
       }

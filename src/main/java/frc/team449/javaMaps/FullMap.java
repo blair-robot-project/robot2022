@@ -213,21 +213,21 @@ public class FullMap {
 
     var driveDefaultCmd =
         new UnidirectionalNavXDefaultDrive<>(
-            0,
-            new Debouncer(1.5),
-            0,
-            0.6,
-            null,
-            2,
             3.0,
-            false,
-            .01,
-            0,
-            0.03,
             new Debouncer(0.15),
             drive,
             oi,
-            null);
+            null,
+            new PIDAngleControllerBuilder()
+                .absoluteTolerance(0)
+                .onTargetBuffer(new Debouncer(1.5))
+                .minimumOutput(0)
+                .maximumOutput(0.6)
+                .loopTimeMillis(null)
+                .deadband(2)
+                .inverted(false)
+                .pid(0.01, 0, 0.03)
+                .build());
 
     Supplier<InstantCommand> resetDriveOdometry =
         () -> new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive);

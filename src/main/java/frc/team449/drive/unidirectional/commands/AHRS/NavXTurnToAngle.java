@@ -11,6 +11,7 @@ import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
 import frc.team449.other.Clock;
+import frc.team449.other.Util;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -62,7 +63,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
     // Logger.addEvent("NavXTurnToAngle init.", this.getClass());
     // Set up start time
     this.startTime = Clock.currentTimeMillis();
-    controller.setSetpoint(PIDAngleController.clipTo180(setpoint));
+    controller.setSetpoint(Util.clipTo180(setpoint));
   }
 
   /** Give output to the motors based on the output of the PID loop. */
