@@ -318,8 +318,8 @@ public class FullMap {
             .drivetrain(drive)
             .leftPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
             .rightPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
-            .b(2.0)
-            .zeta(0.7)
+            .b(2.25)
+            .zeta(0.6)
             .anglePID(
                 new PIDAngleControllerBuilder()
                     .absoluteTolerance(0.5)
