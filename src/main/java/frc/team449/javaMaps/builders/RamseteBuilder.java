@@ -88,7 +88,7 @@ public final class RamseteBuilder {
         new RamseteCommand(
             this.traj,
             drivetrain::getCurrentPose,
-            new RamseteController(),
+            new RamseteController(2.25, 0.6), // essentially b makes the feedback loop correct more error from divergence, kinda like P, and zeta makes it more smooth, like D. Default values are 2.0, 0.7.
             drivetrain.getFeedforward(),
             drivetrain.getDriveKinematics(),
             drivetrain::getWheelSpeeds,

@@ -68,7 +68,21 @@ public class FullMap {
       SPITTER_PORT = 10,
       RIGHT_CLIMBER_MOTOR_PORT = 6,
       LEFT_CLIMBER_MOTOR_PORT = 5;
+  /*
+  public int chVEL = 1;
+  public void changeVel() {
+    if (chVEL == 1) {
+      DRIVE_KP_VEL = 0.0001;
+      chVEL = 2;
+    }
+    else {
+      DRIVE_KP_VEL = 0.001;
+      chVEL = 1;
+    }
+  }
 
+
+  */
   // Other CAN IDs
   public static final int PDP_CAN = 1;
   // Controller ports
@@ -95,7 +109,7 @@ public class FullMap {
       DRIVE_FF_KS = 0.15084,
       DRIVE_FF_KV = 2.4303,
       DRIVE_FF_KA = 0.5323;
-
+//if changeVEL being used change from constant to changable variable
   private FullMap() {}
 
   @NotNull
