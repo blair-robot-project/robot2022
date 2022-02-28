@@ -133,6 +133,9 @@ public class UnidirectionalNavXDefaultDrive<
       controller.setSetpoint(this.subsystem.getHeadingCached());
     }
 
+    // Update the controller with the current heading
+    // Why exactly this line is necessary is beyond me
+    controller.getOutput(subsystem.getHeadingCached());
     // Get the outputs
     double leftOutput = this.oi.getLeftRightOutput()[0];
     double rightOutput = this.oi.getLeftRightOutput()[1];

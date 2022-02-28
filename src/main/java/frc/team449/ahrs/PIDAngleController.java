@@ -2,6 +2,7 @@ package frc.team449.ahrs;
 
 import edu.wpi.first.math.controller.PIDController;
 import frc.team449.other.Debouncer;
+import frc.team449.other.Util;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +19,8 @@ public class PIDAngleController implements Loggable {
 
   /** The minimum the robot should be able to output, to overcome friction. */
   private final double minimumOutput;
+
+  private final double maximumOutput;
 
   /** The range in which output is turned off to prevent "dancing" around the setpoint. */
   private final double deadband;
@@ -82,6 +85,7 @@ public class PIDAngleController implements Loggable {
     // speed is about
     // right.
     this.minimumOutput = minimumOutput;
+    this.maximumOutput = maximumOutput == null ? Double.POSITIVE_INFINITY : maximumOutput;
 
     // Set a deadband around the setpoint, in degrees, within which don't move, to avoid "dancing"
     this.deadband = deadband;
@@ -116,11 +120,12 @@ public class PIDAngleController implements Loggable {
    * @param controllerOutput PID loop output
    */
   private double processOutput(double controllerOutput) {
-    if (controllerOutput > 0 && controllerOutput < minimumOutput) {
-      controllerOutput = minimumOutput;
-    } else if (controllerOutput < 0 && controllerOutput > -minimumOutput) {
-      controllerOutput = -minimumOutput;
+    if (controllerOutput > 0) {
+      controllerOutput = Util.clamp(controllerOutput, minimumOutput, maximumOutput);
+    } else if (controllerOutput < 0) {
+      controllerOutput = Util.clamp(controllerOutput, -maximumOutput, -minimumOutput);
     }
+
     if (inverted) {
       controllerOutput *= -1;
     }
