@@ -74,9 +74,11 @@ public class FullMap {
       LEFT_CLIMBER_MOTOR_PORT = 5;
 
   // Other CAN IDs
-  public static final int PDP_CAN = 1;
+  public static final int PDP_CAN = 1, PCM_MODULE = 0;
   // Controller ports
-  public static final int MECHANISMS_JOYSTICK_PORT = 0, DRIVE_JOYSTICK_PORT = 1;
+  public static final int CARGO_JOYSTICK_PORT = 0,
+      DRIVE_JOYSTICK_PORT = 1,
+      CLIMBER_JOYSTICK_PORT = 2;
   // Limelight
   public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
   // Speeds
@@ -92,6 +94,9 @@ public class FullMap {
   // todo find these using sysid
   public static final double MOMENT_OF_INERTIA = 7.5;
   public static final double MASS = 60;
+  // Climber
+  public static final int CLIMBER_PISTON_FWD_CHANNEL = 0,
+      CLIMBER_PISTON_REV_CHANNEL = 1; // todo find out what these actually are
 
   // Other constants
   public static final double CLIMBER_DISTANCE = 0.5;
@@ -109,8 +114,9 @@ public class FullMap {
   @NotNull
   public static RobotMap createRobotMap() {
     var pdp = new PDP(PDP_CAN, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
-    var mechanismsJoystick = new RumbleableJoystick(MECHANISMS_JOYSTICK_PORT);
+    var cargoJoystick = new RumbleableJoystick(CARGO_JOYSTICK_PORT);
     var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
+    var climberJoystick = new RumbleableJoystick(CLIMBER_JOYSTICK_PORT);
 
     var navx = AHRS.createRealOrSim(SerialPort.Port.kMXP, true);
 
@@ -286,7 +292,13 @@ public class FullMap {
                 .createReal(),
             new PIDController(12, 0, 0),
             new ElevatorFeedforward(0, 0, 0));
-    var climber = new PivotingTelescopingClimber(leftArm, rightArm, CLIMBER_DISTANCE);
+    var pivotPiston =
+        new DoubleSolenoid(
+            PCM_MODULE,
+            PneumaticsModuleType.CTREPCM,
+            CLIMBER_PISTON_FWD_CHANNEL,
+            CLIMBER_PISTON_REV_CHANNEL);
+    var climber = new PivotingTelescopingClimber(leftArm, rightArm, pivotPiston, CLIMBER_DISTANCE);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo, climber);
@@ -295,23 +307,34 @@ public class FullMap {
 
     // Button bindings here
     // Take in balls but don't shoot
-    //    new SimpleButton(mechanismsJoystick, XboxController.Button.kA.value)
-    //        .whileHeld(cargo::runIntake, cargo)
-    //        .whenReleased(cargo::stop, cargo);
+    new JoystickButton(cargoJoystick, XboxController.Button.kA.value)
+        .whileHeld(cargo::runIntake, cargo)
+        .whenReleased(cargo::stop, cargo);
     // Run all motors in intake to spit balls out
-    //    new SimpleButton(mechanismsJoystick, XboxController.Button.kB.value)
-    //        .whileHeld(cargo::spit, cargo)
-    //        .whenReleased(cargo::stop, cargo);
+    new JoystickButton(cargoJoystick, XboxController.Button.kB.value)
+        .whileHeld(cargo::spit, cargo)
+        .whenReleased(cargo::stop, cargo);
+    // Run intake in reverse to feed ball from top
+    new JoystickButton(cargoJoystick, XboxController.Button.kY.value)
+        .whileHeld(cargo::runIntakeReverse, cargo)
+        .whenReleased(cargo::stop, cargo);
 
-    // TODO BUTTON BINDINGS HERE
-    new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)
+    // Move climber arm up
+    new JoystickButton(climberJoystick, XboxController.Button.kA.value)
         .whileActiveContinuous(
             new WaitCommand(0.01)
                 .andThen(() -> climber.setSetpoint(climber.getSetpoint() + 0.01), climber));
-    new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
+    // Move climber arm down
+    new JoystickButton(climberJoystick, XboxController.Button.kY.value)
         .whileActiveContinuous(
             new WaitCommand(0.01)
                 .andThen(() -> climber.setSetpoint(climber.getSetpoint() - 0.01), climber));
+    // Extend climber arm out
+    new JoystickButton(climberJoystick, XboxController.Button.kB.value)
+        .whenPressed(climber::pivotTelescopingArmOut);
+    // Retract climber arm in with piston
+    new JoystickButton(climberJoystick, XboxController.Button.kX.value)
+            .whenPressed(climber::pivotTelescopingArmIn);
 
     var ramsetePrototype =
         new RamseteBuilder()
