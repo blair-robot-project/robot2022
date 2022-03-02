@@ -95,8 +95,10 @@ public class FullMap {
   public static final double MOMENT_OF_INERTIA = 7.5;
   public static final double MASS = 60;
   // Climber
-  public static final int CLIMBER_PISTON_FWD_CHANNEL = 0,
-      CLIMBER_PISTON_REV_CHANNEL = 1; // todo find out what these actually are
+  public static final int CLIMBER_PISTON_FWD_CHANNEL = 0, CLIMBER_PISTON_REV_CHANNEL = 1;
+  // Intake
+  public static final int INTAKE_PISTON_FWD_CHANNEL = 2, INTAKE_PISTON_REV_CHANNEL = 3;
+  // todo find out what the channel numbers are
 
   // Other constants
   public static final double CLIMBER_DISTANCE = 0.5;
@@ -251,6 +253,11 @@ public class FullMap {
                 .setPort(SPITTER_PORT)
                 .setEnableBrakeMode(false)
                 .createReal(),
+            new DoubleSolenoid(
+                PCM_MODULE,
+                PneumaticsModuleType.CTREPCM,
+                INTAKE_PISTON_FWD_CHANNEL,
+                INTAKE_PISTON_REV_CHANNEL),
             INTAKE_SPEED,
             SPITTER_SPEED);
     Supplier<Command> runIntake =
@@ -311,13 +318,19 @@ public class FullMap {
         .whileHeld(cargo::runIntake, cargo)
         .whenReleased(cargo::stop, cargo);
     // Run all motors in intake to spit balls out
-    new JoystickButton(cargoJoystick, XboxController.Button.kB.value)
+    new JoystickButton(cargoJoystick, XboxController.Button.kY.value)
         .whileHeld(cargo::spit, cargo)
         .whenReleased(cargo::stop, cargo);
+    // Stow/retract intake
+    new JoystickButton(cargoJoystick, XboxController.Button.kX.value)
+        .whenPressed(cargo::retractIntake);
+    // Deploy intake
+    new JoystickButton(cargoJoystick, XboxController.Button.kB.value)
+        .whenPressed(cargo::deployIntake);
     // Run intake in reverse to feed ball from top
-    new JoystickButton(cargoJoystick, XboxController.Button.kY.value)
-        .whileHeld(cargo::runIntakeReverse, cargo)
-        .whenReleased(cargo::stop, cargo);
+    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
+            .whileHeld(cargo::runIntakeReverse, cargo)
+            .whenReleased(cargo::stop, cargo);
 
     // Move climber arm up
     new JoystickButton(climberJoystick, XboxController.Button.kA.value)
