@@ -52,6 +52,7 @@ import frc.team449.other.Updater;
 import frc.team449.wrappers.AHRS;
 import frc.team449.wrappers.PDP;
 import frc.team449.wrappers.RumbleableJoystick;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -349,6 +350,13 @@ public class FullMap {
     new JoystickButton(climberJoystick, XboxController.Button.kX.value)
             .whenPressed(climber::pivotTelescopingArmIn);
 
+    var topRight = new Pose2d(new Translation2d(7.11, 4.80), Rotation2d.fromDegrees(159.25));
+    var topLeft = pose(7.56, 3.00, -111.80);
+    var bottomRight = pose(8.01, 2.82, -111.80);
+    var bottomLeft = pose(7.56, 3.00, -111.80);
+    var topEdge = pose(7.56, 3.00, -111.80);
+    var bottomEdge = pose(7.56, 3.00, -111.80);
+
     var ramsetePrototype =
         new RamseteBuilder()
             .drivetrain(drive)
@@ -389,6 +397,29 @@ public class FullMap {
     //                    .traj(loadPathPlannerTraj("New Path"))
     //                    .build())
     //            .andThen(spit.get());
+
+    // Spit the preloaded ball, pick up another, come back and spit it out
+    var topOneOneTraj =
+        oneThenOneBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype,
+            topRight,
+            pose(5.39, 5.91, 137.86));
+    var midOneOneTraj =
+        oneThenOneBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype,
+            bottomLeft,
+            pose(5.58, 2.00, -173.42));
+    var bottomOneOneTraj =
+        oneThenOneBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype,
+            bottomRight,
+            pose(7.67, 0.77, -91.97));
 
     var testPath =
         new InstantCommand(cargo::runIntake, cargo)
@@ -494,5 +525,34 @@ public class FullMap {
   private static Trajectory emptyTraj(
       @NotNull DriveUnidirectionalWithGyro drive, @NotNull Pose2d pose) {
     return TrajectoryGenerator.generateTrajectory(pose, List.of(), pose, trajConfig(drive));
+  }
+
+  /** Create a command that immediately spits a ball, then goes to pick up a ball and comes back */
+  private static Command oneThenOneBallTraj(
+      @NotNull DriveUnidirectionalWithGyro drive,
+      @NotNull Cargo2022 cargo,
+      @NotNull RamseteBuilder ramsetePrototype,
+      @NotNull Pose2d startPose,
+      @NotNull Pose2d ballPose) {
+    var toBall =
+        TrajectoryGenerator.generateTrajectory(startPose, List.of(), ballPose, trajConfig(drive));
+    var fromBall =
+        TrajectoryGenerator.generateTrajectory(
+            ballPose, List.of(), startPose, trajConfig(drive).setReversed(true));
+    return new InstantCommand(cargo::spit, cargo)
+        .andThen(new WaitCommand(1))
+        .andThen(cargo::runIntake, cargo)
+        .andThen(ramsetePrototype.copy().traj(toBall).build())
+        .andThen(new WaitCommand(1))
+        .andThen(ramsetePrototype.copy().traj(fromBall).build())
+        .andThen(cargo::spit, cargo)
+        .andThen(new WaitCommand(1))
+        .andThen(cargo::stop, cargo);
+  }
+
+  /** Little helper because the verbosity of the Pose2d constructor is tiring */
+  @Contract("_, _, _ -> new")
+  private static @NotNull Pose2d pose(double x, double y, double degrees) {
+    return new Pose2d(new Translation2d(x, y), Rotation2d.fromDegrees(degrees));
   }
 }
