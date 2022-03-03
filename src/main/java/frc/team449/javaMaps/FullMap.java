@@ -350,13 +350,6 @@ public class FullMap {
     new JoystickButton(climberJoystick, XboxController.Button.kX.value)
             .whenPressed(climber::pivotTelescopingArmIn);
 
-    var topRight = new Pose2d(new Translation2d(7.11, 4.80), Rotation2d.fromDegrees(159.25));
-    var topLeft = pose(7.56, 3.00, -111.80);
-    var bottomRight = pose(8.01, 2.82, -111.80);
-    var bottomLeft = pose(7.56, 3.00, -111.80);
-    var topEdge = pose(7.56, 3.00, -111.80);
-    var bottomEdge = pose(7.56, 3.00, -111.80);
-
     var ramsetePrototype =
         new RamseteBuilder()
             .drivetrain(drive)
@@ -401,25 +394,32 @@ public class FullMap {
     // Spit the preloaded ball, pick up another, come back and spit it out
     var topOneOneTraj =
         oneThenOneBallTraj(
-            drive,
-            cargo,
-            ramsetePrototype,
-            topRight,
-            pose(5.39, 5.91, 137.86));
+            drive, cargo, ramsetePrototype, pose(7.11, 4.80, 159.25), pose(5.39, 5.91, 137.86));
     var midOneOneTraj =
         oneThenOneBallTraj(
-            drive,
-            cargo,
-            ramsetePrototype,
-            bottomLeft,
-            pose(5.58, 2.00, -173.42));
+            drive, cargo, ramsetePrototype, pose(7.56, 3.00, -111.80), pose(5.58, 2.00, -173.42));
     var bottomOneOneTraj =
         oneThenOneBallTraj(
+            drive, cargo, ramsetePrototype, pose(8.01, 2.82, -111.80), pose(7.67, 0.77, -91.97));
+
+    // Start at the edge at the top, collect the top ball, then come back and spit
+    var topTwoBallTraj =
+        twoBallTraj(
             drive,
             cargo,
             ramsetePrototype,
-            bottomRight,
-            pose(7.67, 0.77, -91.97));
+            pose(6.07, 5.12, 134.24),
+            pose(5.34, 5.89, 130.31),
+            pose(7.04, 4.58, -22.25));
+    // Start at the edge at the bottom, collect the bottom ball, then come back and spit
+    var bottomTwoBallTraj =
+        twoBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype,
+            pose(7.55, 1.83, -88.32),
+            pose(7.63, 0.76, -86.19),
+            pose(8.01, 2.82, 68.63));
 
     var testPath =
         new InstantCommand(cargo::runIntake, cargo)
@@ -550,9 +550,40 @@ public class FullMap {
         .andThen(cargo::stop, cargo);
   }
 
+  /**
+   * Create a command that picks up another ball, then goes home and spits both out
+   *
+   * @param endingPose Please ensure that the angle is reversed here!
+   */
+  private static Command twoBallTraj(
+      @NotNull DriveUnidirectionalWithGyro drive,
+      @NotNull Cargo2022 cargo,
+      @NotNull RamseteBuilder ramsetePrototype,
+      @NotNull Pose2d startPose,
+      @NotNull Pose2d ballPose,
+      @NotNull Pose2d endingPose) {
+    var toBall =
+        TrajectoryGenerator.generateTrajectory(startPose, List.of(), ballPose, trajConfig(drive));
+    var fromBall =
+        TrajectoryGenerator.generateTrajectory(
+            ballPose, List.of(), endingPose, trajConfig(drive).setReversed(true));
+    return new InstantCommand(cargo::runIntake, cargo)
+        .andThen(ramsetePrototype.copy().traj(toBall).build())
+        .andThen(new WaitCommand(1))
+        .andThen(ramsetePrototype.copy().traj(fromBall).build())
+        .andThen(cargo::spit, cargo)
+        .andThen(new WaitCommand(1))
+        .andThen(cargo::stop, cargo);
+  }
+
   /** Little helper because the verbosity of the Pose2d constructor is tiring */
   @Contract("_, _, _ -> new")
   private static @NotNull Pose2d pose(double x, double y, double degrees) {
     return new Pose2d(new Translation2d(x, y), Rotation2d.fromDegrees(degrees));
+  }
+
+  /** Set the heading to 180 - degrees */
+  private static @NotNull Pose2d reverseHeading(Pose2d pose) {
+    return pose(pose.getX(), pose.getY(), 180 - pose.getRotation().getDegrees());
   }
 }
