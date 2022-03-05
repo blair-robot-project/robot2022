@@ -3,7 +3,6 @@ package frc.team449.javaMaps;
 import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,21 +13,17 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449._2022robot.cargo.Cargo2022;
-import frc.team449._2022robot.climber.ClimberArm;
-import frc.team449._2022robot.climber.PivotingTelescopingClimber;
+import frc.team449.ahrs.PIDAngleControllerBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
@@ -207,41 +202,46 @@ public class IntakeTestMap {
                     false);
 
     var driveDefaultCmd =
-            new UnidirectionalNavXDefaultDrive<>(
-                    0,
-                    new Debouncer(1.5),
-                    0,
-                    0.6,
-                    null,
-                    2,
-                    3.0,
-                    false,
-                    .01,
-                    0,
-                    0.03,
-                    new Debouncer(0.15),
-                    drive,
-                    oi,
-                    null);
+        new UnidirectionalNavXDefaultDrive<>(
+            3.0,
+            new Debouncer(0.15),
+            drive,
+            oi,
+            null,
+            new PIDAngleControllerBuilder()
+                .absoluteTolerance(0)
+                .onTargetBuffer(new Debouncer(1.5))
+                .minimumOutput(0)
+                .maximumOutput(0.6)
+                .loopTimeMillis(null)
+                .deadband(2)
+                .inverted(false)
+                .pid(0.01, 0, 0.03)
+                .build());
 
     Supplier<InstantCommand> resetDriveOdometry =
             () -> new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive);
     SmartDashboard.putData("Reset odometry", resetDriveOdometry.get());
 
     var cargo =
-            new Cargo2022(
-                    new SparkMaxConfig()
-                            .setName("intakeMotor")
-                            .setPort(INTAKE_LEADER_PORT)
-                            .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), true)
-                            .createReal(),
-                    new SparkMaxConfig()
-                            .setName("spitterMotor")
-                            .setPort(SPITTER_PORT)
-                            .setEnableBrakeMode(false)
-                            .createReal(),
-                    INTAKE_SPEED,
-                    SPITTER_SPEED);
+        new Cargo2022(
+            new SparkMaxConfig()
+                .setName("intakeMotor")
+                .setPort(INTAKE_LEADER_PORT)
+                .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), true)
+                .createReal(),
+            new SparkMaxConfig()
+                .setName("spitterMotor")
+                .setPort(SPITTER_PORT)
+                .setEnableBrakeMode(false)
+                .createReal(),
+            new DoubleSolenoid(
+                FullMap.PCM_MODULE,
+                PneumaticsModuleType.CTREPCM,
+                FullMap.INTAKE_PISTON_FWD_CHANNEL,
+                FullMap.INTAKE_PISTON_REV_CHANNEL),
+            INTAKE_SPEED,
+            SPITTER_SPEED);
     Supplier<Command> runIntake =
             () ->
                     new InstantCommand(cargo::runIntake, cargo)
@@ -284,8 +284,7 @@ public class IntakeTestMap {
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo /*, climber*/);
 
-    var updater =
-            new Updater(List.of(pdp, navx, oi, () -> field.setRobotPose(drive.getCurrentPose())));
+    Updater.subscribe(() -> field.setRobotPose(drive.getCurrentPose()));
 
 //     Button bindings here
 //     Take in balls but don't shoot
@@ -298,21 +297,23 @@ public class IntakeTestMap {
             .whenReleased(cargo::stop, cargo);
 
     // TODO BUTTON BINDINGS HERE
-//    new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)
-//            .whileActiveContinuous(
-//                    new WaitCommand(0.01)
-//                            .andThen(() -> climber.setSetpoint(climber.getSetpoint() + 0.01), climber));
-//    new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
-//            .whileActiveContinuous(
-//                    new WaitCommand(0.01)
-//                            .andThen(() -> climber.setSetpoint(climber.getSetpoint() - 0.01), climber));
+    //    new JoystickButton(mechanismsJoystick, XboxController.Button.kA.value)
+    //            .whileActiveContinuous(
+    //                    new WaitCommand(0.01)
+    //                            .andThen(() -> climber.setSetpoint(climber.getSetpoint() + 0.01),
+    // climber));
+    //    new JoystickButton(mechanismsJoystick, XboxController.Button.kB.value)
+    //            .whileActiveContinuous(
+    //                    new WaitCommand(0.01)
+    //                            .andThen(() -> climber.setSetpoint(climber.getSetpoint() - 0.01),
+    // climber));
 
     var ramsetePrototype =
-            new RamseteBuilder()
-                    .drivetrain(drive)
-                    .leftPidController(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
-                    .rightPidController(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
-                    .field(field);
+        new RamseteBuilder()
+            .drivetrain(drive)
+            .leftPid(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
+            .rightPid(new PIDController(DRIVE_KP_VEL, 0, DRIVE_KD_VEL))
+            .field(field);
     //
     //    var sCurve =
     //        spit.get()
@@ -365,7 +366,7 @@ public class IntakeTestMap {
             new CommandContainer(
                     robotStartupCommands, autoStartupCommands, teleopStartupCommands, testStartupCommands);
 
-    return new RobotMap(subsystems, pdp, updater, allCommands, false);
+    return new RobotMap(subsystems, pdp, allCommands, false);
   }
 
   /** Generate a trajectory for the S-shaped curve we're using to test */
