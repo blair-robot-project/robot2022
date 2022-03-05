@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import frc.team449.drive.DriveSettings;
-import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
+import frc.team449.ahrs.SubsystemAHRS;
 import frc.team449.ahrs.AHRS;
 import frc.team449.motor.WrappedMotor;
 import io.github.oblarg.oblog.annotations.Log;

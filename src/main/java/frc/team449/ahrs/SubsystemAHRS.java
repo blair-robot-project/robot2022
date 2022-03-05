@@ -1,4 +1,4 @@
-package frc.team449.generalInterfaces.ahrs;
+package frc.team449.ahrs;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
