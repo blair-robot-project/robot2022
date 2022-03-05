@@ -121,7 +121,8 @@ public class FullMap {
 
   @NotNull
   public static RobotMap createRobotMap() {
-    var pdp = new PDP(PDP_CAN, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
+    var pdp =
+        new PDP(PDP_CAN, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
     var cargoJoystick = new RumbleableJoystick(CARGO_JOYSTICK_PORT);
     var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
     var climberJoystick = new RumbleableJoystick(CLIMBER_JOYSTICK_PORT);
@@ -319,7 +320,9 @@ public class FullMap {
             leftArm,
             rightArm,
             pivotPiston,
-            RobotBase.isReal() ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get : () -> false, //todo this is janky af
+            RobotBase.isReal()
+                ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get
+                : () -> false, // todo this is janky af
             CLIMBER_DISTANCE);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
@@ -344,8 +347,8 @@ public class FullMap {
         .whenPressed(cargo::deployIntake);
     // Run intake in reverse to feed ball from top
     new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
-            .whileHeld(cargo::runIntakeReverse, cargo)
-            .whenReleased(cargo::stop, cargo);
+        .whileHeld(cargo::runIntakeReverse, cargo)
+        .whenReleased(cargo::stop, cargo);
 
     // Move climber arm up
     new JoystickButton(climberJoystick, XboxController.Button.kA.value)
@@ -360,7 +363,7 @@ public class FullMap {
         .whenPressed(
             new InstantCommand(() -> climber.setGoal(0), climber)
                 .andThen(new WaitUntilCommand(climber::onTarget))
-                .withInterrupt(climber::hitBottom)
+                .until(climber::hitBottom)
                 .andThen(
                     () -> {
                       if (climber.hitBottom()) {
@@ -373,10 +376,12 @@ public class FullMap {
     //                .andThen(() -> climber.setGoal(climber.getGoal() - 0.01), climber));
     // Extend climber arm out
     new JoystickButton(climberJoystick, XboxController.Button.kB.value)
-        .whenPressed(climber::pivotTelescopingArmOut);
+        .whenPressed(
+            // Deploy intake first so it doesn't get in the way
+            new InstantCommand(cargo::deployIntake).andThen(climber::pivotTelescopingArmOut));
     // Retract climber arm in with piston
     new JoystickButton(climberJoystick, XboxController.Button.kX.value)
-            .whenPressed(climber::pivotTelescopingArmIn);
+        .whenPressed(climber::pivotTelescopingArmIn);
 
     var ramsetePrototype =
         new RamseteBuilder()
@@ -415,13 +420,25 @@ public class FullMap {
     // Spit the preloaded ball, pick up another, come back and spit it out
     var topOneOneTraj =
         oneThenOneBallTraj(
-            drive, cargo, ramsetePrototype.name("topOneOne"), pose(7.11, 4.80, 159.25), pose(5.39, 5.91, 137.86));
+            drive,
+            cargo,
+            ramsetePrototype.name("topOneOne"),
+            pose(7.11, 4.80, 159.25),
+            pose(5.39, 5.91, 137.86));
     var midOneOneTraj =
         oneThenOneBallTraj(
-            drive, cargo, ramsetePrototype.name("midOneOne"), pose(7.56, 3.00, -111.80), pose(5.58, 2.00, -173.42));
+            drive,
+            cargo,
+            ramsetePrototype.name("midOneOne"),
+            pose(7.56, 3.00, -111.80),
+            pose(5.58, 2.00, -173.42));
     var bottomOneOneTraj =
         oneThenOneBallTraj(
-            drive, cargo, ramsetePrototype.name("bottomOneOne"), pose(8.01, 2.82, -111.80), pose(7.67, 0.77, -91.97));
+            drive,
+            cargo,
+            ramsetePrototype.name("bottomOneOne"),
+            pose(8.01, 2.82, -111.80),
+            pose(7.67, 0.77, -91.97));
 
     // Start at the edge at the top, collect the top ball, then come back and spit
     var topTwoBallTraj =
