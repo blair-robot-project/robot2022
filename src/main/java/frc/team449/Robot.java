@@ -22,7 +22,7 @@ public class Robot extends TimedRobot {
 
   /** The method that runs when the robot is turned on. Initializes all subsystems from the map. */
   public static @NotNull RobotMap loadMap() {
-    return IntakeTestMap.createRobotMap();
+    return FullMap.createRobotMap();
   }
 
   /**

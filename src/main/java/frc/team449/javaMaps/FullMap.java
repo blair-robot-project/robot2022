@@ -4,6 +4,7 @@ import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,6 +13,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.trajectory.constraint.EllipticalRegionConstraint;
@@ -22,10 +24,7 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
@@ -73,21 +72,7 @@ public class FullMap {
       SPITTER_PORT = 9,
       RIGHT_CLIMBER_MOTOR_PORT = 6,
       LEFT_CLIMBER_MOTOR_PORT = 5;
-  /*
-  public int chVEL = 1;
-  public void changeVel() {
-    if (chVEL == 1) {
-      DRIVE_KP_VEL = 0.0001;
-      chVEL = 2;
-    }
-    else {
-      DRIVE_KP_VEL = 0.001;
-      chVEL = 1;
-    }
-  }
 
-
-  */
   // Other CAN IDs
   public static final int PDP_CAN = 1, PCM_MODULE = 0;
   // Controller ports
@@ -103,20 +88,6 @@ public class FullMap {
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
   public static final double DRIVE_GEARING = 5.86;
   public static final int DRIVE_CURRENT_LIM = 50;
-  // old value from measuring from the outside of the wheel: 0.6492875
-  // measuring from the inside of the wheel : .57785
-  public static final double DRIVE_TRACK_WIDTH = 0.6492875;
-  // todo find these using sysid
-  public static final double MOMENT_OF_INERTIA = 7.5;
-  public static final double MASS = 60;
-  // Climber
-  public static final int CLIMBER_PISTON_FWD_CHANNEL = 0, CLIMBER_PISTON_REV_CHANNEL = 1;
-  // Intake
-  public static final int INTAKE_PISTON_FWD_CHANNEL = 2, INTAKE_PISTON_REV_CHANNEL = 3;
-  // todo find out what the channel numbers are
-
-  // Other constants
-  public static final double CLIMBER_DISTANCE = 0.5;
   public static final double DRIVE_KP_VEL = 27.2,
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0,
@@ -125,7 +96,27 @@ public class FullMap {
       DRIVE_FF_KS = 0.15084,
       DRIVE_FF_KV = 2.4303,
       DRIVE_FF_KA = 0.5323;
-//if changeVEL being used change from constant to changable variable
+  // old value from measuring from the outside of the wheel: 0.6492875
+  // measuring from the inside of the wheel : .57785
+  public static final double DRIVE_TRACK_WIDTH = 0.6492875;
+  // todo find these using sysid
+  public static final double MOMENT_OF_INERTIA = 7.5;
+  public static final double MASS = 60;
+  // Climber
+  public static final int CLIMBER_PISTON_FWD_CHANNEL = 0, CLIMBER_PISTON_REV_CHANNEL = 1;
+  // todo find out what the channel numbers are
+  public static final int CLIMBER_SENSOR_CHANNEL = 0; // todo find out what this really is
+  public static final double CLIMBER_MAX_VEL = 0.1, CLIMBER_MAX_ACCEL = 0.1;
+  public static final double CLIMBER_DISTANCE = 0.5;
+  public static final double CLIMBER_KP = 12;
+  public static final double CLIMBER_FF_KS = 0,
+      CLIMBER_FF_KV = 0,
+      CLIMBER_FF_KA = 0,
+      CLIMBER_FF_KG = 0;
+  // Intake
+  public static final int INTAKE_PISTON_FWD_CHANNEL = 2, INTAKE_PISTON_REV_CHANNEL = 3;
+  // todo find out what the channel numbers are
+
   private FullMap() {}
 
   @NotNull
@@ -220,7 +211,7 @@ public class FullMap {
                         .axis(XboxController.Axis.kRightTrigger.value)
                         .inverted(false)
                         .build())),
-            new RampComponent(.7, .50));
+            new RampComponent(.6, .50));
     var oi =
         new OIArcadeWithDPad(
             rotThrottle,
@@ -275,11 +266,6 @@ public class FullMap {
                 INTAKE_PISTON_REV_CHANNEL),
             INTAKE_SPEED,
             SPITTER_SPEED);
-    Supplier<Command> runIntake =
-        () ->
-            new InstantCommand(cargo::runIntake, cargo)
-                .andThen(new WaitCommand(3))
-                .andThen(cargo::stop);
     Supplier<Command> spit =
         () ->
             new InstantCommand(cargo::spit, cargo).andThen(new WaitCommand(2)).andThen(cargo::stop);
@@ -301,8 +287,12 @@ public class FullMap {
                 .setPostEncoderGearing(10)
                 .setReverseOutput(true)
                 .createReal(),
-            new PIDController(12, 0, 0),
-            new ElevatorFeedforward(0, 0, 0));
+            new ProfiledPIDController(
+                CLIMBER_KP,
+                0,
+                0,
+                new TrapezoidProfile.Constraints(CLIMBER_MAX_VEL, CLIMBER_MAX_ACCEL)),
+            new ElevatorFeedforward(CLIMBER_FF_KS, CLIMBER_FF_KG, CLIMBER_FF_KV, CLIMBER_FF_KA));
     var rightArm =
         new ClimberArm(
             driveMasterPrototype
@@ -312,15 +302,25 @@ public class FullMap {
                 .setPostEncoderGearing(10)
                 .setReverseOutput(false)
                 .createReal(),
-            new PIDController(12, 0, 0),
-            new ElevatorFeedforward(0, 0, 0));
+            new ProfiledPIDController(
+                CLIMBER_KP,
+                0,
+                0,
+                new TrapezoidProfile.Constraints(CLIMBER_MAX_VEL, CLIMBER_MAX_ACCEL)),
+            new ElevatorFeedforward(CLIMBER_FF_KS, CLIMBER_FF_KG, CLIMBER_FF_KV, CLIMBER_FF_KA));
     var pivotPiston =
         new DoubleSolenoid(
             PCM_MODULE,
             PneumaticsModuleType.CTREPCM,
             CLIMBER_PISTON_FWD_CHANNEL,
             CLIMBER_PISTON_REV_CHANNEL);
-    var climber = new PivotingTelescopingClimber(leftArm, rightArm, pivotPiston, CLIMBER_DISTANCE);
+    var climber =
+        new PivotingTelescopingClimber(
+            leftArm,
+            rightArm,
+            pivotPiston,
+            RobotBase.isReal() ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get : () -> false, //todo this is janky af
+            CLIMBER_DISTANCE);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo, climber);
@@ -349,14 +349,28 @@ public class FullMap {
 
     // Move climber arm up
     new JoystickButton(climberJoystick, XboxController.Button.kA.value)
-        .whileActiveContinuous(
-            new WaitCommand(0.01)
-                .andThen(() -> climber.setSetpoint(climber.getSetpoint() + 0.01), climber));
+        .whenPressed(
+            new InstantCommand(() -> climber.setGoal(climber.distanceTopBottom), climber)
+                .andThen(new WaitUntilCommand(climber::onTarget)));
+    //        .whileActiveContinuous(
+    //            new WaitCommand(0.01)
+    //                .andThen(() -> climber.setGoal(climber.getGoal() + 0.01), climber));
     // Move climber arm down
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)
-        .whileActiveContinuous(
-            new WaitCommand(0.01)
-                .andThen(() -> climber.setSetpoint(climber.getSetpoint() - 0.01), climber));
+        .whenPressed(
+            new InstantCommand(() -> climber.setGoal(0), climber)
+                .andThen(new WaitUntilCommand(climber::onTarget))
+                .withInterrupt(climber::hitBottom)
+                .andThen(
+                    () -> {
+                      if (climber.hitBottom()) {
+                        climber.stop();
+                        climber.setState(PivotingTelescopingClimber.ClimberState.RETRACTED);
+                      }
+                    }));
+    //        .whileActiveContinuous(
+    //            new WaitCommand(0.01)
+    //                .andThen(() -> climber.setGoal(climber.getGoal() - 0.01), climber));
     // Extend climber arm out
     new JoystickButton(climberJoystick, XboxController.Button.kB.value)
         .whenPressed(climber::pivotTelescopingArmOut);
@@ -384,13 +398,6 @@ public class FullMap {
                     .build())
             .angleTimeout(4)
             .field(field);
-    //
-    //    var sCurve =
-    //        spit.get()
-    //            .andThen(cargo::runIntake, cargo)
-    //
-    // .andThen(ramsetePrototype.copy().name("scurvetraj").traj(sCurveTraj(drive)).build())
-    //            .andThen(spit.get());
 
     // (assume blue alliance)
     // Start at bottom next to hub, shoot preloaded ball, then get the two balls in that region and
@@ -474,19 +481,6 @@ public class FullMap {
     return new RobotMap(subsystems, pdp, allCommands, false);
   }
 
-  /** Generate a trajectory for the S-shaped curve we're using to test */
-  @NotNull
-  private static Trajectory sCurveTraj(@NotNull DriveUnidirectionalWithGyro drive) {
-    var ballPos = new Pose2d(new Translation2d(2, 0), Rotation2d.fromDegrees(0));
-    var fwdTraj =
-        TrajectoryGenerator.generateTrajectory(
-            new Pose2d(), List.of(), ballPos, trajConfig(drive).setReversed(false));
-    var revTraj =
-        TrajectoryGenerator.generateTrajectory(
-            ballPos, List.of(), new Pose2d(), trajConfig(drive).setReversed(true));
-    return fwdTraj.concatenate(revTraj);
-  }
-
   private static Trajectory testTraj(@NotNull DriveUnidirectionalWithGyro drive) {
     var ballPos = new Translation2d(2.5, 4);
     var speedConstraint =
@@ -533,12 +527,6 @@ public class FullMap {
       throw new Error("Trajectory not found: " + trajName);
     }
     return traj;
-  }
-
-  @NotNull
-  private static Trajectory emptyTraj(
-      @NotNull DriveUnidirectionalWithGyro drive, @NotNull Pose2d pose) {
-    return TrajectoryGenerator.generateTrajectory(pose, List.of(), pose, trajConfig(drive));
   }
 
   /** Create a command that immediately spits a ball, then goes to pick up a ball and comes back */
