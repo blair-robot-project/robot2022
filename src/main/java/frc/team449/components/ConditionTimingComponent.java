@@ -1,6 +1,5 @@
 package frc.team449.components;
 
-import frc.team449.other.RegistrationOrderIDUtil;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
@@ -20,8 +19,6 @@ public abstract class ConditionTimingComponent implements Loggable {
 
   protected ConditionTimingComponent(final boolean initialValue) {
     this.current = initialValue;
-
-    RegistrationOrderIDUtil.registerInstance(this);
   }
 
   /**
@@ -169,6 +166,6 @@ public abstract class ConditionTimingComponent implements Loggable {
   @Override
   @Contract(pure = true)
   public String configureLogName() {
-    return this.getClass().getSimpleName() + RegistrationOrderIDUtil.getExistingID(this);
+    return this.getClass().getSimpleName();
   }
 }

@@ -370,7 +370,7 @@ public class FullMap {
         .whenPressed(
             new InstantCommand(() -> climber.setGoal(0), climber)
                 .andThen(new WaitUntilCommand(climber::atGoal))
-                .until(climber::hitBottom)
+                .withInterrupt(climber::hitBottom)
                 .andThen(
                     () -> {
                       if (climber.hitBottom()) {
