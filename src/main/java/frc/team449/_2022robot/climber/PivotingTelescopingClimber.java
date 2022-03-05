@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.team449.multiSubsystem.BooleanSupplierUpdatable;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +19,7 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
   private @NotNull ClimberState state;
   private final @NotNull ClimberArm leftArm;
   private final @NotNull DoubleSolenoid pivotPiston;
-  private final @NotNull BooleanSupplier hallSensor;
+  private final @NotNull BooleanSupplierUpdatable hallSensor;
   /** The current goal */
   private double goal;
 
@@ -40,7 +41,7 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
     this.rightArm = rightArm;
     this.pivotPiston = pivotPiston;
     this.distanceTopBottom = distanceTopBottom;
-    this.hallSensor = hallSensor;
+    this.hallSensor = new BooleanSupplierUpdatable(hallSensor, null);
     // Start arm retracted
     this.state = ClimberState.RETRACTED;
     this.goal = 0;

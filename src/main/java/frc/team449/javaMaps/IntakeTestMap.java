@@ -240,13 +240,8 @@ public class IntakeTestMap {
                 new DoubleSolenoid(
                         PCM_MODULE,
                         PneumaticsModuleType.CTREPCM,
-                        INTAKE_PISTON_LEFT_FWD_CHANNEL,
-                        INTAKE_PISTON_LEFT_REV_CHANNEL),
-                new DoubleSolenoid(
-                        PCM_MODULE,
-                        PneumaticsModuleType.CTREPCM,
-                        INTAKE_PISTON_RIGHT_FWD_CHANNEL,
-                        INTAKE_PISTON_RIGHT_REV_CHANNEL),
+                        INTAKE_PISTON_FWD_CHANNEL,
+                        INTAKE_PISTON_REV_CHANNEL),
             INTAKE_SPEED,
             SPITTER_SPEED);
     Supplier<Command> runIntake =

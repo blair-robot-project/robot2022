@@ -103,7 +103,7 @@ public class FullMap {
   public static final double MOMENT_OF_INERTIA = 7.5;
   public static final double MASS = 60;
   // Climber
-  public static final int CLIMBER_PISTON_FWD_CHANNEL = 0, CLIMBER_PISTON_REV_CHANNEL = 1;
+  public static final int CLIMBER_PISTON_FWD_CHANNEL = 4, CLIMBER_PISTON_REV_CHANNEL = 5;
   // todo find out what the channel numbers are
   public static final int CLIMBER_SENSOR_CHANNEL = 0; // todo find out what this really is
   public static final double CLIMBER_MAX_VEL = 0.1, CLIMBER_MAX_ACCEL = 0.1;
@@ -114,10 +114,8 @@ public class FullMap {
       CLIMBER_FF_KA = 0,
       CLIMBER_FF_KG = 0;
   // Intake
-  public static final int INTAKE_PISTON_LEFT_FWD_CHANNEL = 2,
-      INTAKE_PISTON_LEFT_REV_CHANNEL = 3,
-      INTAKE_PISTON_RIGHT_FWD_CHANNEL = 2,
-      INTAKE_PISTON_RIGHT_REV_CHANNEL = 3;
+  public static final int INTAKE_PISTON_FWD_CHANNEL = 0,
+      INTAKE_PISTON_REV_CHANNEL = 1;
   // todo find out what the channel numbers are
 
   private FullMap() {}
@@ -251,6 +249,12 @@ public class FullMap {
         () -> new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive);
     SmartDashboard.putData("Reset odometry", resetDriveOdometry.get());
 
+    var deployIntake = new DoubleSolenoid(
+            PCM_MODULE,
+            PneumaticsModuleType.CTREPCM,
+            INTAKE_PISTON_FWD_CHANNEL,
+            INTAKE_PISTON_REV_CHANNEL);
+
     var cargo =
         new Cargo2022(
             new SparkMaxConfig()
@@ -263,16 +267,7 @@ public class FullMap {
                 .setPort(SPITTER_PORT)
                 .setEnableBrakeMode(false)
                 .createReal(),
-            new DoubleSolenoid(
-                PCM_MODULE,
-                PneumaticsModuleType.CTREPCM,
-                INTAKE_PISTON_LEFT_FWD_CHANNEL,
-                INTAKE_PISTON_LEFT_REV_CHANNEL),
-            new DoubleSolenoid(
-                PCM_MODULE,
-                PneumaticsModuleType.CTREPCM,
-                INTAKE_PISTON_RIGHT_FWD_CHANNEL,
-                INTAKE_PISTON_RIGHT_REV_CHANNEL),
+            deployIntake,
             INTAKE_SPEED,
             SPITTER_SPEED);
     Supplier<Command> spit =
@@ -331,10 +326,14 @@ public class FullMap {
             RobotBase.isReal()
                 ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get
                 : () -> false, // todo this is janky af
+                //                did teddy right this cuz he's the only person I know that says "janky"
             CLIMBER_DISTANCE);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo, climber);
+
+    SmartDashboard.putData("Intake deploy piston: ", new InstantCommand(cargo::deployIntake));
+    SmartDashboard.putData("Intake retract piston: ", new InstantCommand(cargo::retractIntake));
 
     Updater.subscribe(() -> field.setRobotPose(drive.getCurrentPose()));
 
@@ -354,9 +353,9 @@ public class FullMap {
     new JoystickButton(cargoJoystick, XboxController.Button.kB.value)
         .whenPressed(cargo::deployIntake);
     // Run intake in reverse to feed ball from top
-    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
-        .whileHeld(cargo::runIntakeReverse, cargo)
-        .whenReleased(cargo::stop, cargo);
+//    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
+//        .whileHeld(cargo::runIntakeReverse, cargo)
+//        .whenReleased(cargo::stop, cargo);
 
     // Move climber arm up
     new JoystickButton(climberJoystick, XboxController.Button.kA.value)
@@ -488,6 +487,7 @@ public class FullMap {
     // cargo)))
     //            .andThen(spit.get());
 
+    //Auto
     List<Command> autoStartupCommands = List.of(resetDriveOdometry.get(), testPath);
 
     List<Command> robotStartupCommands = List.of();
@@ -614,3 +614,5 @@ public class FullMap {
     return pose(pose.getX(), pose.getY(), 180 + pose.getRotation().getDegrees());
   }
 }
+
+//Hi there!
