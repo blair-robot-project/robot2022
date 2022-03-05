@@ -1,4 +1,4 @@
-package frc.team449.generalInterfaces;
+package frc.team449.motor;
 
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.Logger;
