@@ -51,6 +51,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import static frc.team449.javaMaps.FullMap.*;
+
 public class IntakeTestMap {
   // Motor IDs
   public static final int RIGHT_LEADER_PORT = 1,
@@ -235,11 +237,16 @@ public class IntakeTestMap {
                 .setPort(SPITTER_PORT)
                 .setEnableBrakeMode(false)
                 .createReal(),
-            new DoubleSolenoid(
-                FullMap.PCM_MODULE,
-                PneumaticsModuleType.CTREPCM,
-                FullMap.INTAKE_PISTON_FWD_CHANNEL,
-                FullMap.INTAKE_PISTON_REV_CHANNEL),
+                new DoubleSolenoid(
+                        PCM_MODULE,
+                        PneumaticsModuleType.CTREPCM,
+                        INTAKE_PISTON_LEFT_FWD_CHANNEL,
+                        INTAKE_PISTON_LEFT_REV_CHANNEL),
+                new DoubleSolenoid(
+                        PCM_MODULE,
+                        PneumaticsModuleType.CTREPCM,
+                        INTAKE_PISTON_RIGHT_FWD_CHANNEL,
+                        INTAKE_PISTON_RIGHT_REV_CHANNEL),
             INTAKE_SPEED,
             SPITTER_SPEED);
     Supplier<Command> runIntake =
