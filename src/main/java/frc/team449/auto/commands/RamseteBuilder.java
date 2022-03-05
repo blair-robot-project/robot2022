@@ -52,9 +52,7 @@ public final class RamseteBuilder {
     return this;
   }
 
-  /**
-   * Set the {@link Field2d} widget in Glass to display the trajectory on (optional)
-   */
+  /** Set the {@link Field2d} widget in Glass to display the trajectory on (optional) */
   public RamseteBuilder field(Field2d field) {
     this.field = field;
     return this;
@@ -76,8 +74,8 @@ public final class RamseteBuilder {
   }
 
   /**
-   * Set the zeta tuning parameter for Ramsete (0 rad<sup>-1</sup> &lt; zeta &lt; 1 rad<sup>-1</sup>) for which larger
-   * values provide more damping in response.
+   * Set the zeta tuning parameter for Ramsete (0 rad<sup>-1</sup> &lt; zeta &lt; 1
+   * rad<sup>-1</sup>) for which larger values provide more damping in response.
    */
   public RamseteBuilder zeta(double zeta) {
     this.zeta = zeta;
@@ -154,9 +152,10 @@ public final class RamseteBuilder {
 
     return new InstantCommand(() -> drivetrain.resetOdometry(traj.getInitialPose()))
         .andThen(ramseteCmd)
-        .andThen(() -> drivetrain.setVoltage(0, 0))
-        .andThen(
-            new NavXTurnToAngle<>(
-                lastPose.getRotation().getDegrees(), angleTimeout, drivetrain, pidAngleController));
+//        .andThen(() -> drivetrain.setVoltage(0, 0))
+//        .andThen(
+//            new NavXTurnToAngle<>(
+//                lastPose.getRotation().getDegrees(), angleTimeout, drivetrain, pidAngleController))
+        .andThen(() -> drivetrain.setVoltage(0, 0));
   }
 }
