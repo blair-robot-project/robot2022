@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,6 +44,7 @@ public class OIOutreach implements OIUnidirectional {
     this.overridingOI = overridingOI;
     this.overridenOI = overridenOI;
     this.button = stopButton;
+    Updater.subscribe(this);
   }
 
   /**

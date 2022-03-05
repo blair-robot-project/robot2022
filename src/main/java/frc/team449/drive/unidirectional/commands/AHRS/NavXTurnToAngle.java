@@ -2,25 +2,24 @@ package frc.team449.drive.unidirectional.commands.AHRS;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
-import frc.team449.generalInterfaces.ahrs.commands.PIDAngleCommand;
 import frc.team449.other.Clock;
-import frc.team449.other.Debouncer;
+import frc.team449.other.Util;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Turns to a specified angle, relative to the angle the AHRS was at when the robot was turned on.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends PIDAngleCommand {
+    extends CommandBase {
 
   /** The drive subsystem to execute this command on and to get the gyro reading from. */
   @NotNull protected final T subsystem;
@@ -34,60 +33,25 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
   /** The time this command was initiated */
   protected long startTime;
 
+  protected final PIDAngleController controller;
+
   /**
    * Default constructor.
    *
-   * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
-   *     Can be null for no buffer.
-   * @param absoluteTolerance The maximum number of degrees off from the target at which we can be
-   *     considered within tolerance.
-   * @param minimumOutput The minimum output of the loop. Defaults to zero.
-   * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
-   *     output is used.
-   * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
-   *     ms.
-   * @param deadband The deadband around the setpoint, in degrees, within which no output is given
-   *     to the motors. Defaults to zero.
-   * @param inverted Whether the loop is inverted. Defaults to false.
-   * @param kP Proportional gain. Defaults to zero.
-   * @param kI Integral gain. Defaults to zero.
-   * @param kD Derivative gain. Defaults to zero.
    * @param setpoint The setpoint, in degrees from 180 to -180.
-   * @param drive The drive subsystem to execute this command on.
    * @param timeout How long this command is allowed to run for, in seconds. Needed because
    *     sometimes floating-point errors prevent termination.
+   * @param drive The drive subsystem to execute this command on.
+   * @param controller The controller used to turn to the given setpoint
    */
   @JsonCreator
   public NavXTurnToAngle(
-      @JsonProperty(required = true) double absoluteTolerance,
-      @Nullable Debouncer onTargetBuffer,
-      double minimumOutput,
-      @Nullable Double maximumOutput,
-      @Nullable Integer loopTimeMillis,
-      double deadband,
-      boolean inverted,
-      double kP,
-      double kI,
-      double kD,
-      @JsonProperty(required = true) double setpoint,
-      @NotNull @JsonProperty(required = true) T drive,
-      @JsonProperty(required = true) double timeout) {
-    super(
-        absoluteTolerance,
-        onTargetBuffer,
-        minimumOutput,
-        maximumOutput,
-        loopTimeMillis,
-        deadband,
-        inverted,
-        drive,
-        kP,
-        kI,
-        kD);
+      double setpoint, double timeout, @NotNull T drive, @NotNull PIDAngleController controller) {
     this.subsystem = drive;
     this.setpoint = setpoint;
     // Convert from seconds to milliseconds
     this.timeout = (long) (timeout * 1000);
+    this.controller = controller;
     addRequirements(subsystem);
   }
 
@@ -99,14 +63,14 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
     // Logger.addEvent("NavXTurnToAngle init.", this.getClass());
     // Set up start time
     this.startTime = Clock.currentTimeMillis();
-    this.setSetpoint(clipTo180(setpoint));
+    controller.setSetpoint(Util.clipTo180(setpoint));
   }
 
   /** Give output to the motors based on the output of the PID loop. */
   @Override
   public void execute() {
     // Process the output with deadband, minimum output, etc.
-    double output = this.getOutput();
+    double output = controller.getOutput(subsystem.getHeadingCached());
 
     // spin to the right angle
     subsystem.setOutput(-output, output);
@@ -122,7 +86,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
     // The PIDController onTarget() is crap and sometimes never returns true because of floating
     // point errors, so
     // we need a timeout
-    return onTarget() || Clock.currentTimeMillis() - startTime > timeout;
+    return controller.onTarget() || Clock.currentTimeMillis() - startTime > timeout;
   }
 
   /** Log when the command ends. */

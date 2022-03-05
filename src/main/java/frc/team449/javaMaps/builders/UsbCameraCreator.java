@@ -1,8 +1,5 @@
 package frc.team449.javaMaps.builders;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.cscore.UsbCamera;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +21,6 @@ public final class UsbCameraCreator {
    * @param fps The frames per second this camera tries to transmit. There's a minimum value for
    *     this that WPILib won't let us go below, but I don't know what it is.
    */
-  @JsonCreator
   public static UsbCamera createUsbCamera(
       @NotNull String name, int devAddress, int width, int height, int fps) {
     var camera = new UsbCamera(name, devAddress);

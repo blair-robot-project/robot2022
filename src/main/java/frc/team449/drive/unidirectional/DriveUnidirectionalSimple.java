@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +34,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase
       @NotNull @JsonProperty(required = true) final MotorController rightMotor) {
     this.leftMotor = leftMotor;
     this.rightMotor = rightMotor;
+    Updater.subscribe(this);
   }
 
   /**

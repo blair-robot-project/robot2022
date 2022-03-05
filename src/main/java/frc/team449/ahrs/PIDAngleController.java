@@ -1,34 +1,26 @@
-package frc.team449.generalInterfaces.ahrs.commands;
+package frc.team449.ahrs;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
 import frc.team449.other.Debouncer;
+import frc.team449.other.Util;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/** A command that uses a AHRS to turn to a certain angle. */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
-public abstract class PIDAngleCommand
-    extends CommandBase { // implements Loggable { TODO Logging causes the drive subsystem to be
-  // logged twice according to Oblog.
-
-  /** The subsystem to execute this command on. */
-  @NotNull @Log.Exclude protected final SubsystemAHRS subsystem;
-
+/**
+ * A wrapper around {@link edu.wpi.first.math.controller.PIDController PIDController} that can be
+ * used for turning the robot to an angle. <br>
+ * For convenience, you can use a {@link PIDAngleControllerBuilder} to construct controllers.
+ */
+public class PIDAngleController implements Loggable {
   /** On-board PID controller */
-  @Log protected final PIDController pidController;
+  @Log @NotNull protected final PIDController pidController;
 
   /** The minimum the robot should be able to output, to overcome friction. */
   private final double minimumOutput;
+
+  private final double maximumOutput;
 
   /** The range in which output is turned off to prevent "dancing" around the setpoint. */
   private final double deadband;
@@ -49,7 +41,7 @@ public abstract class PIDAngleCommand
    *     considered within tolerance.
    * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
    *     Can be null for no buffer.
-   * @param minimumOutput The minimum output of the loop. Defaults to zero.
+   * @param minimumOutput The minimum output (absolute value) of the loop. Defaults to zero.
    * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
    *     output is used.
    * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
@@ -60,29 +52,24 @@ public abstract class PIDAngleCommand
    * @param kP Proportional gain. Defaults to zero.
    * @param kI Integral gain. Defaults to zero.
    * @param kD Derivative gain. Defaults to zero.
-   * @param subsystem The subsystem to execute this command on.
    */
-  @JsonCreator
-  protected PIDAngleCommand(
-      @JsonProperty(required = true) final double absoluteTolerance,
-      @Nullable final Debouncer onTargetBuffer,
-      final double minimumOutput,
-      @Nullable final Double maximumOutput,
-      @Nullable final Integer loopTimeMillis,
-      final double deadband,
-      final boolean inverted,
-      @NotNull @JsonProperty(required = true) final SubsystemAHRS subsystem,
-      final double kP,
-      final double kI,
-      final double kD) {
+  public PIDAngleController(
+      double absoluteTolerance,
+      @Nullable Debouncer onTargetBuffer,
+      double minimumOutput,
+      @Nullable Double maximumOutput,
+      @Nullable Integer loopTimeMillis,
+      double deadband,
+      boolean inverted,
+      double kP,
+      double kI,
+      double kD) {
 
     // Set P, I and D. I and D will normally be 0 if you're using cascading control, like you should
     // be.
     this.pidController =
         new PIDController(
             kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
-
-    this.subsystem = subsystem;
 
     // It's a circle, so it's continuous
     pidController.enableContinuousInput(-180, 180);
@@ -98,6 +85,7 @@ public abstract class PIDAngleCommand
     // speed is about
     // right.
     this.minimumOutput = minimumOutput;
+    this.maximumOutput = maximumOutput == null ? Double.POSITIVE_INFINITY : maximumOutput;
 
     // Set a deadband around the setpoint, in degrees, within which don't move, to avoid "dancing"
     this.deadband = deadband;
@@ -106,35 +94,19 @@ public abstract class PIDAngleCommand
     this.inverted = inverted;
   }
 
-  /**
-   * Clip a degree number to the NavX's -180 to 180 system.
-   *
-   * @param theta The angle to clip, in degrees.
-   * @return The equivalent of that number, clipped to be between -180 and 180.
-   */
-  @Contract(pure = true)
-  protected static double clipTo180(final double theta) {
-    return (theta + 180) % 360 - 180;
-  }
-
   @Log
-  protected double getSetpoint() {
+  public double getSetpoint() {
     return pidController.getSetpoint();
   }
 
   /** Set setpoint for PID loop to use */
-  protected void setSetpoint(final double setpoint) {
+  public void setSetpoint(final double setpoint) {
     pidController.setSetpoint(setpoint);
   }
 
-  /**
-   * Raw output of the PID loop for later processing
-   *
-   * @return standard output
-   */
-  @Log
-  protected double getRawOutput() {
-    return pidController.calculate(subsystem.getHeadingCached());
+  /** Calculate the output needed to reach the setpoint, given the current heading */
+  public double getOutput(double heading) {
+    return processOutput(pidController.calculate(heading));
   }
 
   @Log
@@ -143,31 +115,17 @@ public abstract class PIDAngleCommand
   }
 
   /**
-   * Process the output of the PID loop to account for minimum output and inversion.
-   *
-   * @return The processed output, ready to be subtracted from the left side of the drive output and
-   *     added to the right side.
-   */
-  @Log
-  protected double getOutput() {
-    return processOutput(getRawOutput());
-  }
-
-  protected double getOutputHardcoded(final double setpoint) {
-    return processOutput(pidController.calculate(subsystem.getHeadingCached(), setpoint));
-  }
-
-  /**
    * Set controller output to the minimum if it's too small
    *
    * @param controllerOutput PID loop output
    */
   private double processOutput(double controllerOutput) {
-    if (controllerOutput > 0 && controllerOutput < minimumOutput) {
-      controllerOutput = minimumOutput;
-    } else if (controllerOutput < 0 && controllerOutput > -minimumOutput) {
-      controllerOutput = -minimumOutput;
+    if (controllerOutput > 0) {
+      controllerOutput = Util.clamp(controllerOutput, minimumOutput, maximumOutput);
+    } else if (controllerOutput < 0) {
+      controllerOutput = Util.clamp(controllerOutput, -maximumOutput, -minimumOutput);
     }
+
     if (inverted) {
       controllerOutput *= -1;
     }
@@ -181,7 +139,7 @@ public abstract class PIDAngleCommand
    * @param output The output from the WPILib angular PID loop.
    * @return That output after being deadbanded with the map-given deadband.
    */
-  protected double deadbandOutput(final double output) {
+  public double deadbandOutput(double output) {
     return Math.abs(pidController.getPositionError()) > deadband ? output : 0;
   }
 
@@ -191,7 +149,7 @@ public abstract class PIDAngleCommand
    * @return True if on target, false otherwise.
    */
   @Log
-  protected boolean onTarget() {
+  public boolean onTarget() {
     if (onTargetBuffer == null) {
       return pidController.atSetpoint();
     } else {
@@ -199,12 +157,8 @@ public abstract class PIDAngleCommand
     }
   }
 
-  /**
-   * Returns the PIDController used by the command.
-   *
-   * @return The PIDController
-   */
-  public PIDController getController() {
-    return this.pidController;
+  /** Reset the error and integral term of the internal PIDController. */
+  public void resetController() {
+    this.pidController.reset();
   }
 }

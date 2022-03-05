@@ -3,16 +3,15 @@ package frc.team449.drive.unidirectional.commands;
 import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
-import frc.team449.generalInterfaces.ahrs.commands.PIDAngleCommand;
 import frc.team449.oi.fieldoriented.OIFieldOriented;
-import frc.team449.other.Debouncer;
-import java.util.ArrayList;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /** Unidirectional drive with field-oriented control */
 @JsonTypeInfo(
@@ -22,70 +21,36 @@ import org.jetbrains.annotations.Nullable;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FieldOrientedUnidirectionalDriveCommand<
         T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends PIDAngleCommand {
+    extends CommandBase {
 
   /** The drive this command is controlling. */
-  @NotNull protected final T subsystem;
+  @NotNull private final T subsystem;
 
   /** The OI giving the input stick values. */
-  @NotNull protected final OIFieldOriented oi;
+  @NotNull private final OIFieldOriented oi;
 
   /** The points to snap the PID controller input to. */
   @NotNull private final List<AngularSnapPoint> snapPoints;
 
+  @NotNull private final PIDAngleController controller;
+
   /**
    * Default constructor
    *
-   * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
-   *     Can be null for no buffer.
-   * @param absoluteTolerance The maximum number of degrees off from the target at which we can be
-   *     considered within tolerance.
-   * @param minimumOutput The minimum output of the loop. Defaults to zero.
-   * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
-   *     output is used.
-   * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
-   *     ms.
-   * @param deadband The deadband around the setpoint, in degrees, within which no output is given
-   *     to the motors. Defaults to zero.
-   * @param inverted Whether the loop is inverted. Defaults to false.
-   * @param kP Proportional gain. Defaults to zero.
-   * @param kI Integral gain. Defaults to zero.
-   * @param kD Derivative gain. Defaults to zero.
    * @param subsystem The drive to execute this command on.
    * @param oi The OI controlling the robot.
    * @param snapPoints The points to snap the PID controller input to.
    */
   @JsonCreator
   public FieldOrientedUnidirectionalDriveCommand(
-      @JsonProperty(required = true) final double absoluteTolerance,
-      @Nullable final Debouncer onTargetBuffer,
-      final double minimumOutput,
-      @Nullable final Double maximumOutput,
-      @Nullable final Integer loopTimeMillis,
-      final double deadband,
-      final boolean inverted,
-      final double kP,
-      final double kI,
-      final double kD,
-      @NotNull @JsonProperty(required = true) final T subsystem,
-      @NotNull @JsonProperty(required = true) final OIFieldOriented oi,
-      @Nullable final List<AngularSnapPoint> snapPoints) {
-    // Assign stuff
-    super(
-        absoluteTolerance,
-        onTargetBuffer,
-        minimumOutput,
-        maximumOutput,
-        loopTimeMillis,
-        deadband,
-        inverted,
-        subsystem,
-        kP,
-        kI,
-        kD);
+      @NotNull T subsystem,
+      @NotNull OIFieldOriented oi,
+      @NotNull List<AngularSnapPoint> snapPoints,
+      @NotNull PIDAngleController controller) {
     this.oi = oi;
     this.subsystem = subsystem;
-    this.snapPoints = snapPoints != null ? snapPoints : new ArrayList<>();
+    this.snapPoints = snapPoints;
+    this.controller = controller;
 
     // Needs a requires because it's a default command.
     this.addRequirements(this.subsystem);
@@ -100,7 +65,7 @@ public class FieldOrientedUnidirectionalDriveCommand<
   @Override
   public void initialize() {
     // Reset all values of the PIDController and enable it.
-    this.getController().reset();
+    controller.resetController();
     Shuffleboard.addEventMarker(
         "FieldOrientedUnidirectionalDriveCommand init.",
         this.getClass().getSimpleName(),
@@ -122,11 +87,12 @@ public class FieldOrientedUnidirectionalDriveCommand<
           break;
         }
       }
-      this.setSetpoint(theta);
+      controller.setSetpoint(theta);
     }
 
     // Process or zero the input depending on whether the NavX is being overriden.
-    double output = this.subsystem.getOverrideGyro() ? 0 : this.getOutput();
+    double output =
+        this.subsystem.getOverrideGyro() ? 0 : controller.getOutput(subsystem.getHeadingCached());
 
     // Adjust the heading according to the PID output, it'll be positive if we want to go right.
     this.subsystem.setOutput(this.oi.getVelCached() - output, this.oi.getVelCached() + output);

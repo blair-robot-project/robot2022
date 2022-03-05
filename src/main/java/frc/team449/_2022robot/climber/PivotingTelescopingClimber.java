@@ -19,10 +19,10 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
   private double setpoint;
 
   public PivotingTelescopingClimber(
-      @NotNull ClimberArm leftArm, @NotNull ClimberArm rightArm, double distanceTopBottom) {
+      @NotNull ClimberArm leftArm, @NotNull ClimberArm rightArm, DoubleSolenoid pivotPiston, double distanceTopBottom) {
     this.leftArm = leftArm;
     this.rightArm = rightArm;
-    this.pivotPiston = null;
+    this.pivotPiston = pivotPiston;
     this.distanceTopBottom = distanceTopBottom;
     // Start arm retracted
     this.state = ClimberState.RETRACTED;

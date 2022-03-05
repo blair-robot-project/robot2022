@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import frc.team449.other.FollowerUtils;
 import frc.team449.wrappers.Encoder;
 import frc.team449.wrappers.WrappedMotor;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -111,6 +112,8 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
     return copy;
   }
 
+  @Contract("-> new")
+  @NotNull
   @Override
   public WrappedMotor createReal() {
     var motor = new WPI_TalonSRX(this.getPort());
@@ -134,7 +137,6 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
                 this.getPostEncoderGearing(),
                 this.getCalculateVel());
 
-    // todo do only slaves need to be inverted?
     motor.setInverted(this.isReverseOutput());
     // Set brake mode
     motor.setNeutralMode(this.isEnableBrakeMode() ? NeutralMode.Brake : NeutralMode.Coast);

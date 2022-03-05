@@ -1,5 +1,6 @@
 package frc.team449.other;
 
+import edu.wpi.first.wpilibj.Timer;
 import org.jetbrains.annotations.Contract;
 
 /**
@@ -9,33 +10,33 @@ import org.jetbrains.annotations.Contract;
 public class Clock {
 
   /** The starting time for this clock. */
-  private static long startTime;
+  private static double startTime;
 
   /** The time since startTime, in milliseconds. */
-  private static long currentTime;
+  private static double currentTime;
 
   /** Make constructor private so it can't be called */
   private Clock() {}
 
   /** Updates the current time. */
   public static synchronized void updateTime() {
-    currentTime = System.currentTimeMillis() - startTime;
+    currentTime = Timer.getFPGATimestamp() - startTime;
   }
 
   /** Sets the start time to the current time. */
   public static synchronized void setStartTime() {
-    startTime = System.currentTimeMillis();
+    startTime = Clock.currentTimeSeconds();
   }
 
-  /** @return The time since the start time, in milliseconds. */
+  /** The time since the start time, in milliseconds. */
   @Contract(pure = true)
   public static synchronized long currentTimeMillis() {
-    return currentTime;
+    return (long)(currentTime * 1000);
   }
 
-  /** @return The time since the start time, in esconds. */
+  /** The time since the start time, in seconds. */
   @Contract(pure = true)
   public static synchronized double currentTimeSeconds() {
-    return currentTime * 0.001;
+    return currentTime;
   }
 }

@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.team449.generalInterfaces.updatable.Updatable;
+import frc.team449.other.Updater;
 import frc.team449.wrappers.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,6 +53,7 @@ public class ClimberArm extends PIDSubsystem {
         double distanceTopBottom) {
       super(motor, controller, feedforward);
       this.sim = new ElevatorSim(DCMotor.getNeo550(1), 1.0, 1.0, 1.0, 0.0, distanceTopBottom);
+      Updater.subscribe(this);
     }
 
     @Override

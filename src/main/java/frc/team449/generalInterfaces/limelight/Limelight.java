@@ -1,21 +1,13 @@
 package frc.team449.generalInterfaces.limelight;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.NotNull;
 
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class Limelight extends SubsystemBase implements Loggable {
 
   /** whether the limelight can see a valid target */
@@ -40,10 +32,39 @@ public class Limelight extends SubsystemBase implements Loggable {
   private final NetworkTableEntry heightTable;
   /** pipeline index of the limelight */
   private final NetworkTableEntry pipeTable;
-  /** entry to change pipeline */
-  private final NetworkTableEntry pipelineSet;
   /** camtran, for getting 3D pos */
   private final NetworkTableEntry camtran;
+  /** Average HSV color under the crosshair region as a NumberArray */
+  private final NetworkTableEntry cTable;
+  /**
+   * entry to change led mode:
+   *
+   * <ul>
+   *   <li>0 - use the LED mode in the current pipeline
+   *   <li>1 - force off
+   *   <li>2 - force blink
+   *   <li>3 - force on
+   * </ul>
+   */
+  private final NetworkTableEntry ledModeSet;
+  /** entry to change camera mode: 0 for vision processor, 1 for driver camera */
+  private final NetworkTableEntry camModeSet;
+  /** entry to change pipeline (1 to 9) */
+  private final NetworkTableEntry pipelineSet;
+  /**
+   * entry to change streaming mode
+   *
+   * <ul>
+   *   <li>0 Standard - Side-by-side streams if a webcam is attached to Limelight
+   *   <li>1 PiP Main - The secondary camera stream is placed in the lower-right corner of the
+   *       primary camera stream
+   *   <li>2 PiP Secondary - The primary camera stream is placed in the lower-right corner of the
+   *       secondary camera stream
+   * </ul>
+   */
+  private final NetworkTableEntry streamSet;
+  /** Entry to allow taking snapshots: 0 - stop taking snapshots, 1 - take 2 snapshots per sec */
+  private final NetworkTableEntry snapshotSet;
 
   /** pipeline for driver camera */
   private final int driverPipeline;
@@ -80,10 +101,10 @@ public class Limelight extends SubsystemBase implements Loggable {
    *
    * @param driverPipeline the pipeline for the driver camera
    */
-  @JsonCreator
   public Limelight(int driverPipeline) {
     this.driverPipeline = driverPipeline;
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    // Entries to get data
     validTargetTable = table.getEntry("tv");
     xTable = table.getEntry("tx");
     yTable = table.getEntry("ty");
@@ -95,8 +116,15 @@ public class Limelight extends SubsystemBase implements Loggable {
     widthTable = table.getEntry("thor");
     heightTable = table.getEntry("tvert");
     pipeTable = table.getEntry("getpipe");
-    pipelineSet = table.getEntry("pipeline");
     camtran = table.getEntry("camtran");
+    cTable = table.getEntry("tc");
+    // Entries to set data
+    ledModeSet = table.getEntry("ledMode");
+    camModeSet = table.getEntry("camMode");
+    pipelineSet = table.getEntry("pipeline");
+    streamSet = table.getEntry("stream");
+    snapshotSet = table.getEntry("snapshot");
+
     setPipeline(driverPipeline);
   }
 
@@ -104,24 +132,24 @@ public class Limelight extends SubsystemBase implements Loggable {
   public void periodic() {
     pipeIndex = (int) pipeTable.getDouble(driverPipeline);
     validTarget = validTargetTable.getDouble(-1);
-    if (true /*pipeIndex != driverPipeline*/) {
+    if (pipeIndex != driverPipeline) {
       x = xTable.getDouble(0);
       y = yTable.getDouble(0);
       // System.out.println("X = " + x + ", y = " + y);
-      //            area = areaTable.getDouble(0);
-      //            skew = skewTable.getDouble(0);
-      //            latency = latencyTable.getDouble(0);
-      //            shortest = shortTable.getDouble(0);
-      //            longest = longTable.getDouble(0);
-      //            width = widthTable.getDouble(0);
-      //            height = heightTable.getDouble(0);
-      //            double[] camtranVals = camtran.getDoubleArray(new double[6]);
-      //            poseX = camtranVals[0];
-      //            poseY = camtranVals[1];
-      //            poseZ = camtranVals[2];
-      //            pitch = camtranVals[3];
-      //            yaw = camtranVals[4];
-      //            roll = camtranVals[5];
+      area = areaTable.getDouble(0);
+      skew = skewTable.getDouble(0);
+      latency = latencyTable.getDouble(0);
+      shortest = shortTable.getDouble(0);
+      longest = longTable.getDouble(0);
+      width = widthTable.getDouble(0);
+      height = heightTable.getDouble(0);
+      var camtranVals = camtran.getNumberArray(new Number[6]);
+      poseX = camtranVals[0].doubleValue();
+      poseY = camtranVals[1].doubleValue();
+      poseZ = camtranVals[2].doubleValue();
+      pitch = camtranVals[3].doubleValue();
+      yaw = camtranVals[4].doubleValue();
+      roll = camtranVals[5].doubleValue();
     }
   }
 
@@ -213,5 +241,48 @@ public class Limelight extends SubsystemBase implements Loggable {
   @Log
   public double getRoll() {
     return roll;
+  }
+
+  public void setLedMode(@NotNull LedMode ledMode) {
+    ledModeSet.setNumber(ledMode.asNum);
+  }
+
+  public void setStreamMode(@NotNull StreamMode streamMode) {
+    streamSet.setNumber(streamMode.asNum);
+  }
+
+  /**
+   * Set the 'snapshot' entry
+   *
+   * @param takeSnapshots {@code true} to take 2 snapshots per second, {@code false} to turn them
+   *     off
+   */
+  public void setSnapshot(boolean takeSnapshots) {
+    snapshotSet.setNumber(takeSnapshots ? 1 : 0);
+  }
+
+  public enum LedMode {
+    CURRENT(0),
+    OFF(1),
+    BLINK(2),
+    ON(3);
+
+    public final Number asNum;
+
+    LedMode(Number asNum) {
+      this.asNum = asNum;
+    }
+  }
+
+  public enum StreamMode {
+    STANDARD(0),
+    PIP_MAIN(1),
+    PIP_SECONDARY(2);
+
+    public final Number asNum;
+
+    StreamMode(Number asNum) {
+      this.asNum = asNum;
+    }
   }
 }
