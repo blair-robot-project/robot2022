@@ -1,12 +1,12 @@
-package frc.team449.javaMaps.builders;
+package frc.team449.motor.builder;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
 import frc.team449.other.FollowerUtils;
-import frc.team449.wrappers.Encoder;
-import frc.team449.wrappers.WrappedMotor;
+import frc.team449.motor.Encoder;
+import frc.team449.motor.WrappedMotor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

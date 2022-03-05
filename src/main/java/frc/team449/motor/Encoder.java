@@ -1,8 +1,7 @@
-package frc.team449.wrappers;
+package frc.team449.motor;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.RelativeEncoder;
-import edu.wpi.first.wpilibj.Timer;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;

@@ -1,8 +1,8 @@
-package frc.team449.wrappers;
+package frc.team449.motor;
 
-import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import frc.team449.generalInterfaces.MotorContainer;
+import frc.team449.motor.Encoder;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;

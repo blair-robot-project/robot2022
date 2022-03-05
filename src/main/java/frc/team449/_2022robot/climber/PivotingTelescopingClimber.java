@@ -1,6 +1,5 @@
 package frc.team449._2022robot.climber;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -14,6 +13,7 @@ import java.util.function.BooleanSupplier;
 public class PivotingTelescopingClimber extends SubsystemBase implements Loggable {
   /** Distance the climber can travel, in meters */
   public final double distanceTopBottom;
+
   private final @NotNull ClimberArm rightArm;
   private @NotNull ClimberState state;
   private final @NotNull ClimberArm leftArm;
@@ -23,11 +23,11 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
   private double goal;
 
   /**
-   *
    * @param leftArm Climber's left arm
    * @param rightArm Climber's right arm
    * @param pivotPiston Piston used to pivot climber arms
-   * @param hallSensor The hall sensor that detects whether or not one climber arm's reached the bottom
+   * @param hallSensor The hall sensor that detects whether or not one climber arm's reached the
+   *     bottom
    * @param distanceTopBottom How much the climber arms extend up
    */
   public PivotingTelescopingClimber(
@@ -107,7 +107,7 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
     this.rightArm.stop();
   }
 
-  public boolean onTarget() {
+  public boolean atGoal() {
     return this.leftArm.getController().atGoal() && this.rightArm.getController().atGoal();
   }
 

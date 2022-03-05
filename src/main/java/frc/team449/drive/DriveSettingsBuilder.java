@@ -1,8 +1,8 @@
-package frc.team449.javaMaps.builders;
+package frc.team449.drive;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import frc.team449.generalInterfaces.DriveSettings;
+import org.jetbrains.annotations.NotNull;
 
 public final class DriveSettingsBuilder {
   private Double fwdPeakOutputVoltage;
@@ -37,6 +37,7 @@ public final class DriveSettingsBuilder {
     return copy;
   }
 
+  @NotNull
   public DriveSettings build() {
     return new DriveSettings(
         feedforward,

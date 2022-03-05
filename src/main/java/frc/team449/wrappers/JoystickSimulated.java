@@ -1,7 +1,7 @@
-package frc.team449.wrappers.simulated;
+package frc.team449.wrappers;
 
 import frc.team449.Robot;
-import frc.team449.wrappers.RumbleableJoystick;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package frc.team449.javaMaps.builders;
+package frc.team449.motor.builder;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -6,8 +6,8 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import frc.team449.other.FollowerUtils;
-import frc.team449.wrappers.Encoder;
-import frc.team449.wrappers.WrappedMotor;
+import frc.team449.motor.Encoder;
+import frc.team449.motor.WrappedMotor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -1,4 +1,4 @@
-package frc.team449.wrappers.simulated;
+package frc.team449.motor.sim;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 

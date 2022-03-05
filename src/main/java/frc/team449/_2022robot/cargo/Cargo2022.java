@@ -3,6 +3,7 @@ package frc.team449._2022robot.cargo;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.jetbrains.annotations.NotNull;
 
 public class Cargo2022 extends SubsystemBase {
   /** The leader motor for the intake */
@@ -17,9 +18,9 @@ public class Cargo2022 extends SubsystemBase {
   private final double spitterSpeed;
 
   public Cargo2022(
-      MotorController intakeMotor,
-      MotorController spitterMotor,
-      DoubleSolenoid deployIntake,
+      @NotNull MotorController intakeMotor,
+      @NotNull MotorController spitterMotor,
+      @NotNull DoubleSolenoid deployIntake,
       double intakeSpeed,
       double spitterSpeed) {
     this.intakeMotor = intakeMotor;
@@ -35,8 +36,8 @@ public class Cargo2022 extends SubsystemBase {
   }
 
   public void runIntakeReverse() {
-    intakeMotor.set(intakeSpeed);
-    spitterMotor.set(spitterSpeed);
+    intakeMotor.set(-intakeSpeed);
+    spitterMotor.set(-spitterSpeed);
   }
 
   public void spit() {
@@ -50,10 +51,10 @@ public class Cargo2022 extends SubsystemBase {
   }
 
   public void deployIntake() {
-    deployIntake.set(DoubleSolenoid.Value.kForward);
+    deployIntake.set(DoubleSolenoid.Value.kReverse);
   }
 
   public void retractIntake() {
-    deployIntake.set(DoubleSolenoid.Value.kReverse);
+    deployIntake.set(DoubleSolenoid.Value.kForward);
   }
 }

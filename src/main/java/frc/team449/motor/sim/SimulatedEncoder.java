@@ -1,8 +1,7 @@
-package frc.team449.wrappers.simulated;
+package frc.team449.motor.sim;
 
-import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import frc.team449.wrappers.Encoder;
+import frc.team449.motor.Encoder;
 import org.jetbrains.annotations.NotNull;
 
 public final class SimulatedEncoder extends Encoder {
@@ -16,13 +15,6 @@ public final class SimulatedEncoder extends Encoder {
       double postEncoderGearing) {
     super(name, encoderCPR, unitPerRotation, postEncoderGearing, false);
     this.encSim = encSim;
-  }
-
-  public SimulatedEncoder(
-      @NotNull String name,
-      @NotNull EncoderSim encSim,
-      @NotNull DifferentialDrivetrainSim driveSim) {
-    this(name, encSim, 1, 1, 1);
   }
 
   @Override

@@ -1,15 +1,10 @@
-package frc.team449.wrappers;
+package frc.team449.ahrs;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
 import frc.team449.generalInterfaces.updatable.Updatable;
 import frc.team449.other.Updater;
-import frc.team449.wrappers.simulated.AHRSSim;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
@@ -18,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
 
 /** An invertible wrapper for the NavX. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class AHRS implements Updatable, Loggable {
 
   /** The AHRS this class is a wrapper on. */

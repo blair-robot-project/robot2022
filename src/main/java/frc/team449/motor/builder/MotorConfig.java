@@ -1,11 +1,11 @@
-package frc.team449.javaMaps.builders;
+package frc.team449.motor.builder;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import frc.team449.wrappers.WrappedMotor;
-import frc.team449.wrappers.simulated.DummyMotorController;
-import frc.team449.wrappers.simulated.SimulatedEncoder;
+import frc.team449.motor.WrappedMotor;
+import frc.team449.motor.sim.DummyMotorController;
+import frc.team449.motor.sim.SimulatedEncoder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>todo find a better way to make the subclass the return type than F-bounds
  *
  * @param <Self> The type of the "current" subclass of {@link MotorConfig}
- * @see frc.team449.wrappers.WrappedMotor
+ * @see WrappedMotor
  */
 @SuppressWarnings({"unchecked", "UnusedReturnValue"})
 public abstract class MotorConfig<Self extends MotorConfig<Self>> {

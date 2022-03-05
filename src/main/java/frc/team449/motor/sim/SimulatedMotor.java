@@ -1,4 +1,4 @@
-package frc.team449.wrappers.simulated;
+package frc.team449.motor.sim;
 
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;

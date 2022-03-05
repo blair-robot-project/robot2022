@@ -1,8 +1,7 @@
-package frc.team449.javaMaps.builders;
+package frc.team449.oi.throttles;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
-import frc.team449.oi.throttles.ThrottlePolynomial;
 import org.jetbrains.annotations.NotNull;
 
 public class ThrottlePolynomialBuilder {
