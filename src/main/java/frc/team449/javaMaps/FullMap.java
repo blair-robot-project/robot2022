@@ -271,7 +271,6 @@ public class FullMap {
     Supplier<Command> spit =
         () ->
             new InstantCommand(cargo::spit, cargo).andThen(new WaitCommand(2)).andThen(cargo::stop);
-    var stopCargo = new InstantCommand(cargo::stop, cargo);
 
     var armPrototype =
         driveMasterPrototype
@@ -360,7 +359,7 @@ public class FullMap {
     // Move climber arm up
     new JoystickButton(climberJoystick, XboxController.Button.kA.value)
         .whenPressed(
-            new InstantCommand(() -> climber.reset(climber.distanceTopBottom), leftArm, rightArm)
+            new InstantCommand(() -> climber.reset(climber.distanceTopBottom), climber)
                 .andThen(new WaitUntilCommand(climber::atGoal)));
     //        .whileActiveContinuous(
     //            new WaitCommand(0.01)
@@ -368,7 +367,7 @@ public class FullMap {
     // Move climber arm down
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)
         .whenPressed(
-            new InstantCommand(() -> climber.reset(0), leftArm, rightArm)
+            new InstantCommand(() -> climber.reset(0), climber)
                 .andThen(new WaitUntilCommand(climber::atGoal))
                 .withInterrupt(climber::hitBottom)
                 .andThen(
@@ -468,11 +467,11 @@ public class FullMap {
     var ballX = 7.65;
     var ballY = 0.69;
     var ballAngle = -92.44;
-    var turnAngle = -109.98;
-    var ballX2 = 5.42;
-    var ballY2 = 1.75;
-    var turnAngle2 = -159.03;
-    var hubPose = pose(7.43, 2.83, 46.64);
+    var turnAngle = 130.0;
+    var ballX2 = 5.55;
+    var ballY2 = 1.85;
+    var turnAngle2 = 200;
+    var hubPose = pose(7.43, 2.83, -180 + 46.64);
     var threeBallAuto =
         new InstantCommand(cargo::spit, cargo)
             .andThen(new WaitCommand(1))
@@ -490,7 +489,7 @@ public class FullMap {
                     .build())
             .andThen(
                 new NavXTurnToAngle<>(
-                    -turnAngle, 6, drive, pidAngleControllerPrototype.pid(0.001, 0, 0).build()))
+                    turnAngle, 4, drive, pidAngleControllerPrototype.pid(0.001, 0, 0).build()))
             .andThen(
                 ramsetePrototype
                     .copy()
@@ -499,33 +498,31 @@ public class FullMap {
                         TrajectoryGenerator.generateTrajectory(
                             pose(ballX, ballY, turnAngle),
                             List.of(),
-                            pose(ballX2, ballY2, 154.49),
+                            pose(ballX2, ballY2, 160),
                             trajConfig(drive)))
+                    .build())
+            .andThen(
+                new NavXTurnToAngle<>(turnAngle2, 4, drive, pidAngleControllerPrototype.build()))
+            .andThen(
+                ramsetePrototype
+                    .name("threeBallAuto3")
+                    .traj(
+                        TrajectoryGenerator.generateTrajectory(
+                            pose(ballX2, ballY2, turnAngle2),
+                            List.of(),
+                            hubPose,
+                            trajConfig(drive).setReversed(true)))
+                    .build())
+            .andThen(cargo::spit, cargo)
+            .andThen(new WaitCommand(2))
+            .andThen(
+                ramsetePrototype
+                    .copy()
+                    .name("threeBallAuto4")
+                    .traj(
+                        TrajectoryGenerator.generateTrajectory(
+                            hubPose, List.of(), pose(5.70, 1.98, -140.73), trajConfig(drive)))
                     .build());
-    //            .andThen(
-    //                new NavXTurnToAngle<>(turnAngle2, 1, drive,
-    // pidAngleControllerPrototype.build()))
-    //            .andThen(
-    //                ramsetePrototype
-    //                    .name("threeBallAuto3")
-    //                    .traj(
-    //                        TrajectoryGenerator.generateTrajectory(
-    //                            pose(ballX2, ballY2, turnAngle2),
-    //                            List.of(),
-    //                            hubPose,
-    //                            trajConfig(drive)))
-    //                    .build())
-    //                .andThen(cargo::spit,cargo)
-    //                .andThen(new WaitCommand(2))
-    //                .andThen(ramsetePrototype
-    //                        .name("threeBallAuto4")
-    //                        .traj(
-    //                                TrajectoryGenerator.generateTrajectory(
-    //                                        hubPose,
-    //                                        List.of(),
-    //                                        pose(5.70,1.98,-140.73),
-    //                                        trajConfig(drive)))
-    //                        .build());
 
     //    var randomTestAuto =
     //        ramsetePrototype

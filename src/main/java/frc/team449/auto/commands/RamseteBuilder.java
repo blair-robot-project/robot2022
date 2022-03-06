@@ -25,7 +25,7 @@ public final class RamseteBuilder {
   private @Nullable String name;
   private double b = 2;
   private double zeta = .7;
-  private PIDAngleController pidAngleController;
+  private @Nullable PIDAngleController pidAngleController;
   private double angleTimeout = 0;
 
   /** Set the drive subsystem which is to be controlled */
@@ -150,12 +150,25 @@ public final class RamseteBuilder {
 
     var lastPose = traj.getStates().get(traj.getStates().size() - 1).poseMeters;
 
-    return new InstantCommand(() -> drivetrain.resetOdometry(traj.getInitialPose()))
-        .andThen(ramseteCmd)
-//        .andThen(() -> drivetrain.setVoltage(0, 0))
-//        .andThen(
-//            new NavXTurnToAngle<>(
-//                lastPose.getRotation().getDegrees(), angleTimeout, drivetrain, pidAngleController))
-        .andThen(() -> drivetrain.setVoltage(0, 0));
+    var cmd =
+        new InstantCommand(() -> drivetrain.resetOdometry(traj.getInitialPose()))
+            .andThen(ramseteCmd)
+            .andThen(() -> drivetrain.setVoltage(0, 0));
+
+    // If angleTimeout is nonzero, then we want to turn after the Ramsete command is over
+    // to ensure our heading is right
+    if (angleTimeout > 0) {
+      assert pidAngleController != null
+          : "PIDAngleController must not be null if turning after Ramsete";
+      return cmd.andThen(
+              new NavXTurnToAngle<>(
+                  lastPose.getRotation().getDegrees(),
+                  angleTimeout,
+                  drivetrain,
+                  pidAngleController))
+          .andThen(() -> drivetrain.setVoltage(0, 0));
+    } else {
+      return cmd;
+    }
   }
 }
