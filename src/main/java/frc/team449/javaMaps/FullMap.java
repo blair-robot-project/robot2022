@@ -323,8 +323,10 @@ public class FullMap {
             pivotPiston,
             RobotBase.isReal()
                 ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get
-                : () -> false, // todo this is janky af
+                : () -> false, // todo this is not great, simulate the Hall effect some other way?
             //                did teddy right this cuz he's the only person I know that says "janky"
+            // He didn't, don't besmirch his name. Jank is my specialty, although this wasn't
+            // actually that bad
             CLIMBER_DISTANCE);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
@@ -358,7 +360,7 @@ public class FullMap {
     // Move climber arm up
     new JoystickButton(climberJoystick, XboxController.Button.kA.value)
         .whenPressed(
-            new InstantCommand(() -> climber.setGoal(climber.distanceTopBottom), climber)
+            new InstantCommand(() -> climber.reset(climber.distanceTopBottom), leftArm, rightArm)
                 .andThen(new WaitUntilCommand(climber::atGoal)));
     //        .whileActiveContinuous(
     //            new WaitCommand(0.01)
@@ -366,7 +368,7 @@ public class FullMap {
     // Move climber arm down
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)
         .whenPressed(
-            new InstantCommand(() -> climber.setGoal(0), climber)
+            new InstantCommand(() -> climber.reset(0), leftArm, rightArm)
                 .andThen(new WaitUntilCommand(climber::atGoal))
                 .withInterrupt(climber::hitBottom)
                 .andThen(
