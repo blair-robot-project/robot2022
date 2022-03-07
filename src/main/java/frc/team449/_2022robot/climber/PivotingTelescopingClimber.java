@@ -110,8 +110,13 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
 
   /** Clear the previous goal and go to this one */
   public void reset(double goal) {
-    this.leftArm.getController().reset(goal);
-    this.rightArm.getController().reset(goal);
+    this.leftArm.getController().reset(this.leftArm.getMeasurement());
+    this.rightArm.getController().reset(this.rightArm.getMeasurement());
+    this.leftArm.setGoal(goal);
+    this.rightArm.setGoal(goal);
+
+    this.goal = goal;
+    System.out.println("resetting to goal " + goal);
   }
 
   public boolean atGoal() {

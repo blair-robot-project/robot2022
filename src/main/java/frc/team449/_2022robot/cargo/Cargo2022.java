@@ -32,7 +32,7 @@ public class Cargo2022 extends SubsystemBase {
 
   public void runIntake() {
     intakeMotor.set(intakeSpeed);
-    spitterMotor.set(-spitterSpeed);
+    spitterMotor.set(spitterSpeed);
   }
 
 //  public void runIntakeReverse() {
@@ -42,7 +42,7 @@ public class Cargo2022 extends SubsystemBase {
 
   public void spit() {
     intakeMotor.set(intakeSpeed);
-    spitterMotor.set(spitterSpeed);
+    spitterMotor.set(-spitterSpeed);
   }
 
   public void stop() {

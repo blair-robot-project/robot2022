@@ -94,9 +94,13 @@ public class FullMap {
       DRIVE_KD_VEL = 0,
       DRIVE_KP_POS = 45.269,
       DRIVE_KD_POS = 3264.2,
-      DRIVE_FF_KS = 0.15084,
-      DRIVE_FF_KV = 2.4303,
-      DRIVE_FF_KA = 0.5323;
+      DRIVE_FF_KS = 0.19993,
+      DRIVE_FF_KV = 2.3776,
+      DRIVE_FF_KA = 0.31082;
+  // todo actually use these feedforward values
+  public static final double DRIVE_ANGLE_FF_KS = 0.59239,
+      DRIVE_ANGLE_FF_KV = 25.315,
+      DRIVE_ANGLE_FF_KA = 145.68;
   // old value from measuring from the outside of the wheel: 0.6492875
   // measuring from the inside of the wheel : .57785
   public static final double DRIVE_TRACK_WIDTH = 0.6492875;
@@ -115,7 +119,7 @@ public class FullMap {
       CLIMBER_FF_KA = 0,
       CLIMBER_FF_KG = 0;
   // Intake
-  public static final int INTAKE_PISTON_FWD_CHANNEL = 2, INTAKE_PISTON_REV_CHANNEL = 3;
+  public static final int INTAKE_PISTON_FWD_CHANNEL = 3, INTAKE_PISTON_REV_CHANNEL = 2;
   // todo find out what the channel numbers are
 
   private FullMap() {}
@@ -268,9 +272,6 @@ public class FullMap {
             deployIntake,
             INTAKE_SPEED,
             SPITTER_SPEED);
-    Supplier<Command> spit =
-        () ->
-            new InstantCommand(cargo::spit, cargo).andThen(new WaitCommand(2)).andThen(cargo::stop);
 
     var armPrototype =
         driveMasterPrototype
@@ -278,6 +279,7 @@ public class FullMap {
             .setRevSoftLimit(0.)
             .setFwdSoftLimit(CLIMBER_DISTANCE)
             .setUnitPerRotation(0.1949)
+            .setPostEncoderGearing(27)
             .setEnableBrakeMode(true);
     var leftArm =
         new ClimberArm(
@@ -285,7 +287,8 @@ public class FullMap {
                 .copy()
                 .setName("climber_left")
                 .setPort(LEFT_CLIMBER_MOTOR_PORT)
-                .setPostEncoderGearing(10)
+                .setUnitPerRotation(0.1778)
+                // checked 3/6/22 by Matthew N
                 .setReverseOutput(true)
                 .createReal(),
             new ProfiledPIDController(
@@ -296,13 +299,23 @@ public class FullMap {
             new ElevatorFeedforward(CLIMBER_FF_KS, CLIMBER_FF_KG, CLIMBER_FF_KV, CLIMBER_FF_KA));
     var rightArm =
         new ClimberArm(
-            driveMasterPrototype
+            armPrototype
                 .copy()
                 .setName("climber_right")
                 .setPort(RIGHT_CLIMBER_MOTOR_PORT)
-                .setPostEncoderGearing(10)
+                .setUnitPerRotation(0.2286)
+                // checked 3/6/22 by Matthew N
                 .setReverseOutput(false)
                 .createReal(),
+
+            //            driveMasterPrototype
+            //                .copy()
+            //                .setName("climber_right")
+            //                .setPort(RIGHT_CLIMBER_MOTOR_PORT)
+            //                .setUnitPerRotation(0.2286)
+            //                    //checked 3/6/22 by Matthew N
+            //                .setReverseOutput(false)
+            //                .createReal(),
             new ProfiledPIDController(
                 CLIMBER_KP,
                 0,
@@ -357,15 +370,18 @@ public class FullMap {
     //        .whenReleased(cargo::stop, cargo);
 
     // Move climber arm up
-    new JoystickButton(climberJoystick, XboxController.Button.kA.value)
+    new JoystickButton(climberJoystick, XboxController.Button.kY.value)
         .whenPressed(
             new InstantCommand(() -> climber.reset(climber.distanceTopBottom), climber)
-                .andThen(new WaitUntilCommand(climber::atGoal)));
-    //        .whileActiveContinuous(
-    //            new WaitCommand(0.01)
-    //                .andThen(() -> climber.setGoal(climber.getGoal() + 0.01), climber));
+                .andThen(new WaitUntilCommand(climber::atGoal))
+                .andThen(climber::stop, climber));
+    //            .whileHeld(
+    //                new WaitCommand(0.01)
+    //                    .andThen(() -> rightArm.set(0.1),
+    // climber))//climber.setGoal(climber.getGoal() + 0.01), climber));
+    //            .whenReleased(() -> rightArm.set(0), climber);
     // Move climber arm down
-    new JoystickButton(climberJoystick, XboxController.Button.kY.value)
+    new JoystickButton(climberJoystick, XboxController.Button.kA.value)
         .whenPressed(
             new InstantCommand(() -> climber.reset(0), climber)
                 .andThen(new WaitUntilCommand(climber::atGoal))
@@ -377,9 +393,11 @@ public class FullMap {
                         climber.setState(PivotingTelescopingClimber.ClimberState.RETRACTED);
                       }
                     }));
-    //        .whileActiveContinuous(
-    //            new WaitCommand(0.01)
-    //                .andThen(() -> climber.setGoal(climber.getGoal() - 0.01), climber));
+    //            .whileActiveContinuous(
+    //                new WaitCommand(0.01)
+    //                    .andThen(() -> climber.setGoal(climber.getGoal() - 0.01), climber));
+    //            .whileHeld(() -> rightArm.set(-0.1), climber)
+    //            .whenReleased(() -> rightArm.set(0), climber);
     // Extend climber arm out
     new JoystickButton(climberJoystick, XboxController.Button.kB.value)
         .whenPressed(
@@ -408,66 +426,73 @@ public class FullMap {
                     .pid(0.002, 0, 0)
                     .build())
             .angleTimeout(4)
-            .field(field);
+            .field(null);
+    // .field(field);
+
+    Supplier<Command> spit =
+        () ->
+            new InstantCommand(cargo::spit, cargo)
+                .andThen(new WaitCommand(1))
+                .andThen(cargo::stop, cargo);
 
     // (assume blue alliance)
     // Start at bottom next to hub, shoot preloaded ball, then get the two balls in that region and
     // score those
-    //        var scoreThenGetTwoThenScore =
-    //            new InstantCommand(cargo::runIntake, cargo)
-    //                .andThen(
-    //                    ramsetePrototype
-    //                        .copy()
-    //                        .name("1-2ballbluebottom")
-    //                        .traj(loadPathPlannerTraj("New Path"))
-    //                        .build())
-    //                .andThen(spit.get());
+    var scoreThenGetTwoThenScore =
+        new InstantCommand(cargo::runIntake, cargo)
+            .andThen(
+                ramsetePrototype
+                    .copy()
+                    .name("1-2ballbluebottom")
+                    .traj(loadPathPlannerTraj("New Path"))
+                    .build())
+            .andThen(spit.get());
 
     // Spit the preloaded ball, pick up another, come back and spit it out
-    //    var topOneOneTraj =
-    //        oneThenOneBallTraj(
-    //            drive,
-    //            cargo,
-    //            ramsetePrototype.name("topOneOne"),
-    //            pose(7.11, 4.80, 159.25),
-    //            pose(5.39, 5.91, 137.86));
-    //    var midOneOneTraj =
-    //        oneThenOneBallTraj(
-    //            drive,
-    //            cargo,
-    //            ramsetePrototype.name("midOneOne"),
-    //            pose(7.56, 3.00, -111.80),
-    //            pose(5.58, 2.00, -173.42));
-    //    var bottomOneOneTraj =
-    //        oneThenOneBallTraj(
-    //            drive,
-    //            cargo,
-    //            ramsetePrototype.name("bottomOneOne"),
-    //            pose(8.01, 2.82, -111.80),
-    //            pose(7.67, 0.77, -91.97));
-    //
+    var topOneOneTraj =
+        oneThenOneBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype.name("topOneOne"),
+            pose(7.11, 4.80, 159.25),
+            pose(5.39, 5.91, 137.86));
+    var midOneOneTraj =
+        oneThenOneBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype.name("midOneOne"),
+            pose(7.56, 3.00, -111.80),
+            pose(5.58, 2.00, -173.42));
+    var bottomOneOneTraj =
+        oneThenOneBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype.name("bottomOneOne"),
+            pose(8.01, 2.82, -111.80),
+            pose(7.67, 0.77, -91.97));
+
     //    // Start at the edge at the top, collect the top ball, then come back and spit
-    //    var topTwoBallTraj =
-    //        twoBallTraj(
-    //            drive,
-    //            cargo,
-    //            ramsetePrototype.name("topTwo"),
-    //            pose(6.07, 5.12, 134.24),
-    //            pose(5.34, 5.89, 130.31),
-    //            reverseHeading(pose(7.04, 4.58, -22.25)));
+    var topTwoBallTraj =
+        twoBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype.name("topTwo"),
+            pose(6.07, 5.12, 134.24),
+            pose(5.34, 5.89, 130.31),
+            reverseHeading(pose(7.04, 4.58, -22.25)));
     //    // Start at the edge at the bottom, collect the bottom ball, then come back and spit
-    //    var bottomTwoBallTraj =
-    //        twoBallTraj(
-    //            drive,
-    //            cargo,
-    //            ramsetePrototype.name("bottomTwo"),
-    //            pose(7.55, 1.83, -88.32),
-    //            pose(7.63, 0.76, -86.19),
-    //            reverseHeading(pose(8.01, 2.82, 68.63)));
+    var bottomTwoBallTraj =
+        twoBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype.name("bottomTwo"),
+            pose(7.55, 1.83, -88.32),
+            pose(7.63, 0.76, -86.19),
+            reverseHeading(pose(8.01, 2.82, 68.63)));
     var ballX = 7.65;
     var ballY = 0.69;
     var ballAngle = -92.44;
-    var turnAngle = 130.0;
+    var turnAngle = 170.0;
     var ballX2 = 5.55;
     var ballY2 = 1.85;
     var turnAngle2 = 200;
@@ -480,6 +505,7 @@ public class FullMap {
                 ramsetePrototype
                     .copy()
                     .name("threeBallAuto1")
+                    .field(field)
                     .traj(
                         TrajectoryGenerator.generateTrajectory(
                             pose(7.99, 2.81, -109.98),
@@ -494,11 +520,12 @@ public class FullMap {
                 ramsetePrototype
                     .copy()
                     .name("threeBallAuto2")
+                    .field(field)
                     .traj(
                         TrajectoryGenerator.generateTrajectory(
                             pose(ballX, ballY, turnAngle),
                             List.of(),
-                            pose(ballX2, ballY2, 160),
+                            pose(ballX2, ballY2, 140),
                             trajConfig(drive)))
                     .build())
             .andThen(
@@ -506,6 +533,7 @@ public class FullMap {
             .andThen(
                 ramsetePrototype
                     .name("threeBallAuto3")
+                    .field(field)
                     .traj(
                         TrajectoryGenerator.generateTrajectory(
                             pose(ballX2, ballY2, turnAngle2),
@@ -519,9 +547,10 @@ public class FullMap {
                 ramsetePrototype
                     .copy()
                     .name("threeBallAuto4")
+                    .field(field)
                     .traj(
                         TrajectoryGenerator.generateTrajectory(
-                            hubPose, List.of(), pose(5.70, 1.98, -140.73), trajConfig(drive)))
+                            hubPose, List.of(), pose(5.70, 1.98, -90), trajConfig(drive)))
                     .build());
 
     //    var randomTestAuto =

@@ -5,10 +5,11 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.team449.motor.WrappedMotor;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-public class ClimberArm extends ProfiledPIDSubsystem {
+public class ClimberArm extends ProfiledPIDSubsystem implements Loggable {
   private final WrappedMotor motor;
   private final ElevatorFeedforward feedforward;
 
@@ -32,12 +33,22 @@ public class ClimberArm extends ProfiledPIDSubsystem {
   }
 
   @Log
+  public double getGoal() {
+    return getController().getGoal().position;
+  }
+
+  @Log
+  public double getSetpoint() {
+    return getController().getSetpoint().position;
+  }
+
+  @Log
   public double getError() {
     return this.getController().getPositionError();
   }
 
   public void stop() {
-    this.getController().reset(0);
+    this.getController().reset(getMeasurement());
   }
 
   /**
@@ -46,5 +57,10 @@ public class ClimberArm extends ProfiledPIDSubsystem {
   @Deprecated
   public void set(double velocity) {
     this.motor.set(velocity);
+  }
+
+  @Override
+  public String configureLogName() {
+    return "ClimberArm" + motor.configureLogName();
   }
 }
