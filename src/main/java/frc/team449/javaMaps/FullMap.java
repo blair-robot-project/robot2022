@@ -38,6 +38,7 @@ import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
+import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
@@ -83,7 +84,7 @@ public class FullMap {
   // Limelight
   public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
   // Speeds
-  public static final double INTAKE_SPEED = 0.4, SPITTER_SPEED = 0.5;
+  public static final double INTAKE_SPEED = 0.6, SPITTER_SPEED = 0.6;
   public static final double AUTO_MAX_SPEED = 1.9, AUTO_MAX_ACCEL = .4;
   // Drive constants
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
@@ -118,6 +119,9 @@ public class FullMap {
       CLIMBER_FF_KV = 0,
       CLIMBER_FF_KA = 0,
       CLIMBER_FF_KG = 0;
+  public static final double CLIMBER_LEFT_UPR = 0.1778,
+          CLIMBER_RIGHT_UPR = 0.2286;
+
   // Intake
   public static final int INTAKE_PISTON_FWD_CHANNEL = 3, INTAKE_PISTON_REV_CHANNEL = 2;
   // todo find out what the channel numbers are
@@ -287,7 +291,7 @@ public class FullMap {
                 .copy()
                 .setName("climber_left")
                 .setPort(LEFT_CLIMBER_MOTOR_PORT)
-                .setUnitPerRotation(0.1778)
+                .setUnitPerRotation(CLIMBER_LEFT_UPR)
                 // checked 3/6/22 by Matthew N
                 .setReverseOutput(true)
                 .createReal(),
@@ -303,7 +307,7 @@ public class FullMap {
                 .copy()
                 .setName("climber_right")
                 .setPort(RIGHT_CLIMBER_MOTOR_PORT)
-                .setUnitPerRotation(0.2286)
+                .setUnitPerRotation(CLIMBER_RIGHT_UPR)
                 // checked 3/6/22 by Matthew N
                 .setReverseOutput(false)
                 .createReal(),
@@ -552,6 +556,11 @@ public class FullMap {
                         TrajectoryGenerator.generateTrajectory(
                             hubPose, List.of(), pose(5.70, 1.98, -90), trajConfig(drive)))
                     .build());
+    var oneBallAuto =
+            new InstantCommand(cargo::spit, cargo)
+                    .andThen(new WaitCommand(1))
+                    .andThen(cargo::stop,cargo)
+                    .andThen(new DriveAtSpeed<>(drive,0.18,2));
 
     //    var randomTestAuto =
     //        ramsetePrototype
@@ -592,7 +601,7 @@ public class FullMap {
     //            .andThen(spit.get());
 
     // Auto
-    List<Command> autoStartupCommands = List.of(resetDriveOdometry.get(), threeBallAuto);
+    List<Command> autoStartupCommands = List.of(new InstantCommand(() -> drive.resetOdometry(pose(7.76, 2.89, 249.19)), drive).andThen(oneBallAuto));
 
     List<Command> robotStartupCommands = List.of();
 
