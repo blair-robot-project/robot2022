@@ -1,15 +1,13 @@
 package frc.team449.javaMaps;
 
 import com.pathplanner.lib.PathPlanner;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.*;
-import edu.wpi.first.math.estimator.KalmanFilter;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -38,6 +36,7 @@ import frc.team449.ahrs.PIDAngleControllerBuilder;
 import frc.team449.auto.commands.RamseteBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.unidirectional.DriveFeedforward;
+import frc.team449.drive.unidirectional.DriveLoopBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
@@ -194,29 +193,23 @@ public class FullMap {
             .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
             .createRealOrSim(rightEncSim);
 
-    var driveController =
-        new LinearQuadraticRegulator<>(
-            drivePlant,
-            VecBuilder.fill(1.0, 1.0), // todo tune this
-            VecBuilder.fill(MAX_VOLT, MAX_VOLT), // todo tune this
-            DT_SECONDS);
-    var driveFeedforward = new LinearPlantInversionFeedforward<>(drivePlant, DT_SECONDS);
-    var driveObserver =
-        new KalmanFilter<>(
-            Nat.N2(),
-            Nat.N2(),
-            drivePlant,
-            VecBuilder.fill(3.0, 3.0), // todo tune this
-            VecBuilder.fill(0.01, 0.01), // todo tune this
-            DT_SECONDS);
     var driveLoop =
-        new LinearSystemLoop<>(driveController, driveFeedforward, driveObserver, MAX_VOLT);
+        new DriveLoopBuilder()
+            .drivePlant(drivePlant)
+            .maxVolts(RobotController.getBatteryVoltage())
+            .dtSeconds(0.02)
+            .errorTolerance(1.0, 1.0) // todo tune this
+            .stateStdDev(3.0, 3.0) // todo tune this
+            .measStdDev(0.01, 0.01) // todo tune this
+            .build();
 
     var drive =
         new DriveUnidirectionalWithGyro(
                 leftMaster,
                 rightMaster,
                 navx,
+                //                new DriveFeedforward.SimpleFF(DRIVE_KS_LINEAR, DRIVE_KV_LINEAR,
+                // DRIVE_KA_LINEAR),
                 new DriveFeedforward.LinearSystemFF(driveLoop),
                 DRIVE_TRACK_WIDTH)
             .simIfNeeded(driveSim, leftEncSim, rightEncSim);
@@ -577,7 +570,10 @@ public class FullMap {
                     .field(field)
                     .traj(
                         TrajectoryGenerator.generateTrajectory(
-                            hubPose, List.of(), pose(5.70, 1.98, -90), trajConfig(drive)))
+                            hubPose,
+                            List.of(),
+                            pose(5.70, 1.98, hubPose.getRotation().getDegrees()),
+                            trajConfig(drive)))
                     .build());
     var oneBallAuto =
         new InstantCommand(cargo::spit, cargo)
@@ -627,7 +623,7 @@ public class FullMap {
     List<Command> autoStartupCommands =
         List.of(
             new InstantCommand(() -> drive.resetOdometry(pose(7.76, 2.89, 249.19)), drive)
-                .andThen(oneBallAuto));
+                .andThen(threeBallAuto));
 
     List<Command> robotStartupCommands = List.of();
 
