@@ -1,15 +1,18 @@
 package frc.team449.javaMaps;
 
 import com.pathplanner.lib.PathPlanner;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.controller.*;
+import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -94,14 +97,15 @@ public class FullMap {
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0,
       DRIVE_KP_POS = 45.269,
-      DRIVE_KD_POS = 3264.2,
-      DRIVE_FF_KS = 0.19993,
-      DRIVE_FF_KV = 2.3776,
-      DRIVE_FF_KA = 0.31082;
-  // todo actually use these feedforward values
-  public static final double DRIVE_ANGLE_FF_KS = 0.59239,
-      DRIVE_ANGLE_FF_KV = 25.315,
-      DRIVE_ANGLE_FF_KA = 145.68;
+      DRIVE_KD_POS = 3264.2;
+  // Feedforward gains gotten with Sysid
+  // todo use the linear and angular kS gains
+  public static final double DRIVE_KS_LINEAR = 0.19993,
+      DRIVE_KV_LINEAR = 2.3776,
+      DRIVE_KA_LINEAR = 0.31082,
+      DRIVE_KS_ANGULAR = 0.59239,
+      DRIVE_KV_ANGULAR = 25.315,
+      DRIVE_KA_ANGULAR = 145.68;
   // old value from measuring from the outside of the wheel: 0.6492875
   // measuring from the inside of the wheel : .57785
   public static final double DRIVE_TRACK_WIDTH = 0.6492875;
@@ -124,7 +128,9 @@ public class FullMap {
 
   // Intake
   public static final int INTAKE_PISTON_FWD_CHANNEL = 3, INTAKE_PISTON_REV_CHANNEL = 2;
-  // todo find out what the channel numbers are
+
+  public static final double DT_SECONDS = Units.millisecondsToSeconds(20);
+  public static final double MAX_VOLT = 12;
 
   private FullMap() {}
 
@@ -152,13 +158,18 @@ public class FullMap {
             .setPostEncoderGearing(DRIVE_GEARING)
             .setEnableVoltageComp(true);
 
-    // todo use sysid gains to make this
+    var drivePlant =
+        LinearSystemId.identifyDrivetrainSystem(
+            DRIVE_KV_LINEAR,
+            DRIVE_KA_LINEAR,
+            DRIVE_KV_ANGULAR,
+            DRIVE_KA_ANGULAR,
+            DRIVE_TRACK_WIDTH);
     var driveSim =
         new DifferentialDrivetrainSim(
+            drivePlant,
             DCMotor.getNEO(3),
             DRIVE_GEARING,
-            MOMENT_OF_INERTIA,
-            MASS,
             DRIVE_WHEEL_RADIUS,
             DRIVE_TRACK_WIDTH,
             VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
@@ -185,13 +196,32 @@ public class FullMap {
             .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
             .createRealOrSim(rightEncSim);
 
+    var driveController =
+        new LinearQuadraticRegulator<>(
+            drivePlant,
+            VecBuilder.fill(1.0, 1.0), // todo tune this
+            VecBuilder.fill(MAX_VOLT, MAX_VOLT),
+            DT_SECONDS);
+    var driveFeedforward = new LinearPlantInversionFeedforward<>(drivePlant, DT_SECONDS);
+    var driveObserver =
+        new KalmanFilter<>(
+            Nat.N2(),
+            Nat.N2(),
+            drivePlant,
+            VecBuilder.fill(3.0, 3.0), // todo tune this
+            VecBuilder.fill(0.01, 0.01), // todo tune this
+            DT_SECONDS);
+    var driveLoop =
+        new LinearSystemLoop<>(driveController, driveFeedforward, driveObserver, MAX_VOLT);
+
     var drive =
         DriveUnidirectionalWithGyro.createRealOrSim(
             leftMaster,
             rightMaster,
             navx,
             new DriveSettingsBuilder()
-                .feedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
+                .feedforward(
+                    new SimpleMotorFeedforward(DRIVE_KS_LINEAR, DRIVE_KV_LINEAR, DRIVE_KA_LINEAR))
                 .trackWidth(DRIVE_TRACK_WIDTH)
                 .build(),
             driveSim,
