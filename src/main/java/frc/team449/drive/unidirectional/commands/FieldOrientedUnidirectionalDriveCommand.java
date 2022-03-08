@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.ahrs.PIDAngleController;
-import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.ahrs.SubsystemAHRS;
+import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.oi.fieldoriented.OIFieldOriented;
 import org.jetbrains.annotations.NotNull;
 
@@ -161,7 +161,9 @@ public class FieldOrientedUnidirectionalDriveCommand<
       this.lowerBound = lowerBound;
     }
 
-    /** @return The angle to snap the setpoint to, in degrees. */
+    /**
+     * @return The angle to snap the setpoint to, in degrees.
+     */
     public double getSnapTo() {
       return this.snapTo;
     }

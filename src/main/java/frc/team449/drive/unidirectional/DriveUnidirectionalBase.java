@@ -1,10 +1,10 @@
 package frc.team449.drive.unidirectional;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.drive.DriveSettings;
-import frc.team449.other.Updater;
 import frc.team449.motor.WrappedMotor;
+import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +17,10 @@ public class DriveUnidirectionalBase extends SubsystemBase
   protected final @NotNull WrappedMotor rightMaster;
 
   /** Current settings for the drivetrain */
-  protected final @NotNull DriveSettings settings;
+  protected final @NotNull DriveFeedforward feedforward;
+
+  /** Drivetrain kinematics processor for measuring individual wheel speeds */
+  @NotNull private final DifferentialDriveKinematics driveKinematics;
 
   // Cached values for various sensor readings
   private double cachedLeftVel = Double.NaN;
@@ -32,10 +35,12 @@ public class DriveUnidirectionalBase extends SubsystemBase
   public DriveUnidirectionalBase(
       @NotNull WrappedMotor leftMaster,
       @NotNull WrappedMotor rightMaster,
-      @NotNull DriveSettings settings) {
+      @NotNull DriveFeedforward feedforward,
+      double trackWidth) {
     this.leftMaster = leftMaster;
     this.rightMaster = rightMaster;
-    this.settings = settings;
+    this.feedforward = feedforward;
+    this.driveKinematics = new DifferentialDriveKinematics(trackWidth);
     Updater.subscribe(this);
   }
 
@@ -65,68 +70,40 @@ public class DriveUnidirectionalBase extends SubsystemBase
 
   @Override
   public void setOutput(double left, double right) {
-    //todo add feedforward
-    this.leftMaster.set(left);
-    this.rightMaster.set(right);
+    this.setVoltage(
+        left * RobotController.getBatteryVoltage(), right * RobotController.getBatteryVoltage());
   }
 
   /**
-   * Set the position setpoint for both the left and right sides. Note: This actually moves there
+   * Set voltage output raw
    *
-   * @param leftPos Position setpoint for left side
-   * @param rightPos Position setpoint for right side
+   * @param left The voltage output for the left side of the drive from [-12, 12]
+   * @param right The voltage output for the right side of the drive from [-12, 12]
    */
-  public void setPositionSetpoint(double leftPos, double rightPos) {
-    var leftOutput = settings.leftPosPID.calculate(this.getLeftPos(), leftPos);
-    var rightOutput = settings.rightPosPID.calculate(this.getRightPos(), rightPos);
-
-    while (!settings.leftPosPID.atSetpoint() || !settings.rightPosPID.atSetpoint()) {
-      this.setOutput(leftOutput, rightOutput);
-      leftOutput = settings.leftPosPID.calculate(this.getLeftPos());
-      rightOutput = settings.rightPosPID.calculate(this.getRightPos());
-    }
+  public void setVoltage(double left, double right) {
+    var leftRightVolts =
+        feedforward.calculate(left, right, getLeftVelCached(), getRightVelCached());
+    this.leftMaster.setVoltage(leftRightVolts.fst);
+    this.rightMaster.setVoltage(leftRightVolts.snd);
   }
 
-  /**
-   * Hold the current position.
-   *
-   * @param pos the position to stop at
-   */
-  public void holdPosition(double pos) {
-    this.holdPosition(pos, pos);
-  }
-
-  /**
-   * Hold the current position.
-   *
-   * @param leftPos the position to stop the left side at
-   * @param rightPos the position to stop the right side at
-   */
-  public void holdPosition(double leftPos, double rightPos) {
-    this.setPositionSetpoint(leftPos, rightPos);
-  }
-
-  @NotNull
   @Override
-  public Double getLeftVel() {
+  public double getLeftVel() {
     return this.leftMaster.encoder.getVelocityUnits();
   }
 
-  @NotNull
   @Override
-  public Double getRightVel() {
+  public double getRightVel() {
     return this.rightMaster.encoder.getVelocityUnits();
   }
 
-  @NotNull
   @Override
-  public Double getLeftPos() {
+  public double getLeftPos() {
     return this.leftMaster.encoder.getPositionUnits();
   }
 
-  @NotNull
   @Override
-  public Double getRightPos() {
+  public double getRightPos() {
     return this.rightMaster.encoder.getPositionUnits();
   }
 
@@ -142,9 +119,8 @@ public class DriveUnidirectionalBase extends SubsystemBase
     return this.cachedRightVel;
   }
 
-  @NotNull
   @Override
-  public Double getLeftPosCached() {
+  public double getLeftPosCached() {
     return this.cachedLeftPos;
   }
 
@@ -154,9 +130,18 @@ public class DriveUnidirectionalBase extends SubsystemBase
     return this.cachedRightPos;
   }
 
-  /** @return The feedforward calculator for left motors */
-  public SimpleMotorFeedforward getFeedforward() {
-    return settings.feedforward;
+  /**
+   * @return Kinematics processor for wheel speeds
+   */
+  @NotNull
+  public DifferentialDriveKinematics getDriveKinematics() {
+    return this.driveKinematics;
+  }
+
+  /** The feedforward calculator */
+  @NotNull
+  public DriveFeedforward getFeedforward() {
+    return feedforward;
   }
 
   /** Updates all cached values with current ones. */

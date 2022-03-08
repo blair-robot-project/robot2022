@@ -3,15 +3,13 @@ package frc.team449.drive.unidirectional;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import frc.team449.drive.DriveSettings;
-import frc.team449.ahrs.SubsystemAHRS;
 import frc.team449.ahrs.AHRS;
+import frc.team449.ahrs.SubsystemAHRS;
 import frc.team449.motor.WrappedMotor;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
@@ -21,9 +19,6 @@ import org.jetbrains.annotations.NotNull;
 public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase implements SubsystemAHRS {
   /** The NavX gyro */
   @NotNull protected final AHRS ahrs;
-
-  /** Drivetrain kinematics processor for measuring individual wheel speeds */
-  @NotNull private final DifferentialDriveKinematics driveKinematics;
 
   /** Drivetrain odometry tracker for tracking position */
   private final DifferentialDriveOdometry driveOdometry;
@@ -36,18 +31,17 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
    * @param leftMaster The master talon on the left side of the drive.
    * @param rightMaster The master talon on the right side of the drive.
    * @param ahrs The NavX gyro for calculating this drive's heading and angular velocity.
-   * @param driveSettings The settings for this drivetrain
    */
   public DriveUnidirectionalWithGyro(
       @NotNull WrappedMotor leftMaster,
       @NotNull WrappedMotor rightMaster,
       @NotNull AHRS ahrs,
-      @NotNull DriveSettings driveSettings) {
-    super(leftMaster, rightMaster, driveSettings);
+      @NotNull DriveFeedforward feedforward,
+      double trackWidth) {
+    super(leftMaster, rightMaster, feedforward, trackWidth);
     // Initialize stuff
     this.ahrs = ahrs;
     this.overrideGyro = false;
-    this.driveKinematics = new DifferentialDriveKinematics(driveSettings.trackWidth);
     this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(this.getHeading()));
   }
 
@@ -55,45 +49,25 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
    * Create a {@link DriveUnidirectionalWithGyro} if not in a simulation, make a {@link
    * DriveUnidirectionalWithGyroSim} otherwise.
    *
-   * @param leftMaster The leader motor on the left side of the drive.
-   * @param rightMaster The leader motor on the right side of the drive.
-   * @param ahrs The NavX gyro for calculating this drive's heading and angular velocity.
-   * @param settings The settings for this drivetrain
    * @param driveSim The drivetrain simulation object, if needed
    * @param leftEncSim The simulated encoder for the left side, if needed
    * @param rightEncSim The simulated encoder for the left side, if needed
    */
-  @Contract("_, _, _, _, _, _, _ -> new")
-  public static @NotNull DriveUnidirectionalWithGyro createRealOrSim(
-      @NotNull WrappedMotor leftMaster,
-      @NotNull WrappedMotor rightMaster,
-      @NotNull AHRS ahrs,
-      @NotNull DriveSettings settings,
+  @Contract("_, _, _ -> new")
+  public @NotNull DriveUnidirectionalWithGyro simIfNeeded(
       @NotNull DifferentialDrivetrainSim driveSim,
       @NotNull EncoderSim leftEncSim,
       @NotNull EncoderSim rightEncSim) {
     if (RobotBase.isReal()) {
-      return new DriveUnidirectionalWithGyro(leftMaster, rightMaster, ahrs, settings);
+      return this;
     } else {
-      return new DriveUnidirectionalWithGyroSim(
-          leftMaster, rightMaster, ahrs, settings, driveSim, leftEncSim, rightEncSim);
+      return new DriveUnidirectionalWithGyroSim(this, driveSim, leftEncSim, rightEncSim);
     }
   }
 
   @Override
   public void periodic() {
     updateOdometry();
-  }
-
-  /**
-   * Set voltage output raw
-   *
-   * @param left The voltage output for the left side of the drive from [-12, 12]
-   * @param right The voltage output for the right side of the drive from [-12, 12]
-   */
-  public void setVoltage(final double left, final double right) {
-    leftMaster.setVoltage(left + settings.feedforward.calculate(left));
-    rightMaster.setVoltage(right + settings.feedforward.calculate(right));
   }
 
   /**
@@ -186,14 +160,18 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
     return this.ahrs.getCachedPitch();
   }
 
-  /** @return true if the NavX is currently overriden, false otherwise. */
+  /**
+   * @return true if the NavX is currently overriden, false otherwise.
+   */
   @Override
   @Log
   public boolean getOverrideGyro() {
     return this.overrideGyro;
   }
 
-  /** @param override true to override the NavX, false to un-override it. */
+  /**
+   * @param override true to override the NavX, false to un-override it.
+   */
   @Override
   public void setOverrideGyro(final boolean override) {
     this.overrideGyro = override;
@@ -214,7 +192,9 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
         Rotation2d.fromDegrees(this.getHeading()), this.getLeftPos(), this.getRightPos());
   }
 
-  /** @return Current estimated pose based on odometry tracker data */
+  /**
+   * @return Current estimated pose based on odometry tracker data
+   */
   @Log.ToString
   @NotNull
   public Pose2d getCurrentPose() {
@@ -223,16 +203,12 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
         : new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
   }
 
-  /** @return Current wheel speeds based on encoder readings for future pose correction */
+  /**
+   * @return Current wheel speeds based on encoder readings for future pose correction
+   */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     // need to convert to meters
     return new DifferentialDriveWheelSpeeds(this.getLeftVel(), this.getRightVel());
-  }
-
-  /** @return Kinematics processor for wheel speeds */
-  @NotNull
-  public DifferentialDriveKinematics getDriveKinematics() {
-    return this.driveKinematics;
   }
 
   @Override

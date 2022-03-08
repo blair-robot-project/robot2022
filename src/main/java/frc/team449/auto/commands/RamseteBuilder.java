@@ -2,6 +2,7 @@ package frc.team449.auto.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -137,7 +138,7 @@ public final class RamseteBuilder {
             this.traj,
             drivetrain::getCurrentPose,
             new RamseteController(b, zeta),
-            drivetrain.getFeedforward(),
+            new SimpleMotorFeedforward(0, 0, 0),
             drivetrain.getDriveKinematics(),
             drivetrain::getWheelSpeeds,
             leftPid,

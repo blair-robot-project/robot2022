@@ -9,7 +9,6 @@ import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -38,7 +37,7 @@ import frc.team449.ahrs.AHRS;
 import frc.team449.ahrs.PIDAngleControllerBuilder;
 import frc.team449.auto.commands.RamseteBuilder;
 import frc.team449.components.RunningLinRegComponent;
-import frc.team449.drive.DriveSettingsBuilder;
+import frc.team449.drive.unidirectional.DriveFeedforward;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
@@ -123,8 +122,7 @@ public class FullMap {
       CLIMBER_FF_KV = 0,
       CLIMBER_FF_KA = 0,
       CLIMBER_FF_KG = 0;
-  public static final double CLIMBER_LEFT_UPR = 0.1778,
-          CLIMBER_RIGHT_UPR = 0.2286;
+  public static final double CLIMBER_LEFT_UPR = 0.1778, CLIMBER_RIGHT_UPR = 0.2286;
 
   // Intake
   public static final int INTAKE_PISTON_FWD_CHANNEL = 3, INTAKE_PISTON_REV_CHANNEL = 2;
@@ -200,7 +198,7 @@ public class FullMap {
         new LinearQuadraticRegulator<>(
             drivePlant,
             VecBuilder.fill(1.0, 1.0), // todo tune this
-            VecBuilder.fill(MAX_VOLT, MAX_VOLT),
+            VecBuilder.fill(MAX_VOLT, MAX_VOLT), // todo tune this
             DT_SECONDS);
     var driveFeedforward = new LinearPlantInversionFeedforward<>(drivePlant, DT_SECONDS);
     var driveObserver =
@@ -215,18 +213,13 @@ public class FullMap {
         new LinearSystemLoop<>(driveController, driveFeedforward, driveObserver, MAX_VOLT);
 
     var drive =
-        DriveUnidirectionalWithGyro.createRealOrSim(
-            leftMaster,
-            rightMaster,
-            navx,
-            new DriveSettingsBuilder()
-                .feedforward(
-                    new SimpleMotorFeedforward(DRIVE_KS_LINEAR, DRIVE_KV_LINEAR, DRIVE_KA_LINEAR))
-                .trackWidth(DRIVE_TRACK_WIDTH)
-                .build(),
-            driveSim,
-            leftEncSim,
-            rightEncSim);
+        new DriveUnidirectionalWithGyro(
+                leftMaster,
+                rightMaster,
+                navx,
+                new DriveFeedforward.LinearSystemFF(driveLoop),
+                DRIVE_TRACK_WIDTH)
+            .simIfNeeded(driveSim, leftEncSim, rightEncSim);
 
     var throttlePrototype =
         new ThrottlePolynomialBuilder().stick(driveJoystick).smoothingTimeSecs(0.06);
@@ -587,10 +580,10 @@ public class FullMap {
                             hubPose, List.of(), pose(5.70, 1.98, -90), trajConfig(drive)))
                     .build());
     var oneBallAuto =
-            new InstantCommand(cargo::spit, cargo)
-                    .andThen(new WaitCommand(1))
-                    .andThen(cargo::stop,cargo)
-                    .andThen(new DriveAtSpeed<>(drive,0.18,2));
+        new InstantCommand(cargo::spit, cargo)
+            .andThen(new WaitCommand(1))
+            .andThen(cargo::stop, cargo)
+            .andThen(new DriveAtSpeed<>(drive, 0.18, 2));
 
     //    var randomTestAuto =
     //        ramsetePrototype
@@ -631,7 +624,10 @@ public class FullMap {
     //            .andThen(spit.get());
 
     // Auto
-    List<Command> autoStartupCommands = List.of(new InstantCommand(() -> drive.resetOdometry(pose(7.76, 2.89, 249.19)), drive).andThen(oneBallAuto));
+    List<Command> autoStartupCommands =
+        List.of(
+            new InstantCommand(() -> drive.resetOdometry(pose(7.76, 2.89, 249.19)), drive)
+                .andThen(oneBallAuto));
 
     List<Command> robotStartupCommands = List.of();
 
@@ -682,7 +678,7 @@ public class FullMap {
         .setKinematics(drive.getDriveKinematics())
         .addConstraint(
             new DifferentialDriveVoltageConstraint(
-                drive.getFeedforward(),
+                drive.getFeedforward().asWpiFF(),
                 drive.getDriveKinematics(),
                 RobotController.getBatteryVoltage()))
         .addConstraint(new CentripetalAccelerationConstraint(0.5));

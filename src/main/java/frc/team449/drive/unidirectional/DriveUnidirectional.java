@@ -26,39 +26,35 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
   /**
    * Get the velocity of the left side of the drive.
    *
-   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second
    */
-  @Nullable
-  Double getLeftVel();
+  double getLeftVel();
 
   /**
    * Get the velocity of the right side of the drive.
    *
-   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second
    */
-  @Nullable
-  Double getRightVel();
+  double getRightVel();
 
   /**
    * Get the position of the left side of the drive.
    *
-   * @return The signed position in meters, or null if the drive doesn't have encoders.
+   * @return The signed position in meters
    */
-  @Nullable
-  Double getLeftPos();
+  double getLeftPos();
 
   /**
    * Get the position of the right side of the drive.
    *
-   * @return The signed position in meters, or null if the drive doesn't have encoders.
+   * @return The signed position in meters
    */
-  @Nullable
-  Double getRightPos();
+  double getRightPos();
 
   /**
    * Get the cached velocity of the left side of the drive.
    *
-   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second
    */
   @Nullable
   Double getLeftVelCached();
@@ -66,7 +62,7 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
   /**
    * Get the cached velocity of the right side of the drive.
    *
-   * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
+   * @return The signed velocity in meters per second
    */
   @Nullable
   Double getRightVelCached();
@@ -74,15 +70,14 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
   /**
    * Get the cached position of the left side of the drive.
    *
-   * @return The signed position in meters, or null if the drive doesn't have encoders.
+   * @return The signed position in meters
    */
-  @Nullable
-  Double getLeftPosCached();
+  double getLeftPosCached();
 
   /**
    * Get the cached position of the right side of the drive.
    *
-   * @return The signed position in meters, or null if the drive doesn't have encoders.
+   * @return The signed position in meters
    */
   @Nullable
   Double getRightPosCached();
