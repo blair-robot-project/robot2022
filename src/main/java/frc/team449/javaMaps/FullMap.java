@@ -355,11 +355,11 @@ public class FullMap {
 
     // Button bindings here
     // Take in balls but don't shoot
-    new JoystickButton(cargoJoystick, XboxController.Button.kA.value)
+    new JoystickButton(cargoJoystick, XboxController.Button.kLeftBumper.value)
         .whileHeld(cargo::runIntake, cargo)
         .whenReleased(cargo::stop, cargo);
     // Run all motors in intake to spit balls out
-    new JoystickButton(cargoJoystick, XboxController.Button.kY.value)
+    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
         .whileHeld(cargo::spit, cargo)
         .whenReleased(cargo::stop, cargo);
     // Stow/retract intake
