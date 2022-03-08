@@ -28,7 +28,7 @@ public class ClimberArm extends ProfiledPIDSubsystem implements Loggable {
   }
 
   @Override
-  protected double getMeasurement() {
+  public double getMeasurement() {
     return this.motor.getPositionUnits();
   }
 

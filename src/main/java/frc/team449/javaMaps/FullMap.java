@@ -113,14 +113,14 @@ public class FullMap {
   // todo find out what the channel numbers are
   public static final int CLIMBER_SENSOR_CHANNEL = 6; // todo find out what this really is
   public static final double CLIMBER_MAX_VEL = 0.1, CLIMBER_MAX_ACCEL = 0.1;
-  public static final double CLIMBER_DISTANCE = 0.5;
-  public static final double CLIMBER_KP = 12;
+  public static final double CLIMBER_DISTANCE = 0.7, CLIMBER_MID_DISTANCE = 0.6;
+  public static final double CLIMBER_KP = 30; //600;
   public static final double CLIMBER_FF_KS = 0,
       CLIMBER_FF_KV = 0,
       CLIMBER_FF_KA = 0,
       CLIMBER_FF_KG = 0;
-  public static final double CLIMBER_LEFT_UPR = 0.1778,
-          CLIMBER_RIGHT_UPR = 0.2286;
+  public static final double CLIMBER_LEFT_UPR = 0.239, // 0.1778,
+      CLIMBER_RIGHT_UPR = 0.239; // 0.2286;
 
   // Intake
   public static final int INTAKE_PISTON_FWD_CHANNEL = 3, INTAKE_PISTON_REV_CHANNEL = 2;
@@ -337,12 +337,7 @@ public class FullMap {
             leftArm,
             rightArm,
             pivotPiston,
-            RobotBase.isReal()
-                ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get
-                : () -> false, // todo this is not great, simulate the Hall effect some other way?
-            //                did teddy right this cuz he's the only person I know that says "janky"
-            // He didn't, don't besmirch his name. Jank is my specialty, although this wasn't
-            // actually that bad
+            RobotBase.isReal() ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get : () -> false,
             CLIMBER_DISTANCE);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
@@ -373,12 +368,14 @@ public class FullMap {
     //        .whileHeld(cargo::runIntakeReverse, cargo)
     //        .whenReleased(cargo::stop, cargo);
 
-    // Move climber arm up
+    // Move climber arms up enough for mid rung
+    //    new JoystickButton(climberJoystick, XboxController.Button.kRightBumper.value)
+    //        .whenPressed(() -> climber.reset(CLIMBER_MID_DISTANCE), climber);
+    // Move climber arm up enough for high rung
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)
-        .whenPressed(
-            new InstantCommand(() -> climber.reset(climber.distanceTopBottom), climber)
-                .andThen(new WaitUntilCommand(climber::atGoal))
-                .andThen(climber::stop, climber));
+        .whenPressed(new InstantCommand(() -> climber.disable(), climber)
+                    .andThen(new InstantCommand(() -> climber.set(.6), climber)))
+        .whenReleased(climber::hold, climber);
     //            .whileHeld(
     //                new WaitCommand(0.01)
     //                    .andThen(() -> rightArm.set(0.1),
@@ -386,17 +383,9 @@ public class FullMap {
     //            .whenReleased(() -> rightArm.set(0), climber);
     // Move climber arm down
     new JoystickButton(climberJoystick, XboxController.Button.kA.value)
-        .whenPressed(
-            new InstantCommand(() -> climber.reset(0), climber)
-                .andThen(new WaitUntilCommand(climber::atGoal))
-                .withInterrupt(climber::hitBottom)
-                .andThen(
-                    () -> {
-                      if (climber.hitBottom()) {
-                        climber.stop();
-                        climber.setState(PivotingTelescopingClimber.ClimberState.RETRACTED);
-                      }
-                    }));
+            .whenPressed(new InstantCommand(() -> climber.disable(), climber)
+                    .andThen(new InstantCommand(() -> climber.set(-.6), climber)))
+            .whenReleased(climber::hold, climber);
     //            .whileActiveContinuous(
     //                new WaitCommand(0.01)
     //                    .andThen(() -> climber.setGoal(climber.getGoal() - 0.01), climber));
@@ -410,6 +399,14 @@ public class FullMap {
     // Retract climber arm in with piston
     new JoystickButton(climberJoystick, XboxController.Button.kX.value)
         .whenPressed(climber::pivotTelescopingArmIn);
+    // Stop climber
+    //    new JoystickButton(climberJoystick, XboxController.Button.kRightBumper.value)
+    //        .whenPressed(climber::stop, climber);
+    // Manual control to go down
+    new JoystickButton(climberJoystick, XboxController.Button.kStart.value)
+        .whenPressed(climber::disable, climber)
+        .whileHeld(() -> climber.set(-0.1), climber)
+        .whenReleased(() -> climber.set(0), climber);
 
     var ramsetePrototype =
         new RamseteBuilder()
@@ -557,10 +554,10 @@ public class FullMap {
                             hubPose, List.of(), pose(5.70, 1.98, -90), trajConfig(drive)))
                     .build());
     var oneBallAuto =
-            new InstantCommand(cargo::spit, cargo)
-                    .andThen(new WaitCommand(1))
-                    .andThen(cargo::stop,cargo)
-                    .andThen(new DriveAtSpeed<>(drive,0.18,2));
+        new InstantCommand(cargo::spit, cargo)
+            .andThen(new WaitCommand(1))
+            .andThen(cargo::stop, cargo)
+            .andThen(new DriveAtSpeed<>(drive, 0.18, 2));
 
     //    var randomTestAuto =
     //        ramsetePrototype
@@ -601,7 +598,10 @@ public class FullMap {
     //            .andThen(spit.get());
 
     // Auto
-    List<Command> autoStartupCommands = List.of(new InstantCommand(() -> drive.resetOdometry(pose(7.76, 2.89, 249.19)), drive).andThen(oneBallAuto));
+    List<Command> autoStartupCommands =
+        List.of(
+            new InstantCommand(() -> drive.resetOdometry(pose(7.76, 2.89, 249.19)), drive)
+                .andThen(oneBallAuto));
 
     List<Command> robotStartupCommands = List.of();
 
