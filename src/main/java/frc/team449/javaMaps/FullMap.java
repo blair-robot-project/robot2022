@@ -198,7 +198,7 @@ public class FullMap {
             .drivePlant(drivePlant)
             .maxVolts(RobotController.getBatteryVoltage())
             .dtSeconds(0.02)
-            .errorTolerance(1.0, 1.0) // todo tune this
+            .errorTolerance(8.0, 8.0) // todo tune this
             .stateStdDev(3.0, 3.0) // todo tune this
             .measStdDev(0.01, 0.01) // todo tune this
             .build();

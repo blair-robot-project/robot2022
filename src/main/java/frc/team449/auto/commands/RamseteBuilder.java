@@ -138,7 +138,7 @@ public final class RamseteBuilder {
             this.traj,
             drivetrain::getCurrentPose,
             new RamseteController(b, zeta),
-            new SimpleMotorFeedforward(0, 0, 0),
+            drivetrain.getFeedforward().asWpiFF(),
             drivetrain.getDriveKinematics(),
             drivetrain::getWheelSpeeds,
             leftPid,
