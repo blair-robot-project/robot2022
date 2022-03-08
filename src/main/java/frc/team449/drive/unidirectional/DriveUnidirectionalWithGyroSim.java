@@ -49,8 +49,8 @@ public class DriveUnidirectionalWithGyroSim extends DriveUnidirectionalWithGyro
   public void setVoltage(double left, double right) {
     var leftRightVolts =
         feedforward.calculate(left, right, getLeftVelCached(), getRightVelCached());
-    driveSim.setInputs(leftRightVolts.fst, leftRightVolts.snd);
-    super.setVoltage(left, right);
+    driveSim.setInputs(leftRightVolts.getFirst(), leftRightVolts.getSecond());
+    super.setVoltage(leftRightVolts.getFirst(), leftRightVolts.getSecond());
   }
 
   @Override

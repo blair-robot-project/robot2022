@@ -1,11 +1,11 @@
 package frc.team449.drive.unidirectional;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import frc.team449.other.Clock;
-import frc.team449.other.DoublePair;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +23,8 @@ public interface DriveFeedforward {
    */
   @Contract(pure = false)
   @NotNull
-  DoublePair calculate(double leftVolt, double rightVolt, double leftVel, double rightVel);
+  Pair<Double, Double> calculate(
+      double leftVolt, double rightVolt, double leftVel, double rightVel);
 
   @NotNull
   SimpleMotorFeedforward asWpiFF();
@@ -39,9 +40,9 @@ public interface DriveFeedforward {
     @Contract("_, _, _, _ -> new")
     @NotNull
     @Override
-    public DoublePair calculate(
+    public Pair<Double, Double> calculate(
         double leftVolt, double rightVolt, double leftVel, double rightVel) {
-      return new DoublePair(
+      return new Pair<>(
           leftVolt + feedforward.calculate(leftVolt), rightVolt + feedforward.calculate(rightVolt));
     }
 
@@ -73,7 +74,7 @@ public interface DriveFeedforward {
     @Contract(pure = false)
     @NotNull
     @Override
-    public DoublePair calculate(
+    public Pair<Double, Double> calculate(
         double leftVolt, double rightVolt, double leftVel, double rightVel) {
       driveLoop.setNextR(VecBuilder.fill(leftVolt, rightVolt));
       driveLoop.correct(VecBuilder.fill(leftVel, rightVel));
@@ -83,7 +84,7 @@ public interface DriveFeedforward {
       this.lastTime = now;
 
       // todo ensure that getU(1) is what we want
-      return new DoublePair(driveLoop.getU(0), driveLoop.getU(1));
+      return new Pair<>(driveLoop.getU(0), driveLoop.getU(1));
     }
 
     @NotNull

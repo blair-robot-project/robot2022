@@ -83,8 +83,8 @@ public class DriveUnidirectionalBase extends SubsystemBase
   public void setVoltage(double left, double right) {
     var leftRightVolts =
         feedforward.calculate(left, right, getLeftVelCached(), getRightVelCached());
-    this.leftMaster.setVoltage(leftRightVolts.fst);
-    this.rightMaster.setVoltage(leftRightVolts.snd);
+    this.leftMaster.setVoltage(leftRightVolts.getFirst());
+    this.rightMaster.setVoltage(leftRightVolts.getSecond());
   }
 
   @Override
