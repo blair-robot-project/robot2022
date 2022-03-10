@@ -225,7 +225,7 @@ public class FullMap {
                         .axis(XboxController.Axis.kRightTrigger.value)
                         .inverted(false)
                         .build())),
-            new RampComponent(1, 1.5));
+            new RampComponent(.9, 1.8));
     var oi =
         new OIArcadeWithDPad(
             rotThrottle,
@@ -296,7 +296,6 @@ public class FullMap {
                 .setName("climber_left")
                 .setPort(LEFT_CLIMBER_MOTOR_PORT)
                 .setUnitPerRotation(CLIMBER_LEFT_UPR)
-                // checked 3/6/22 by Matthew N
                 .setReverseOutput(true)
                 .createReal(),
             new ProfiledPIDController(
@@ -341,7 +340,7 @@ public class FullMap {
             leftArm,
             rightArm,
             pivotPiston,
-            RobotBase.isReal() ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get : () -> false,
+            RobotBase.isSimulation() ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get : () -> false,
             CLIMBER_DISTANCE,
             CLIMBER_MID_DISTANCE);
 
@@ -355,18 +354,18 @@ public class FullMap {
 
     // Button bindings here
     // Take in balls but don't shoot
-    new JoystickButton(cargoJoystick, XboxController.Button.kLeftBumper.value)
+    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
         .whileHeld(cargo::runIntake, cargo)
         .whenReleased(cargo::stop, cargo);
     // Run all motors in intake to spit balls out
-    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
+    new JoystickButton(cargoJoystick, XboxController.Button.kLeftBumper.value)
         .whileHeld(cargo::spit, cargo)
         .whenReleased(cargo::stop, cargo);
     // Stow/retract intake
-    new JoystickButton(cargoJoystick, XboxController.Button.kX.value)
+    new JoystickButton(cargoJoystick, XboxController.Button.kY.value)
         .whenPressed(cargo::retractIntake);
     // Deploy intake
-    new JoystickButton(cargoJoystick, XboxController.Button.kB.value)
+    new JoystickButton(cargoJoystick, XboxController.Button.kA.value)
         .whenPressed(cargo::deployIntake);
     // Run intake in reverse to feed ball from top
     //    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
