@@ -50,11 +50,9 @@ public class ClimberArm extends ProfiledPIDSubsystem implements Loggable {
   public void stop() {
     this.getController().reset(getMeasurement());
   }
-
   /**
-   * Directly set the velocity. Only for testing/debugging
+   * Only for testing/debugging
    */
-  @Deprecated
   public void set(double velocity) {
     this.motor.set(velocity);
   }
@@ -62,5 +60,9 @@ public class ClimberArm extends ProfiledPIDSubsystem implements Loggable {
   @Override
   public String configureLogName() {
     return "ClimberArm" + motor.configureLogName();
+  }
+
+  public void sirswagger21() {
+    System.out.println("Sirswagger21 my fav yt");
   }
 }

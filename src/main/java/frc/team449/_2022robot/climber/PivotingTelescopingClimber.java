@@ -15,6 +15,8 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
   /** Distance the climber can travel, in meters */
   public final double distanceTopBottom;
 
+  public final double midDistance;
+
   private final @NotNull ClimberArm rightArm;
   private @NotNull ClimberState state;
   private final @NotNull ClimberArm leftArm;
@@ -36,11 +38,13 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
       @NotNull ClimberArm rightArm,
       @NotNull DoubleSolenoid pivotPiston,
       @NotNull BooleanSupplier hallSensor,
-      double distanceTopBottom) {
+      double distanceTopBottom,
+      double midDistance) {
     this.leftArm = leftArm;
     this.rightArm = rightArm;
     this.pivotPiston = pivotPiston;
     this.distanceTopBottom = distanceTopBottom;
+    this.midDistance = midDistance;
     this.hallSensor = new BooleanSupplierUpdatable(hallSensor, null);
     // Start arm retracted
     this.state = ClimberState.RETRACTED;
@@ -94,11 +98,34 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
     pivotPiston.set(DoubleSolenoid.Value.kForward);
   }
 
-  /** Only for testing/debugging */
-  @Deprecated
+  /** Directly set velocity. This method must be called every loop if you're using climber.
+   * However, sets velocity to 0 if:
+   * <ul>
+   *   <li>Hall sensor is active and velocity is negative</li>
+   *   <li>Arms are stowed, velocity is positive, and is beyond {@link PivotingTelescopingClimber#midDistance}</li>
+   * </ul>
+   */
   public void set(double velocity) {
-    leftArm.set(velocity);
-    rightArm.set(velocity);
+    double leftVel = velocity;
+    double rightVel = velocity;
+    if (velocity <= 0 && this.hitBottom()) {
+        leftVel = rightVel = 0;
+    } else if (this.isStowed()) {
+        if (leftArm.getMeasurement() > midDistance) {
+          leftVel = 0;
+        }
+        if (rightArm.getMeasurement() > midDistance) {
+          rightVel = 0;
+        }
+    }
+
+    leftArm.set(leftVel);
+    rightArm.set(rightVel);
+  }
+
+  /** Whether the arms are vertical */
+  public boolean isStowed() {
+    return pivotPiston.get() == DoubleSolenoid.Value.kForward;
   }
 
   public void enable() {
