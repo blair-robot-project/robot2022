@@ -114,7 +114,7 @@ public class FullMap {
   public static final int CLIMBER_SENSOR_CHANNEL = 6; // todo find out what this really is
   public static final double CLIMBER_MAX_VEL = 0.1, CLIMBER_MAX_ACCEL = 0.1;
   public static final double CLIMBER_DISTANCE = 0.7, CLIMBER_MID_DISTANCE = 0.6;
-  public static final double CLIMBER_KP = 30; //600;
+  public static final double CLIMBER_KP = 500; //600;
   public static final double CLIMBER_FF_KS = 0,
       CLIMBER_FF_KV = 0,
       CLIMBER_FF_KA = 0,
@@ -221,7 +221,7 @@ public class FullMap {
                         .axis(XboxController.Axis.kRightTrigger.value)
                         .inverted(false)
                         .build())),
-            new RampComponent(.6, .50));
+            new RampComponent(1, 1.5));
     var oi =
         new OIArcadeWithDPad(
             rotThrottle,
@@ -373,9 +373,10 @@ public class FullMap {
     //        .whenPressed(() -> climber.reset(CLIMBER_MID_DISTANCE), climber);
     // Move climber arm up enough for high rung
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)
-        .whenPressed(new InstantCommand(() -> climber.disable(), climber)
-                    .andThen(new InstantCommand(() -> climber.set(.6), climber)))
-        .whenReleased(climber::hold, climber);
+            .whenPressed(
+                    new InstantCommand(() -> climber.reset(climber.distanceTopBottom), climber)
+                            .andThen(new WaitUntilCommand(climber::atGoal))
+                            .andThen(climber::stop, climber));
     //            .whileHeld(
     //                new WaitCommand(0.01)
     //                    .andThen(() -> rightArm.set(0.1),
@@ -383,14 +384,17 @@ public class FullMap {
     //            .whenReleased(() -> rightArm.set(0), climber);
     // Move climber arm down
     new JoystickButton(climberJoystick, XboxController.Button.kA.value)
-            .whenPressed(new InstantCommand(() -> climber.disable(), climber)
-                    .andThen(new InstantCommand(() -> climber.set(-.6), climber)))
-            .whenReleased(climber::hold, climber);
-    //            .whileActiveContinuous(
-    //                new WaitCommand(0.01)
-    //                    .andThen(() -> climber.setGoal(climber.getGoal() - 0.01), climber));
-    //            .whileHeld(() -> rightArm.set(-0.1), climber)
-    //            .whenReleased(() -> rightArm.set(0), climber);
+            .whenPressed(
+                    new InstantCommand(() -> climber.reset(0), climber)
+                            .andThen(new WaitUntilCommand(climber::atGoal))
+                            .withInterrupt(climber::hitBottom)
+                            .andThen(
+                                    () -> {
+                                      if (climber.hitBottom()) {
+                                        climber.stop();
+                                        climber.setState(PivotingTelescopingClimber.ClimberState.RETRACTED);
+                                      }
+                                    }));
     // Extend climber arm out
     new JoystickButton(climberJoystick, XboxController.Button.kB.value)
         .whenPressed(
