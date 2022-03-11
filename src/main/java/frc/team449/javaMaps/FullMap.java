@@ -76,7 +76,11 @@ public class FullMap {
       INTAKE_FOLLOWER_PORT = 10,
       SPITTER_PORT = 9,
       RIGHT_CLIMBER_MOTOR_PORT = 6,
-      LEFT_CLIMBER_MOTOR_PORT = 5;
+      LEFT_CLIMBER_MOTOR_PORT = 5,
+      LEFT_EXTERNAL_FWD_PORT = 1,
+      LEFT_EXTERNAL_REV_PORT = 1,
+      RIGHT_EXTERNAL_FWD_PORT = 1,
+      RIGHT_EXTERNAL_REV_PORT = 1;
 
   // Other CAN IDs
   public static final int PDP_CAN = 1, PCM_MODULE = 0;
@@ -91,7 +95,8 @@ public class FullMap {
   public static final double AUTO_MAX_SPEED = 1.9, AUTO_MAX_ACCEL = .4;
   // Drive constants
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
-  public static final double DRIVE_GEARING = 5.86;
+  public static final double DRIVE_GEARING = 1; // 5.86;
+  public static final int DRIVE_ENCODER_CPR = 256;
   public static final int DRIVE_CURRENT_LIM = 50;
   public static final double DRIVE_KP_VEL = 27.2,
       DRIVE_KI_VEL = 0.0,
@@ -154,6 +159,7 @@ public class FullMap {
             .setUnitPerRotation(2 * Math.PI * DRIVE_WHEEL_RADIUS) // = 0.3191858136
             .setCurrentLimit(DRIVE_CURRENT_LIM)
             .setPostEncoderGearing(DRIVE_GEARING)
+            .setEncoderCPR(DRIVE_ENCODER_CPR)
             .setEnableVoltageComp(true);
 
     // todo use sysid gains to make this
@@ -167,8 +173,10 @@ public class FullMap {
             DRIVE_TRACK_WIDTH,
             VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
 
-    var leftEncSim = new EncoderSim(new Encoder(0, 1));
-    var rightEncSim = new EncoderSim(new Encoder(2, 3));
+    var leftExtEnc = new Encoder(LEFT_EXTERNAL_FWD_PORT, LEFT_EXTERNAL_REV_PORT);
+    var rightExtEnc = new Encoder(RIGHT_EXTERNAL_FWD_PORT, RIGHT_EXTERNAL_REV_PORT);
+    var leftEncSim = new EncoderSim(leftExtEnc);
+    var rightEncSim = new EncoderSim(rightExtEnc);
 
     var leftMaster =
         driveMasterPrototype
@@ -176,6 +184,7 @@ public class FullMap {
             .setPort(LEFT_LEADER_PORT)
             .setName("left")
             .setReverseOutput(false)
+            .setExternalEncoder(leftExtEnc)
             .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_1_PORT), false)
             .addSlaveSpark(FollowerUtils.createFollowerSpark(LEFT_LEADER_FOLLOWER_2_PORT), false)
             .createRealOrSim(leftEncSim);
@@ -185,6 +194,7 @@ public class FullMap {
             .setName("right")
             .setPort(RIGHT_LEADER_PORT)
             .setReverseOutput(true)
+            .setExternalEncoder(rightExtEnc)
             .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_1_PORT), false)
             .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
             .createRealOrSim(rightEncSim);
@@ -482,7 +492,7 @@ public class FullMap {
         oneThenOneBallTraj(
             drive,
             cargo,
-            ramsetePrototype.name("bottomOneOne"),
+            ramsetePrototype.copy().name("bottomOneOne"),
             pose(8.01, 2.82, -111.80),
             pose(7.67, 0.77, -91.97));
 
@@ -491,10 +501,10 @@ public class FullMap {
         twoBallTraj(
             drive,
             cargo,
-            ramsetePrototype.name("topTwo"),
-            pose(6.07, 5.12, 134.24),
-            pose(5.34, 5.89, 130.31),
-            reverseHeading(pose(7.04, 4.58, -22.25)));
+            ramsetePrototype.copy().name("topTwo").field(null),
+            pose(6.07, 5.12, 140.24), // was 134.24
+            pose(5.35, 5.75, 140.24), // degrees was 130.31
+            reverseHeading(pose(6.94, 4.4, -22.25))); // x was 7.04, y was 4.58
     //    // Start at the edge at the bottom, collect the bottom ball, then come back and spit
     var bottomTwoBallTraj =
         twoBallTraj(
@@ -520,7 +530,7 @@ public class FullMap {
                 ramsetePrototype
                     .copy()
                     .name("threeBallAuto1")
-                    .field(field)
+                    .field(null)
                     .traj(
                         TrajectoryGenerator.generateTrajectory(
                             pose(7.99, 2.81, -109.98),
@@ -535,7 +545,7 @@ public class FullMap {
                 ramsetePrototype
                     .copy()
                     .name("threeBallAuto2")
-                    .field(field)
+                    .field(null)
                     .traj(
                         TrajectoryGenerator.generateTrajectory(
                             pose(ballX, ballY, turnAngle),
@@ -548,7 +558,7 @@ public class FullMap {
             .andThen(
                 ramsetePrototype
                     .name("threeBallAuto3")
-                    .field(field)
+                    .field(null)
                     .traj(
                         TrajectoryGenerator.generateTrajectory(
                             pose(ballX2, ballY2, turnAngle2),
@@ -562,7 +572,7 @@ public class FullMap {
                 ramsetePrototype
                     .copy()
                     .name("threeBallAuto4")
-                    .field(field)
+                    .field(null)
                     .traj(
                         TrajectoryGenerator.generateTrajectory(
                             hubPose, List.of(), pose(5.70, 1.98, -90), trajConfig(drive)))
@@ -612,16 +622,13 @@ public class FullMap {
     //            .andThen(spit.get());
 
     // Auto
-    List<Command> autoStartupCommands =
-        List.of(
-            new InstantCommand(() -> drive.resetOdometry(pose(7.76, 2.89, 249.19)), drive)
-                .andThen(oneBallAuto));
+    List<Command> autoStartupCommands = List.of(topTwoBallTraj);
 
     List<Command> robotStartupCommands = List.of();
 
     List<Command> teleopStartupCommands =
         List.of(
-            new InstantCommand(climber::enable),
+            new InstantCommand(climber::disable),
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
             new InstantCommand(cargo::stop));
 
