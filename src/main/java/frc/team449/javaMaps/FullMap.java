@@ -24,10 +24,7 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
@@ -78,9 +75,9 @@ public class FullMap {
       RIGHT_CLIMBER_MOTOR_PORT = 6,
       LEFT_CLIMBER_MOTOR_PORT = 5,
       LEFT_EXTERNAL_FWD_PORT = 1,
-      LEFT_EXTERNAL_REV_PORT = 1,
-      RIGHT_EXTERNAL_FWD_PORT = 1,
-      RIGHT_EXTERNAL_REV_PORT = 1;
+      LEFT_EXTERNAL_REV_PORT = 2,
+      RIGHT_EXTERNAL_FWD_PORT = 3,
+      RIGHT_EXTERNAL_REV_PORT = 4;
 
   // Other CAN IDs
   public static final int PDP_CAN = 1, PCM_MODULE = 0;
@@ -97,7 +94,7 @@ public class FullMap {
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
   public static final double DRIVE_GEARING = 1; // 5.86;
   public static final int DRIVE_ENCODER_CPR = 256;
-  public static final int DRIVE_CURRENT_LIM = 50;
+  public static final int DRIVE_CURRENT_LIM = 40;
   public static final double DRIVE_KP_VEL = 27.2,
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0,
@@ -133,7 +130,11 @@ public class FullMap {
 
   // Intake
   public static final int INTAKE_PISTON_FWD_CHANNEL = 3, INTAKE_PISTON_REV_CHANNEL = 2;
-  // todo find out what the channel numbers are
+  public static final int INTAKE_CURR_LIM = 20;
+
+  // Ramping
+  public static final double RAMP_INCREASE = 0.9, RAMP_DECREASE = 0.7;
+  public static final int BLUE_PIPELINE = 1, RED_PIPELINE = 2;
 
   private FullMap() {}
 
@@ -235,7 +236,7 @@ public class FullMap {
                         .axis(XboxController.Axis.kRightTrigger.value)
                         .inverted(false)
                         .build())),
-            new RampComponent(.9, 1.8));
+            new RampComponent(RAMP_INCREASE, RAMP_DECREASE));
     var oi =
         new OIArcadeWithDPad(
             rotThrottle,
@@ -280,6 +281,7 @@ public class FullMap {
             new SparkMaxConfig()
                 .setName("intakeMotor")
                 .setPort(INTAKE_LEADER_PORT)
+                .setCurrentLimit(INTAKE_CURR_LIM)
                 .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), true)
                 .createReal(),
             new SparkMaxConfig()
@@ -350,7 +352,7 @@ public class FullMap {
             leftArm,
             rightArm,
             pivotPiston,
-            RobotBase.isSimulation() ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get : () -> false,
+            RobotBase.isReal() ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get : () -> false,
             CLIMBER_DISTANCE,
             CLIMBER_MID_DISTANCE);
 
@@ -387,7 +389,7 @@ public class FullMap {
     //        .whenPressed(() -> climber.reset(CLIMBER_MID_DISTANCE), climber);
     // Move climber arm up enough for high rung
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)
-        .whenPressed(climber::disable, climber)
+        //        .whenPressed(climber::disable, climber)
         .whileHeld(() -> climber.set(CLIMBER_EXTEND_VEL), climber)
         .whenReleased(() -> climber.set(0), climber);
     //    new JoystickButton(climberJoystick, XboxController.Button.kY.value)
@@ -403,7 +405,7 @@ public class FullMap {
     //            .whenReleased(() -> rightArm.set(0), climber);
     // Move climber arm down
     new JoystickButton(climberJoystick, XboxController.Button.kA.value)
-        .whenPressed(climber::disable, climber)
+        //        .whenPressed(climber::disable, climber)
         .whileHeld(() -> climber.set(CLIMBER_RETRACT_VEL), climber)
         .whenReleased(() -> climber.set(0), climber);
     //    new JoystickButton(climberJoystick, XboxController.Button.kA.value)
@@ -501,10 +503,10 @@ public class FullMap {
         twoBallTraj(
             drive,
             cargo,
-            ramsetePrototype.copy().name("topTwo").field(null),
-            pose(6.07, 5.12, 140.24), // was 134.24
-            pose(5.35, 5.75, 140.24), // degrees was 130.31
-            reverseHeading(pose(6.94, 4.4, -22.25))); // x was 7.04, y was 4.58
+            ramsetePrototype.copy().name("topTwo").field(null).angleTimeout(0),
+            pose(6.07, 5.12, 140.24),
+            pose(5.35, 5.75, 140.24),
+            pose(6.94, 4.4, 140.24));
     //    // Start at the edge at the bottom, collect the bottom ball, then come back and spit
     var bottomTwoBallTraj =
         twoBallTraj(
@@ -622,7 +624,15 @@ public class FullMap {
     //            .andThen(spit.get());
 
     // Auto
-    List<Command> autoStartupCommands = List.of(topTwoBallTraj);
+    List<Command> autoStartupCommands =
+        List.of(
+            topTwoBallTraj,
+            new InstantCommand(
+                    () -> {
+                      var cmd = CommandScheduler.getInstance().requiring(drive);
+                      if (cmd != null) System.out.println("current drive cmd: " + cmd.getName());
+                    })
+                .perpetually());
 
     List<Command> robotStartupCommands = List.of();
 
@@ -631,6 +641,8 @@ public class FullMap {
             new InstantCommand(climber::disable),
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
             new InstantCommand(cargo::stop));
+    //            new IntakeLimelightCommand(cargo, limelight, BLUE_PIPELINE, RED_PIPELINE)
+    //                .perpetually());
 
     List<Command> testStartupCommands = List.of();
     var allCommands =
@@ -728,13 +740,14 @@ public class FullMap {
     var fromBall =
         TrajectoryGenerator.generateTrajectory(
             ballPose, List.of(), endingPose, trajConfig(drive).setReversed(true));
-    return new InstantCommand(cargo::runIntake, cargo)
-        .andThen(ramsetePrototype.copy().traj(toBall).build())
-        .andThen(new WaitCommand(1))
-        .andThen(ramsetePrototype.copy().traj(fromBall).build())
-        .andThen(cargo::spit, cargo)
-        .andThen(new WaitCommand(1))
-        .andThen(cargo::stop, cargo);
+    return ramsetePrototype.copy().traj(toBall).build();
+    //    return new InstantCommand(cargo::runIntake, cargo)
+    //        .andThen(ramsetePrototype.copy().traj(toBall).build())
+    //        .andThen(new WaitCommand(1))
+    //        .andThen(ramsetePrototype.copy().traj(fromBall).build())
+    //        .andThen(cargo::spit, cargo)
+    //        .andThen(new WaitCommand(1))
+    //        .andThen(cargo::stop, cargo);
   }
 
   /** Little helper because the verbosity of the Pose2d constructor is tiring */

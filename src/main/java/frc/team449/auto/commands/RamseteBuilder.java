@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
@@ -153,22 +154,26 @@ public final class RamseteBuilder {
     var cmd =
         new InstantCommand(() -> drivetrain.resetOdometry(traj.getInitialPose()))
             .andThen(ramseteCmd)
-            .andThen(() -> drivetrain.setVoltage(0, 0));
+            .andThen(drivetrain::fullStop, drivetrain)
+            .andThen(new PrintCommand("Stopped"))
+            .andThen(() -> System.out.println(drivetrain.getWheelSpeeds()));
+    cmd.setName("Ramsete command");
 
     // If angleTimeout is nonzero, then we want to turn after the Ramsete command is over
     // to ensure our heading is right
     if (angleTimeout > 0) {
       assert pidAngleController != null
           : "PIDAngleController must not be null if turning after Ramsete";
-      return cmd.andThen(
-              new NavXTurnToAngle<>(
-                  lastPose.getRotation().getDegrees(),
-                  angleTimeout,
-                  drivetrain,
-                  pidAngleController))
-          .andThen(() -> drivetrain.setVoltage(0, 0));
-    } else {
-      return cmd;
+      cmd =
+          cmd.andThen(
+                  new NavXTurnToAngle<>(
+                      lastPose.getRotation().getDegrees(),
+                      angleTimeout,
+                      drivetrain,
+                      pidAngleController))
+              .andThen(drivetrain::fullStop, drivetrain);
+      cmd.setName("Ramsete command with NavX");
     }
+    return cmd;
   }
 }
