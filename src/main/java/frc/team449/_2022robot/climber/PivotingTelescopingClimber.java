@@ -98,26 +98,29 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
     pivotPiston.set(DoubleSolenoid.Value.kForward);
   }
 
-  /** Directly set velocity. This method must be called every loop if you're using climber.
-   * However, sets velocity to 0 if:
+  /**
+   * Directly set velocity. This method must be called every loop if you're using climber. However,
+   * sets velocity to 0 if:
+   *
    * <ul>
-   *   <li>Hall sensor is active and velocity is negative</li>
-   *   <li>Arms are stowed, velocity is positive, and is beyond {@link PivotingTelescopingClimber#midDistance}</li>
+   *   <li>Hall sensor is active and velocity is negative
+   *   <li>Arms are stowed, velocity is positive, and is beyond {@link
+   *       PivotingTelescopingClimber#midDistance}
    * </ul>
    */
   public void set(double velocity) {
     double leftVel = velocity;
     double rightVel = velocity;
-    if (velocity <= 0 && this.hitBottom()) {
-        leftVel = rightVel = 0;
-    } else if (this.isStowed()) {
-        if (leftArm.getMeasurement() > midDistance) {
-          leftVel = 0;
-        }
-        if (rightArm.getMeasurement() > midDistance) {
-          rightVel = 0;
-        }
-    }
+//    if (velocity <= 0 && this.hitBottom()) {
+//      leftVel = rightVel = 0;
+//    } else if (this.isStowed()) {
+//      if (leftArm.getMeasurement() > midDistance) {
+//        leftVel = 0;
+//      }
+//      if (rightArm.getMeasurement() > midDistance) {
+//        rightVel = 0;
+//      }
+//    }
 
     leftArm.set(leftVel);
     rightArm.set(rightVel);

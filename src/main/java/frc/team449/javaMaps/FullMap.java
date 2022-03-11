@@ -24,7 +24,10 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
@@ -74,10 +77,10 @@ public class FullMap {
       SPITTER_PORT = 9,
       RIGHT_CLIMBER_MOTOR_PORT = 6,
       LEFT_CLIMBER_MOTOR_PORT = 5,
-      LEFT_EXTERNAL_FWD_PORT = 1,
-      LEFT_EXTERNAL_REV_PORT = 2,
-      RIGHT_EXTERNAL_FWD_PORT = 3,
-      RIGHT_EXTERNAL_REV_PORT = 4;
+      LEFT_EXTERNAL_FWD_PORT = 6,
+      LEFT_EXTERNAL_REV_PORT = 7,
+      RIGHT_EXTERNAL_FWD_PORT = 8,
+      RIGHT_EXTERNAL_REV_PORT = 9;
 
   // Other CAN IDs
   public static final int PDP_CAN = 1, PCM_MODULE = 0;
@@ -88,14 +91,14 @@ public class FullMap {
   // Limelight
   public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
   // Speeds
-  public static final double INTAKE_SPEED = 0.6, SPITTER_SPEED = 0.6;
+  public static final double INTAKE_SPEED = 0.8, SPITTER_SPEED = 0.6;
   public static final double AUTO_MAX_SPEED = 1.9, AUTO_MAX_ACCEL = .4;
   // Drive constants
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
   public static final double DRIVE_GEARING = 1; // 5.86;
   public static final int DRIVE_ENCODER_CPR = 256;
-  public static final int DRIVE_CURRENT_LIM = 40;
-  public static final double DRIVE_KP_VEL = 27.2,
+  public static final int DRIVE_CURRENT_LIM = 30;
+  public static final double DRIVE_KP_VEL = 0.02, // 27.2,
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0,
       DRIVE_KP_POS = 45.269,
@@ -116,10 +119,10 @@ public class FullMap {
   // Climber
   public static final int CLIMBER_PISTON_FWD_CHANNEL = 0, CLIMBER_PISTON_REV_CHANNEL = 1;
   // todo find out what the channel numbers are
-  public static final int CLIMBER_SENSOR_CHANNEL = 6; // todo find out what this really is
+  public static final int CLIMBER_SENSOR_CHANNEL = 0; // todo find out what this really is
   public static final double CLIMBER_MAX_VEL = 0.1, CLIMBER_MAX_ACCEL = 0.1;
-  public static final double CLIMBER_EXTEND_VEL = 0.1, CLIMBER_RETRACT_VEL = -0.3;
-  public static final double CLIMBER_DISTANCE = 0.7, CLIMBER_MID_DISTANCE = 0.6;
+  public static final double CLIMBER_EXTEND_VEL = 0.2, CLIMBER_RETRACT_VEL = -0.3;
+  public static final double CLIMBER_DISTANCE = 0.7, CLIMBER_MID_DISTANCE = 0.5;
   public static final double CLIMBER_KP = 500; // 600;
   public static final double CLIMBER_FF_KS = 0,
       CLIMBER_FF_KV = 0,
@@ -176,6 +179,7 @@ public class FullMap {
 
     var leftExtEnc = new Encoder(LEFT_EXTERNAL_FWD_PORT, LEFT_EXTERNAL_REV_PORT);
     var rightExtEnc = new Encoder(RIGHT_EXTERNAL_FWD_PORT, RIGHT_EXTERNAL_REV_PORT);
+    rightExtEnc.setReverseDirection(true);
     var leftEncSim = new EncoderSim(leftExtEnc);
     var rightEncSim = new EncoderSim(rightExtEnc);
 
@@ -252,14 +256,14 @@ public class FullMap {
 
     var pidAngleControllerPrototype =
         new PIDAngleControllerBuilder()
-            .absoluteTolerance(0)
+            .absoluteTolerance(0.001)
             .onTargetBuffer(new Debouncer(1.5))
             .minimumOutput(0)
             .maximumOutput(0.6)
             .loopTimeMillis(null)
             .deadband(2)
             .inverted(false)
-            .pid(0.01, 0, 0.03);
+            .pid(0.006, 0, 0.03);
 
     var driveDefaultCmd =
         new UnidirectionalNavXDefaultDrive<>(
@@ -296,8 +300,9 @@ public class FullMap {
     var armPrototype =
         driveMasterPrototype
             .copy()
-            .setRevSoftLimit(0.)
-            .setFwdSoftLimit(CLIMBER_DISTANCE)
+            .setCurrentLimit(null)
+            //            .setRevSoftLimit(0.)
+            //            .setFwdSoftLimit(CLIMBER_DISTANCE)
             .setUnitPerRotation(0.1949)
             .setPostEncoderGearing(27)
             .setEnableBrakeMode(true);
@@ -366,11 +371,11 @@ public class FullMap {
 
     // Button bindings here
     // Take in balls but don't shoot
-    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
+    new JoystickButton(cargoJoystick, XboxController.Button.kLeftBumper.value)
         .whileHeld(cargo::runIntake, cargo)
         .whenReleased(cargo::stop, cargo);
     // Run all motors in intake to spit balls out
-    new JoystickButton(cargoJoystick, XboxController.Button.kLeftBumper.value)
+    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
         .whileHeld(cargo::spit, cargo)
         .whenReleased(cargo::stop, cargo);
     // Stow/retract intake
@@ -378,7 +383,11 @@ public class FullMap {
         .whenPressed(cargo::retractIntake);
     // Deploy intake
     new JoystickButton(cargoJoystick, XboxController.Button.kA.value)
-        .whenPressed(cargo::deployIntake);
+        .whileHeld(cargo::deployIntake, cargo)
+        .whenReleased(cargo::stop, cargo);
+    new JoystickButton(cargoJoystick, XboxController.Button.kB.value)
+        .whileHeld(cargo::runIntakeReverse, cargo)
+        .whenReleased(cargo::stop);
     // Run intake in reverse to feed ball from top
     //    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
     //        .whileHeld(cargo::runIntakeReverse, cargo)
@@ -503,10 +512,10 @@ public class FullMap {
         twoBallTraj(
             drive,
             cargo,
-            ramsetePrototype.copy().name("topTwo").field(null).angleTimeout(0),
-            pose(6.07, 5.12, 140.24),
-            pose(5.35, 5.75, 140.24),
-            pose(6.94, 4.4, 140.24));
+            ramsetePrototype.copy().name("topTwo").field(field).angleTimeout(0),
+            pose(6.10, 5.12, 136.40),
+            pose(5.3, 5.93, 135.86),
+            pose(7, 4.4, 180 - 22.78));
     //    // Start at the edge at the bottom, collect the bottom ball, then come back and spit
     var bottomTwoBallTraj =
         twoBallTraj(
@@ -624,15 +633,7 @@ public class FullMap {
     //            .andThen(spit.get());
 
     // Auto
-    List<Command> autoStartupCommands =
-        List.of(
-            topTwoBallTraj,
-            new InstantCommand(
-                    () -> {
-                      var cmd = CommandScheduler.getInstance().requiring(drive);
-                      if (cmd != null) System.out.println("current drive cmd: " + cmd.getName());
-                    })
-                .perpetually());
+    List<Command> autoStartupCommands = List.of(topTwoBallTraj);
 
     List<Command> robotStartupCommands = List.of();
 
@@ -740,14 +741,13 @@ public class FullMap {
     var fromBall =
         TrajectoryGenerator.generateTrajectory(
             ballPose, List.of(), endingPose, trajConfig(drive).setReversed(true));
-    return ramsetePrototype.copy().traj(toBall).build();
-    //    return new InstantCommand(cargo::runIntake, cargo)
-    //        .andThen(ramsetePrototype.copy().traj(toBall).build())
-    //        .andThen(new WaitCommand(1))
-    //        .andThen(ramsetePrototype.copy().traj(fromBall).build())
-    //        .andThen(cargo::spit, cargo)
-    //        .andThen(new WaitCommand(1))
-    //        .andThen(cargo::stop, cargo);
+    return new InstantCommand(cargo::runIntake, cargo)
+        .andThen(ramsetePrototype.copy().traj(toBall).build())
+        .andThen(new WaitCommand(1))
+        .andThen(ramsetePrototype.copy().traj(fromBall).build())
+        .andThen(cargo::spit, cargo)
+        .andThen(new WaitCommand(1))
+        .andThen(cargo::stop, cargo);
   }
 
   /** Little helper because the verbosity of the Pose2d constructor is tiring */
