@@ -4,9 +4,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
-import frc.team449.other.FollowerUtils;
 import frc.team449.motor.Encoder;
 import frc.team449.motor.WrappedMotor;
+import frc.team449.other.FollowerUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -138,7 +138,9 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
 
     // Set the current limit if it was given
     if (this.getCurrentLimit() != null) {
-      motor.setSmartCurrentLimit(this.getCurrentLimit());
+      var limit = this.getCurrentLimit();
+      motor.setSmartCurrentLimit(limit);
+      this.slaveSparks.forEach((slave, __) -> slave.setSmartCurrentLimit(limit));
     }
 
     if (this.isEnableVoltageComp()) {
