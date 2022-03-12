@@ -40,8 +40,10 @@ import frc.team449.auto.commands.RamseteBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
+import frc.team449.drive.unidirectional.commands.AHRS.NavXDriveStraight;
 import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
+import frc.team449.drive.unidirectional.commands.DriveStraight;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
@@ -92,13 +94,13 @@ public class FullMap {
   public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
   // Speeds
   public static final double INTAKE_SPEED = 0.8, SPITTER_SPEED = 0.6;
-  public static final double AUTO_MAX_SPEED = 1.9, AUTO_MAX_ACCEL = .4;
+  public static final double AUTO_MAX_SPEED = 1.9, AUTO_MAX_ACCEL = .2;
   // Drive constants
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
   public static final double DRIVE_GEARING = 1; // 5.86;
   public static final int DRIVE_ENCODER_CPR = 256;
-  public static final int DRIVE_CURRENT_LIM = 30;
-  public static final double DRIVE_KP_VEL = 0.02, // 27.2,
+  public static final int DRIVE_CURRENT_LIM = 40;
+  public static final double DRIVE_KP_VEL = 0.005, // 27.2,
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0,
       DRIVE_KP_POS = 45.269,
@@ -508,20 +510,20 @@ public class FullMap {
             pose(7.67, 0.77, -91.97));
 
     //    // Start at the edge at the top, collect the top ball, then come back and spit
-    var topTwoBallTraj =
+    var hangarTwoBallTraj =
         twoBallTraj(
             drive,
             cargo,
-            ramsetePrototype.copy().name("topTwo").field(field).angleTimeout(0),
-            pose(6.10, 5.12, 136.40),
-            pose(5.3, 5.93, 135.86),
-            pose(7, 4.4, 180 - 22.78));
+            ramsetePrototype.copy().name("hangar_two_ball_auto").field(field).angleTimeout(0),
+            pose(6.06, 5.13, 136.40),
+            pose(5.33, 5.87, 134.37),
+            pose(6.76, 4.05, 180 - 41));
     //    // Start at the edge at the bottom, collect the bottom ball, then come back and spit
-    var bottomTwoBallTraj =
+    var stationTwoBallTraj =
         twoBallTraj(
             drive,
             cargo,
-            ramsetePrototype.name("bottomTwo"),
+            ramsetePrototype.name("station_two_ball_auto"),
             pose(7.55, 1.83, -88.32),
             pose(7.63, 0.76, -86.19),
             reverseHeading(pose(8.01, 2.82, 68.63)));
@@ -592,7 +594,7 @@ public class FullMap {
         new InstantCommand(cargo::spit, cargo)
             .andThen(new WaitCommand(1))
             .andThen(cargo::stop, cargo)
-            .andThen(new DriveAtSpeed<>(drive, 0.18, 2));
+            .andThen(new DriveAtSpeed<>(drive, 0.13, 5));
 
     //    var randomTestAuto =
     //        ramsetePrototype
@@ -633,7 +635,7 @@ public class FullMap {
     //            .andThen(spit.get());
 
     // Auto
-    List<Command> autoStartupCommands = List.of(topTwoBallTraj);
+    List<Command> autoStartupCommands = List.of(hangarTwoBallTraj);
 
     List<Command> robotStartupCommands = List.of();
 
@@ -741,13 +743,15 @@ public class FullMap {
     var fromBall =
         TrajectoryGenerator.generateTrajectory(
             ballPose, List.of(), endingPose, trajConfig(drive).setReversed(true));
-    return new InstantCommand(cargo::runIntake, cargo)
+    return //new InstantCommand(cargo::runIntake, cargo)
+        /*.andThen(*/new InstantCommand(cargo::deployIntake, cargo)/*)*/
+        .andThen(new WaitCommand(1))
         .andThen(ramsetePrototype.copy().traj(toBall).build())
         .andThen(new WaitCommand(1))
         .andThen(ramsetePrototype.copy().traj(fromBall).build())
-        .andThen(cargo::spit, cargo)
+        /*.andThen(cargo::spit, cargo)
         .andThen(new WaitCommand(1))
-        .andThen(cargo::stop, cargo);
+        .andThen(cargo::stop, cargo)*/;
   }
 
   /** Little helper because the verbosity of the Pose2d constructor is tiring */
