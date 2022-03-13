@@ -154,9 +154,7 @@ public final class RamseteBuilder {
     var cmd =
         new InstantCommand(() -> drivetrain.resetOdometry(traj.getInitialPose()))
             .andThen(ramseteCmd)
-            .andThen(drivetrain::fullStop, drivetrain)
-            .andThen(new PrintCommand("Stopped"))
-            .andThen(() -> System.out.println(drivetrain.getWheelSpeeds()));
+            .andThen(drivetrain::fullStop, drivetrain);
     cmd.setName("Ramsete command");
 
     // If angleTimeout is nonzero, then we want to turn after the Ramsete command is over
