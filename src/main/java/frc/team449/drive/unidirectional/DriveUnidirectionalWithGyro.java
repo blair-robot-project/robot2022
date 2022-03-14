@@ -97,19 +97,6 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
   }
 
   /**
-   * Set voltage output with feedforward
-   *
-   * @param left The voltage output for the left side of the drive from [-12, 12]
-   * @param right The voltage output for the right side of the drive from [-12, 12]
-   * @param leftVel The velocity to reach for the left side (m/s)
-   * @param rightVel The velocity to reach for the right side (m/s)
-   */
-  public void setVoltage(double left, double right, double leftVel, double rightVel) {
-    leftMaster.setVoltage(left + getFeedforward().calculate(leftVel));
-    rightMaster.setVoltage(right + getFeedforward().calculate(rightVel));
-  }
-
-  /**
    * Get the robot's heading using the AHRS
    *
    * @return robot heading, in degrees, on [-180, 180]

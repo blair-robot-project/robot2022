@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
@@ -134,7 +132,10 @@ public final class RamseteBuilder {
       field.getObject(Objects.requireNonNullElse(this.name, "traj")).setTrajectory(traj);
 
     var ramseteCmd =
-        new RamseteCommand(
+        //        new frc.team449.auto.commands.RamseteCommand(
+        //            drivetrain, new RamseteController(b, zeta), traj, leftPid, rightPid);
+        //    SmartDashboard.putData("RamseteCommand", ramseteCmd);
+        new edu.wpi.first.wpilibj2.command.RamseteCommand(
             this.traj,
             drivetrain::getCurrentPose,
             new RamseteController(b, zeta),
