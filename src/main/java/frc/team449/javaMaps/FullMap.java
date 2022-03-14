@@ -86,7 +86,7 @@ public class FullMap {
       DRIVE_JOYSTICK_PORT = 1,
       CLIMBER_JOYSTICK_PORT = 2;
   // Limelight
-  public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
+  public static final int DRIVER_PIPELINE = 0;
   // Speeds
   public static final double INTAKE_SPEED = 0.75, SPITTER_SPEED = 0.45;
   public static final double AUTO_MAX_SPEED = 1.9, AUTO_MAX_ACCEL = .2;
@@ -607,6 +607,7 @@ public class FullMap {
             .andThen(new WaitCommand(2))
             .andThen(cargo::stop, cargo)
             .andThen(drive::fullStop, drive);
+
     // (assume blue alliance)
     // Start at bottom on edge of tape, get one ball, score that and the preloaded one, go back for
     // another ball, then score that

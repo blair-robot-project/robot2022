@@ -9,9 +9,9 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import frc.team449.drive.DriveSettings;
-import frc.team449.ahrs.SubsystemAHRS;
 import frc.team449.ahrs.AHRS;
+import frc.team449.ahrs.SubsystemAHRS;
+import frc.team449.drive.DriveSettings;
 import frc.team449.motor.WrappedMotor;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
@@ -92,8 +92,21 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
    * @param right The voltage output for the right side of the drive from [-12, 12]
    */
   public void setVoltage(final double left, final double right) {
-    leftMaster.setVoltage(left + settings.feedforward.calculate(left));
-    rightMaster.setVoltage(right + settings.feedforward.calculate(right));
+    leftMaster.setVoltage(left);
+    rightMaster.setVoltage(right);
+  }
+
+  /**
+   * Set voltage output with feedforward
+   *
+   * @param left The voltage output for the left side of the drive from [-12, 12]
+   * @param right The voltage output for the right side of the drive from [-12, 12]
+   * @param leftVel The velocity to reach for the left side (m/s)
+   * @param rightVel The velocity to reach for the right side (m/s)
+   */
+  public void setVoltage(double left, double right, double leftVel, double rightVel) {
+    leftMaster.setVoltage(left + getFeedforward().calculate(leftVel));
+    rightMaster.setVoltage(right + getFeedforward().calculate(rightVel));
   }
 
   /**
