@@ -3,7 +3,6 @@ package frc.team449.other;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -14,6 +13,7 @@ public final class FollowerUtils {
   private FollowerUtils() {}
 
   /** Create a Spark that will follow another Spark */
+  @NotNull
   public static CANSparkMax createFollowerSpark(int port) {
     var slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
 
@@ -31,7 +31,8 @@ public final class FollowerUtils {
     return slaveSpark;
   }
 
-  /** Make a Spark follow another Spark
+  /**
+   * Make a Spark follow another Spark
    *
    * @param follower The follower
    * @param leader The leader
@@ -53,8 +54,8 @@ public final class FollowerUtils {
    * @param invertType Whether or not to invert this Talon. Defaults to FollowMaster , but can be
    *     changed to OpposeMaster.
    */
-  @JsonCreator
-  public static TalonSRX createFollowerTalon(int port, InvertType invertType) {
+  @NotNull
+  public static TalonSRX createFollowerTalon(int port, @Nullable InvertType invertType) {
     var talonSRX = new TalonSRX(port);
 
     // Turn off features we don't want a slave to have
@@ -136,7 +137,7 @@ public final class FollowerUtils {
    * @param invertType Whether to invert this relative to the master. Defaults to not inverting
    *     relative to master.
    */
-  @JsonCreator
+  @NotNull
   public static VictorSPX createFollowerVictor(int port, InvertType invertType) {
     var victorSPX = new VictorSPX(port);
     victorSPX.setInverted(invertType == null ? InvertType.FollowMaster : invertType);

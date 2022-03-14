@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
-    id "edu.wpi.first.GradleRIO" version "2022.3.1"
+    id "edu.wpi.first.GradleRIO" version "2022.4.1"
 }
 
 def ROBOT_MAIN_CLASS = "frc.team449.Main"
@@ -38,8 +38,6 @@ deploy {
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 
 dependencies {
-    implementation group: 'com.google.guava', name: 'guava', version: '31.0-jre'
-
     def jacksonVersion = '2.12.5'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion

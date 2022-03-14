@@ -5,11 +5,11 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import frc.team449.generalInterfaces.DriveSettings;
+import frc.team449.drive.DriveSettings;
 import frc.team449.generalInterfaces.updatable.Updatable;
 import frc.team449.other.Clock;
-import frc.team449.wrappers.AHRS;
-import frc.team449.wrappers.WrappedMotor;
+import frc.team449.ahrs.AHRS;
+import frc.team449.motor.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 
 public class DriveUnidirectionalWithGyroSim extends DriveUnidirectionalWithGyro implements Updatable {

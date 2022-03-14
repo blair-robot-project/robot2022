@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
-import frc.team449.generalInterfaces.ahrs.SubsystemAHRS;
+import frc.team449.ahrs.SubsystemAHRS;
 import frc.team449.other.Clock;
 import frc.team449.other.Util;
 import org.jetbrains.annotations.NotNull;

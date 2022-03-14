@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.other.InjectiveDependencyHelper;
 import frc.team449.other.Util;
 import io.github.oblarg.oblog.Loggable;
 import java.util.Map;
@@ -41,8 +40,6 @@ public class IntakeSimple extends SubsystemBase
   public IntakeSimple(
       @NotNull @JsonProperty(required = true) final MotorController motor,
       @NotNull @JsonProperty(required = true) final Map<IntakeMode, Double> velocities) {
-
-    InjectiveDependencyHelper.assertInjective(this, motor);
 
     this.motor = motor;
     this.velocities = velocities;
