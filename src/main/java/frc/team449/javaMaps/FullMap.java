@@ -174,9 +174,8 @@ public class FullMap {
             DRIVE_TRACK_WIDTH,
             VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
 
-    var leftExtEnc = new Encoder(LEFT_EXTERNAL_FWD_PORT, LEFT_EXTERNAL_REV_PORT);
-    var rightExtEnc = new Encoder(RIGHT_EXTERNAL_FWD_PORT, RIGHT_EXTERNAL_REV_PORT);
-    rightExtEnc.setReverseDirection(true);
+    var leftExtEnc = new Encoder(LEFT_EXTERNAL_FWD_PORT, LEFT_EXTERNAL_REV_PORT, false);
+    var rightExtEnc = new Encoder(RIGHT_EXTERNAL_FWD_PORT, RIGHT_EXTERNAL_REV_PORT, true);
     var leftEncSim = new EncoderSim(leftExtEnc);
     var rightEncSim = new EncoderSim(rightExtEnc);
 
@@ -442,8 +441,8 @@ public class FullMap {
             .drivetrain(drive)
             .leftPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
             .rightPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
-            .b(2.25)
-            .zeta(0.6)
+//            .b(2.25)
+//            .zeta(0.6)
             .anglePID(
                 new PIDAngleControllerBuilder()
                     .absoluteTolerance(0.5)
@@ -625,7 +624,7 @@ public class FullMap {
     //            .andThen(spit.get());
 
     // Auto
-    List<Command> autoStartupCommands = List.of(twoBallAuto);
+    List<Command> autoStartupCommands = List.of(hangarTwoBallTraj);
 
     List<Command> robotStartupCommands = List.of();
 
@@ -651,7 +650,8 @@ public class FullMap {
             new DifferentialDriveVoltageConstraint(
                 drive.getFeedforward(),
                 drive.getDriveKinematics(),
-                RobotController.getBatteryVoltage()));
+                RobotController.getBatteryVoltage()))
+        .setEndVelocity(0);
     //        .addConstraint(new CentripetalAccelerationConstraint(0.5));
   }
 
@@ -726,5 +726,3 @@ public class FullMap {
     return pose(pose.getX(), pose.getY(), 180 + pose.getRotation().getDegrees());
   }
 }
-
-// Hi there!
