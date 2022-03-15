@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -163,15 +164,13 @@ public class FullMap {
             .setEncoderCPR(DRIVE_ENCODER_CPR)
             .setEnableVoltageComp(true);
 
-    // todo use sysid gains to make this
     var driveSim =
         new DifferentialDrivetrainSim(
+            LinearSystemId.identifyDrivetrainSystem(DRIVE_FF_KV, DRIVE_FF_KA, DRIVE_ANGLE_FF_KV, DRIVE_ANGLE_FF_KA),
             DCMotor.getNEO(3),
             DRIVE_GEARING,
-            MOMENT_OF_INERTIA,
-            MASS,
-            DRIVE_WHEEL_RADIUS,
             DRIVE_TRACK_WIDTH,
+            DRIVE_WHEEL_RADIUS,
             VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
 
     var leftExtEnc = new Encoder(LEFT_EXTERNAL_FWD_PORT, LEFT_EXTERNAL_REV_PORT, false);
