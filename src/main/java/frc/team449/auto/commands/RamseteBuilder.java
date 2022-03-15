@@ -2,14 +2,13 @@ package frc.team449.auto.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.team449.ahrs.PIDAngleController;
+import frc.team449.drive.unidirectional.DriveFeedforward;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +20,7 @@ public final class RamseteBuilder {
   private @Nullable DriveUnidirectionalWithGyro drivetrain;
   private @Nullable PIDController leftPid;
   private @Nullable PIDController rightPid;
+  private @Nullable DriveFeedforward feedforward;
   private @Nullable Trajectory traj;
   private @Nullable Field2d field;
   private @Nullable String name;
@@ -32,6 +32,12 @@ public final class RamseteBuilder {
   /** Set the drive subsystem which is to be controlled */
   public RamseteBuilder drivetrain(DriveUnidirectionalWithGyro drivetrain) {
     this.drivetrain = drivetrain;
+    return this;
+  }
+
+  /** Set the feedforward used for the drive */
+  public RamseteBuilder feedforward(DriveFeedforward feedforward) {
+    this.feedforward = feedforward;
     return this;
   }
 
@@ -108,6 +114,7 @@ public final class RamseteBuilder {
         .name(name)
         .b(b)
         .zeta(zeta)
+        .feedforward(feedforward)
         .anglePID(pidAngleController)
         .angleTimeout(angleTimeout);
   }
@@ -117,6 +124,8 @@ public final class RamseteBuilder {
     assert leftPid != null : "Left PID controller must not be null";
     assert rightPid != null : "Right PID controller must not be null";
     assert traj != null : "Trajectory must not be null";
+    System.out.println(feedforward);
+    assert feedforward != null : "Feedforward must not be null";
 
     SmartDashboard.putData(
         "ramsete pid controllers",
@@ -135,16 +144,12 @@ public final class RamseteBuilder {
 
     var ramseteCmd =
         new RamseteCommand(
+            drivetrain,
             this.traj,
-            drivetrain::getCurrentPose,
             new RamseteController(b, zeta),
-            drivetrain.getFeedforward().asWpiFF(),
-            drivetrain.getDriveKinematics(),
-            drivetrain::getWheelSpeeds,
+            feedforward,
             leftPid,
-            rightPid,
-            drivetrain::setVoltage,
-            drivetrain);
+            rightPid);
     if (this.name != null) {
       ramseteCmd.setName(this.name);
     }

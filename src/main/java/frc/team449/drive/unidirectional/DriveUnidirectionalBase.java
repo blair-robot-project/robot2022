@@ -8,16 +8,13 @@ import frc.team449.other.Updater;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 
-public class DriveUnidirectionalBase extends SubsystemBase
+public abstract class DriveUnidirectionalBase extends SubsystemBase
     implements DriveUnidirectional, Loggable {
 
   /** The master on the left */
   protected final @NotNull WrappedMotor leftMaster;
   /** The master on the right */
   protected final @NotNull WrappedMotor rightMaster;
-
-  /** Current settings for the drivetrain */
-  protected final @NotNull DriveFeedforward feedforward;
 
   /** Drivetrain kinematics processor for measuring individual wheel speeds */
   @NotNull private final DifferentialDriveKinematics driveKinematics;
@@ -35,11 +32,9 @@ public class DriveUnidirectionalBase extends SubsystemBase
   public DriveUnidirectionalBase(
       @NotNull WrappedMotor leftMaster,
       @NotNull WrappedMotor rightMaster,
-      @NotNull DriveFeedforward feedforward,
       double trackWidth) {
     this.leftMaster = leftMaster;
     this.rightMaster = rightMaster;
-    this.feedforward = feedforward;
     this.driveKinematics = new DifferentialDriveKinematics(trackWidth);
     Updater.subscribe(this);
   }
@@ -81,10 +76,8 @@ public class DriveUnidirectionalBase extends SubsystemBase
    * @param right The voltage output for the right side of the drive from [-12, 12]
    */
   public void setVoltage(double left, double right) {
-    var leftRightVolts =
-        feedforward.calculate(left, right, getLeftVelCached(), getRightVelCached());
-    this.leftMaster.setVoltage(leftRightVolts.fst);
-    this.rightMaster.setVoltage(leftRightVolts.snd);
+    this.leftMaster.setVoltage(left);
+    this.rightMaster.setVoltage(right);
   }
 
   @Override
@@ -136,12 +129,6 @@ public class DriveUnidirectionalBase extends SubsystemBase
   @NotNull
   public DifferentialDriveKinematics getDriveKinematics() {
     return this.driveKinematics;
-  }
-
-  /** The feedforward calculator */
-  @NotNull
-  public DriveFeedforward getFeedforward() {
-    return feedforward;
   }
 
   /** Updates all cached values with current ones. */

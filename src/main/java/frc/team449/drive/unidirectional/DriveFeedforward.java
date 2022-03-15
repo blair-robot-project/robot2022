@@ -6,27 +6,27 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import frc.team449.other.Clock;
 import frc.team449.other.DoublePair;
+import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /** To calculate feedforward for a drivetrain */
-public interface DriveFeedforward {
+public interface DriveFeedforward extends Loggable {
   /**
-   * Calculate voltage for the left and right sides (the total voltage to set output to, not extra
-   * voltage to add). This method may actually mutate stuff, and it should be called every iteration
-   * of the control loop.
+   * Calculate feedforward/extra voltage for the left and right sides. This method may actually
+   * mutate stuff, and it should be called every iteration of the control loop.
    *
-   * @param leftVolt The intended voltage for the left side
-   * @param rightVolt The intended voltage for the right side
-   * @param leftVel The current velocity of the left side
-   * @param rightVel The current velocity of the right side
+   * @param leftVel The intended velocity of the left side
+   * @param rightVel The intended velocity of the right side
+   * @param leftAccel The intended acceleration on the left side
+   * @param rightAccel The intended acceleration on the right side
    */
   @Contract(pure = false)
   @NotNull
-  DoublePair calculate(double leftVolt, double rightVolt, double leftVel, double rightVel);
+  DoublePair calculate(double leftVel, double rightVel, double leftAccel, double rightAccel);
 
-  @NotNull
-  SimpleMotorFeedforward asWpiFF();
+  /** Update this feedforward object with the voltage given to the drivetrain it's controlling */
+  default void updateVoltages(double leftVolt, double rightVolt) {}
 
   /** Uses {@link edu.wpi.first.math.controller.SimpleMotorFeedforward} to calculate feedforward */
   final class SimpleFF implements DriveFeedforward {
@@ -40,15 +40,9 @@ public interface DriveFeedforward {
     @NotNull
     @Override
     public DoublePair calculate(
-        double leftVolt, double rightVolt, double leftVel, double rightVel) {
+        double leftVel, double rightVel, double leftAccel, double rightAccel) {
       return new DoublePair(
-          leftVolt + feedforward.calculate(leftVolt), rightVolt + feedforward.calculate(rightVolt));
-    }
-
-    @NotNull
-    @Override
-    public SimpleMotorFeedforward asWpiFF() {
-      return feedforward;
+          feedforward.calculate(leftVel, leftAccel), feedforward.calculate(rightVel, rightAccel));
     }
   }
 
@@ -60,22 +54,23 @@ public interface DriveFeedforward {
     public LinearSystemFF(@NotNull LinearSystemLoop<N2, N2, N2> driveLoop) {
       this.driveLoop = driveLoop;
       this.lastTime = Clock.currentTimeSeconds();
+      this.updateVoltages(0, 0);
     }
 
     /**
-     * Updates the loop and gets the next voltage needed
+     * Updates the loop with the new requested velocity and acceleration and calculate feedforward
+     * to get there
      *
-     * @param leftVolt The intended voltage for the left side
-     * @param rightVolt The intended voltage for the right side
-     * @param leftVel The current velocity of the left side
-     * @param rightVel The current velocity of the right side
+     * @param leftVel The intended velocity of the left side
+     * @param rightVel The intended velocity of the right side
+     * @param leftAccel The intended acceleration on the left side
+     * @param rightAccel The intended acceleration on the right side
      */
     @Contract(pure = false)
     @NotNull
     @Override
     public DoublePair calculate(
-        double leftVolt, double rightVolt, double leftVel, double rightVel) {
-      driveLoop.setNextR(VecBuilder.fill(leftVolt, rightVolt));
+        double leftVel, double rightVel, double leftAccel, double rightAccel) {
       driveLoop.correct(VecBuilder.fill(leftVel, rightVel));
 
       var now = Clock.currentTimeSeconds();
@@ -86,11 +81,9 @@ public interface DriveFeedforward {
       return new DoublePair(driveLoop.getU(0), driveLoop.getU(1));
     }
 
-    @NotNull
     @Override
-    public SimpleMotorFeedforward asWpiFF() {
-      // todo actually use kS, kV, and kA
-      return new SimpleMotorFeedforward(0, 0, 0);
+    public void updateVoltages(double leftVolt, double rightVolt) {
+      driveLoop.setNextR(VecBuilder.fill(leftVolt, rightVolt));
     }
   }
 }

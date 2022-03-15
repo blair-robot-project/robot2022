@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class DriveUnidirectionalWithGyroSim extends DriveUnidirectionalWithGyro
     implements Updatable {
-  private final @NotNull DriveUnidirectionalWithGyro wrapped;
   private final @NotNull DifferentialDrivetrainSim driveSim;
   private final @NotNull EncoderSim leftEncSim;
   private final @NotNull EncoderSim rightEncSim;
@@ -21,24 +20,18 @@ public class DriveUnidirectionalWithGyroSim extends DriveUnidirectionalWithGyro
    * DriveUnidirectionalWithGyro#simIfNeeded(DifferentialDrivetrainSim, EncoderSim, EncoderSim)}
    * instead
    *
-   * @param wrapped The "real" drivetrain object this wraps around
+   * @param real The "real" drivetrain object this wraps around
    * @param driveSim The drivetrain simulation object, if needed
    * @param leftEncSim The simulated encoder for the left side, if needed
    * @param rightEncSim The simulated encoder for the left side, if needed
    */
   public DriveUnidirectionalWithGyroSim(
-      @NotNull DriveUnidirectionalWithGyro wrapped,
+      @NotNull DriveUnidirectionalWithGyro real,
       @NotNull DifferentialDrivetrainSim driveSim,
       @NotNull EncoderSim leftEncSim,
       @NotNull EncoderSim rightEncSim) {
-    super(
-        wrapped.leftMaster,
-        wrapped.rightMaster,
-        wrapped.ahrs,
-        wrapped.getFeedforward(),
-        wrapped.getDriveKinematics().trackWidthMeters);
+    super(real.leftMaster, real.rightMaster, real.ahrs, real.getDriveKinematics().trackWidthMeters);
 
-    this.wrapped = wrapped;
     this.driveSim = driveSim;
     this.leftEncSim = leftEncSim;
     this.rightEncSim = rightEncSim;
@@ -47,9 +40,7 @@ public class DriveUnidirectionalWithGyroSim extends DriveUnidirectionalWithGyro
 
   @Override
   public void setVoltage(double left, double right) {
-    var leftRightVolts =
-        feedforward.calculate(left, right, getLeftVelCached(), getRightVelCached());
-    driveSim.setInputs(leftRightVolts.fst, leftRightVolts.snd);
+    driveSim.setInputs(left, right);
     super.setVoltage(left, right);
   }
 
