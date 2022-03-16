@@ -31,7 +31,7 @@ import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
 import frc.team449.generalInterfaces.limelight.Limelight;
 import frc.team449.drive.DriveSettingsBuilder;
-import frc.team449.auto.commands.RamseteBuilder;
+import frc.team449.auto.builders.RamseteBuilder;
 import frc.team449.motor.builder.SparkMaxConfig;
 import frc.team449.oi.throttles.ThrottlePolynomialBuilder;
 import frc.team449.oi.buttons.SimpleButton;
