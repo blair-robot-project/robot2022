@@ -111,10 +111,10 @@ public final class RamseteBuilder {
   }
 
   public Command build() {
-    assert drivetrain != null : "Drivetrain must not be null";
-    assert leftPid != null : "Left PID controller must not be null";
-    assert rightPid != null : "Right PID controller must not be null";
-    assert traj != null : "Trajectory must not be null";
+    Objects.requireNonNull(drivetrain, "Drivetrain must not be null");
+    Objects.requireNonNull(leftPid, "Left PID controller must not be null");
+    Objects.requireNonNull(rightPid, "Right PID controller must not be null");
+    Objects.requireNonNull(traj, "Trajectory must not be null");
 
     SmartDashboard.putData(
         "ramsete pid controllers",
@@ -161,8 +161,8 @@ public final class RamseteBuilder {
     // If angleTimeout is nonzero, then we want to turn after the Ramsete command is over
     // to ensure our heading is right
     if (angleTimeout > 0) {
-      assert pidAngleController != null
-          : "PIDAngleController must not be null if turning after Ramsete";
+      Objects.requireNonNull(
+          pidAngleController, "PIDAngleController must not be null if turning after Ramsete");
       cmd =
           cmd.andThen(
                   new NavXTurnToAngle<>(
