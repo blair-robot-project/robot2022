@@ -87,9 +87,9 @@ public class FullMap {
     public static final double DRIVE_GEARING = 1; // 5.86;
     public static final int DRIVE_ENCODER_CPR = 256;
     public static final int DRIVE_CURRENT_LIM = 40;
-    public static final double DRIVE_KP_VEL = 27, // 27.2,
+    public static final double DRIVE_KP_VEL = 10, // 27.2,
             DRIVE_KI_VEL = 0.0,
-            DRIVE_KD_VEL = 20.0,
+            DRIVE_KD_VEL = 0.0,
             DRIVE_KP_POS = 45.269,
             DRIVE_KD_POS = 3264.2,
             DRIVE_FF_KS = 0.19993,
@@ -97,7 +97,7 @@ public class FullMap {
             DRIVE_FF_KA = 0.31082;
     // todo actually use these feedforward values
     public static final double DRIVE_ANGLE_FF_KS = 0.59239,
-            DRIVE_ANGLE_FF_KV = 29.0,
+            DRIVE_ANGLE_FF_KV = 5.0,
             DRIVE_ANGLE_FF_KA = 10.0;
     // old value from measuring from the outside of the wheel: 0.6492875
     // measuring from the inside of the wheel : .57785
