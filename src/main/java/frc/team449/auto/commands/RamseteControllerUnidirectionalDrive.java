@@ -3,8 +3,12 @@ package frc.team449.auto.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -119,4 +123,19 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
     Shuffleboard.addEventMarker(
         "Ramsete controller end.", this.getClass().getSimpleName(), EventImportance.kNormal);
   }
+
+  @NotNull
+  public static TrajectoryConfig basicTrajConfig(
+          @NotNull DriveUnidirectionalWithGyro drive, double maxVel, double maxAccel) {
+    var voltageConstraint =
+        new DifferentialDriveVoltageConstraint(
+            drive.getFeedforward(), drive.getDriveKinematics(), 12);
+    return new TrajectoryConfig(maxVel, maxAccel)
+        .setKinematics(drive.getDriveKinematics())
+        .addConstraint(voltageConstraint);
+  }
+
+//  public static Trajectory createTraj(@NotNull TrajectoryConfig config, Pose2d start, Pose2d end, ) {
+//    return TrajectoryGenerator.generateTrajectory(config);
+//  }
 }
