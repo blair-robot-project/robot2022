@@ -111,16 +111,16 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
   public void set(double velocity) {
     double leftVel = velocity;
     double rightVel = velocity;
-//    if (velocity <= 0 && this.hitBottom()) {
-//      leftVel = rightVel = 0;
-//    } else if (this.isStowed()) {
-//      if (leftArm.getMeasurement() > midDistance) {
-//        leftVel = 0;
-//      }
-//      if (rightArm.getMeasurement() > midDistance) {
-//        rightVel = 0;
-//      }
-//    }
+    if (velocity <= 0 && this.hitBottom()) {
+      leftVel = rightVel = 0;
+    } else if (this.isStowed()) {
+      if (leftArm.getMeasurement() > midDistance) {
+        leftVel = 0;
+      }
+      if (rightArm.getMeasurement() > midDistance) {
+        rightVel = 0;
+      }
+    }
 
     leftArm.set(leftVel);
     rightArm.set(rightVel);
