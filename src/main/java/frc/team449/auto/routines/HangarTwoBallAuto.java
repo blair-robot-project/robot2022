@@ -1,5 +1,6 @@
 package frc.team449.auto.routines;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -49,9 +50,9 @@ public class HangarTwoBallAuto {
         return new InstantCommand(cargo::deployIntake)
                 .andThen(new InstantCommand(cargo::runIntake))
                 .andThen(new InstantCommand(()->drive.resetOdometry(start)))
-                .andThen(new RamseteControllerUnidirectionalDrive(drive, kP, kD, traj1, rightFF, leftFF, field))
+                .andThen(new RamseteControllerUnidirectionalDrive(drive, new PIDController(kP, 0, kD), traj1, rightFF, leftFF, field))
                 .andThen(new WaitCommand(1))
-                .andThen(new RamseteControllerUnidirectionalDrive(drive, kP, kD, traj2, rightFF, leftFF, field))
+                .andThen(new RamseteControllerUnidirectionalDrive(drive, new PIDController(kP, 0, kD), traj2, rightFF, leftFF, field))
                 .andThen(new InstantCommand(cargo::spit))
                 .andThen(new WaitCommand(1));
     }
