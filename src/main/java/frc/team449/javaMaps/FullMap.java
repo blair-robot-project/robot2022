@@ -66,8 +66,8 @@ public class FullMap {
       LEFT_CLIMBER_MOTOR_PORT = 5,
       LEFT_EXTERNAL_FWD_PORT = 6,
       LEFT_EXTERNAL_REV_PORT = 7,
-      RIGHT_EXTERNAL_FWD_PORT = 8,
-      RIGHT_EXTERNAL_REV_PORT = 9;
+      RIGHT_EXTERNAL_FWD_PORT = 4,
+      RIGHT_EXTERNAL_REV_PORT = 5;
 
   // Other CAN IDs
   public static final int PDP_CAN = 1, PCM_MODULE = 0;
@@ -85,7 +85,7 @@ public class FullMap {
   public static final double DRIVE_GEARING = 1; // 5.86;
   public static final int DRIVE_ENCODER_CPR = 256;
   public static final int DRIVE_CURRENT_LIM = 40;
-  public static final double DRIVE_KP_VEL = 3.201, // 27.2,
+  public static final double DRIVE_KP_VEL = .0, // 27.2,
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0.0,
       DRIVE_KP_POS = 45.269,
@@ -96,7 +96,10 @@ public class FullMap {
   // todo actually use these feedforward values
   public static final double DRIVE_ANGLE_FF_KS = 0.20112,
       DRIVE_ANGLE_FF_KV = 171.58,
-      DRIVE_ANGLE_FF_KA = 22.755;
+      DRIVE_ANGLE_FF_KA = 22.755,
+      DRIVE_ANGLE_KP = 0.006, // 221.18
+      DRIVE_ANGLE_KI = 0,
+      DRIVE_ANGLE_KD = 0.03;
   // old value from measuring from the outside of the wheel: 0.6492875
   // measuring from the inside of the wheel : .57785
   public static final double DRIVE_TRACK_WIDTH = 0.61401; // 0.6492875;
@@ -251,7 +254,7 @@ public class FullMap {
             .loopTimeMillis(null)
             .deadband(2)
             .inverted(false)
-            .pid(221.18, 0, 0.03);
+            .pid(DRIVE_ANGLE_KP, DRIVE_ANGLE_KI, DRIVE_ANGLE_KD);
 
     var driveDefaultCmd =
         new UnidirectionalNavXDefaultDrive<>(

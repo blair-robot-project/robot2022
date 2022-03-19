@@ -19,9 +19,9 @@ import java.util.List;
 public class StationTwoBallAuto {
   public static Pose2d start =
       new Pose2d(7.54, 1.87, Rotation2d.fromDegrees(180 + 89.32)); // TODO later
-  public static Pose2d ball = new Pose2d(7.55, 1.06, Rotation2d.fromDegrees(180 + 90));
+  public static Pose2d ball = new Pose2d(7.45, 0.92, Rotation2d.fromDegrees(180 + 90)); // 7.55, 1.06
   public static Pose2d end = new Pose2d(7.77, 2.86, Rotation2d.fromDegrees(180 + 73));
-  public static double maxVel = 2.5, maxAcc = .5;
+  public static double maxVel = 2.5, maxAcc = .01;
 
   public static Command createCommand(
       @NotNull DriveUnidirectionalWithGyro drive,
@@ -45,10 +45,10 @@ public class StationTwoBallAuto {
         .andThen(new InstantCommand(cargo::runIntake))
         .andThen(new InstantCommand(() -> drive.resetOdometry(start)))
         .andThen(
-            new RamseteControllerUnidirectionalDrive(drive, kP, kD, traj1, rightFF, leftFF, field))
+            RamseteControllerUnidirectionalDrive.createRamsete(drive, kP, kD, traj1, rightFF, leftFF, field))
         .andThen(new WaitCommand(1))
         .andThen(
-            new RamseteControllerUnidirectionalDrive(drive, kP, kD, traj2, rightFF, leftFF, field))
+            RamseteControllerUnidirectionalDrive.createRamsete(drive, kP, kD, traj2, rightFF, leftFF, field))
         .andThen(new InstantCommand(cargo::spit))
         .andThen(new WaitCommand(1));
   }

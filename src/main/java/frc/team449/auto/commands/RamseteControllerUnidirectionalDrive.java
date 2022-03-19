@@ -3,18 +3,18 @@ package frc.team449.auto.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.team449.components.TrajectoryGenerationComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +32,27 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
   private final Field2d field;
   private double startTime;
   private double prevTime;
+
+  public static Command createRamsete(
+      @NotNull DriveUnidirectionalWithGyro drive,
+      double kP,
+      double kD,
+      @NotNull TrajectoryGenerationComponent trajectoryGenerator,
+      @NotNull SimpleMotorFeedforward rightFF,
+      @NotNull SimpleMotorFeedforward leftFF,
+      @Nullable Field2d field) {
+    return new RamseteCommand(
+            trajectoryGenerator.getTrajectory(),
+            drive::getCurrentPose,
+            new RamseteController(),
+            leftFF,
+            drive.getDriveKinematics(),
+            drive::getWheelSpeeds,
+            new PIDController(kP, 0, kD),
+            new PIDController(kP, 0, kD),
+            drive::setVoltage,
+            drive);
+  }
 
   public RamseteControllerUnidirectionalDrive(
       @NotNull DriveUnidirectionalWithGyro drivetrain,
@@ -126,7 +147,7 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
 
   @NotNull
   public static TrajectoryConfig basicTrajConfig(
-          @NotNull DriveUnidirectionalWithGyro drive, double maxVel, double maxAccel) {
+      @NotNull DriveUnidirectionalWithGyro drive, double maxVel, double maxAccel) {
     var voltageConstraint =
         new DifferentialDriveVoltageConstraint(
             drive.getFeedforward(), drive.getDriveKinematics(), 12);
@@ -135,7 +156,8 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
         .addConstraint(voltageConstraint);
   }
 
-//  public static Trajectory createTraj(@NotNull TrajectoryConfig config, Pose2d start, Pose2d end, ) {
-//    return TrajectoryGenerator.generateTrajectory(config);
-//  }
+  //  public static Trajectory createTraj(@NotNull TrajectoryConfig config, Pose2d start, Pose2d
+  // end, ) {
+  //    return TrajectoryGenerator.generateTrajectory(config);
+  //  }
 }
