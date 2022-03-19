@@ -38,7 +38,7 @@ import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
-import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
+import frc.team449.oi.throttles.Polynomial;
 import frc.team449.motor.builder.SparkMaxConfig;
 import frc.team449.oi.RampComponent;
 import frc.team449.oi.throttles.ThrottlePolynomialBuilder;

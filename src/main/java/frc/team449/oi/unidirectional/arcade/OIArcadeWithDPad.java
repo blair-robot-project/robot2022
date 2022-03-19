@@ -5,16 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Sendable;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
+import frc.team449.oi.throttles.Polynomial;
 import frc.team449.oi.throttles.Throttle;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Arrays;
 
 /** An arcade OI with an option to use the D-pad for turning. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

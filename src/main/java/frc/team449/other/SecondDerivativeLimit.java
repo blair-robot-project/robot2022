@@ -1,4 +1,4 @@
-package frc.team449.generalInterfaces.doubleUnaryOperator;
+package frc.team449.other;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
