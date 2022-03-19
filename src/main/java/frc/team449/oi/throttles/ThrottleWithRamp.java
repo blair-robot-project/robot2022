@@ -1,6 +1,6 @@
 package frc.team449.oi.throttles;
 
-import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
+import frc.team449.oi.RampComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class ThrottleWithRamp extends Throttle {

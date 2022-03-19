@@ -2,7 +2,7 @@ package frc.team449.oi.unidirectional.tank;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.oi.unidirectional.OIUnidirectional;
-import frc.team449.other.Updater;
+import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 
 /** A tank-style dual joystick OI. */

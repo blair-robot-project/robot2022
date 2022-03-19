@@ -1,6 +1,5 @@
-package frc.team449.other;
+package frc.team449.updatable;
 
-import frc.team449.generalInterfaces.updatable.Updatable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

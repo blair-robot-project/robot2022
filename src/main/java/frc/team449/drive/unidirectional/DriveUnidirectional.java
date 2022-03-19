@@ -2,7 +2,7 @@ package frc.team449.drive.unidirectional;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.drive.DriveSubsystem;
-import frc.team449.generalInterfaces.updatable.Updatable;
+import frc.team449.updatable.Updatable;
 import org.jetbrains.annotations.Nullable;
 
 /**

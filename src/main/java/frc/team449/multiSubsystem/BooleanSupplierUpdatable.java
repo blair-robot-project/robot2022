@@ -2,11 +2,11 @@ package frc.team449.multiSubsystem;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import frc.team449.generalInterfaces.updatable.Updatable;
+import frc.team449.updatable.Updatable;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
-import frc.team449.other.Updater;
+import frc.team449.updatable.Updater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

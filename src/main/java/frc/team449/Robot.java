@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.team449.javaMaps.FullMap;
 import frc.team449.other.Clock;
-import frc.team449.other.Updater;
+import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
 

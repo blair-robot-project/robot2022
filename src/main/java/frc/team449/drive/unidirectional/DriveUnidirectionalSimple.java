@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team449.other.Updater;
+import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

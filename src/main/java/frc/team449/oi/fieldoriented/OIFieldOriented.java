@@ -2,7 +2,7 @@ package frc.team449.oi.fieldoriented;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.oi.OI;
-import frc.team449.other.Updater;
+import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 

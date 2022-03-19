@@ -3,7 +3,7 @@ package frc.team449.drive.unidirectional;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.drive.DriveSettings;
-import frc.team449.other.Updater;
+import frc.team449.updatable.Updater;
 import frc.team449.motor.WrappedMotor;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;

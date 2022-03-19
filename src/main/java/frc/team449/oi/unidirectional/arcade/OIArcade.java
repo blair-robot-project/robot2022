@@ -3,7 +3,7 @@ package frc.team449.oi.unidirectional.arcade;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.oi.unidirectional.OIUnidirectional;
-import frc.team449.other.Updater;
+import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

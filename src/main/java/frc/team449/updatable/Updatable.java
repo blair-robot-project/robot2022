@@ -1,4 +1,4 @@
-package frc.team449.generalInterfaces.updatable;
+package frc.team449.updatable;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

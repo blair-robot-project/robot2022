@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.AnalogInput;
-import frc.team449.generalInterfaces.updatable.Updatable;
-import frc.team449.other.Updater;
+import frc.team449.updatable.Updatable;
+import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 

@@ -39,22 +39,21 @@ import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
-import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
-import frc.team449.wrappers.Limelight;
 import frc.team449.motor.builder.SparkMaxConfig;
+import frc.team449.oi.RampComponent;
 import frc.team449.oi.throttles.ThrottlePolynomialBuilder;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.throttles.ThrottleWithRamp;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
 import frc.team449.other.FollowerUtils;
-import frc.team449.other.Updater;
 import frc.team449.robot2022.cargo.Cargo2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.ThreeBallAuto;
+import frc.team449.updatable.Updater;
+import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
-import frc.team449.wrappers.RumbleableJoystick;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -142,9 +141,9 @@ public class FullMap {
   public static RobotMap createRobotMap() {
     var pdp =
         new PDP(PDP_CAN, new RunningLinRegComponent(250, 0.75), PowerDistribution.ModuleType.kCTRE);
-    var cargoJoystick = new RumbleableJoystick(CARGO_JOYSTICK_PORT);
-    var driveJoystick = new RumbleableJoystick(DRIVE_JOYSTICK_PORT);
-    var climberJoystick = new RumbleableJoystick(CLIMBER_JOYSTICK_PORT);
+    var cargoJoystick = new Joystick(CARGO_JOYSTICK_PORT);
+    var driveJoystick = new Joystick(DRIVE_JOYSTICK_PORT);
+    var climberJoystick = new Joystick(CLIMBER_JOYSTICK_PORT);
 
     var navx = AHRS.createRealOrSim(SerialPort.Port.kMXP, true);
 

@@ -1,13 +1,11 @@
-package frc.team449.generalInterfaces.doubleUnaryOperator;
+package frc.team449.oi;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import frc.team449.other.Clock;
 import java.util.function.DoubleUnaryOperator;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-/** A component for limiting the rate of change of a value. */
+/** A component for limiting the rate of change of a value. Mainly used for limiting acceleration of drive */
 public class RampComponent implements DoubleUnaryOperator {
 
   /** The maximum allowed change in the value per second. */

@@ -1,21 +1,22 @@
-package frc.team449.wrappers;
+package frc.team449.oi.joystick;
 
+import edu.wpi.first.wpilibj.Joystick;
 import frc.team449.Robot;
+import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.swing.*;
-import org.jetbrains.annotations.NotNull;
 
 /**
- * Class that extends {@link RumbleableJoystick} that does not rely on the existence of actual hardware.
- * This class is automatically instantiated by the MappedJoystick factory method when the robot is
- * running in a simulation and should not be otherwise referenced in code.
+ * Class that extends {@link Joystick} that does not rely on the existence of actual
+ * hardware. This class is automatically instantiated by the MappedJoystick factory method when the
+ * robot is running in a simulation and should not be otherwise referenced in code.
  */
-public class JoystickSimulated extends RumbleableJoystick {
+public class JoystickSimulated extends Joystick {
   @NotNull private final Map<String, Boolean> keyStates = new ConcurrentHashMap<>();
   @NotNull private final String logName;
   @NotNull private final String logPrefix;
@@ -392,15 +393,6 @@ public class JoystickSimulated extends RumbleableJoystick {
   public double getDirectionDegrees() {
     return 0;
   }
-
-  /**
-   * Rumble at a given strength on each side of the device.
-   *
-   * @param left The strength to rumble the left side, on [-1, 1]
-   * @param right The strength to rumble the right side, on [-1, 1]
-   */
-  @Override
-  public void rumble(final double left, final double right) {}
 
   // Janky awt for now.
   private class SimulatedJoystickUI extends JFrame {

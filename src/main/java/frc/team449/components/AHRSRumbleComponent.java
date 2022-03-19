@@ -2,10 +2,9 @@ package frc.team449.components;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj.GenericHID;
 import frc.team449.ahrs.AHRS;
-import frc.team449.oi.Rumbleable;
 import frc.team449.other.Clock;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,14 +14,13 @@ import java.util.List;
  * A component to rumble controllers based off the jerk measurements from an AHRS (jerk is the
  * derivative of acceleration).
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class AHRSRumbleComponent implements Runnable {
 
   /** The NavX to get jerk measurements from. */
   @NotNull private final AHRS ahrs;
 
-  /** The things to rumble. */
-  @NotNull private final List<Rumbleable> rumbleables;
+  /** The joysticks to rumble. */
+  @NotNull private final List<? extends GenericHID> joysticks;
 
   /** The minimum jerk that will trigger rumbling, in meters/second^3. */
   private final double minJerk;
@@ -49,22 +47,21 @@ public class AHRSRumbleComponent implements Runnable {
    * Default constructor.
    *
    * @param ahrs The NavX to get jerk measurements from.
-   * @param rumbleables The things to rumble.
+   * @param joysticks The things to rumble.
    * @param minJerk The minimum jerk that will trigger rumbling, in meters/(sec^3).
    * @param maxJerk The jerk, in meters/(sec^3), that's scaled to maximum rumble. All jerks of
    *     greater magnitude are capped at 1.
    * @param yIsFrontBack Whether the NavX Y-axis measures forwards-back jerk or left-right jerk.
    *     Defaults to false.
    */
-  @JsonCreator
   public AHRSRumbleComponent(
-      @NotNull @JsonProperty(required = true) final AHRS ahrs,
-      @NotNull @JsonProperty(required = true) final List<Rumbleable> rumbleables,
-      @JsonProperty(required = true) final double minJerk,
-      @JsonProperty(required = true) final double maxJerk,
-      final boolean yIsFrontBack) {
+      @NotNull AHRS ahrs,
+      @NotNull List<? extends @NotNull GenericHID> joysticks,
+      double minJerk,
+      double maxJerk,
+      boolean yIsFrontBack) {
     this.ahrs = ahrs;
-    this.rumbleables = rumbleables;
+    this.joysticks = joysticks;
     this.minJerk = minJerk;
     this.maxJerk = maxJerk;
     this.yIsFrontBack = yIsFrontBack;
@@ -93,8 +90,9 @@ public class AHRSRumbleComponent implements Runnable {
     double leftRumble = leftJerk <= this.minJerk ? 0 : (leftJerk - this.minJerk) / this.maxJerk;
     double rightRumble = rightJerk <= this.minJerk ? 0 : (rightJerk - this.minJerk) / this.maxJerk;
 
-    for (final Rumbleable rumbleable : this.rumbleables) {
-      rumbleable.rumble(leftRumble, rightRumble);
+    for (var joystick : this.joysticks) {
+      joystick.setRumble(GenericHID.RumbleType.kLeftRumble, leftRumble);
+      joystick.setRumble(GenericHID.RumbleType.kRightRumble, rightRumble);
     }
 
     this.lastLeftRightAccel = leftRightAccel;
