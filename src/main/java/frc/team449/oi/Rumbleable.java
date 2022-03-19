@@ -1,4 +1,4 @@
-package frc.team449.generalInterfaces.rumbleable;
+package frc.team449.oi;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

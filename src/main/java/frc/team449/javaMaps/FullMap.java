@@ -40,7 +40,7 @@ import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
-import frc.team449.generalInterfaces.limelight.Limelight;
+import frc.team449.wrappers.Limelight;
 import frc.team449.motor.builder.SparkMaxConfig;
 import frc.team449.oi.throttles.ThrottlePolynomialBuilder;
 import frc.team449.oi.throttles.ThrottleSum;

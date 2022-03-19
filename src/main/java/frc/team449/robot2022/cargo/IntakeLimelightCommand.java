@@ -2,7 +2,7 @@ package frc.team449.robot2022.cargo;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.team449.generalInterfaces.limelight.Limelight;
+import frc.team449.wrappers.Limelight;
 
 public class IntakeLimelightCommand extends CommandBase {
   private final Cargo2022 cargo;

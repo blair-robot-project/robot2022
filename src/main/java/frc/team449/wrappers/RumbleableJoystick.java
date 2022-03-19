@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.team449.generalInterfaces.rumbleable.Rumbleable;
+import frc.team449.oi.Rumbleable;
 
 import static frc.team449.other.Util.getLogPrefix;
 

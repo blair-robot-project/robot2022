@@ -4,10 +4,9 @@ import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.ahrs.PIDAngleController;
-import frc.team449.components.limelight.LimelightDistanceComponent;
-import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.ahrs.SubsystemAHRS;
-import frc.team449.generalInterfaces.limelight.Limelight;
+import frc.team449.drive.unidirectional.DriveUnidirectional;
+import frc.team449.wrappers.Limelight;
 import frc.team449.other.Clock;
 import frc.team449.other.Util;
 import org.jetbrains.annotations.NotNull;
@@ -50,9 +49,6 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
     // Do math to setup the setpoint.
     controller.setSetpoint(Util.clipTo180(subsystem.getHeadingCached() - limelight.getX()));
     // System.out.println("Current setpoint = " + limelight.getX());
-    final LimelightDistanceComponent distanceComponent =
-        new LimelightDistanceComponent(limelight, 20. / 12., 36, 7.5);
-    System.out.println(distanceComponent.getAsDouble());
   }
 
   /** Log when the command ends. */
