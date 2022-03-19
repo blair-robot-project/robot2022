@@ -4,10 +4,13 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449.components.TrajectoryGenerationComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
@@ -24,7 +27,7 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
   private final SimpleMotorFeedforward leftFF;
   private final Field2d field;
   private double startingTime;
-  private double relativeTime;
+  private double prevTime;
 
   /**
    * @param drivetrain
@@ -51,6 +54,21 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
     trajectory = trajectoryGenerator.getTrajectory();
     this.field = field;
     addRequirements(drivetrain);
+
+    SmartDashboard.putData(
+        "Ramsete PID",
+        builder -> {
+          builder.addDoubleProperty("left error", leftController::getPositionError, null);
+          builder.addDoubleProperty("right error", rightController::getPositionError, null);
+          builder.addDoubleProperty(
+              "left vel",
+              () -> leftController.getSetpoint() - leftController.getPositionError(),
+              null);
+          builder.addDoubleProperty(
+              "right vel",
+              () -> rightController.getSetpoint() - rightController.getPositionError(),
+              null);
+        });
   }
 
   @Override
@@ -58,8 +76,8 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
     if (field != null) {
       field.getObject("traj").setTrajectory(trajectory);
     }
-    startingTime = Timer.getFPGATimestamp();
-    relativeTime = startingTime;
+    this.startingTime = Timer.getFPGATimestamp();
+    this.prevTime = startingTime;
     leftController.reset();
     rightController.reset();
   }
@@ -67,7 +85,6 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
   @Override
   public void execute() {
     var currTime = Timer.getFPGATimestamp();
-    var timeDelta = currTime - relativeTime;
 
     var currentWheelSpeeds = drivetrain.getWheelSpeeds();
     var targetWheelSpeeds =
@@ -75,26 +92,23 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
             .getDriveKinematics()
             .toWheelSpeeds(
                 ramseteFeedback.calculate(
-                    drivetrain.getCurrentPose(),
-                    trajectory.sample(Timer.getFPGATimestamp() - startingTime)));
-    var leftTarget = targetWheelSpeeds.leftMetersPerSecond;
-    var rightTarget = targetWheelSpeeds.rightMetersPerSecond;
+                    drivetrain.getCurrentPose(), trajectory.sample(currTime - startingTime)));
 
-    var leftSpeedDelta =
-        targetWheelSpeeds.leftMetersPerSecond - currentWheelSpeeds.leftMetersPerSecond;
-    var rightSpeedDelta =
-        targetWheelSpeeds.rightMetersPerSecond - currentWheelSpeeds.rightMetersPerSecond;
+    double leftTarget = targetWheelSpeeds.leftMetersPerSecond;
+    double rightTarget = targetWheelSpeeds.rightMetersPerSecond;
+    double leftCurrent = currentWheelSpeeds.leftMetersPerSecond;
+    double rightCurrent = currentWheelSpeeds.leftMetersPerSecond;
 
-    var leftFeedforward = leftFF.calculate(leftTarget, leftSpeedDelta / timeDelta);
-    var rightFeedforward = rightFF.calculate(rightTarget, rightSpeedDelta / timeDelta);
+    double dt = currTime - prevTime;
+    double leftFeedforward = leftFF.calculate(leftTarget, (leftTarget - leftCurrent) / dt);
+    double rightFeedforward = rightFF.calculate(rightTarget, (rightTarget - rightCurrent) / dt);
 
-    drivetrain.setVoltage(
-        leftFeedforward
-            + leftController.calculate(currentWheelSpeeds.leftMetersPerSecond, leftTarget),
-        rightFeedforward
-            + rightController.calculate(currentWheelSpeeds.rightMetersPerSecond, rightTarget));
+    double leftOutput = leftFeedforward + leftController.calculate(leftCurrent, leftTarget);
+    double rightOutput = rightFeedforward + rightController.calculate(rightCurrent, rightTarget);
 
-    relativeTime = currTime;
+    drivetrain.setVoltage(leftOutput, rightOutput);
+
+    this.prevTime = currTime;
   }
 
   @Override
@@ -114,4 +128,20 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
     Shuffleboard.addEventMarker(
         "Ramsete controller end.", this.getClass().getSimpleName(), EventImportance.kNormal);
   }
+
+  @NotNull
+  public static TrajectoryConfig basicTrajConfig(
+      @NotNull DriveUnidirectionalWithGyro drive, double maxVel, double maxAccel) {
+    var voltageConstraint =
+        new DifferentialDriveVoltageConstraint(
+            drive.getFeedforward(), drive.getDriveKinematics(), 12);
+    return new TrajectoryConfig(maxVel, maxAccel)
+        .setKinematics(drive.getDriveKinematics())
+        .addConstraint(voltageConstraint);
+  }
+
+  //  public static Trajectory createTraj(@NotNull TrajectoryConfig config, Pose2d start, Pose2d
+  // end, ) {
+  //    return TrajectoryGenerator.generateTrajectory(config);
+  //  }
 }

@@ -17,15 +17,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -85,8 +77,8 @@ public class FullMap {
       LEFT_CLIMBER_MOTOR_PORT = 5,
       LEFT_EXTERNAL_FWD_PORT = 6,
       LEFT_EXTERNAL_REV_PORT = 7,
-      RIGHT_EXTERNAL_FWD_PORT = 8,
-      RIGHT_EXTERNAL_REV_PORT = 9;
+      RIGHT_EXTERNAL_FWD_PORT = 4,
+      RIGHT_EXTERNAL_REV_PORT = 5;
 
   // Other CAN IDs
   public static final int PDP_CAN = 1, PCM_MODULE = 0;
@@ -104,21 +96,25 @@ public class FullMap {
   public static final double DRIVE_GEARING = 1; // 5.86;
   public static final int DRIVE_ENCODER_CPR = 256;
   public static final int DRIVE_CURRENT_LIM = 40;
-  public static final double DRIVE_KP_VEL = 0.005, // 27.2,
+  public static final double DRIVE_UPR = 0.3021211527151539;
+  public static final double DRIVE_KP_VEL = .0, // 27.2,
       DRIVE_KI_VEL = 0.0,
-      DRIVE_KD_VEL = 0,
+      DRIVE_KD_VEL = 0.0,
       DRIVE_KP_POS = 45.269,
       DRIVE_KD_POS = 3264.2,
-      DRIVE_FF_KS = 0.19993,
-      DRIVE_FF_KV = 2.3776,
-      DRIVE_FF_KA = 0.31082;
+      DRIVE_FF_KS = 0.20835,
+      DRIVE_FF_KV = 2.4401,
+      DRIVE_FF_KA = 0.3523;
   // todo actually use these feedforward values
-  public static final double DRIVE_ANGLE_FF_KS = 0.59239,
-      DRIVE_ANGLE_FF_KV = 25.315,
-      DRIVE_ANGLE_FF_KA = 145.68;
+  public static final double DRIVE_ANGLE_FF_KS = 0.20112,
+      DRIVE_ANGLE_FF_KV = 171.58,
+      DRIVE_ANGLE_FF_KA = 22.755,
+      DRIVE_ANGLE_KP = 0.006, // 221.18
+      DRIVE_ANGLE_KI = 0,
+      DRIVE_ANGLE_KD = 0.03;
   // old value from measuring from the outside of the wheel: 0.6492875
   // measuring from the inside of the wheel : .57785
-  public static final double DRIVE_TRACK_WIDTH = 0.6492875;
+  public static final double DRIVE_TRACK_WIDTH = 0.61401; // 0.6492875;
   // Climber
   public static final int CLIMBER_PISTON_FWD_CHANNEL = 0, CLIMBER_PISTON_REV_CHANNEL = 1;
   // todo find out what the channel numbers are
@@ -163,7 +159,7 @@ public class FullMap {
     var driveMasterPrototype =
         new SparkMaxConfig()
             .setEnableBrakeMode(true)
-            .setUnitPerRotation(0.3192) // * Math.PI * DRIVE_WHEEL_RADIUS) // = 0.3191858136
+            .setUnitPerRotation(DRIVE_UPR)
             .setCurrentLimit(DRIVE_CURRENT_LIM)
             .setPostEncoderGearing(DRIVE_GEARING)
             .setEncoderCPR(DRIVE_ENCODER_CPR)
@@ -172,7 +168,7 @@ public class FullMap {
     var driveSim =
         new DifferentialDrivetrainSim(
             LinearSystemId.identifyDrivetrainSystem(
-                DRIVE_FF_KV, DRIVE_FF_KA, DRIVE_ANGLE_FF_KV, DRIVE_ANGLE_FF_KA),
+                DRIVE_FF_KV, DRIVE_FF_KA, DRIVE_ANGLE_FF_KV, DRIVE_ANGLE_FF_KA, DRIVE_TRACK_WIDTH),
             DCMotor.getNEO(3),
             DRIVE_GEARING,
             DRIVE_TRACK_WIDTH,
@@ -234,6 +230,11 @@ public class FullMap {
                     throttlePrototype
                         .axis(XboxController.Axis.kLeftTrigger.value)
                         .deadband(0.05)
+                        .inverted(true)
+                        .polynomial(new Polynomial(Map.of(1., 1.), null))
+                        .build(),
+                    throttlePrototype
+                        .axis(XboxController.Axis.kRightTrigger.value)
                         .inverted(false)
                         .build())),
             new RampComponent(RAMP_INCREASE, RAMP_DECREASE));
@@ -259,7 +260,7 @@ public class FullMap {
             .loopTimeMillis(null)
             .deadband(2)
             .inverted(false)
-            .pid(0.006, 0, 0.03);
+            .pid(DRIVE_ANGLE_KP, DRIVE_ANGLE_KI, DRIVE_ANGLE_KD);
 
     var driveDefaultCmd =
         new UnidirectionalNavXDefaultDrive<>(
@@ -385,56 +386,21 @@ public class FullMap {
     new JoystickButton(cargoJoystick, XboxController.Button.kB.value)
         .whileHeld(cargo::runIntakeReverse, cargo)
         .whenReleased(cargo::stop);
-
-    // Move climber arms up enough for mid rung
-    //    new JoystickButton(climberJoystick, XboxController.Button.kRightBumper.value)
-    //        .whenPressed(() -> climber.reset(CLIMBER_MID_DISTANCE), climber);
-    // Move climber arm up enough for high rung
+    // Extend Climber
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)
-        //        .whenPressed(climber::disable, climber)
         .whileHeld(() -> climber.set(CLIMBER_EXTEND_VEL), climber)
         .whenReleased(() -> climber.set(0), climber);
-    //    new JoystickButton(climberJoystick, XboxController.Button.kY.value)
-    //            .whenPressed(
-    //                    new InstantCommand(() -> climber.reset(climber.distanceTopBottom),
-    // climber)
-    //                            .andThen(new WaitUntilCommand(climber::atGoal))
-    //                            .andThen(climber::stop, climber));
-    //            .whileHeld(
-    //                new WaitCommand(0.01)
-    //                    .andThen(() -> rightArm.set(0.1),
-    // climber))//climber.setGoal(climber.getGoal() + 0.01), climber));
-    //            .whenReleased(() -> rightArm.set(0), climber);
-    // Move climber arm down
+    // Retract climber
     new JoystickButton(climberJoystick, XboxController.Button.kA.value)
-        //        .whenPressed(climber::disable, climber)
         .whileHeld(() -> climber.set(CLIMBER_RETRACT_VEL), climber)
         .whenReleased(() -> climber.set(0), climber);
-    //    new JoystickButton(climberJoystick, XboxController.Button.kA.value)
-    //            .whenPressed(
-    //                    new InstantCommand(() -> climber.reset(0), climber)
-    //                            .andThen(new WaitUntilCommand(climber::atGoal))
-    //                            .withInterrupt(climber::hitBottom)
-    //                            .andThen(
-    //                                    () -> {
-    //                                      if (climber.hitBottom()) {
-    //                                        climber.stop();
-    //
-    // climber.setState(PivotingTelescopingClimber.ClimberState.RETRACTED);
-    //                                      }
-    //                                    }));
-    // Extend climber arm out
+    // Pivot climber out
     new JoystickButton(climberJoystick, XboxController.Button.kB.value)
         .whenPressed(
-            // Deploy intake first so it doesn't get in the way
             new InstantCommand(cargo::deployIntake).andThen(climber::pivotTelescopingArmOut));
     // Retract climber arm in with piston
     new JoystickButton(climberJoystick, XboxController.Button.kX.value)
         .whenPressed(climber::pivotTelescopingArmIn);
-    // Stop climber
-    //    new JoystickButton(climberJoystick, XboxController.Button.kRightBumper.value)
-    //        .whenPressed(climber::stop, climber);
-    // Manual control to go down
 
     var ramsetePrototype =
         new RamseteBuilder()
