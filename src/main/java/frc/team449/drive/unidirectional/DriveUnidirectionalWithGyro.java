@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.team449.drive.DriveSettings;
 import frc.team449.ahrs.SubsystemAHRS;
 import frc.team449.ahrs.AHRS;
@@ -233,6 +234,16 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
   @NotNull
   public DifferentialDriveKinematics getDriveKinematics() {
     return this.driveKinematics;
+  }
+
+  @Log
+  public String currentCommand() {
+    var cmd = this.getCurrentCommand();
+    if (cmd == null) {
+      return "null";
+    } else {
+      return cmd.getName() + ": " + cmd;
+    }
   }
 
   @Override

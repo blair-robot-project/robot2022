@@ -26,6 +26,8 @@ import frc.team449._2022robot.climber.ClimberArm;
 import frc.team449._2022robot.climber.PivotingTelescopingClimber;
 import frc.team449.ahrs.AHRS;
 import frc.team449.ahrs.PIDAngleControllerBuilder;
+import frc.team449.auto.commands.BraindeadAutoCommand;
+import frc.team449.auto.commands.DriveDistanceCommand;
 import frc.team449.auto.routines.HangarTwoBallAuto;
 import frc.team449.auto.routines.StationTwoBallAuto;
 import frc.team449.auto.routines.ThreeBallAuto;
