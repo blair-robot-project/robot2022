@@ -17,7 +17,15 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -34,7 +42,8 @@ import frc.team449._2022robot.climber.ClimberArm;
 import frc.team449._2022robot.climber.PivotingTelescopingClimber;
 import frc.team449.ahrs.AHRS;
 import frc.team449.ahrs.PIDAngleControllerBuilder;
-import frc.team449.auto.commands.RamseteBuilder;
+import frc.team449.auto.builders.RamseteBuilder;
+import frc.team449.auto.routines.ThreeBallAuto;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
@@ -54,7 +63,6 @@ import frc.team449.other.FollowerUtils;
 import frc.team449.other.Updater;
 import frc.team449.wrappers.PDP;
 import frc.team449.wrappers.RumbleableJoystick;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -111,9 +119,6 @@ public class FullMap {
   // old value from measuring from the outside of the wheel: 0.6492875
   // measuring from the inside of the wheel : .57785
   public static final double DRIVE_TRACK_WIDTH = 0.6492875;
-  // todo find these using sysid
-  public static final double MOMENT_OF_INERTIA = 7.5;
-  public static final double MASS = 60;
   // Climber
   public static final int CLIMBER_PISTON_FWD_CHANNEL = 0, CLIMBER_PISTON_REV_CHANNEL = 1;
   // todo find out what the channel numbers are
@@ -166,7 +171,8 @@ public class FullMap {
 
     var driveSim =
         new DifferentialDrivetrainSim(
-            LinearSystemId.identifyDrivetrainSystem(DRIVE_FF_KV, DRIVE_FF_KA, DRIVE_ANGLE_FF_KV, DRIVE_ANGLE_FF_KA),
+            LinearSystemId.identifyDrivetrainSystem(
+                DRIVE_FF_KV, DRIVE_FF_KA, DRIVE_ANGLE_FF_KV, DRIVE_ANGLE_FF_KA),
             DCMotor.getNEO(3),
             DRIVE_GEARING,
             DRIVE_TRACK_WIDTH,
@@ -228,11 +234,6 @@ public class FullMap {
                     throttlePrototype
                         .axis(XboxController.Axis.kLeftTrigger.value)
                         .deadband(0.05)
-                        .inverted(true)
-                        .polynomial(new Polynomial(Map.of(1., 1.), null))
-                        .build(),
-                    throttlePrototype
-                        .axis(XboxController.Axis.kRightTrigger.value)
                         .inverted(false)
                         .build())),
             new RampComponent(RAMP_INCREASE, RAMP_DECREASE));
@@ -440,8 +441,8 @@ public class FullMap {
             .drivetrain(drive)
             .leftPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
             .rightPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
-//            .b(2.25)
-//            .zeta(0.6)
+            //            .b(2.25)
+            //            .zeta(0.6)
             .anglePID(
                 new PIDAngleControllerBuilder()
                     .absoluteTolerance(0.5)
@@ -623,7 +624,19 @@ public class FullMap {
     //            .andThen(spit.get());
 
     // Auto
-    List<Command> autoStartupCommands = List.of(hangarTwoBallTraj);
+    List<Command> autoStartupCommands =
+        List.of(
+            new InstantCommand(cargo::runIntake)
+                .andThen(
+                    ThreeBallAuto.createCommand(
+                        drive,
+                        cargo,
+                        DRIVE_KP_VEL,
+                        DRIVE_KD_VEL,
+                        new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA),
+                        new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA),
+                        field))
+                .andThen(spit.get()));
 
     List<Command> robotStartupCommands = List.of();
 
@@ -651,7 +664,6 @@ public class FullMap {
                 drive.getDriveKinematics(),
                 RobotController.getBatteryVoltage()))
         .setEndVelocity(0);
-    //        .addConstraint(new CentripetalAccelerationConstraint(0.5));
   }
 
   @NotNull
@@ -715,7 +727,6 @@ public class FullMap {
   }
 
   /** Little helper because the verbosity of the Pose2d constructor is tiring */
-  @Contract("_, _, _ -> new")
   private static @NotNull Pose2d pose(double x, double y, double degrees) {
     return new Pose2d(new Translation2d(x, y), Rotation2d.fromDegrees(degrees));
   }

@@ -1,5 +1,6 @@
 package frc.team449.other;
 
+import edu.wpi.first.math.controller.PIDController;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -74,5 +75,18 @@ public class Util {
   @Contract(pure = true)
   public static double clipTo180(double theta) {
     return (theta + 180) % 360 - 180;
+  }
+
+  /**
+   * Copy a PIDController
+   *
+   * @return a PIDController with the same P, I, D, and period
+   */
+  public static PIDController copyPid(PIDController pidController) {
+    return new PIDController(
+        pidController.getP(),
+        pidController.getI(),
+        pidController.getD(),
+        pidController.getPeriod());
   }
 }
