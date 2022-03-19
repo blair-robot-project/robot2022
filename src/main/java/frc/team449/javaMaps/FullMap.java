@@ -1,13 +1,21 @@
 package frc.team449.javaMaps;
 
+import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
@@ -26,10 +34,13 @@ import frc.team449._2022robot.climber.ClimberArm;
 import frc.team449._2022robot.climber.PivotingTelescopingClimber;
 import frc.team449.ahrs.AHRS;
 import frc.team449.ahrs.PIDAngleControllerBuilder;
+import frc.team449.auto.builders.RamseteBuilder;
 import frc.team449.auto.routines.ThreeBallAuto;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
+import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
+import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import frc.team449.generalInterfaces.doubleUnaryOperator.RampComponent;
@@ -76,15 +87,16 @@ public class FullMap {
       DRIVE_JOYSTICK_PORT = 1,
       CLIMBER_JOYSTICK_PORT = 2;
   // Limelight
-  public static final int DRIVER_PIPELINE = 0; // TODO find out what this is!
+  public static final int DRIVER_PIPELINE = 0;
   // Speeds
-  public static final double INTAKE_SPEED = 0.8, SPITTER_SPEED = 0.6;
+  public static final double INTAKE_SPEED = 0.75, SPITTER_SPEED = 0.45;
   public static final double AUTO_MAX_SPEED = 1.9, AUTO_MAX_ACCEL = .2;
   // Drive constants
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
   public static final double DRIVE_GEARING = 1; // 5.86;
   public static final int DRIVE_ENCODER_CPR = 256;
   public static final int DRIVE_CURRENT_LIM = 40;
+  public static final double DRIVE_UPR = 0.3021211527151539;
   public static final double DRIVE_KP_VEL = .0, // 27.2,
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0.0,
@@ -103,9 +115,6 @@ public class FullMap {
   // old value from measuring from the outside of the wheel: 0.6492875
   // measuring from the inside of the wheel : .57785
   public static final double DRIVE_TRACK_WIDTH = 0.61401; // 0.6492875;
-  // todo find these using sysid
-  public static final double MOMENT_OF_INERTIA = 7.5;
-  public static final double MASS = 60;
   // Climber
   public static final int CLIMBER_PISTON_FWD_CHANNEL = 0, CLIMBER_PISTON_REV_CHANNEL = 1;
   // todo find out what the channel numbers are
@@ -150,14 +159,12 @@ public class FullMap {
     var driveMasterPrototype =
         new SparkMaxConfig()
             .setEnableBrakeMode(true)
-            .setUnitPerRotation(
-                0.3021211527151539) // 2 * Math.PI * DRIVE_WHEEL_RADIUS) // = 0.3191858136
+            .setUnitPerRotation(DRIVE_UPR)
             .setCurrentLimit(DRIVE_CURRENT_LIM)
             .setPostEncoderGearing(DRIVE_GEARING)
             .setEncoderCPR(DRIVE_ENCODER_CPR)
             .setEnableVoltageComp(true);
 
-    // todo use sysid gains to make this
     var driveSim =
         new DifferentialDrivetrainSim(
             LinearSystemId.identifyDrivetrainSystem(
@@ -168,9 +175,8 @@ public class FullMap {
             DRIVE_WHEEL_RADIUS,
             VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
 
-    var leftExtEnc = new Encoder(LEFT_EXTERNAL_FWD_PORT, LEFT_EXTERNAL_REV_PORT);
-    var rightExtEnc = new Encoder(RIGHT_EXTERNAL_FWD_PORT, RIGHT_EXTERNAL_REV_PORT);
-    rightExtEnc.setReverseDirection(true);
+    var leftExtEnc = new Encoder(LEFT_EXTERNAL_FWD_PORT, LEFT_EXTERNAL_REV_PORT, false);
+    var rightExtEnc = new Encoder(RIGHT_EXTERNAL_FWD_PORT, RIGHT_EXTERNAL_REV_PORT, true);
     var leftEncSim = new EncoderSim(leftExtEnc);
     var rightEncSim = new EncoderSim(rightExtEnc);
 
@@ -396,12 +402,194 @@ public class FullMap {
     new JoystickButton(climberJoystick, XboxController.Button.kX.value)
         .whenPressed(climber::pivotTelescopingArmIn);
 
+    var ramsetePrototype =
+        new RamseteBuilder()
+            .drivetrain(drive)
+            .leftPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
+            .rightPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
+            //            .b(2.25)
+            //            .zeta(0.6)
+            .anglePID(
+                new PIDAngleControllerBuilder()
+                    .absoluteTolerance(0.5)
+                    .onTargetBuffer(null)
+                    .minimumOutput(0)
+                    .maximumOutput(null)
+                    .loopTimeMillis(20)
+                    .deadband(0.05)
+                    .inverted(false)
+                    .pid(0.002, 0, 0)
+                    .build())
+            .angleTimeout(4)
+            .field(null);
+    // .field(field);
+
     Supplier<Command> spit =
         () ->
             new InstantCommand(cargo::spit, cargo)
                 .andThen(new WaitCommand(1))
                 .andThen(cargo::stop, cargo);
 
+    // (assume blue alliance)
+    // Start at bottom next to hub, shoot preloaded ball, then get the two balls in that region and
+    // score those
+    var scoreThenGetTwoThenScore =
+        new InstantCommand(cargo::runIntake, cargo)
+            .andThen(
+                ramsetePrototype
+                    .copy()
+                    .name("1-2ballbluebottom")
+                    .traj(loadPathPlannerTraj("New Path"))
+                    .build())
+            .andThen(spit.get());
+
+    // Spit the preloaded ball, pick up another, come back and spit it out
+    var topOneOneTraj =
+        oneThenOneBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype.name("topOneOne"),
+            pose(7.11, 4.80, 159.25),
+            pose(5.39, 5.91, 137.86));
+    var midOneOneTraj =
+        oneThenOneBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype.name("midOneOne"),
+            pose(7.56, 3.00, -111.80),
+            pose(5.58, 2.00, -173.42));
+    var bottomOneOneTraj =
+        oneThenOneBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype.copy().name("bottomOneOne"),
+            pose(8.01, 2.82, -111.80),
+            pose(7.67, 0.77, -91.97));
+
+    //    // Start at the edge at the top, collect the top ball, then come back and spit
+    //    var hangarTwoBallTraj =
+    //        twoBallTraj(
+    //            drive,
+    //            cargo,
+    //            ramsetePrototype.copy().name("hangar_two_ball_auto").field(field).angleTimeout(0),
+    //            pose(6.06, 5.13, 136.40),
+    //            pose(5.33, 5.87, 134.37),
+    //            pose(6.76, 4.05, 180 - 41));
+    var hangarTwoBallTraj =
+        twoBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype.copy().name("hangar_two_ball_auto").field(field).angleTimeout(0),
+            pose(6.06, 5.13, 136.40),
+            pose(5.33, 5.87, 134.37),
+            pose(6.76, 4.05, 180 - 41));
+    //    // Start at the edge at the bottom, collect the bottom ball, then come back and spit
+    var stationTwoBallTraj =
+        twoBallTraj(
+            drive,
+            cargo,
+            ramsetePrototype.name("station_two_ball_auto"),
+            pose(7.55, 1.83, -88.32),
+            pose(7.63, 0.76, -86.19),
+            pose(7.83, 2.91, 180 + 68.63));
+    var ballX = 7.65;
+    var ballY = 0.69;
+    var ballAngle = -92.44;
+    var turnAngle = 170.0;
+    var ballX2 = 5.55;
+    var ballY2 = 1.85;
+    var turnAngle2 = 200;
+    var hubPose = pose(7.43, 2.83, -180 + 46.64);
+    var threeBallAuto =
+        new InstantCommand(cargo::spit, cargo)
+            .andThen(new WaitCommand(1))
+            .andThen(cargo::runIntake, cargo)
+            .andThen(
+                ramsetePrototype
+                    .copy()
+                    .name("threeBallAuto1")
+                    .field(null)
+                    .traj(
+                        TrajectoryGenerator.generateTrajectory(
+                            pose(7.99, 2.81, -109.98),
+                            List.of(),
+                            pose(ballX, ballY, ballAngle),
+                            trajConfig(drive)))
+                    .build())
+            .andThen(
+                new NavXTurnToAngle<>(
+                    turnAngle, 4, drive, pidAngleControllerPrototype.pid(0.001, 0, 0).build()))
+            .andThen(
+                ramsetePrototype
+                    .copy()
+                    .name("threeBallAuto2")
+                    .field(null)
+                    .traj(
+                        TrajectoryGenerator.generateTrajectory(
+                            pose(ballX, ballY, turnAngle),
+                            List.of(),
+                            pose(ballX2, ballY2, 140),
+                            trajConfig(drive)))
+                    .build())
+            .andThen(
+                new NavXTurnToAngle<>(turnAngle2, 4, drive, pidAngleControllerPrototype.build()))
+            .andThen(
+                ramsetePrototype
+                    .name("threeBallAuto3")
+                    .field(null)
+                    .traj(
+                        TrajectoryGenerator.generateTrajectory(
+                            pose(ballX2, ballY2, turnAngle2),
+                            List.of(),
+                            hubPose,
+                            trajConfig(drive).setReversed(true)))
+                    .build())
+            .andThen(cargo::spit, cargo)
+            .andThen(new WaitCommand(2))
+            .andThen(
+                ramsetePrototype
+                    .copy()
+                    .name("threeBallAuto4")
+                    .field(null)
+                    .traj(
+                        TrajectoryGenerator.generateTrajectory(
+                            hubPose, List.of(), pose(5.70, 1.98, -90), trajConfig(drive)))
+                    .build());
+    var oneBallAuto =
+        new InstantCommand(cargo::spit, cargo)
+            .andThen(new WaitCommand(1))
+            .andThen(cargo::stop, cargo)
+            .andThen(new DriveAtSpeed<>(drive, 0.13, 5));
+    var twoBallAuto =
+        new InstantCommand(cargo::runIntake, cargo)
+            .andThen(() -> drive.resetOdometry(pose(6.06, 5.13, 136.40)), drive)
+            .andThen(cargo::deployIntake, cargo)
+            .andThen(new WaitCommand(.4))
+            .andThen(new DriveAtSpeed<>(drive, .13, 2))
+            .andThen(new WaitCommand(.4))
+            .andThen(new DriveAtSpeed<>(drive, -.13, 4.4))
+            .andThen(cargo::spit, cargo)
+            .andThen(new WaitCommand(2))
+            .andThen(cargo::stop, cargo)
+            .andThen(drive::fullStop, drive);
+
+    // (assume blue alliance)
+    // Start at bottom on edge of tape, get one ball, score that and the preloaded one, go back for
+    // another ball, then score that
+    //    var getOneThenScoreThenGetAnotherThenScore =
+    //        new InstantCommand(cargo::runIntake, cargo)
+    //            .andThen(
+    //                ramsetePrototype
+    //                    .copy()
+    //                    .name("2-1ballbluebottom")
+    //                    .traj(loadPathPlannerTraj("2-1ball blue bottom"))
+    //                    .build()
+    //                    .alongWith(
+    //                        new WaitCommand(10).andThen(spit.get()).andThen(cargo::runIntake,
+    // cargo)))
+    //            .andThen(spit.get());
+
+    // Auto
     List<Command> autoStartupCommands =
         List.of(
             new InstantCommand(cargo::runIntake)
@@ -423,8 +611,6 @@ public class FullMap {
             new InstantCommand(climber::disable),
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
             new InstantCommand(cargo::stop));
-    //            new IntakeLimelightCommand(cargo, limelight, BLUE_PIPELINE, RED_PIPELINE)
-    //                .perpetually());
 
     List<Command> testStartupCommands = List.of();
     var allCommands =
@@ -433,5 +619,86 @@ public class FullMap {
 
     return new RobotMap(subsystems, pdp, allCommands, false);
   }
+
+  @NotNull
+  private static TrajectoryConfig trajConfig(@NotNull DriveUnidirectionalWithGyro drive) {
+    return new TrajectoryConfig(AUTO_MAX_SPEED, AUTO_MAX_ACCEL)
+        .setKinematics(drive.getDriveKinematics())
+        .addConstraint(
+            new DifferentialDriveVoltageConstraint(
+                drive.getFeedforward(),
+                drive.getDriveKinematics(),
+                RobotController.getBatteryVoltage()))
+        .setEndVelocity(0);
+  }
+
+  @NotNull
+  private static Trajectory loadPathPlannerTraj(@NotNull String trajName) {
+    var traj = PathPlanner.loadPath(trajName, AUTO_MAX_SPEED, AUTO_MAX_ACCEL, false);
+    if (traj == null) {
+      throw new Error("Trajectory not found: " + trajName);
+    }
+    return traj;
+  }
+
+  /** Create a command that immediately spits a ball, then goes to pick up a ball and comes back */
+  private static Command oneThenOneBallTraj(
+      @NotNull DriveUnidirectionalWithGyro drive,
+      @NotNull Cargo2022 cargo,
+      @NotNull RamseteBuilder ramsetePrototype,
+      @NotNull Pose2d startPose,
+      @NotNull Pose2d ballPose) {
+    var toBall =
+        TrajectoryGenerator.generateTrajectory(startPose, List.of(), ballPose, trajConfig(drive));
+    var fromBall =
+        TrajectoryGenerator.generateTrajectory(
+            ballPose, List.of(), startPose, trajConfig(drive).setReversed(true));
+    return new InstantCommand(cargo::spit, cargo)
+        .andThen(new WaitCommand(1))
+        .andThen(cargo::runIntake, cargo)
+        .andThen(ramsetePrototype.copy().traj(toBall).build())
+        .andThen(new WaitCommand(1))
+        .andThen(ramsetePrototype.copy().traj(fromBall).build())
+        .andThen(cargo::spit, cargo)
+        .andThen(new WaitCommand(1))
+        .andThen(cargo::stop, cargo);
+  }
+
+  /**
+   * Create a command that picks up another ball, then goes home and spits both out
+   *
+   * @param endingPose Please ensure that the angle is reversed here!
+   */
+  private static Command twoBallTraj(
+      @NotNull DriveUnidirectionalWithGyro drive,
+      @NotNull Cargo2022 cargo,
+      @NotNull RamseteBuilder ramsetePrototype,
+      @NotNull Pose2d startPose,
+      @NotNull Pose2d ballPose,
+      @NotNull Pose2d endingPose) {
+    var toBall =
+        TrajectoryGenerator.generateTrajectory(startPose, List.of(), ballPose, trajConfig(drive));
+    var fromBall =
+        TrajectoryGenerator.generateTrajectory(
+            ballPose, List.of(), endingPose, trajConfig(drive).setReversed(true));
+    return new InstantCommand(cargo::runIntake, cargo)
+        .andThen(new InstantCommand(cargo::deployIntake, cargo))
+        .andThen(new WaitCommand(.4))
+        .andThen(ramsetePrototype.copy().traj(toBall).build())
+        .andThen(new WaitCommand(1))
+        .andThen(ramsetePrototype.copy().traj(fromBall).build())
+        .andThen(cargo::spit, cargo)
+        .andThen(new WaitCommand(1))
+        .andThen(cargo::stop, cargo);
+  }
+
+  /** Little helper because the verbosity of the Pose2d constructor is tiring */
+  private static @NotNull Pose2d pose(double x, double y, double degrees) {
+    return new Pose2d(new Translation2d(x, y), Rotation2d.fromDegrees(degrees));
+  }
+
+  /** Add 180 to the heading */
+  private static @NotNull Pose2d reverseHeading(Pose2d pose) {
+    return pose(pose.getX(), pose.getY(), 180 + pose.getRotation().getDegrees());
+  }
 }
-// Hi there!

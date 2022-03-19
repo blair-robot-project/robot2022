@@ -9,9 +9,9 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import frc.team449.drive.DriveSettings;
-import frc.team449.ahrs.SubsystemAHRS;
 import frc.team449.ahrs.AHRS;
+import frc.team449.ahrs.SubsystemAHRS;
+import frc.team449.drive.DriveSettings;
 import frc.team449.motor.WrappedMotor;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
@@ -92,8 +92,8 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
    * @param right The voltage output for the right side of the drive from [-12, 12]
    */
   public void setVoltage(final double left, final double right) {
-    leftMaster.setVoltage(left + settings.feedforward.calculate(left));
-    rightMaster.setVoltage(right + settings.feedforward.calculate(right));
+    leftMaster.setVoltage(left);
+    rightMaster.setVoltage(right);
   }
 
   /**
@@ -186,14 +186,18 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
     return this.ahrs.getCachedPitch();
   }
 
-  /** @return true if the NavX is currently overriden, false otherwise. */
+  /**
+   * @return true if the NavX is currently overriden, false otherwise.
+   */
   @Override
   @Log
   public boolean getOverrideGyro() {
     return this.overrideGyro;
   }
 
-  /** @param override true to override the NavX, false to un-override it. */
+  /**
+   * @param override true to override the NavX, false to un-override it.
+   */
   @Override
   public void setOverrideGyro(final boolean override) {
     this.overrideGyro = override;
@@ -214,7 +218,9 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
         Rotation2d.fromDegrees(this.getHeading()), this.getLeftPos(), this.getRightPos());
   }
 
-  /** @return Current estimated pose based on odometry tracker data */
+  /**
+   * @return Current estimated pose based on odometry tracker data
+   */
   @Log.ToString
   @NotNull
   public Pose2d getCurrentPose() {
@@ -223,13 +229,17 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
         : new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
   }
 
-  /** @return Current wheel speeds based on encoder readings for future pose correction */
+  /**
+   * @return Current wheel speeds based on encoder readings for future pose correction
+   */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     // need to convert to meters
     return new DifferentialDriveWheelSpeeds(this.getLeftVel(), this.getRightVel());
   }
 
-  /** @return Kinematics processor for wheel speeds */
+  /**
+   * @return Kinematics processor for wheel speeds
+   */
   @NotNull
   public DifferentialDriveKinematics getDriveKinematics() {
     return this.driveKinematics;

@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
@@ -113,10 +111,10 @@ public final class RamseteBuilder {
   }
 
   public Command build() {
-    assert drivetrain != null : "Drivetrain must not be null";
-    assert leftPid != null : "Left PID controller must not be null";
-    assert rightPid != null : "Right PID controller must not be null";
-    assert traj != null : "Trajectory must not be null";
+    Objects.requireNonNull(drivetrain, "Drivetrain must not be null");
+    Objects.requireNonNull(leftPid, "Left PID controller must not be null");
+    Objects.requireNonNull(rightPid, "Right PID controller must not be null");
+    Objects.requireNonNull(traj, "Trajectory must not be null");
 
     SmartDashboard.putData(
         "ramsete pid controllers",
@@ -134,7 +132,10 @@ public final class RamseteBuilder {
       field.getObject(Objects.requireNonNullElse(this.name, "traj")).setTrajectory(traj);
 
     var ramseteCmd =
-        new RamseteCommand(
+        //        new frc.team449.auto.commands.RamseteCommand(
+        //            drivetrain, new RamseteController(b, zeta), traj, leftPid, rightPid);
+        //    SmartDashboard.putData("RamseteCommand", ramseteCmd);
+        new edu.wpi.first.wpilibj2.command.RamseteCommand(
             this.traj,
             drivetrain::getCurrentPose,
             new RamseteController(b, zeta),
@@ -154,16 +155,14 @@ public final class RamseteBuilder {
     var cmd =
         new InstantCommand(() -> drivetrain.resetOdometry(traj.getInitialPose()))
             .andThen(ramseteCmd)
-            .andThen(drivetrain::fullStop, drivetrain)
-            .andThen(new PrintCommand("Stopped"))
-            .andThen(() -> System.out.println(drivetrain.getWheelSpeeds()));
+            .andThen(drivetrain::fullStop, drivetrain);
     cmd.setName("Ramsete command");
 
     // If angleTimeout is nonzero, then we want to turn after the Ramsete command is over
     // to ensure our heading is right
     if (angleTimeout > 0) {
-      assert pidAngleController != null
-          : "PIDAngleController must not be null if turning after Ramsete";
+      Objects.requireNonNull(
+          pidAngleController, "PIDAngleController must not be null if turning after Ramsete");
       cmd =
           cmd.andThen(
                   new NavXTurnToAngle<>(

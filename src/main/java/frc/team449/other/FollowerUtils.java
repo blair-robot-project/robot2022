@@ -32,22 +32,6 @@ public final class FollowerUtils {
   }
 
   /**
-   * Make a Spark follow another Spark
-   *
-   * @param follower The follower
-   * @param leader The leader
-   * @param inverted Whether or not to invert the follower
-   */
-  public static void setMasterForSpark(
-      @NotNull CANSparkMax follower,
-      @NotNull CANSparkMax leader,
-      CANSparkMax.IdleMode brakeMode,
-      boolean inverted) {
-    follower.follow(leader, inverted);
-    follower.setIdleMode(brakeMode);
-  }
-
-  /**
    * Default constructor.
    *
    * @param port The CAN ID of this Talon SRX.

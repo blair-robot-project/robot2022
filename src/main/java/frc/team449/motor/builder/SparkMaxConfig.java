@@ -6,7 +6,6 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
 import frc.team449.motor.Encoder;
 import frc.team449.motor.WrappedMotor;
-import frc.team449.other.FollowerUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -103,11 +102,12 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
 
     motor.restoreFactoryDefaults();
 
-    // todo Set this to false because we only use reverseOutput for slaves.
+    var brakeMode =
+        this.isEnableBrakeMode() ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast;
+
     motor.setInverted(this.isReverseOutput());
     // Set brake mode
-    motor.setIdleMode(
-        this.isEnableBrakeMode() ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
+    motor.setIdleMode(brakeMode);
 
     // Set frame rates
     if (this.getControlFrameRateMillis() != null) {
@@ -140,7 +140,6 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
     if (this.getCurrentLimit() != null) {
       var limit = this.getCurrentLimit();
       motor.setSmartCurrentLimit(limit);
-      this.slaveSparks.forEach((slave, __) -> slave.setSmartCurrentLimit(limit));
     }
 
     if (this.isEnableVoltageComp()) {
@@ -148,11 +147,6 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
     } else {
       motor.disableVoltageCompensation();
     }
-
-    var brakeMode =
-        this.isEnableBrakeMode() ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast;
-    this.slaveSparks.forEach(
-        (slave, inverted) -> FollowerUtils.setMasterForSpark(slave, motor, brakeMode, inverted));
 
     if (this.getRampRate() != null) {
       // Set ramp rate, converting from volts/sec to seconds until 12 volts.
@@ -162,6 +156,16 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
       motor.setClosedLoopRampRate(0);
       motor.setOpenLoopRampRate(0);
     }
+
+    this.slaveSparks.forEach(
+        (slave, inverted) -> {
+          slave.follow(motor, inverted);
+          slave.setIdleMode(brakeMode);
+          if (this.getCurrentLimit() != null) {
+            slave.setSmartCurrentLimit(this.getCurrentLimit());
+          }
+          slave.burnFlash();
+        });
 
     motor.burnFlash();
 

@@ -1,5 +1,6 @@
 package frc.team449.auto.routines;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,7 +21,8 @@ public class ThreeBallAuto {
   // Carry over the two ball auto and append to it another path that forms the three ball auto
   public static double maxVel = StationTwoBallAuto.maxVel, maxAcc = StationTwoBallAuto.maxAcc;
   public static Pose2d start = StationTwoBallAuto.end;
-  public static Pose2d ball = new Pose2d(5.41, 1.76, Rotation2d.fromDegrees(133.92)); // 5.54, 2.24, 360 - 146.61
+  public static Pose2d ball =
+      new Pose2d(5.41, 1.76, Rotation2d.fromDegrees(133.92)); // 5.54, 2.24, 360 - 146.61
   public static Pose2d end = start;
 
   public static Command createCommand(
@@ -44,10 +46,12 @@ public class ThreeBallAuto {
     return StationTwoBallAuto.createCommand(drive, cargo, kP, kD, rightFF, leftFF, field)
         .andThen(new InstantCommand(cargo::runIntake))
         .andThen(
-            RamseteControllerUnidirectionalDrive.createRamsete(drive, kP, kD, traj1, rightFF, leftFF, field))
+            new RamseteControllerUnidirectionalDrive(
+                drive, new PIDController(kP, 0, kD), traj1, rightFF, leftFF, field))
         .andThen(new WaitCommand(1))
         .andThen(
-            RamseteControllerUnidirectionalDrive.createRamsete(drive, kP, kD, traj2, rightFF, leftFF, field))
+            new RamseteControllerUnidirectionalDrive(
+                drive, new PIDController(kP, 0, kD), traj2, rightFF, leftFF, field))
         .andThen(new InstantCommand(cargo::spit))
         .andThen(new WaitCommand(1));
   }
