@@ -5,6 +5,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 /** Builder for {@link frc.team449.ahrs.PIDAngleController PIDAngleController} */
 public final class PIDAngleControllerBuilder {
   private Double absoluteTolerance;
@@ -97,8 +99,8 @@ public final class PIDAngleControllerBuilder {
   @Contract(" -> new")
   @NotNull
   public PIDAngleController build() {
-    assert absoluteTolerance != null
-        : "Absolute tolerance required for " + this.getClass().getSimpleName();
+    Objects.requireNonNull(
+        absoluteTolerance, "Absolute tolerance required for " + this.getClass().getSimpleName());
     return new PIDAngleController(
         absoluteTolerance,
         onTargetBuffer,

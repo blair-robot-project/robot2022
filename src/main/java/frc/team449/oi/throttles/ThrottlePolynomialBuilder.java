@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import frc.team449.generalInterfaces.doubleUnaryOperator.Polynomial;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class ThrottlePolynomialBuilder {
 
   private GenericHID stick;
@@ -50,8 +52,8 @@ public class ThrottlePolynomialBuilder {
   }
 
   public ThrottlePolynomial build() {
-    assert stick != null : "Stick for ThrottlePolynomial must not be null";
-    assert polynomial != null : "Polynomial for ThrottlePolynomial must not be null";
+    Objects.requireNonNull(stick, "Stick for ThrottlePolynomial must not be null");
+    Objects.requireNonNull(polynomial, "Polynomial for ThrottlePolynomial must not be null");
     return new ThrottlePolynomial(
         stick, axis, deadband, smoothingTimeSecs, inverted, polynomial, scale);
   }
