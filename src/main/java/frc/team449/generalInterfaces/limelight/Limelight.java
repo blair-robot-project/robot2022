@@ -262,6 +262,7 @@ public class Limelight extends SubsystemBase implements Loggable {
   }
 
   public enum LedMode {
+    /** Use the mode set for the current pipeline */
     CURRENT(0),
     OFF(1),
     BLINK(2),
@@ -274,9 +275,19 @@ public class Limelight extends SubsystemBase implements Loggable {
     }
   }
 
+  /** Streaming mode for Limelight */
   public enum StreamMode {
+    /** Side-by-side streams if a webcam is attached to Limelight */
     STANDARD(0),
+    /**
+     * PiP Main - The secondary camera stream is placed in the lower-right corner of the primary
+     * camera stream
+     */
     PIP_MAIN(1),
+    /**
+     * PiP Secondary - The primary camera stream is placed in the lower-right corner of the
+     * secondary camera stream
+     */
     PIP_SECONDARY(2);
 
     public final Number asNum;

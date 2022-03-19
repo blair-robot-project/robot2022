@@ -29,13 +29,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
-import frc.team449._2022robot.cargo.Cargo2022;
-import frc.team449._2022robot.climber.ClimberArm;
-import frc.team449._2022robot.climber.PivotingTelescopingClimber;
 import frc.team449.ahrs.AHRS;
 import frc.team449.ahrs.PIDAngleControllerBuilder;
 import frc.team449.auto.builders.RamseteBuilder;
-import frc.team449.auto.routines.ThreeBallAuto;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
@@ -53,6 +49,10 @@ import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
 import frc.team449.other.FollowerUtils;
 import frc.team449.other.Updater;
+import frc.team449.robot2022.cargo.Cargo2022;
+import frc.team449.robot2022.climber.ClimberArm;
+import frc.team449.robot2022.climber.PivotingTelescopingClimber;
+import frc.team449.robot2022.routines.ThreeBallAuto;
 import frc.team449.wrappers.PDP;
 import frc.team449.wrappers.RumbleableJoystick;
 import org.jetbrains.annotations.NotNull;
@@ -87,7 +87,7 @@ public class FullMap {
       DRIVE_JOYSTICK_PORT = 1,
       CLIMBER_JOYSTICK_PORT = 2;
   // Limelight
-  public static final int DRIVER_PIPELINE = 0;
+  public static final int DRIVER_PIPELINE = 0, BLUE_PIPELINE = 1, RED_PIPELINE = 2;
   // Speeds
   public static final double INTAKE_SPEED = 0.75, SPITTER_SPEED = 0.45;
   public static final double AUTO_MAX_SPEED = 1.9, AUTO_MAX_ACCEL = .2;
@@ -115,6 +115,8 @@ public class FullMap {
   // old value from measuring from the outside of the wheel: 0.6492875
   // measuring from the inside of the wheel : .57785
   public static final double DRIVE_TRACK_WIDTH = 0.61401; // 0.6492875;
+  // Ramping
+  public static final double RAMP_INCREASE = 0.9, RAMP_DECREASE = 0.7;
   // Climber
   public static final int CLIMBER_PISTON_FWD_CHANNEL = 0, CLIMBER_PISTON_REV_CHANNEL = 1;
   // todo find out what the channel numbers are
@@ -134,10 +136,6 @@ public class FullMap {
   public static final int INTAKE_PISTON_FWD_CHANNEL = 3, INTAKE_PISTON_REV_CHANNEL = 2;
   public static final int INTAKE_CURR_LIM = 20;
 
-  // Ramping
-  public static final double RAMP_INCREASE = 0.9, RAMP_DECREASE = 0.7;
-  public static final int BLUE_PIPELINE = 1, RED_PIPELINE = 2;
-
   private FullMap() {}
 
   @NotNull
@@ -155,6 +153,8 @@ public class FullMap {
     SmartDashboard.putData(field);
 
     var limelight = new Limelight(DRIVER_PIPELINE);
+    limelight.setStreamMode(Limelight.StreamMode.STANDARD);
+    limelight.setLedMode(Limelight.LedMode.OFF);
 
     var driveMasterPrototype =
         new SparkMaxConfig()
@@ -295,11 +295,10 @@ public class FullMap {
             SPITTER_SPEED);
 
     var armPrototype =
-        driveMasterPrototype
-            .copy()
-            .setCurrentLimit(null)
-            //            .setRevSoftLimit(0.)
-            //            .setFwdSoftLimit(CLIMBER_DISTANCE)
+        new SparkMaxConfig()
+            .setEnableVoltageComp(true)
+//            .setRevSoftLimit(0.)
+//            .setFwdSoftLimit(CLIMBER_DISTANCE)
             .setUnitPerRotation(0.1949)
             .setPostEncoderGearing(27)
             .setEnableBrakeMode(true);

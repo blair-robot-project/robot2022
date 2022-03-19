@@ -1,18 +1,18 @@
-package frc.team449.auto.routines;
+package frc.team449.robot2022.routines;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.team449._2022robot.cargo.Cargo2022;
 import frc.team449.auto.commands.RamseteControllerUnidirectionalDrive;
-import frc.team449.components.TrajectoryGenerationComponent;
 import frc.team449.components.TrajectoryGenerationQuinticComponent;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
+import frc.team449.robot2022.cargo.Cargo2022;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -31,26 +31,23 @@ public class HangarTwoBallAuto {
       @NotNull SimpleMotorFeedforward rightFF,
       @NotNull SimpleMotorFeedforward leftFF,
       Field2d field) {
-    TrajectoryGenerationComponent traj1 =
-        new TrajectoryGenerationQuinticComponent(
-            drive, maxVel, maxAcc, List.of(start, ball), false);
-    TrajectoryGenerationComponent traj2 =
-        new TrajectoryGenerationQuinticComponent(drive, maxVel, maxAcc, List.of(ball, end), true);
-    if (field != null)
-      field
-          .getObject("traj")
-          .setTrajectory(traj1.getTrajectory().concatenate(traj2.getTrajectory()));
+    var config = RamseteControllerUnidirectionalDrive.basicTrajConfig(drive, maxVel, maxAcc);
+    var toBall =
+            TrajectoryGenerator.generateTrajectory(List.of(start, ball), config.setReversed(false));
+    var fromBall =
+            TrajectoryGenerator.generateTrajectory(List.of(ball, end), config.setReversed(true));
+    if (field != null) field.getObject("HangarTwoBallAuto").setTrajectory(toBall.concatenate(fromBall));
     // assume that the robot is placed here at the start of auto
     return new InstantCommand(cargo::deployIntake)
         .andThen(new InstantCommand(cargo::runIntake))
         .andThen(new InstantCommand(() -> drive.resetOdometry(start)))
         .andThen(
             new RamseteControllerUnidirectionalDrive(
-                drive, new PIDController(kP, 0, kD), traj1, rightFF, leftFF, field))
+                drive, new PIDController(kP, 0, kD), toBall, rightFF, leftFF, field))
         .andThen(new WaitCommand(1))
         .andThen(
             new RamseteControllerUnidirectionalDrive(
-                drive, new PIDController(kP, 0, kD), traj2, rightFF, leftFF, field))
+                drive, new PIDController(kP, 0, kD), fromBall, rightFF, leftFF, field))
         .andThen(new InstantCommand(cargo::spit))
         .andThen(new WaitCommand(1));
   }
