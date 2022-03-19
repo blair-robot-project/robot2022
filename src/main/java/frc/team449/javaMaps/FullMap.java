@@ -90,7 +90,7 @@ public class FullMap {
   public static final int DRIVER_PIPELINE = 0, BLUE_PIPELINE = 1, RED_PIPELINE = 2;
   // Speeds
   public static final double INTAKE_SPEED = 0.75, SPITTER_SPEED = 0.45;
-  public static final double AUTO_MAX_SPEED = 1.9, AUTO_MAX_ACCEL = .2;
+  public static final double AUTO_MAX_SPEED = 2, AUTO_MAX_ACCEL = .4;
   // Drive constants
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
   public static final double DRIVE_GEARING = 1; // 5.86;
@@ -201,13 +201,14 @@ public class FullMap {
             .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
             .createRealOrSim(rightEncSim);
 
+    var driveFeedforward = new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA);
     var drive =
         DriveUnidirectionalWithGyro.createRealOrSim(
             leftMaster,
             rightMaster,
             navx,
             new DriveSettingsBuilder()
-                .feedforward(new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA))
+                .feedforward(driveFeedforward)
                 .trackWidth(DRIVE_TRACK_WIDTH)
                 .build(),
             driveSim,
@@ -297,8 +298,8 @@ public class FullMap {
     var armPrototype =
         new SparkMaxConfig()
             .setEnableVoltageComp(true)
-//            .setRevSoftLimit(0.)
-//            .setFwdSoftLimit(CLIMBER_DISTANCE)
+            //            .setRevSoftLimit(0.)
+            //            .setFwdSoftLimit(CLIMBER_DISTANCE)
             .setUnitPerRotation(0.1949)
             .setPostEncoderGearing(27)
             .setEnableBrakeMode(true);
@@ -404,8 +405,7 @@ public class FullMap {
     var ramsetePrototype =
         new RamseteBuilder()
             .drivetrain(drive)
-            .leftPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
-            .rightPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
+            .pidController(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
             //            .b(2.25)
             //            .zeta(0.6)
             .anglePID(
@@ -419,7 +419,7 @@ public class FullMap {
                     .inverted(false)
                     .pid(0.002, 0, 0)
                     .build())
-            .angleTimeout(4)
+            .angleTimeout(0)
             .field(null);
     // .field(field);
 
@@ -589,18 +589,20 @@ public class FullMap {
     //            .andThen(spit.get());
 
     // Auto
+    Supplier<TrajectoryConfig> trajConfig =
+        () ->
+            new TrajectoryConfig(AUTO_MAX_SPEED, AUTO_MAX_ACCEL)
+                .setKinematics(drive.getDriveKinematics())
+                .addConstraint(
+                    new DifferentialDriveVoltageConstraint(
+                        driveFeedforward,
+                        drive.getDriveKinematics(),
+                        RobotController.getBatteryVoltage()));
     List<Command> autoStartupCommands =
         List.of(
             new InstantCommand(cargo::runIntake)
                 .andThen(
-                    ThreeBallAuto.createCommand(
-                        drive,
-                        cargo,
-                        DRIVE_KP_VEL,
-                        DRIVE_KD_VEL,
-                        new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA),
-                        new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA),
-                        field))
+                    ThreeBallAuto.createCommand(drive, cargo, ramsetePrototype, trajConfig, field))
                 .andThen(spit.get()));
 
     List<Command> robotStartupCommands = List.of();

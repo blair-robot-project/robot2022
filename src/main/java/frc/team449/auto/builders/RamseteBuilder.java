@@ -1,13 +1,12 @@
 package frc.team449.auto.builders;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team449.ahrs.PIDAngleController;
+import frc.team449.auto.commands.RamseteControllerUnidirectionalDrive;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
 import org.jetbrains.annotations.Nullable;
@@ -17,8 +16,7 @@ import java.util.Objects;
 public final class RamseteBuilder {
 
   private @Nullable DriveUnidirectionalWithGyro drivetrain;
-  private @Nullable PIDController leftPid;
-  private @Nullable PIDController rightPid;
+  private @Nullable PIDController pidController;
   private @Nullable Trajectory traj;
   private @Nullable Field2d field;
   private @Nullable String name;
@@ -33,15 +31,9 @@ public final class RamseteBuilder {
     return this;
   }
 
-  /** Set the PID controller for the left side. Uses velocity control. */
-  public RamseteBuilder leftPid(PIDController leftPid) {
-    this.leftPid = leftPid;
-    return this;
-  }
-
-  /** Set the PID controller for the right side. Uses velocity control. */
-  public RamseteBuilder rightPid(PIDController rightPid) {
-    this.rightPid = rightPid;
+  /** Set the PID controller for both sides. Uses velocity control. */
+  public RamseteBuilder pidController(PIDController pidController) {
+    this.pidController = pidController;
     return this;
   }
 
@@ -98,9 +90,8 @@ public final class RamseteBuilder {
 
   public RamseteBuilder copy() {
     return new RamseteBuilder()
-        .drivetrain(this.drivetrain)
-        .leftPid(this.leftPid)
-        .rightPid(this.rightPid)
+        .drivetrain(drivetrain)
+        .pidController(pidController)
         .traj(traj)
         .field(field)
         .name(name)
@@ -112,40 +103,26 @@ public final class RamseteBuilder {
 
   public Command build() {
     Objects.requireNonNull(drivetrain, "Drivetrain must not be null");
-    Objects.requireNonNull(leftPid, "Left PID controller must not be null");
-    Objects.requireNonNull(rightPid, "Right PID controller must not be null");
+    Objects.requireNonNull(pidController, "PID controller must not be null");
     Objects.requireNonNull(traj, "Trajectory must not be null");
 
-    SmartDashboard.putData(
-        "ramsete pid controllers",
-        (builder) -> {
-          builder.addDoubleProperty("leftpid", leftPid::getSetpoint, x -> {});
-          builder.addDoubleProperty("rightpid", rightPid::getSetpoint, x -> {});
-          builder.addDoubleProperty("lefterr", leftPid::getPositionError, x -> {});
-          builder.addDoubleProperty("righterr", rightPid::getPositionError, x -> {});
-          builder.addDoubleProperty(
-              "leftvel", () -> leftPid.getSetpoint() - leftPid.getPositionError(), x -> {});
-          builder.addDoubleProperty(
-              "rightvel", () -> rightPid.getSetpoint() - rightPid.getPositionError(), x -> {});
-        });
     if (field != null)
       field.getObject(Objects.requireNonNullElse(this.name, "traj")).setTrajectory(traj);
 
     var ramseteCmd =
-        //        new frc.team449.auto.commands.RamseteCommand(
-        //            drivetrain, new RamseteController(b, zeta), traj, leftPid, rightPid);
-        //    SmartDashboard.putData("RamseteCommand", ramseteCmd);
-        new edu.wpi.first.wpilibj2.command.RamseteCommand(
-            this.traj,
-            drivetrain::getCurrentPose,
-            new RamseteController(b, zeta),
-            drivetrain.getFeedforward(),
-            drivetrain.getDriveKinematics(),
-            drivetrain::getWheelSpeeds,
-            leftPid,
-            rightPid,
-            drivetrain::setVoltage,
-            drivetrain);
+        new RamseteControllerUnidirectionalDrive(
+            drivetrain, pidController, traj, drivetrain.getFeedforward());
+    //        new edu.wpi.first.wpilibj2.command.RamseteCommand(
+    //            this.traj,
+    //            drivetrain::getCurrentPose,
+    //            new RamseteController(b, zeta),
+    //            drivetrain.getFeedforward(),
+    //            drivetrain.getDriveKinematics(),
+    //            drivetrain::getWheelSpeeds,
+    //            leftPid,
+    //            rightPid,
+    //            drivetrain::setVoltage,
+    //            drivetrain);
     if (this.name != null) {
       ramseteCmd.setName(this.name);
     }
