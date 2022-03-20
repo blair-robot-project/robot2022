@@ -28,7 +28,7 @@ public class StationTwoBallAuto {
       Field2d field) {
     return new InstantCommand(cargo::deployIntake, cargo)
         .andThen(
-            AutoUtils.oneBallAuto(
+            AutoUtils.getBallAndScore(
                 cargo, ramseteBuilder, trajConfig, start, ball, end, "StationTwoBallAuto", field));
   }
 }

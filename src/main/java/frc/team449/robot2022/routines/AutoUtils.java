@@ -20,15 +20,15 @@ public final class AutoUtils {
   private AutoUtils() {}
 
   /**
-   * Create an auto command that runs intake, goes to a ball, picks it up, comes back, and
-   * spits it out. Despite the name, the robot may already have a preloaded ball, making it a
-   * two-ball auto
+   * Create an auto command that runs intake, goes to a ball, picks it up, comes back, and spits it
+   * out. Despite the name, the robot may already have a preloaded ball xor may happen to pick up
+   * two balls on the way
    *
    * @param startPose The pose in which the robot starts
    * @param ballPose The pose at which the ball is found
    * @param endPose The pose to come back to and spit
    */
-  public static Command oneBallAuto(
+  public static Command getBallAndScore(
       @NotNull Cargo2022 cargo,
       @NotNull RamseteBuilder ramseteBuilder,
       @NotNull Supplier<TrajectoryConfig> trajConfig,

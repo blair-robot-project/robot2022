@@ -27,7 +27,7 @@ public class ThreeBallAuto {
       Field2d field) {
     return StationTwoBallAuto.createCommand(drive, cargo, ramseteBuilder, trajConfig, field)
         .andThen(
-            AutoUtils.oneBallAuto(
+            AutoUtils.getBallAndScore(
                 cargo, ramseteBuilder, trajConfig, start, ball, end, "ThreeBallAuto", field));
   }
 }
