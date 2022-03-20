@@ -115,17 +115,17 @@ public class UnidirectionalNavXDefaultDrive<
         !(this.subsystem.getOverrideGyro())
             && !(this.drivingStraight)
             && this.oi.commandingStraight()
-            && Math.abs(this.subsystem.getAngularVelCached()) <= this.maxAngularVelToEnterLoop)) {
+            && Math.abs(this.subsystem.getAHRS().getCachedAngularVelocity()) <= this.maxAngularVelToEnterLoop)) {
       // Switch to driving straight
       this.drivingStraight = true;
       // Set the setpoint to the current heading and reset the AHRS
       controller.resetController();
-      controller.setSetpoint(this.subsystem.getHeadingCached());
+      controller.setSetpoint(this.subsystem.getAHRS().getCachedHeading());
     }
 
     // Update the controller with the current heading
     // Why exactly this line is necessary is beyond me
-    controller.getOutput(subsystem.getHeadingCached());
+    controller.getOutput(subsystem.getAHRS().getCachedHeading());
     // Get the outputs
     double leftOutput = this.oi.getLeftRightOutput()[0];
     double rightOutput = this.oi.getLeftRightOutput()[1];
@@ -140,7 +140,7 @@ public class UnidirectionalNavXDefaultDrive<
     double finalOutput;
     if (this.drivingStraight) {
       // Process the output (minimumOutput, deadband, etc.)
-      processedOutput = controller.getOutput(subsystem.getHeadingCached());
+      processedOutput = controller.getOutput(subsystem.getAHRS().getCachedHeading());
 
       // Deadband if we're stationary
       if (leftOutput == 0 && rightOutput == 0) {

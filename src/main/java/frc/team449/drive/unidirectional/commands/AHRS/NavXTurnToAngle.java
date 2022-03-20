@@ -65,7 +65,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
   @Override
   public void execute() {
     // Process the output with deadband, minimum output, etc.
-    double output = controller.getOutput(subsystem.getHeadingCached());
+    double output = controller.getOutput(subsystem.getAHRS().getCachedHeading());
 
     // spin to the right angle
     subsystem.setOutput(-output, output);

@@ -48,7 +48,8 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
     this.ahrs = ahrs;
     this.overrideGyro = false;
     this.driveKinematics = new DifferentialDriveKinematics(driveSettings.trackWidth);
-    this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(this.getHeading()));
+    this.driveOdometry =
+        new DifferentialDriveOdometry(Rotation2d.fromDegrees(this.ahrs.getHeading()));
   }
 
   /**
@@ -96,94 +97,10 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
     rightMaster.setVoltage(right);
   }
 
-  /**
-   * Get the robot's heading using the AHRS
-   *
-   * @return robot heading, in degrees, on [-180, 180]
-   */
+  @NotNull
   @Override
-  public double getHeading() {
-    return this.ahrs.getHeading();
-  }
-
-  /**
-   * Set the robot's heading.
-   *
-   * @param heading The heading to set to, in degrees on [-180, 180].
-   */
-  @Override
-  public void setHeading(final double heading) {
-    this.ahrs.setHeading(heading);
-  }
-
-  /**
-   * Get the robot's cached heading.
-   *
-   * @return robot heading, in degrees, on [-180, 180].
-   */
-  @Override
-  public double getHeadingCached() {
-    return this.ahrs.getCachedHeading();
-  }
-
-  /**
-   * Get the robot's angular velocity.
-   *
-   * @return Angular velocity in degrees/sec
-   */
-  @Override
-  public double getAngularVel() {
-    return this.ahrs.getAngularVelocity();
-  }
-
-  /**
-   * Get the robot's cached angular velocity.
-   *
-   * @return Angular velocity in degrees/sec
-   */
-  @Override
-  public double getAngularVelCached() {
-    return this.ahrs.getCachedAngularVelocity();
-  }
-
-  /**
-   * Get the robot's angular displacement since being turned on.
-   *
-   * @return Angular displacement in degrees.
-   */
-  @Override
-  public double getAngularDisplacement() {
-    return this.ahrs.getAngularDisplacement();
-  }
-
-  /**
-   * Get the robot's cached angular displacement since being turned on.
-   *
-   * @return Angular displacement in degrees.
-   */
-  @Override
-  public double getAngularDisplacementCached() {
-    return this.ahrs.getCachedAngularDisplacement();
-  }
-
-  /**
-   * Get the pitch value.
-   *
-   * @return The pitch, in degrees from [-180, 180]
-   */
-  @Override
-  public double getPitch() {
-    return this.ahrs.getPitch();
-  }
-
-  /**
-   * Get the cached pitch value.
-   *
-   * @return The pitch, in degrees from [-180, 180]
-   */
-  @Override
-  public double getCachedPitch() {
-    return this.ahrs.getCachedPitch();
+  public AHRS getAHRS() {
+    return ahrs;
   }
 
   /**
@@ -208,14 +125,14 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
   public void resetOdometry(final Pose2d pose) {
     resetPosition();
     ahrs.setHeading(pose.getRotation().getDegrees());
-    driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.getHeading()));
+    driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.ahrs.getHeading()));
   }
 
   /** Update odometry tracker with current heading, and encoder readings */
   public void updateOdometry() {
     // need to convert to meters
     this.driveOdometry.update(
-        Rotation2d.fromDegrees(this.getHeading()), this.getLeftPos(), this.getRightPos());
+        Rotation2d.fromDegrees(this.ahrs.getHeading()), this.getLeftPos(), this.getRightPos());
   }
 
   /**

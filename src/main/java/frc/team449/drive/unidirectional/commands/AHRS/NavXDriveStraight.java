@@ -42,14 +42,14 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
   /** Set the setpoint of the angle PID. */
   @Override
   public void initialize() {
-    controller.setSetpoint(subsystem.getHeadingCached());
+    controller.setSetpoint(subsystem.getAHRS().getCachedHeading());
   }
 
   /** Give output to the drive based on the output of the PID loop. */
   @Override
   public void execute() {
     // Process the PID output with deadband, minimum output, etc.
-    double output = controller.getOutput(subsystem.getHeadingCached());
+    double output = controller.getOutput(subsystem.getAHRS().getCachedHeading());
 
     // Set throttle to the specified stick.
     subsystem.setOutput(

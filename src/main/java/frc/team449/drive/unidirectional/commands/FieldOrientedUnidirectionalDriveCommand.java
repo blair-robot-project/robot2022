@@ -85,7 +85,7 @@ public class FieldOrientedUnidirectionalDriveCommand<
 
     // Process or zero the input depending on whether the NavX is being overriden.
     double output =
-        this.subsystem.getOverrideGyro() ? 0 : controller.getOutput(subsystem.getHeadingCached());
+        this.subsystem.getOverrideGyro() ? 0 : controller.getOutput(subsystem.getAHRS().getCachedHeading());
 
     // Adjust the heading according to the PID output, it'll be positive if we want to go right.
     this.subsystem.setOutput(this.oi.getVelCached() - output, this.oi.getVelCached() + output);

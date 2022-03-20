@@ -37,7 +37,7 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
         "NavXTurnToAngleRelative init.", getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
     // Do math to setup the setpoint.
-    controller.setSetpoint(Util.clipTo180(subsystem.getHeadingCached() + setpoint));
+    controller.setSetpoint(Util.clipTo180(subsystem.getAHRS().getCachedHeading() + setpoint));
   }
 
   /** Log when the command ends. */
