@@ -1,15 +1,10 @@
 package frc.team449.oi.throttles;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.GenericHID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** An exponentially-scaled throttle. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ThrottleExponential extends ThrottleDeadbanded {
 
   /** The base that is raised to the power of the joystick input. */
@@ -26,14 +21,13 @@ public class ThrottleExponential extends ThrottleDeadbanded {
    * @param inverted Whether or not to invert the joystick input. Defaults to false.
    * @param base The base that is raised to the power of the joystick input.
    */
-  @JsonCreator
   public ThrottleExponential(
-      @NotNull @JsonProperty(required = true) GenericHID stick,
-      @JsonProperty(required = true) int axis,
+      @NotNull GenericHID stick,
+      int axis,
       double deadband,
       @Nullable Double smoothingTimeSecs,
       boolean inverted,
-      @JsonProperty(required = true) double base) {
+      double base) {
     super(stick, axis, deadband, smoothingTimeSecs, inverted);
     this.base = base;
   }

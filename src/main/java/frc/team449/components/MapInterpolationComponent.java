@@ -1,15 +1,11 @@
 package frc.team449.components;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
+
 public class MapInterpolationComponent {
 
   /** LookUpTable, the table of experimentally optimized values */
@@ -27,10 +23,8 @@ public class MapInterpolationComponent {
    * @param method the interpolation method
    * @param entries the list of experimentally derived values for the LUT
    */
-  @JsonCreator
   public MapInterpolationComponent(
-      @JsonProperty(required = true) InterpolationMethod method,
-      @JsonProperty(required = true) List<Map.Entry<Double, Double>> entries) {
+      InterpolationMethod method, List<Map.Entry<Double, Double>> entries) {
     currentMethod = method;
     LUT = new TreeMap<>();
     for (Map.Entry<Double, Double> entry : entries) {

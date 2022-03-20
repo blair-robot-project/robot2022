@@ -1,8 +1,5 @@
 package frc.team449.wrappers;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.updatable.Updatable;
@@ -13,10 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * An object representing the {@link PowerDistribution} that logs power, current, and
- * resistance.
+ * An object representing the {@link PowerDistribution} that logs power, current, and resistance.
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class PDP implements Loggable, Updatable {
 
   /**
@@ -36,7 +31,6 @@ public class PDP implements Loggable, Updatable {
    *
    * @param canID CAN ID of the PDP. Defaults to 0.
    */
-  @JsonCreator
   public PDP(
       final int canID,
       @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,

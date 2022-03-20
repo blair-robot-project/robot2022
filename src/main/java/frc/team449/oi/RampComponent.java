@@ -1,9 +1,9 @@
 package frc.team449.oi;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import frc.team449.other.Clock;
-import java.util.function.DoubleUnaryOperator;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.DoubleUnaryOperator;
 
 /** A component for limiting the rate of change of a value. Mainly used for limiting acceleration of drive */
 public class RampComponent implements DoubleUnaryOperator {
@@ -18,25 +18,21 @@ public class RampComponent implements DoubleUnaryOperator {
   private long lastTime;
 
   /**
-   *
    * @param maxIncreasePerSecond The maximum allowed increase in the value per second.
    * @param maxDecreasePerSecond The maximum allowed decrease in the value per second. Should be
    *     positive. Defaults to maxIncreasePerSecond.
    */
-  @JsonCreator
-  public RampComponent(
-      double maxIncreasePerSecond,
-      double maxDecreasePerSecond) {
+  public RampComponent(double maxIncreasePerSecond, double maxDecreasePerSecond) {
     this.maxIncreasePerMillis = maxIncreasePerSecond / 1000.;
     this.maxDecreasePerMillis = maxDecreasePerSecond / 1000.;
   }
 
   /**
-   * {@link RampComponent#maxDecreasePerMillis} is taken to be the same as {@link RampComponent#maxIncreasePerMillis}
+   * {@link RampComponent#maxDecreasePerMillis} is taken to be the same as {@link
+   * RampComponent#maxIncreasePerMillis}
    *
    * @param maxChangePerSecond The maximum allowed increase/decrease in the value per second.
    */
-  @JsonCreator
   public RampComponent(double maxChangePerSecond) {
     this(maxChangePerSecond, maxChangePerSecond);
   }

@@ -1,19 +1,16 @@
 package frc.team449.drive.unidirectional.commands.AHRS;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.ahrs.PIDAngleController;
-import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.ahrs.SubsystemAHRS;
+import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.oi.unidirectional.tank.OITank;
 import org.jetbrains.annotations.NotNull;
 
 /** Drives straight using the NavX gyro to keep a constant alignment. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
     extends CommandBase {
 

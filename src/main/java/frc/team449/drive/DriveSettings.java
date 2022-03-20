@@ -1,6 +1,5 @@
 package frc.team449.drive;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import org.jetbrains.annotations.NotNull;
@@ -31,8 +30,8 @@ public class DriveSettings {
   /**
    * Default constructor.
    *
-   * @param feedforward The component for calculating feedforwards for the left side in
-   *     closed-loop control modes.
+   * @param feedforward The component for calculating feedforwards for the left side in closed-loop
+   *     control modes.
    * @param leftPosPID Left position PID controller
    * @param rightPosPID Right position PID controller
    * @param leftVelPID Left velocity PID controller
@@ -41,7 +40,6 @@ public class DriveSettings {
    * @param maxSpeed The maximum speed of the motor in this gear, in MPS. Used for throttle scaling.
    * @param trackWidth The distance between the left and right wheels in meters
    */
-  @JsonCreator
   public DriveSettings(
       @NotNull SimpleMotorFeedforward feedforward,
       @NotNull PIDController leftPosPID,

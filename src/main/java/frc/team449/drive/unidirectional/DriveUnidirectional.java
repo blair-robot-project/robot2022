@@ -1,6 +1,5 @@
 package frc.team449.drive.unidirectional;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.drive.DriveSubsystem;
 import frc.team449.updatable.Updatable;
 import org.jetbrains.annotations.Nullable;
@@ -9,10 +8,6 @@ import org.jetbrains.annotations.Nullable;
  * A drive with a left side and a right side. "Unidirectional" because it can only move forwards or
  * backwards, not sideways.
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
 public interface DriveUnidirectional extends DriveSubsystem, Updatable {
 
   /**

@@ -1,13 +1,8 @@
 package frc.team449.multiSubsystem;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jetbrains.annotations.NotNull;
 
 /** A subsystem used for intaking and possibly ejecting game pieces. */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
 public interface SubsystemIntake {
 
   /** @return the current mode of the intake. */

@@ -1,8 +1,5 @@
 package frc.team449.other;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import frc.team449.other.Clock;
 import java.util.function.DoubleUnaryOperator;
 
 /**
@@ -34,10 +31,7 @@ public class SecondDerivativeLimit implements DoubleUnaryOperator {
    * @param secondDerivativeLimit The maximum allowed change per second of the change in the value
    *     per second.
    */
-  @JsonCreator
-  public SecondDerivativeLimit(
-      @JsonProperty(required = true) double firstDerivativeLimit,
-      @JsonProperty(required = true) double secondDerivativeLimit) {
+  public SecondDerivativeLimit(double firstDerivativeLimit, double secondDerivativeLimit) {
     this.firstDerivativeLimit = firstDerivativeLimit / 1000.; // convert to change/milliseconds
     this.secondDerivativeLimit =
         secondDerivativeLimit / 1000. / 1000.; // convert to change/millisecond^2

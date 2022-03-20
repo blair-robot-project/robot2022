@@ -1,9 +1,5 @@
 package frc.team449.drive.unidirectional.commands;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -13,7 +9,6 @@ import frc.team449.oi.unidirectional.OIUnidirectional;
 import org.jetbrains.annotations.NotNull;
 
 /** Very simple unidirectional drive control. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SimpleUnidirectionalDrive<T extends Subsystem & DriveUnidirectional>
     extends CommandBase {
 
@@ -29,10 +24,7 @@ public class SimpleUnidirectionalDrive<T extends Subsystem & DriveUnidirectional
    * @param subsystem The subsystem to execute this command on
    * @param oi The OI that gives the input to this command.
    */
-  @JsonCreator
-  public SimpleUnidirectionalDrive(
-      @NotNull @JsonProperty(required = true) T subsystem,
-      @NotNull @JsonProperty(required = true) OIUnidirectional oi) {
+  public SimpleUnidirectionalDrive(@NotNull T subsystem, @NotNull OIUnidirectional oi) {
     this.oi = oi;
     this.subsystem = subsystem;
     // Default commands need to require their subsystems.

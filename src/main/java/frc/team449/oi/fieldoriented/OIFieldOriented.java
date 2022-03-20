@@ -1,16 +1,11 @@
 package frc.team449.oi.fieldoriented;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.oi.OI;
 import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 
 /** An OI that gives an absolute heading, relative to the field, and a velocity. */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
 public abstract class OIFieldOriented implements OI {
 
   /** The cached linear velocity. */

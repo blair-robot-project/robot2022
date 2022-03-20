@@ -1,7 +1,5 @@
 package frc.team449.components;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpiutil.CircularBuffer;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,9 +34,7 @@ public class RunningLinRegComponent {
    * @param rSquaredThreshhold The minimum R^2 value considered significant enough to return the
    *     regression slope instead of NaN. Defaults to 0.
    */
-  @JsonCreator
-  public RunningLinRegComponent(
-      @JsonProperty(required = true) int bufferSize, double rSquaredThreshhold) {
+  public RunningLinRegComponent(int bufferSize, double rSquaredThreshhold) {
     xBuffer = new CircularBuffer(bufferSize);
     yBuffer = new CircularBuffer(bufferSize);
     this.rSquaredThreshhold = rSquaredThreshhold;

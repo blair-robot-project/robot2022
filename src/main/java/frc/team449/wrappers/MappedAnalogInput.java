@@ -1,17 +1,12 @@
 package frc.team449.wrappers;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.AnalogInput;
 import frc.team449.updatable.Updatable;
 import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
-/** A Jackson-friendly wrapper on WPILib's {@link AnalogInput}. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
+/** A wrapper on WPILib's {@link AnalogInput}. */
 public class MappedAnalogInput extends AnalogInput implements Updatable, Loggable {
 
   /** The value of analog input, as a percent. */
@@ -26,11 +21,7 @@ public class MappedAnalogInput extends AnalogInput implements Updatable, Loggabl
    * @param averageBits The sensor output will be the average of 2^averageBits readings. Defaults to
    *     0.
    */
-  @JsonCreator
-  public MappedAnalogInput(
-      @JsonProperty(required = true) final int port,
-      final int oversampleBits,
-      final int averageBits) {
+  public MappedAnalogInput(final int port, final int oversampleBits, final int averageBits) {
     super(port);
     setOversampleBits(oversampleBits);
     setAverageBits(averageBits);

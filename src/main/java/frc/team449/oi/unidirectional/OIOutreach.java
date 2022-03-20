@@ -1,9 +1,5 @@
 package frc.team449.oi.unidirectional;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.annotations.Log;
@@ -11,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
+
 public class OIOutreach implements OIUnidirectional {
 
   /** The OI with higher priority that overrides if it has any input. */
@@ -36,11 +32,10 @@ public class OIOutreach implements OIUnidirectional {
    * @param overridenOI the override controller with the full-stop button
    * @param stopButton the button to stop all robot functions while held
    */
-  @JsonCreator
   public OIOutreach(
-      @NotNull @JsonProperty(required = true) final OIUnidirectional overridingOI,
-      @NotNull @JsonProperty(required = true) final OIUnidirectional overridenOI,
-      @NotNull @JsonProperty(required = true) final Button stopButton) {
+      @NotNull final OIUnidirectional overridingOI,
+      @NotNull final OIUnidirectional overridenOI,
+      @NotNull final Button stopButton) {
     this.overridingOI = overridingOI;
     this.overridenOI = overridenOI;
     this.button = stopButton;

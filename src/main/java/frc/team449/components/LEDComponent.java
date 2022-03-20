@@ -1,9 +1,5 @@
 package frc.team449.components;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
@@ -11,7 +7,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.util.Color;
 import org.jetbrains.annotations.Nullable;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
+
 public class LEDComponent {
 
   final AddressableLED LEDStrip;
@@ -20,8 +16,7 @@ public class LEDComponent {
 
   // todo array to hold HSV values of each LED
 
-  @JsonCreator
-  public LEDComponent(@JsonProperty(required = true) int port, @Nullable Integer LEDCount) {
+  public LEDComponent(int port, @Nullable Integer LEDCount) {
     LEDStrip = new AddressableLED(port);
     buffer = new AddressableLEDBuffer(LEDCount != null ? LEDCount : 10);
 

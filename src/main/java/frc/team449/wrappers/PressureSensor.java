@@ -1,16 +1,11 @@
 package frc.team449.wrappers;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.AnalogInput;
 
 /**
  * Wrapper for an {@link AnalogInput} pressure sensor that returns a voltage linearly proportional
  * to pressure.
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class PressureSensor {
 
   /** The AnalogInput this is a wrapper on. */
@@ -23,11 +18,7 @@ public class PressureSensor {
    * @param oversampleBits The number of oversample bits.
    * @param averageBits The number of averaging bits.
    */
-  @JsonCreator
-  public PressureSensor(
-      @JsonProperty(required = true) int port,
-      @JsonProperty(required = true) int oversampleBits,
-      @JsonProperty(required = true) int averageBits) {
+  public PressureSensor(int port, int oversampleBits, int averageBits) {
     sensor = new AnalogInput(port);
     sensor.setOversampleBits(oversampleBits);
     sensor.setAverageBits(averageBits);

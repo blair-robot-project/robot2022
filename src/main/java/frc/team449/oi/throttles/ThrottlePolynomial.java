@@ -1,15 +1,10 @@
 package frc.team449.oi.throttles;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.GenericHID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** A polynomially scaled throttle. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ThrottlePolynomial extends ThrottleDeadbanded {
 
   /** The polynomial that scales the throttle. */
@@ -29,14 +24,13 @@ public class ThrottlePolynomial extends ThrottleDeadbanded {
    * @param polynomial The polynomially that scales the throttle. Must not have any negative
    *     exponents.
    */
-  @JsonCreator
   public ThrottlePolynomial(
-      @NotNull @JsonProperty(required = true) GenericHID stick,
-      @JsonProperty(required = true) int axis,
+      @NotNull GenericHID stick,
+      int axis,
       double deadband,
       @Nullable Double smoothingTimeSecs,
       boolean inverted,
-      @NotNull @JsonProperty(required = true) Polynomial polynomial,
+      @NotNull Polynomial polynomial,
       @Nullable Double scale) {
     super(stick, axis, deadband, smoothingTimeSecs, inverted);
 

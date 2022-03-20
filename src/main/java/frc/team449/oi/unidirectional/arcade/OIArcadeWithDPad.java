@@ -1,9 +1,5 @@
 package frc.team449.oi.unidirectional.arcade;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.GenericHID;
 import frc.team449.oi.throttles.Polynomial;
 import frc.team449.oi.throttles.Throttle;
@@ -11,8 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** An arcade OI with an option to use the D-pad for turning. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class OIArcadeWithDPad extends OIArcade  {
+public class OIArcadeWithDPad extends OIArcade {
 
   /**
    * How much the D-pad moves the robot rotationally on a 0 to 1 scale, equivalent to pushing the
@@ -55,15 +50,14 @@ public class OIArcadeWithDPad extends OIArcade  {
    * @param rescaleOutputs Whether or not to scale the left and right outputs so the max output is
    *     1. Defaults to false.
    */
-  @JsonCreator
   public OIArcadeWithDPad(
-      @NotNull @JsonProperty(required = true) Throttle rotThrottle,
-      @NotNull @JsonProperty(required = true) Throttle fwdThrottle,
+      @NotNull Throttle rotThrottle,
+      @NotNull Throttle fwdThrottle,
       double dPadShift,
       boolean invertDPad,
       @Nullable GenericHID gamepad,
       @Nullable Polynomial scaleRotByFwdPoly,
-      @JsonProperty(required = true) double turnInPlaceRotScale,
+      double turnInPlaceRotScale,
       boolean rescaleOutputs) {
     super(rescaleOutputs);
     this.dPadShift = (invertDPad ? -1 : 1) * dPadShift;

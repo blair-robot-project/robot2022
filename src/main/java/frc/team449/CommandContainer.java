@@ -1,6 +1,5 @@
 package frc.team449;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.wpilibj2.command.Command;
 import io.github.oblarg.oblog.Loggable;
 
@@ -19,7 +18,6 @@ public class CommandContainer implements Loggable {
 
   private final List<Command> testStartupCommand;
 
-  @JsonCreator
   public CommandContainer(
       List<Command> robotStartupCommand,
       List<Command> autoStartupCommand,

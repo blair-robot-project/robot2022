@@ -1,9 +1,5 @@
 package frc.team449.drive.unidirectional;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.updatable.Updater;
@@ -12,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** A simple unidirectional drive with no encoders. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class DriveUnidirectionalSimple extends SubsystemBase
     implements DriveUnidirectional, Loggable {
 
@@ -28,10 +23,8 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    * @param leftMotor The motor for the left side of the drive.
    * @param rightMotor The motor for the right side of the drive.
    */
-  @JsonCreator
   public DriveUnidirectionalSimple(
-      @NotNull @JsonProperty(required = true) final MotorController leftMotor,
-      @NotNull @JsonProperty(required = true) final MotorController rightMotor) {
+      @NotNull final MotorController leftMotor, @NotNull final MotorController rightMotor) {
     this.leftMotor = leftMotor;
     this.rightMotor = rightMotor;
     Updater.subscribe(this);

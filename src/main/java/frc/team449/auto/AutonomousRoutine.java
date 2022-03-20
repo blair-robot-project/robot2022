@@ -1,27 +1,16 @@
 package frc.team449.auto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.StringIdGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.team449.auto.commands.AutonomousCommand;
 
 import java.util.List;
 
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
-@JsonIdentityInfo(generator = StringIdGenerator.class)
 public class AutonomousRoutine extends SequentialCommandGroup {
 
   double executionTime = 0;
 
-  @JsonCreator
-  public AutonomousRoutine(@JsonProperty(required = true) List<AutonomousCommand> commandList) {
+  public AutonomousRoutine(List<AutonomousCommand> commandList) {
     for (AutonomousCommand command : commandList) {
       addCommands(command.getAutoCommand());
       executionTime += command.getRunTimeSeconds() == null ? 0 : command.getRunTimeSeconds();

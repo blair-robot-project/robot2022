@@ -1,9 +1,6 @@
 package frc.team449.ahrs;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 /** A subsystem that has a AHRS on it. */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 public interface SubsystemAHRS {
 
   /**

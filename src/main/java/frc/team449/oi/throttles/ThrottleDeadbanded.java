@@ -1,17 +1,11 @@
 package frc.team449.oi.throttles;
 
-import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.LinearFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** A throttle with a deadband and smoothing. */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ThrottleDeadbanded extends ThrottleBasic {
 
   /** The value below which the joystick input is considered 0. */
@@ -29,10 +23,9 @@ public class ThrottleDeadbanded extends ThrottleBasic {
    *     Defaults to 0.02.
    * @param inverted Whether or not to invert the joystick input. Defaults to false.
    */
-  @JsonCreator
   public ThrottleDeadbanded(
-      @NotNull @JsonProperty(required = true) final GenericHID stick,
-      @JsonProperty(required = true) final int axis,
+      @NotNull final GenericHID stick,
+      final int axis,
       final double deadband,
       @Nullable final Double smoothingTimeSecs,
       final boolean inverted) {

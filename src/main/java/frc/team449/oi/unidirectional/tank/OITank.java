@@ -1,15 +1,10 @@
 package frc.team449.oi.unidirectional.tank;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 
 /** A tank-style dual joystick OI. */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
 public abstract class OITank implements OIUnidirectional {
 
   /** Cached left and right output. */

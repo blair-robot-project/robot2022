@@ -1,14 +1,9 @@
 package frc.team449.oi.buttons;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import org.jetbrains.annotations.NotNull;
 
 /** Negates another {@link Button}. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class NegateButton extends Button {
 
   /** The button to negate. */
@@ -19,8 +14,7 @@ public class NegateButton extends Button {
    *
    * @param toNegate The button to negate.
    */
-  @JsonCreator
-  public NegateButton(@NotNull @JsonProperty(required = true) final Button toNegate) {
+  public NegateButton(@NotNull final Button toNegate) {
     this.toNegate = toNegate;
   }
 

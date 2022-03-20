@@ -1,9 +1,5 @@
 package frc.team449.oi.fieldoriented;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.oi.throttles.Throttle;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
  * A field-oriented OI that always points the robot an angle where cosine is positive, i.e. always
  * pointing away from the driver station.
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class OIFieldOrientedPosCos extends OIFieldOriented {
 
   /** The throttle for the X-axis, which points towards the opposing driver station. */
@@ -37,10 +32,9 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
    * @param rDeadband The radius, from [0,1], within which the joystick is considered to be "at
    *     rest." Defaults to 0.
    */
-  @JsonCreator
   public OIFieldOrientedPosCos(
-      @NotNull @JsonProperty(required = true) final Throttle xThrottle,
-      @NotNull @JsonProperty(required = true) final Throttle yThrottle,
+      @NotNull final Throttle xThrottle,
+      @NotNull final Throttle yThrottle,
       final double rDeadband) {
     this.xThrottle = xThrottle;
     this.yThrottle = yThrottle;

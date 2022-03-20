@@ -1,19 +1,15 @@
 package frc.team449.multiSubsystem;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.other.Util;
 import io.github.oblarg.oblog.Loggable;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+
 /** A simple intake subsystem that relies on a single motor to rotate some part of it. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class IntakeSimple extends SubsystemBase
     implements SubsystemIntake, MotorController, Loggable {
 
@@ -36,10 +32,8 @@ public class IntakeSimple extends SubsystemBase
    * @param velocities The velocity for the motor to go at for each {@link IntakeMode}, on the
    *     interval [-1, 1]. Modes can be missing to indicate that this intake doesn't have/use them.
    */
-  @JsonCreator
   public IntakeSimple(
-      @NotNull @JsonProperty(required = true) final MotorController motor,
-      @NotNull @JsonProperty(required = true) final Map<IntakeMode, Double> velocities) {
+      @NotNull final MotorController motor, @NotNull final Map<IntakeMode, Double> velocities) {
 
     this.motor = motor;
     this.velocities = velocities;

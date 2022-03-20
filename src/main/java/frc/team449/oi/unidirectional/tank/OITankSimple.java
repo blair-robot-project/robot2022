@@ -1,15 +1,10 @@
 package frc.team449.oi.unidirectional.tank;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.oi.throttles.Throttle;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 /** A simple tank drive, where each joystick controls a side of the robot. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class OITankSimple extends OITank {
 
   /** The left throttle */
@@ -32,10 +27,9 @@ public class OITankSimple extends OITank {
    * @param commandingStraightTolerance The difference between left and right input within which the
    *     driver is considered to be trying to drive straight. Defaults to 0.
    */
-  @JsonCreator
   public OITankSimple(
-      @NotNull @JsonProperty(required = true) final Throttle leftThrottle,
-      @NotNull @JsonProperty(required = true) final Throttle rightThrottle,
+      @NotNull final Throttle leftThrottle,
+      @NotNull final Throttle rightThrottle,
       final double commandingStraightTolerance) {
     this.leftThrottle = leftThrottle;
     this.rightThrottle = rightThrottle;

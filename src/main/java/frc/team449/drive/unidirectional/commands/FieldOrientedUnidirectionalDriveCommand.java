@@ -1,24 +1,18 @@
 package frc.team449.drive.unidirectional.commands;
 
-import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.ahrs.PIDAngleController;
-import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.ahrs.SubsystemAHRS;
+import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.oi.fieldoriented.OIFieldOriented;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /** Unidirectional drive with field-oriented control */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FieldOrientedUnidirectionalDriveCommand<
         T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
     extends CommandBase {
@@ -41,7 +35,6 @@ public class FieldOrientedUnidirectionalDriveCommand<
    * @param oi The OI controlling the robot.
    * @param snapPoints The points to snap the PID controller input to.
    */
-  @JsonCreator
   public FieldOrientedUnidirectionalDriveCommand(
       @NotNull T subsystem,
       @NotNull OIFieldOriented oi,
@@ -151,11 +144,7 @@ public class FieldOrientedUnidirectionalDriveCommand<
      * @param lowerBound The lower bound, above which all angles below snapTo are changed to snapTo.
      *     Measured in degrees.
      */
-    @JsonCreator
-    public AngularSnapPoint(
-        @JsonProperty(required = true) final double snapTo,
-        @JsonProperty(required = true) final double upperBound,
-        @JsonProperty(required = true) final double lowerBound) {
+    public AngularSnapPoint(final double snapTo, final double upperBound, final double lowerBound) {
       this.snapTo = snapTo;
       this.upperBound = upperBound;
       this.lowerBound = lowerBound;

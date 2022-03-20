@@ -1,9 +1,5 @@
 package frc.team449.drive.unidirectional.commands;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -13,7 +9,6 @@ import frc.team449.other.Clock;
 import org.jetbrains.annotations.NotNull;
 
 /** A command to ramp up the motors to full power at a given voltage rate. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class VoltageRamp<T extends Subsystem & DriveUnidirectional> extends CommandBase {
 
   /** The subsystem to execute this command on. */
@@ -35,11 +30,7 @@ public class VoltageRamp<T extends Subsystem & DriveUnidirectional> extends Comm
    * @param voltsPerSecond How many volts to increase the output by per second.
    * @param spin Whether to spin in place or drive straight. Defaults to false.
    */
-  @JsonCreator
-  public VoltageRamp(
-      @NotNull @JsonProperty(required = true) T subsystem,
-      @JsonProperty(required = true) double voltsPerSecond,
-      boolean spin) {
+  public VoltageRamp(@NotNull T subsystem, double voltsPerSecond, boolean spin) {
     addRequirements(subsystem);
     this.subsystem = subsystem;
     this.percentPerMillis = voltsPerSecond / 12. / 1000.;

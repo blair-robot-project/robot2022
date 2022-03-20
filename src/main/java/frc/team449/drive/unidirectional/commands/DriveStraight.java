@@ -1,9 +1,5 @@
 package frc.team449.drive.unidirectional.commands;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -13,7 +9,6 @@ import frc.team449.oi.unidirectional.tank.OITank;
 import org.jetbrains.annotations.NotNull;
 
 /** Drives straight when using a tank drive. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends CommandBase {
 
   /** The oi that this command gets input from. */
@@ -32,11 +27,7 @@ public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends Co
    * @param oi The oi to get input from.
    * @param useLeft true to use the left stick to drive straight, false to use the right.
    */
-  @JsonCreator
-  public DriveStraight(
-      @NotNull @JsonProperty(required = true) T subsystem,
-      @NotNull @JsonProperty(required = true) OITank oi,
-      @JsonProperty(required = true) boolean useLeft) {
+  public DriveStraight(@NotNull T subsystem, @NotNull OITank oi, boolean useLeft) {
     this.subsystem = subsystem;
     this.oi = oi;
     this.useLeft = useLeft;

@@ -1,16 +1,12 @@
 package frc.team449.drive.unidirectional.commands;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.ahrs.PIDAngleController;
-import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.ahrs.SubsystemAHRS;
+import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.oi.RampComponent;
 import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.other.Debouncer;
@@ -25,11 +21,6 @@ import java.util.function.DoubleUnaryOperator;
  * Drive with arcade drive setup, and when the driver isn't turning, use a NavX to stabilize the
  * robot's alignment.
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class UnidirectionalNavXDefaultDrive<
         T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
     extends CommandBase implements Loggable {
@@ -68,7 +59,6 @@ public class UnidirectionalNavXDefaultDrive<
    *     ramp.
    * @param controller Controller used to actually turn
    */
-  @JsonCreator
   public UnidirectionalNavXDefaultDrive(
       @Nullable Double maxAngularVelToEnterLoop,
       @NotNull Debouncer driveStraightLoopEntryTimer,

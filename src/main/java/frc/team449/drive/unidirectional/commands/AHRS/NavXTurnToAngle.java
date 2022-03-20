@@ -1,15 +1,12 @@
 package frc.team449.drive.unidirectional.commands.AHRS;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.ahrs.PIDAngleController;
-import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.ahrs.SubsystemAHRS;
+import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.other.Clock;
 import frc.team449.other.Util;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Turns to a specified angle, relative to the angle the AHRS was at when the robot was turned on.
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
     extends CommandBase {
 
@@ -44,7 +40,6 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
    * @param drive The drive subsystem to execute this command on.
    * @param controller The controller used to turn to the given setpoint
    */
-  @JsonCreator
   public NavXTurnToAngle(
       double setpoint, double timeout, @NotNull T drive, @NotNull PIDAngleController controller) {
     this.subsystem = drive;

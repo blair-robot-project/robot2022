@@ -1,15 +1,10 @@
 package frc.team449.oi.unidirectional.arcade;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.oi.throttles.Throttle;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 /** A simple, two-stick arcade drive OI. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class OIArcadeSimple extends OIArcade {
 
   /** Left (rotation control) stick's throttle */
@@ -26,10 +21,9 @@ public class OIArcadeSimple extends OIArcade {
    * @param rescaleOutputs Whether or not to scale the left and right outputs so the max output is
    *     1. Defaults to false.
    */
-  @JsonCreator
   public OIArcadeSimple(
-      @NotNull @JsonProperty(required = true) final Throttle rotThrottle,
-      @NotNull @JsonProperty(required = true) final Throttle velThrottle,
+      @NotNull final Throttle rotThrottle,
+      @NotNull final Throttle velThrottle,
       final boolean rescaleOutputs) {
     super(rescaleOutputs);
     this.rotThrottle = rotThrottle;

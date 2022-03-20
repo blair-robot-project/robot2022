@@ -1,10 +1,5 @@
 package frc.team449.drive.unidirectional.commands;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -14,7 +9,6 @@ import frc.team449.other.Clock;
 import org.jetbrains.annotations.NotNull;
 
 /** Go at a certain velocity for a set number of seconds */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends CommandBase {
 
   /** Speed to go at */
@@ -36,11 +30,7 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
    * @param velocity How fast to go, in RPS
    * @param seconds How long to drive for.
    */
-  @JsonCreator
-  public DriveAtSpeed(
-      @NotNull @JsonProperty(required = true) T subsystem,
-      @JsonProperty(required = true) double velocity,
-      @JsonProperty(required = true) double seconds) {
+  public DriveAtSpeed(@NotNull T subsystem, double velocity, double seconds) {
     // Initialize stuff
     this.subsystem = subsystem;
     this.velocity = velocity;

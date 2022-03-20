@@ -1,14 +1,9 @@
 package frc.team449.multiSubsystem;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import org.jetbrains.annotations.NotNull;
 
 /** A subsystem with a single DoubleSolenoid piston. */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
 public interface SubsystemSolenoid {
 
   /** @param value The position to set the solenoid to. */

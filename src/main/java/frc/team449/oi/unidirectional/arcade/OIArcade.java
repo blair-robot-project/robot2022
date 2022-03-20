@@ -1,7 +1,5 @@
 package frc.team449.oi.unidirectional.arcade;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.annotations.Log;
@@ -9,10 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** An arcade-style dual joystick OI. */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
 public abstract class OIArcade implements OIUnidirectional {
 
   /** Whether or not to scale the left and right outputs so the max output is 1. */
@@ -28,7 +22,6 @@ public abstract class OIArcade implements OIUnidirectional {
    * @param rescaleOutputs Whether or not to scale the left and right outputs so the max output is
    *     1. Defaults to false.
    */
-  @JsonCreator
   protected OIArcade(final boolean rescaleOutputs) {
     this.rescaleOutputs = rescaleOutputs;
     Updater.subscribe(this);

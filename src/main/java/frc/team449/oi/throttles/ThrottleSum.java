@@ -1,16 +1,10 @@
 package frc.team449.oi.throttles;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
 /** A Throttle that sums any number of other Throttles. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ThrottleSum extends Throttle {
 
   /** The throttles to sum. */
@@ -21,8 +15,7 @@ public class ThrottleSum extends Throttle {
    *
    * @param throttles The throttles to sum.
    */
-  @JsonCreator
-  public ThrottleSum(@NotNull @JsonProperty(required = true) Set<Throttle> throttles) {
+  public ThrottleSum(@NotNull Set<Throttle> throttles) {
     this.throttles = throttles;
   }
 

@@ -1,7 +1,5 @@
 package frc.team449;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.motor.MotorContainer;
@@ -12,8 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
-/** The Jackson-compatible object representing the entire robot. */
-@JsonIgnoreProperties({"CONSTANTS", "NAVIGATION"})
+/** The object representing the entire robot. */
 public class RobotMap {
   @SuppressWarnings("FieldCanBeLocal")
   @NotNull
@@ -38,7 +35,6 @@ public class RobotMap {
    * @param commands A container to hold all of the robot's commands.
    * @param useCameraServer Whether the camera server should be run. Defaults to false.
    */
-  @JsonCreator
   public RobotMap(
       @NotNull List<Subsystem> subsystems,
       @NotNull PDP pdp,

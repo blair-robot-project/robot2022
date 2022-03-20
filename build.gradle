@@ -38,16 +38,9 @@ deploy {
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 
 dependencies {
-    def jacksonVersion = '2.12.5'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jacksonVersion
-    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: jacksonVersion
-    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: jacksonVersion
-
     testImplementation 'junit:junit:4.13.2'
 
-    compileOnly 'org.jetbrains:annotations:22.0.0'
+    compileOnly 'org.jetbrains:annotations:23.0.0'
 
     implementation 'com.github.Oblarg:Oblog:3.1.2'
 

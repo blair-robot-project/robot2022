@@ -1,14 +1,10 @@
 package frc.team449.other;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import frc.team449.components.ConditionTimingComponent;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 
 /** A timer that checks if condition has been true for the past n seconds/milliseconds. */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class Debouncer extends ConditionTimingComponent {
   /** How long the condition has to be true for, in seconds. */
   private final double bufferTime;
@@ -18,7 +14,6 @@ public class Debouncer extends ConditionTimingComponent {
    *
    * @param bufferTimeSeconds the amount of time the condition has to be true for, in seconds
    */
-  @JsonCreator
   public Debouncer(final double bufferTimeSeconds) {
     super(false);
     this.bufferTime = bufferTimeSeconds;
