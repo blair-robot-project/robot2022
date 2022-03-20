@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.other.Util;
 import org.jetbrains.annotations.NotNull;
 
 public class RamseteControllerUnidirectionalDrive extends CommandBase {
@@ -32,13 +31,14 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
    */
   public RamseteControllerUnidirectionalDrive(
       @NotNull DriveUnidirectionalWithGyro drivetrain,
-      @NotNull PIDController pidController,
+      @NotNull PIDController leftController,
+      @NotNull PIDController rightController,
       @NotNull Trajectory trajectory,
       @NotNull SimpleMotorFeedforward feedforward) {
     this.drivetrain = drivetrain;
     this.ramseteFeedback = new RamseteController();
-    this.leftController = Util.copyPid(pidController);
-    this.rightController = Util.copyPid(pidController);
+    this.leftController = leftController;
+    this.rightController = rightController;
     this.feedforward = feedforward;
     this.trajectory = trajectory;
     addRequirements(drivetrain);

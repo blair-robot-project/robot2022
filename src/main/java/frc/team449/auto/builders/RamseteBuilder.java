@@ -1,6 +1,5 @@
 package frc.team449.auto.builders;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,7 +15,6 @@ import java.util.Objects;
 public final class RamseteBuilder {
 
   private @Nullable DriveUnidirectionalWithGyro drivetrain;
-  private @Nullable PIDController pidController;
   private @Nullable Trajectory traj;
   private @Nullable Field2d field;
   private @Nullable String name;
@@ -28,12 +26,6 @@ public final class RamseteBuilder {
   /** Set the drive subsystem which is to be controlled */
   public RamseteBuilder drivetrain(DriveUnidirectionalWithGyro drivetrain) {
     this.drivetrain = drivetrain;
-    return this;
-  }
-
-  /** Set the PID controller for both sides. Uses velocity control. */
-  public RamseteBuilder pidController(PIDController pidController) {
-    this.pidController = pidController;
     return this;
   }
 
@@ -91,7 +83,6 @@ public final class RamseteBuilder {
   public RamseteBuilder copy() {
     return new RamseteBuilder()
         .drivetrain(drivetrain)
-        .pidController(pidController)
         .traj(traj)
         .field(field)
         .name(name)
@@ -103,7 +94,6 @@ public final class RamseteBuilder {
 
   public Command build() {
     Objects.requireNonNull(drivetrain, "Drivetrain must not be null");
-    Objects.requireNonNull(pidController, "PID controller must not be null");
     Objects.requireNonNull(traj, "Trajectory must not be null");
 
     if (field != null)
@@ -111,7 +101,11 @@ public final class RamseteBuilder {
 
     var ramseteCmd =
         new RamseteControllerUnidirectionalDrive(
-            drivetrain, pidController, traj, drivetrain.getFeedforward());
+            drivetrain,
+            drivetrain.leftVelPID(),
+            drivetrain.rightVelPID(),
+            traj,
+            drivetrain.getFeedforward());
     //        new edu.wpi.first.wpilibj2.command.RamseteCommand(
     //            this.traj,
     //            drivetrain::getCurrentPose,

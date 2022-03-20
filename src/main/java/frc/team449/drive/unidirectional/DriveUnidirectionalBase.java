@@ -1,5 +1,6 @@
 package frc.team449.drive.unidirectional;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.drive.DriveSettings;
@@ -69,42 +70,6 @@ public class DriveUnidirectionalBase extends SubsystemBase
     this.rightMaster.set(right);
   }
 
-  /**
-   * Set the position setpoint for both the left and right sides. Note: This actually moves there
-   *
-   * @param leftPos Position setpoint for left side
-   * @param rightPos Position setpoint for right side
-   */
-  public void setPositionSetpoint(double leftPos, double rightPos) {
-    var leftOutput = settings.leftPosPID.calculate(this.getLeftPos(), leftPos);
-    var rightOutput = settings.rightPosPID.calculate(this.getRightPos(), rightPos);
-
-    while (!settings.leftPosPID.atSetpoint() || !settings.rightPosPID.atSetpoint()) {
-      this.setOutput(leftOutput, rightOutput);
-      leftOutput = settings.leftPosPID.calculate(this.getLeftPos());
-      rightOutput = settings.rightPosPID.calculate(this.getRightPos());
-    }
-  }
-
-  /**
-   * Hold the current position.
-   *
-   * @param pos the position to stop at
-   */
-  public void holdPosition(double pos) {
-    this.holdPosition(pos, pos);
-  }
-
-  /**
-   * Hold the current position.
-   *
-   * @param leftPos the position to stop the left side at
-   * @param rightPos the position to stop the right side at
-   */
-  public void holdPosition(double leftPos, double rightPos) {
-    this.setPositionSetpoint(leftPos, rightPos);
-  }
-
   @NotNull
   @Override
   public Double getLeftVel() {
@@ -156,6 +121,16 @@ public class DriveUnidirectionalBase extends SubsystemBase
   /** @return The feedforward calculator for left motors */
   public SimpleMotorFeedforward getFeedforward() {
     return settings.feedforward;
+  }
+
+  /** The left PID velocity controller */
+  public PIDController leftVelPID() {
+    return settings.leftVelPID;
+  }
+
+  /** The right PID velocity controller */
+  public PIDController rightVelPID() {
+    return settings.rightVelPID;
   }
 
   /** Updates all cached values with current ones. */

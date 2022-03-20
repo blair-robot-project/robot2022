@@ -225,6 +225,8 @@ public class FullMap {
             navx,
             new DriveSettingsBuilder()
                 .feedforward(driveFeedforward)
+                .leftVelPID(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
+                .rightVelPID(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
                 .trackWidth(DRIVE_TRACK_WIDTH)
                 .build(),
             driveSim,
@@ -417,7 +419,6 @@ public class FullMap {
     var ramsetePrototype =
         new RamseteBuilder()
             .drivetrain(drive)
-            .pidController(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
             //            .b(2.25)
             //            .zeta(0.6)
             .anglePID(
