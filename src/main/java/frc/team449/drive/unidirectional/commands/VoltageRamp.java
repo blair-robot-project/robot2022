@@ -3,16 +3,15 @@ package frc.team449.drive.unidirectional.commands;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.other.Clock;
 import org.jetbrains.annotations.NotNull;
 
 /** A command to ramp up the motors to full power at a given voltage rate. */
-public class VoltageRamp<T extends Subsystem & DriveUnidirectional> extends CommandBase {
+public class VoltageRamp extends CommandBase {
 
   /** The subsystem to execute this command on. */
-  @NotNull private final T subsystem;
+  @NotNull private final DriveUnidirectional subsystem;
 
   /** The number of percentage points to increase motor output by per millisecond. */
   private final double percentPerMillis;
@@ -30,7 +29,7 @@ public class VoltageRamp<T extends Subsystem & DriveUnidirectional> extends Comm
    * @param voltsPerSecond How many volts to increase the output by per second.
    * @param spin Whether to spin in place or drive straight. Defaults to false.
    */
-  public VoltageRamp(@NotNull T subsystem, double voltsPerSecond, boolean spin) {
+  public VoltageRamp(@NotNull DriveUnidirectional subsystem, double voltsPerSecond, boolean spin) {
     addRequirements(subsystem);
     this.subsystem = subsystem;
     this.percentPerMillis = voltsPerSecond / 12. / 1000.;

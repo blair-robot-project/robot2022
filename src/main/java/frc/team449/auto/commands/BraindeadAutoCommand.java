@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ public final class BraindeadAutoCommand {
    * @param waypoints
    * @return
    */
+  @Contract("_, _, _, _, _, _, _, _ -> new")
+  @NotNull
   public static Command create(
       @NotNull DriveUnidirectionalWithGyro drive,
       boolean reversed,
@@ -63,8 +66,7 @@ public final class BraindeadAutoCommand {
         newAngle += 180;
       }
       cmds.add(new PrintCommand("Turning to angle " + newAngle + ", " + i));
-      cmds.add(
-          new NavXTurnToAngle<>(newAngle, turnToAngleTimeout, drive, pidAngleController));
+      cmds.add(new NavXTurnToAngle(newAngle, turnToAngleTimeout, drive, pidAngleController));
       cmds.add(new PrintCommand("Turned to angle " + newAngle + ", " + i));
 
       var dist = Math.hypot(deltaX, deltaY);
@@ -79,7 +81,7 @@ public final class BraindeadAutoCommand {
     }
 
     cmds.add(
-        new NavXTurnToAngle<>(
+        new NavXTurnToAngle(
             endPose.getRotation().getDegrees(), turnToAngleTimeout, drive, pidAngleController));
     cmds.add(new PrintCommand("BraindeadAutoCommand over"));
 

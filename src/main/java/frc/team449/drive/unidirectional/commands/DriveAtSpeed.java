@@ -3,13 +3,12 @@ package frc.team449.drive.unidirectional.commands;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.other.Clock;
 import org.jetbrains.annotations.NotNull;
 
 /** Go at a certain velocity for a set number of seconds */
-public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends CommandBase {
+public class DriveAtSpeed extends CommandBase {
 
   /** Speed to go at */
   private final double velocity;
@@ -18,7 +17,7 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
   private final double seconds;
 
   /** The drive subsystem to execute this command on. */
-  @NotNull private final T subsystem;
+  @NotNull private final DriveUnidirectional subsystem;
 
   /** When this command was initialized. */
   private long startTime;
@@ -30,7 +29,7 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
    * @param velocity How fast to go, in RPS
    * @param seconds How long to drive for.
    */
-  public DriveAtSpeed(@NotNull T subsystem, double velocity, double seconds) {
+  public DriveAtSpeed(@NotNull DriveUnidirectional subsystem, double velocity, double seconds) {
     // Initialize stuff
     this.subsystem = subsystem;
     this.velocity = velocity;

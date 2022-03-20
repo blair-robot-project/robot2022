@@ -3,25 +3,24 @@ package frc.team449.drive.unidirectional.commands.AHRS;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.ahrs.PIDAngleController;
-import frc.team449.ahrs.SubsystemAHRS;
-import frc.team449.drive.unidirectional.DriveUnidirectional;
+import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.other.Clock;
 import frc.team449.other.Util;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.DoubleSupplier;
+
 /**
  * Turns to a specified angle, relative to the angle the AHRS was at when the robot was turned on.
  */
-public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends CommandBase {
+public class NavXTurnToAngle extends CommandBase {
 
   /** The drive subsystem to execute this command on and to get the gyro reading from. */
-  @NotNull protected final T subsystem;
+  @NotNull protected final DriveUnidirectionalWithGyro drive;
 
-  /** The angle to turn to. */
-  protected final double setpoint;
+  /** Gives the angle to turn to */
+  private final DoubleSupplier setpointSupplier;
 
   /** How long this command is allowed to run for (in milliseconds) */
   private final long timeout;
@@ -41,13 +40,53 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
    * @param controller The controller used to turn to the given setpoint
    */
   public NavXTurnToAngle(
-      double setpoint, double timeout, @NotNull T drive, @NotNull PIDAngleController controller) {
-    this.subsystem = drive;
-    this.setpoint = setpoint;
+      double setpoint,
+      double timeout,
+      @NotNull DriveUnidirectionalWithGyro drive,
+      @NotNull PIDAngleController controller) {
+    this(() -> setpoint, timeout, drive, controller);
+  }
+
+  /**
+   * Default constructor.
+   *
+   * @param setpointSupplier Supply the setpoint, in degrees from 180 to -180.
+   * @param timeout How long this command is allowed to run for, in seconds. Needed because
+   *     sometimes floating-point errors prevent termination.
+   * @param drive The drive subsystem to execute this command on.
+   * @param controller The controller used to turn to the given setpoint
+   */
+  public NavXTurnToAngle(
+      DoubleSupplier setpointSupplier,
+      double timeout,
+      @NotNull DriveUnidirectionalWithGyro drive,
+      @NotNull PIDAngleController controller) {
+    this.drive = drive;
+    this.setpointSupplier = setpointSupplier;
     // Convert from seconds to milliseconds
     this.timeout = (long) (timeout * 1000);
     this.controller = controller;
-    addRequirements(subsystem);
+    addRequirements(this.drive);
+  }
+
+  /**
+   * Turn by a given angle from the heading at the start of the command
+   *
+   * @param setpoint The angle to turn by, in degrees
+   * @param timeout How long this command is allowed to run for, in seconds. Needed because
+   *     sometimes floating-point errors prevent termination.
+   * @param drive The drive subsystem to execute this command on.
+   * @param controller The controller used to turn to the given setpoint
+   * @return A {@link NavXTurnToAngle} command that turns to the given relative angle (instead of an
+   *     absolute angle)
+   */
+  public static NavXTurnToAngle createRelative(
+      double setpoint,
+      double timeout,
+      @NotNull DriveUnidirectionalWithGyro drive,
+      @NotNull PIDAngleController controller) {
+    return new NavXTurnToAngle(
+        () -> drive.getAHRS().getCachedHeading() + setpoint, timeout, drive, controller);
   }
 
   /** Set up the start time and setpoint. */
@@ -58,17 +97,17 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
     // Logger.addEvent("NavXTurnToAngle init.", this.getClass());
     // Set up start time
     this.startTime = Clock.currentTimeMillis();
-    controller.setSetpoint(Util.clipTo180(setpoint));
+    controller.setSetpoint(Util.clipTo180(setpointSupplier.getAsDouble()));
   }
 
   /** Give output to the motors based on the output of the PID loop. */
   @Override
   public void execute() {
     // Process the output with deadband, minimum output, etc.
-    double output = controller.getOutput(subsystem.getAHRS().getCachedHeading());
+    double output = controller.getOutput(drive.getAHRS().getCachedHeading());
 
     // spin to the right angle
-    subsystem.setOutput(-output, output);
+    drive.setOutput(-output, output);
   }
 
   /**
@@ -91,7 +130,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
       Shuffleboard.addEventMarker(
           "NavXTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
-    subsystem.fullStop();
+    drive.fullStop();
     Shuffleboard.addEventMarker(
         "NavXTurnToAngle end.", this.getClass().getSimpleName(), EventImportance.kNormal);
   }

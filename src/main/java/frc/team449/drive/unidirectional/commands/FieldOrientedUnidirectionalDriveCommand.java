@@ -3,22 +3,18 @@ package frc.team449.drive.unidirectional.commands;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.ahrs.PIDAngleController;
-import frc.team449.ahrs.SubsystemAHRS;
-import frc.team449.drive.unidirectional.DriveUnidirectional;
+import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.oi.fieldoriented.OIFieldOriented;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /** Unidirectional drive with field-oriented control */
-public class FieldOrientedUnidirectionalDriveCommand<
-        T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends CommandBase {
+public class FieldOrientedUnidirectionalDriveCommand extends CommandBase {
 
   /** The drive this command is controlling. */
-  @NotNull private final T subsystem;
+  @NotNull private final DriveUnidirectionalWithGyro subsystem;
 
   /** The OI giving the input stick values. */
   @NotNull private final OIFieldOriented oi;
@@ -36,7 +32,7 @@ public class FieldOrientedUnidirectionalDriveCommand<
    * @param snapPoints The points to snap the PID controller input to.
    */
   public FieldOrientedUnidirectionalDriveCommand(
-      @NotNull T subsystem,
+      @NotNull DriveUnidirectionalWithGyro subsystem,
       @NotNull OIFieldOriented oi,
       @NotNull List<AngularSnapPoint> snapPoints,
       @NotNull PIDAngleController controller) {

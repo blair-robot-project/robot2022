@@ -3,13 +3,12 @@ package frc.team449.drive.unidirectional.commands;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.drive.unidirectional.DriveUnidirectional;
 import frc.team449.oi.unidirectional.tank.OITank;
 import org.jetbrains.annotations.NotNull;
 
 /** Drives straight when using a tank drive. */
-public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends CommandBase {
+public class DriveStraight extends CommandBase {
 
   /** The oi that this command gets input from. */
   @NotNull private final OITank oi;
@@ -18,7 +17,7 @@ public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends Co
   private final boolean useLeft;
 
   /** The drive subsystem to execute this command on. */
-  @NotNull private final T subsystem;
+  @NotNull private final DriveUnidirectional subsystem;
 
   /**
    * Drive straight without NavX stabilization.
@@ -27,7 +26,8 @@ public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends Co
    * @param oi The oi to get input from.
    * @param useLeft true to use the left stick to drive straight, false to use the right.
    */
-  public DriveStraight(@NotNull T subsystem, @NotNull OITank oi, boolean useLeft) {
+  public DriveStraight(
+      @NotNull DriveUnidirectional subsystem, @NotNull OITank oi, boolean useLeft) {
     this.subsystem = subsystem;
     this.oi = oi;
     this.useLeft = useLeft;

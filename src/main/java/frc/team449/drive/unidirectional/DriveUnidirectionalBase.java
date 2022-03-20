@@ -3,8 +3,8 @@ package frc.team449.drive.unidirectional;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.drive.DriveSettings;
-import frc.team449.updatable.Updater;
 import frc.team449.motor.WrappedMotor;
+import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,7 +65,6 @@ public class DriveUnidirectionalBase extends SubsystemBase
 
   @Override
   public void setOutput(double left, double right) {
-    //todo add feedforward
     this.leftMaster.set(left);
     this.rightMaster.set(right);
   }

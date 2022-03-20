@@ -142,7 +142,7 @@ public final class RamseteBuilder {
           pidAngleController, "PIDAngleController must not be null if turning after Ramsete");
       cmd =
           cmd.andThen(
-                  new NavXTurnToAngle<>(
+                  new NavXTurnToAngle(
                       lastPose.getRotation().getDegrees(),
                       angleTimeout,
                       drivetrain,

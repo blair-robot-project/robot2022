@@ -280,7 +280,7 @@ public class FullMap {
             .pid(DRIVE_ANGLE_KP, DRIVE_ANGLE_KI, DRIVE_ANGLE_KD);
 
     var driveDefaultCmd =
-        new UnidirectionalNavXDefaultDrive<>(
+        new UnidirectionalNavXDefaultDrive(
             3.0, new Debouncer(0.15), drive, oi, null, pidAngleControllerPrototype.build());
 
     Supplier<InstantCommand> resetDriveOdometry =
@@ -528,7 +528,7 @@ public class FullMap {
                             trajConfig(drive)))
                     .build())
             .andThen(
-                new NavXTurnToAngle<>(
+                new NavXTurnToAngle(
                     turnAngle, 4, drive, pidAngleControllerPrototype.pid(0.001, 0, 0).build()))
             .andThen(
                 ramsetePrototype
@@ -542,8 +542,7 @@ public class FullMap {
                             pose(ballX2, ballY2, 140),
                             trajConfig(drive)))
                     .build())
-            .andThen(
-                new NavXTurnToAngle<>(turnAngle2, 4, drive, pidAngleControllerPrototype.build()))
+            .andThen(new NavXTurnToAngle(turnAngle2, 4, drive, pidAngleControllerPrototype.build()))
             .andThen(
                 ramsetePrototype
                     .name("threeBallAuto3")
@@ -570,15 +569,15 @@ public class FullMap {
         new InstantCommand(cargo::spit, cargo)
             .andThen(new WaitCommand(1))
             .andThen(cargo::stop, cargo)
-            .andThen(new DriveAtSpeed<>(drive, 0.13, 5));
+            .andThen(new DriveAtSpeed(drive, 0.13, 5));
     var twoBallAuto =
         new InstantCommand(cargo::runIntake, cargo)
             .andThen(() -> drive.resetOdometry(pose(6.06, 5.13, 136.40)), drive)
             .andThen(cargo::deployIntake, cargo)
             .andThen(new WaitCommand(.4))
-            .andThen(new DriveAtSpeed<>(drive, .13, 2))
+            .andThen(new DriveAtSpeed(drive, .13, 2))
             .andThen(new WaitCommand(.4))
-            .andThen(new DriveAtSpeed<>(drive, -.13, 4.4))
+            .andThen(new DriveAtSpeed(drive, -.13, 4.4))
             .andThen(cargo::spit, cargo)
             .andThen(new WaitCommand(2))
             .andThen(cargo::stop, cargo)

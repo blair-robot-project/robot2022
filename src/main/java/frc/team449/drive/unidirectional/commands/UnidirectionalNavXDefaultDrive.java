@@ -3,10 +3,8 @@ package frc.team449.drive.unidirectional.commands;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.ahrs.PIDAngleController;
-import frc.team449.ahrs.SubsystemAHRS;
-import frc.team449.drive.unidirectional.DriveUnidirectional;
+import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.oi.RampComponent;
 import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.other.Debouncer;
@@ -21,13 +19,11 @@ import java.util.function.DoubleUnaryOperator;
  * Drive with arcade drive setup, and when the driver isn't turning, use a NavX to stabilize the
  * robot's alignment.
  */
-public class UnidirectionalNavXDefaultDrive<
-        T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends CommandBase implements Loggable {
+public final class UnidirectionalNavXDefaultDrive extends CommandBase implements Loggable {
   /** The drive this command is controlling. */
-  @NotNull @Log.Exclude protected final T subsystem;
+  @NotNull @Log.Exclude private final DriveUnidirectionalWithGyro subsystem;
   /** The OI giving the input stick values. */
-  @NotNull protected final OIUnidirectional oi;
+  @NotNull private final OIUnidirectional oi;
   /**
    * The maximum velocity for the robot to be at in order to switch to driveStraight, in degrees/sec
    */
@@ -62,7 +58,7 @@ public class UnidirectionalNavXDefaultDrive<
   public UnidirectionalNavXDefaultDrive(
       @Nullable Double maxAngularVelToEnterLoop,
       @NotNull Debouncer driveStraightLoopEntryTimer,
-      @NotNull T subsystem,
+      @NotNull DriveUnidirectionalWithGyro subsystem,
       @NotNull OIUnidirectional oi,
       @Nullable RampComponent rampComponent,
       @NotNull PIDAngleController controller) {
