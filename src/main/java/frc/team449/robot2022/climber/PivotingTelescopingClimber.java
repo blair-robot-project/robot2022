@@ -39,7 +39,7 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
     this.distanceTopBottom = distanceTopBottom;
     this.midDistance = midDistance;
     // Start arm retracted
-    this.state = ClimberState.RETRACTED;
+    this.state = ClimberState.BETWEEN;
     this.goal = 0;
   }
 
@@ -116,18 +116,22 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
     } else if (this.isStowed()) {
       // During mid climb, don't move further up when already at the mid climb height limit
       if (leftArm.reachedMidLimit()) {
+        System.out.println("Left arm stowed and reached mid limit");
         leftVel = 0;
       }
       if (rightArm.reachedMidLimit()) {
+        System.out.println("Right arm stowed and reached mid limit");
         rightVel = 0;
       }
     }
 
     leftArm.set(leftVel);
     rightArm.set(rightVel);
+
   }
 
   /** Whether the arms are vertical */
+  @Log
   public boolean isStowed() {
     return pivotPiston.get() == DoubleSolenoid.Value.kForward;
   }
@@ -163,8 +167,9 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
   }
 
   public enum ClimberState {
-    EXTENDED,
-    RETRACTED,
-    MIDDLE
+    BOTTOM,
+    BETWEEN,
+    MID_LIMIT,
+    ABOVE_MID
   }
 }

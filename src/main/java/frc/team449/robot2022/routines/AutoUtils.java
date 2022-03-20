@@ -39,18 +39,18 @@ public final class AutoUtils {
       @Nullable Field2d field) {
     var toBall =
         TrajectoryGenerator.generateTrajectory(
-            List.of(startPose, ballPose), trajConfig.get().setReversed(false));
+            List.of(startPose, ballPose, endPose), trajConfig.get().setReversed(false));
     var fromBall =
         TrajectoryGenerator.generateTrajectory(
-            List.of(ballPose, endPose), trajConfig.get().setReversed(true));
+            List.of(ballPose, endPose), trajConfig.get().setReversed(false));
     if (field != null) {
-      field.getObject(name).setTrajectory(toBall.concatenate(fromBall));
+      field.getObject(name).setTrajectory(toBall); //.concatenate(fromBall));
     }
     return new InstantCommand(cargo::runIntake)
         .andThen(ramseteBuilder.copy().traj(toBall).build())
-        .andThen(new WaitCommand(1))
-        .andThen(ramseteBuilder.copy().traj(fromBall).build())
-        .andThen(new InstantCommand(cargo::spit))
+//        .andThen(new WaitCommand(1))
+//        .andThen(ramseteBuilder.copy().traj(fromBall).build())
+//        .andThen(new InstantCommand(cargo::spit))
         .andThen(new WaitCommand(1));
   }
 }

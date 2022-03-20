@@ -3,6 +3,8 @@ package frc.team449.auto.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
@@ -10,9 +12,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-public class RamseteControllerUnidirectionalDrive extends CommandBase {
+public class RamseteControllerUnidirectionalDrive extends CommandBase implements Loggable {
   private final DriveUnidirectionalWithGyro drivetrain;
   private final RamseteController ramseteFeedback;
   private final PIDController leftController;
@@ -21,7 +25,9 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
   private final SimpleMotorFeedforward feedforward;
   private double startingTime;
   private double prevTime;
-
+  private DifferentialDriveWheelSpeeds previousSpeeds;
+  @Log private double desiredLeftVoltage;
+  @Log private double desiredRightVoltage;
   /**
    * @param drivetrain
    * @param leftController Velocity PID controller to use for the left side
@@ -56,6 +62,8 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
               "right vel",
               () -> rightController.getSetpoint() - rightController.getPositionError(),
               null);
+          builder.addDoubleProperty("left desired", () -> desiredLeftVoltage, x -> {});
+          builder.addDoubleProperty("right desired", () -> desiredRightVoltage, x -> {});
         });
   }
 
@@ -63,9 +71,19 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
   public void initialize() {
     this.startingTime = Timer.getFPGATimestamp();
     this.prevTime = startingTime;
+    var initialState = trajectory.sample(0);
+    previousSpeeds =
+        drivetrain
+            .getDriveKinematics()
+            .toWheelSpeeds(
+                new ChassisSpeeds(
+                    initialState.velocityMetersPerSecond,
+                    0,
+                    initialState.curvatureRadPerMeter * initialState.velocityMetersPerSecond));
     leftController.reset();
     rightController.reset();
     drivetrain.resetOdometry(trajectory.getInitialPose());
+    ramseteFeedback.setEnabled(false);
   }
 
   @Override
@@ -85,15 +103,20 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
     double leftCurrent = currentWheelSpeeds.leftMetersPerSecond;
     double rightCurrent = currentWheelSpeeds.leftMetersPerSecond;
 
+    double leftDelta = targetWheelSpeeds.leftMetersPerSecond - previousSpeeds.leftMetersPerSecond;
+    double rightDelta =
+        targetWheelSpeeds.rightMetersPerSecond - previousSpeeds.rightMetersPerSecond;
     double dt = currTime - prevTime;
-    double leftFeedforward = feedforward.calculate(leftTarget, (leftTarget - leftCurrent) / dt);
-    double rightFeedforward = feedforward.calculate(rightTarget, (rightTarget - rightCurrent) / dt);
+    double leftFeedforward = feedforward.calculate(leftTarget, leftDelta / dt);
+    double rightFeedforward = feedforward.calculate(rightTarget, rightDelta / dt);
 
-    double leftOutput = leftFeedforward + leftController.calculate(leftCurrent, leftTarget);
-    double rightOutput = rightFeedforward + rightController.calculate(rightCurrent, rightTarget);
+    this.desiredLeftVoltage = leftFeedforward + leftController.calculate(leftCurrent, leftTarget);
+    this.desiredRightVoltage =
+        rightFeedforward + rightController.calculate(rightCurrent, rightTarget);
 
-    drivetrain.setVoltage(leftOutput, rightOutput);
+    drivetrain.setVoltage(desiredLeftVoltage, desiredRightVoltage);
 
+    previousSpeeds = targetWheelSpeeds;
     this.prevTime = currTime;
   }
 

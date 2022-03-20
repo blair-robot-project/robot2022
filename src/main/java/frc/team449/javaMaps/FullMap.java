@@ -17,16 +17,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -44,8 +35,8 @@ import frc.team449.auto.builders.RamseteBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.drive.unidirectional.commands.NavXTurnToAngle;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
+import frc.team449.drive.unidirectional.commands.NavXTurnToAngle;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.motor.builder.SparkMaxConfig;
 import frc.team449.oi.RampComponent;
@@ -62,7 +53,7 @@ import frc.team449.robot2022.cargo.IntakeLimelightRumbleComponent;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
-import frc.team449.robot2022.routines.ThreeBallAuto;
+import frc.team449.robot2022.routines.BadStationTwoBallAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -116,9 +107,9 @@ public class FullMap {
       DRIVE_FF_KA = 0.3523;
   // todo actually use these feedforward values
   public static final double DRIVE_ANGLE_FF_KS = 0.20112,
-      DRIVE_ANGLE_FF_KV = 171.58,
+      DRIVE_ANGLE_FF_KV = 10.58, // 171.58,
       DRIVE_ANGLE_FF_KA = 22.755,
-      DRIVE_ANGLE_KP = 0.006, // 221.18
+      DRIVE_ANGLE_KP = 0.004, // 221.18
       DRIVE_ANGLE_KI = 0,
       DRIVE_ANGLE_KD = 0.03;
   // old value from measuring from the outside of the wheel: 0.6492875
@@ -127,12 +118,13 @@ public class FullMap {
   // Ramping
   public static final double RAMP_INCREASE = 0.9, RAMP_DECREASE = 0.7;
   // Climber
-  public static final int CLIMBER_PISTON_FWD_CHANNEL = 0, CLIMBER_PISTON_REV_CHANNEL = 1;
-  public static final int CLIMBER_LEFT_SENSOR_CHANNEL = 0, CLIMBER_RIGHT_SENSOR_CHANNEL = 0;
+  public static final int CLIMBER_PISTON_FWD_CHANNEL = 1, CLIMBER_PISTON_REV_CHANNEL = 0;
+  public static final int CLIMBER_LEFT_SENSOR_CHANNEL = 1, CLIMBER_RIGHT_SENSOR_CHANNEL = 0;
   // todo find out what the sensor ports are
   public static final double CLIMBER_MAX_VEL = 0.1, CLIMBER_MAX_ACCEL = 0.1;
-  public static final double CLIMBER_EXTEND_VEL = 0.2, CLIMBER_RETRACT_VEL = -0.3;
-  public static final double CLIMBER_DISTANCE = 0.7, CLIMBER_MID_DISTANCE = 0.5;
+  public static final double CLIMBER_EXTEND_VEL = 0.4, CLIMBER_RETRACT_VEL = -0.5;
+  public static final double CLIMBER_DISTANCE = 1.8, CLIMBER_MID_DISTANCE = 1.67;
+  public static final double CLIMBER_DIFFERENTIATION_HEIGHT = 0.5;
   public static final double CLIMBER_KP = 500; // 600;
   public static final double CLIMBER_FF_KS = 0,
       CLIMBER_FF_KV = 0,
@@ -142,6 +134,8 @@ public class FullMap {
       CLIMBER_RIGHT_UPR = 0.239; // 0.2286;
   // How close the arm gets to the limits before climber joystick starts rumbling
   public static final double CLIMBER_RUMBLE_TOLERANCE = 0.1;
+  /** Whether the hall effect sensors are plugged in */
+  public static final boolean CLIMBER_HAS_SENSORS = true;
 
   // Intake
   public static final int INTAKE_PISTON_FWD_CHANNEL = 3, INTAKE_PISTON_REV_CHANNEL = 2;
@@ -336,8 +330,11 @@ public class FullMap {
                 .createReal(),
             new ProfiledPIDController(CLIMBER_KP, 0, 0, climberConstraints),
             climberFeedforward,
+            CLIMBER_DIFFERENTIATION_HEIGHT,
             CLIMBER_MID_DISTANCE,
-            RobotBase.isReal() ? new DigitalInput(CLIMBER_LEFT_SENSOR_CHANNEL)::get : () -> false);
+            RobotBase.isReal() && CLIMBER_HAS_SENSORS
+                ? new DigitalInput(CLIMBER_LEFT_SENSOR_CHANNEL)::get
+                : () -> false);
     var rightArm =
         new ClimberArm(
             armPrototype
@@ -349,8 +346,11 @@ public class FullMap {
                 .createReal(),
             new ProfiledPIDController(CLIMBER_KP, 0, 0, climberConstraints),
             climberFeedforward,
+            CLIMBER_DIFFERENTIATION_HEIGHT,
             CLIMBER_MID_DISTANCE,
-            RobotBase.isReal() ? new DigitalInput(CLIMBER_RIGHT_SENSOR_CHANNEL)::get : () -> false);
+            RobotBase.isReal() && CLIMBER_HAS_SENSORS
+                ? new DigitalInput(CLIMBER_RIGHT_SENSOR_CHANNEL)::get
+                : () -> false);
     var pivotPiston =
         new DoubleSolenoid(
             PCM_MODULE,
@@ -359,11 +359,7 @@ public class FullMap {
             CLIMBER_PISTON_REV_CHANNEL);
     var climber =
         new PivotingTelescopingClimber(
-            leftArm,
-            rightArm,
-            pivotPiston,
-            CLIMBER_DISTANCE,
-            CLIMBER_MID_DISTANCE);
+            leftArm, rightArm, pivotPiston, CLIMBER_DISTANCE, CLIMBER_MID_DISTANCE);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.<Subsystem>of(drive, cargo, climber);
@@ -428,7 +424,7 @@ public class FullMap {
                     .loopTimeMillis(20)
                     .deadband(0.05)
                     .inverted(false)
-                    .pid(0.002, 0, 0)
+                    .pid(.002, 0, 0)
                     .build())
             .angleTimeout(0)
             .field(null);
@@ -612,7 +608,8 @@ public class FullMap {
         List.of(
             new InstantCommand(cargo::runIntake)
                 .andThen(
-                    ThreeBallAuto.createCommand(drive, cargo, ramsetePrototype, trajConfig, field))
+                    BadStationTwoBallAuto.createCommand(
+                        drive, cargo, ramsetePrototype, trajConfig, field))
                 .andThen(spit.get()));
 
     List<Command> robotStartupCommands = List.of();
