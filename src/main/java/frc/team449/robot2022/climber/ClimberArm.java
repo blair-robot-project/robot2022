@@ -11,19 +11,21 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BooleanSupplier;
 
+/**
+ * A single arm of the 2022 climber. Periodically checks if the hall sensor is active. If it is,
+ * then it determines whether the arm is at the bottom or mid climb height limit, and resets its
+ * motor's encoder's position based on that
+ */
 public class ClimberArm extends ProfiledPIDSubsystem implements Loggable {
   private final @NotNull WrappedMotor motor;
   private final @NotNull ElevatorFeedforward feedforward;
   private final @NotNull BooleanSupplierUpdatable hallSensor;
   private final double midClimbLimit;
 
-  private boolean reachedBottomCached;
-  private boolean reachedMidLimitCached;
-
   /**
-   * @param motor
-   * @param controller
-   * @param feedforward
+   * @param motor Winch motor used for retracting/extending arm
+   * @param controller Profiled PID controller used for controlling this arm. Unused currently
+   * @param feedforward Feedforward
    * @param midClimbLimit The height limit for mid climb. If the hall sensor is on and the arm is
    *     below half this height, the arm is considered to be at the bottom. If the hall sensor is on
    *     and the arm is above half this height, the arm is considered to be at the mid climb height
@@ -44,14 +46,14 @@ public class ClimberArm extends ProfiledPIDSubsystem implements Loggable {
     this.hallSensor = new BooleanSupplierUpdatable(hallSensor, null);
   }
 
-  /** Whether this arm's reached the bottom */
+  /** Whether this arm's reached the bottom. Based on encoder position */
   public boolean reachedBottom() {
-    return reachedBottomCached;
+    return motor.getPositionUnits() <= 0;
   }
 
-  /** Whether this arm's reached the mid climb height limit */
+  /** Whether this arm's reached the mid climb height limit. Based on encoder position */
   public boolean reachedMidLimit() {
-    return reachedMidLimitCached;
+    return motor.getPositionUnits() >= midClimbLimit;
   }
 
   @Override
@@ -63,6 +65,7 @@ public class ClimberArm extends ProfiledPIDSubsystem implements Loggable {
   public double getMeasurement() {
     return this.motor.getPositionUnits();
   }
+
   public void stop() {
     this.getController().reset(getMeasurement());
   }
@@ -70,16 +73,16 @@ public class ClimberArm extends ProfiledPIDSubsystem implements Loggable {
   @Override
   public void periodic() {
     super.periodic();
-    this.reachedBottomCached =
-        this.hallSensor.getAsBoolean() && this.motor.getPositionUnits() < midClimbLimit / 2;
-    this.reachedMidLimitCached =
-        this.hallSensor.getAsBoolean() && this.motor.getPositionUnits() > midClimbLimit / 2;
 
     // Reset encoder position based on the Hall effect sensors
-    if (reachedBottomCached) {
-      motor.encoder.resetPosition(0);
-    } else if (reachedMidLimitCached) {
-      motor.encoder.resetPosition(this.midClimbLimit);
+    if (this.hallSensor.getAsBoolean()) {
+      if (motor.encoder.getPositionUnits() < midClimbLimit / 2) {
+        // It's below half the mid climb height limit, so it's at the bottom
+        motor.encoder.resetPosition(0);
+      } else {
+        // It's above half the mid climb height limit, so it's probably at the top
+        motor.encoder.resetPosition(this.midClimbLimit);
+      }
     }
   }
 
