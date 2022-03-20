@@ -48,8 +48,8 @@ public class DriveUnidirectionalBase extends SubsystemBase
   /** Reset the position of the drive if it has encoders. */
   @Override
   public void resetPosition() {
-    this.leftMaster.encoder.resetPosition();
-    this.rightMaster.encoder.resetPosition();
+    this.leftMaster.encoder.resetPosition(0);
+    this.rightMaster.encoder.resetPosition(0);
   }
 
   /** Disable the motors. */

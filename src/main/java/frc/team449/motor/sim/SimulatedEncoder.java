@@ -18,8 +18,8 @@ public final class SimulatedEncoder extends Encoder {
   }
 
   @Override
-  public void resetPosition() {
-    encSim.setReset(true);
+  public void resetPosition(double pos) {
+    encSim.setDistance(pos);
   }
 
   @Override

@@ -47,8 +47,9 @@ public abstract class Encoder implements Loggable {
     this.calculateVel = calculateVel;
   }
 
-  /** Reset position to 0 */
-  public abstract void resetPosition();
+
+  /** Reset encoder position to the given position */
+  public abstract void resetPosition(double pos);
 
   /**
    * Current position in encoder's units
@@ -157,6 +158,11 @@ public abstract class Encoder implements Loggable {
 
   public static class WPIEncoder extends Encoder {
     private final edu.wpi.first.wpilibj.Encoder encoder;
+    /**
+     * How much to add to the position (because WPI encoders don't allow resetting position to any
+     * value
+     */
+    private double positionOffset = 0.0;
 
     public WPIEncoder(
         @NotNull String name,
@@ -170,12 +176,12 @@ public abstract class Encoder implements Loggable {
       encoder.setDistancePerPulse(unitPerRotation * postEncoderGearing / encoderCPR);
       encoder.setSamplesToAverage(5);
       this.encoder = encoder;
-      this.resetPosition();
+      this.resetPosition(0);
     }
 
     @Override
     public double getPositionNative() {
-      return encoder.getDistance();
+      return encoder.getDistance() + positionOffset;
     }
 
     @Override
@@ -184,8 +190,8 @@ public abstract class Encoder implements Loggable {
     }
 
     @Override
-    public void resetPosition() {
-      encoder.reset();
+    public void resetPosition(double pos) {
+      this.positionOffset = getPositionNative() - unitToEncoder(pos);
     }
 
     @Override
@@ -217,7 +223,7 @@ public abstract class Encoder implements Loggable {
         boolean calculateVel) {
       super(name, 1, unitPerRotation, postEncoderGearing, calculateVel);
       this.encoder = encoder;
-      this.resetPosition();
+      this.resetPosition(0);
     }
 
     @Override
@@ -231,8 +237,8 @@ public abstract class Encoder implements Loggable {
     }
 
     @Override
-    public void resetPosition() {
-      encoder.setPosition(0);
+    public void resetPosition(double pos) {
+      encoder.setPosition(unitToEncoder(pos));
     }
 
     @Override
@@ -259,7 +265,7 @@ public abstract class Encoder implements Loggable {
       // The Talon multiplies its encoder count by 4
       super(name, encoderCPR * 4, unitPerRotation, postEncoderGearing, calculateVel);
       this.talon = talon;
-      this.resetPosition();
+      this.resetPosition(0);
     }
 
     @Override
@@ -273,8 +279,8 @@ public abstract class Encoder implements Loggable {
     }
 
     @Override
-    public void resetPosition() {
-      this.talon.setSelectedSensorPosition(0, 0, 0);
+    public void resetPosition(double pos) {
+      this.talon.setSelectedSensorPosition(unitToEncoder(pos), 0, 0);
     }
 
     @Override

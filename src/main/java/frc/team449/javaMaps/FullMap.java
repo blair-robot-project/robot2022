@@ -111,8 +111,6 @@ public class FullMap {
   public static final double DRIVE_KP_VEL = .0, // 27.2,
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0.0,
-      DRIVE_KP_POS = 45.269,
-      DRIVE_KD_POS = 3264.2,
       DRIVE_FF_KS = 0.20835,
       DRIVE_FF_KV = 2.4401,
       DRIVE_FF_KA = 0.3523;
@@ -130,8 +128,8 @@ public class FullMap {
   public static final double RAMP_INCREASE = 0.9, RAMP_DECREASE = 0.7;
   // Climber
   public static final int CLIMBER_PISTON_FWD_CHANNEL = 0, CLIMBER_PISTON_REV_CHANNEL = 1;
-  // todo find out what the channel numbers are
-  public static final int CLIMBER_SENSOR_CHANNEL = 0; // todo find out what this really is
+  public static final int CLIMBER_LEFT_SENSOR_CHANNEL = 0, CLIMBER_RIGHT_SENSOR_CHANNEL = 0;
+  // todo find out what the sensor ports are
   public static final double CLIMBER_MAX_VEL = 0.1, CLIMBER_MAX_ACCEL = 0.1;
   public static final double CLIMBER_EXTEND_VEL = 0.2, CLIMBER_RETRACT_VEL = -0.3;
   public static final double CLIMBER_DISTANCE = 0.7, CLIMBER_MID_DISTANCE = 0.5;
@@ -321,6 +319,10 @@ public class FullMap {
             .setUnitPerRotation(0.1949)
             .setPostEncoderGearing(27)
             .setEnableBrakeMode(true);
+
+    var climberConstraints = new TrapezoidProfile.Constraints(CLIMBER_MAX_VEL, CLIMBER_MAX_ACCEL);
+    var climberFeedforward =
+        new ElevatorFeedforward(CLIMBER_FF_KS, CLIMBER_FF_KG, CLIMBER_FF_KV, CLIMBER_FF_KA);
     var leftArm =
         new ClimberArm(
             armPrototype
@@ -330,12 +332,10 @@ public class FullMap {
                 .setUnitPerRotation(CLIMBER_LEFT_UPR)
                 .setReverseOutput(true)
                 .createReal(),
-            new ProfiledPIDController(
-                CLIMBER_KP,
-                0,
-                0,
-                new TrapezoidProfile.Constraints(CLIMBER_MAX_VEL, CLIMBER_MAX_ACCEL)),
-            new ElevatorFeedforward(CLIMBER_FF_KS, CLIMBER_FF_KG, CLIMBER_FF_KV, CLIMBER_FF_KA));
+            new ProfiledPIDController(CLIMBER_KP, 0, 0, climberConstraints),
+            climberFeedforward,
+            CLIMBER_MID_DISTANCE,
+            RobotBase.isReal() ? new DigitalInput(CLIMBER_LEFT_SENSOR_CHANNEL)::get : () -> false);
     var rightArm =
         new ClimberArm(
             armPrototype
@@ -343,24 +343,12 @@ public class FullMap {
                 .setName("climber_right")
                 .setPort(RIGHT_CLIMBER_MOTOR_PORT)
                 .setUnitPerRotation(CLIMBER_RIGHT_UPR)
-                // checked 3/6/22 by Matthew N
                 .setReverseOutput(false)
                 .createReal(),
-
-            //            driveMasterPrototype
-            //                .copy()
-            //                .setName("climber_right")
-            //                .setPort(RIGHT_CLIMBER_MOTOR_PORT)
-            //                .setUnitPerRotation(0.2286)
-            //                    //checked 3/6/22 by Matthew N
-            //                .setReverseOutput(false)
-            //                .createReal(),
-            new ProfiledPIDController(
-                CLIMBER_KP,
-                0,
-                0,
-                new TrapezoidProfile.Constraints(CLIMBER_MAX_VEL, CLIMBER_MAX_ACCEL)),
-            new ElevatorFeedforward(CLIMBER_FF_KS, CLIMBER_FF_KG, CLIMBER_FF_KV, CLIMBER_FF_KA));
+            new ProfiledPIDController(CLIMBER_KP, 0, 0, climberConstraints),
+            climberFeedforward,
+            CLIMBER_MID_DISTANCE,
+            RobotBase.isReal() ? new DigitalInput(CLIMBER_RIGHT_SENSOR_CHANNEL)::get : () -> false);
     var pivotPiston =
         new DoubleSolenoid(
             PCM_MODULE,
@@ -372,7 +360,6 @@ public class FullMap {
             leftArm,
             rightArm,
             pivotPiston,
-            RobotBase.isReal() ? new DigitalInput(CLIMBER_SENSOR_CHANNEL)::get : () -> false,
             CLIMBER_DISTANCE,
             CLIMBER_MID_DISTANCE);
 
