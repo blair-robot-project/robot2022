@@ -1,12 +1,11 @@
 package frc.team449.oi.unidirectional;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
-
+import org.jetbrains.annotations.Nullable;
 
 public class OIOutreach implements OIUnidirectional {
 
@@ -20,10 +19,10 @@ public class OIOutreach implements OIUnidirectional {
   @NotNull private final Button button;
 
   /** The cached outputs for the left and right sides of the drive. */
-  private double[] cachedLeftRightOutput;
+  private @NotNull Pair<Double, Double> cachedLeftRightOutput = Pair.of(0.0, 0.0);
 
   /** The cached forwards and rotational outputs. */
-  private double[] cachedFwdRotOutput;
+  private @NotNull Pair<Double, Double> cachedFwdRotOutput = Pair.of(0.0, 0.0);
 
   /**
    * Default constructor
@@ -45,13 +44,13 @@ public class OIOutreach implements OIUnidirectional {
   /**
    * The output to be given to the left and right sides of the drive.
    *
-   * @return An array of length 2, where the 1st element is the output for the left and the second
-   *     for the right, both from [-1, 1].
+   * @return A Pair of Doubles, where the 1st element is the output for the left and the second for
+   *     the right, both from [-1, 1].
    */
   @Override
-  public double[] getLeftRightOutput() {
-    if (!Arrays.equals(this.overridingOI.getLeftRightOutput(), new double[] {0, 0})
-        || this.button.get()) {
+  public @NotNull Pair<Double, Double> getLeftRightOutput() {
+    var leftRight = this.overridingOI.getLeftRightOutput();
+    if (leftRight.getFirst() != 0 || leftRight.getSecond() != 0 || this.button.get()) {
       return this.overridingOI.getLeftRightOutput();
     } else {
       return this.overridenOI.getLeftRightOutput();
@@ -61,25 +60,25 @@ public class OIOutreach implements OIUnidirectional {
   /**
    * The cached output to be given to the left and right sides of the drive.
    *
-   * @return An array of length 2, where the 1st element is the output for the left and the second
-   *     for the right, both from [-1, 1].
+   * @return A Pair of Doubles, where the 1st element is the output for the left and the second for
+   *     the right, both from [-1, 1].
    */
   @Override
   @Log
-  public double[] getLeftRightOutputCached() {
+  public @NotNull Pair<Double, Double> getLeftRightOutputCached() {
     return this.cachedLeftRightOutput;
   }
 
   /**
    * The forwards and rotational movement given to the drive.
    *
-   * @return An array of length 2, where the first element is the forwards output and the second is
-   *     the rotational, both from [-1, 1]
+   * @return A Pair of Doubles, where the first element is the forwards output and the second is the
+   *     rotational, both from [-1, 1]
    */
   @Override
-  public double[] getFwdRotOutput() {
-    if (!Arrays.equals(this.overridingOI.getLeftRightOutput(), new double[] {0, 0})
-        || this.button.get()) {
+  public @NotNull Pair<Double, Double> getFwdRotOutput() {
+    var leftRight = this.overridingOI.getLeftRightOutput();
+    if (leftRight.getFirst() != 0 || leftRight.getSecond() != 0 || this.button.get()) {
       return this.overridingOI.getFwdRotOutput();
     } else {
       return this.overridenOI.getFwdRotOutput();
@@ -89,12 +88,12 @@ public class OIOutreach implements OIUnidirectional {
   /**
    * The cached forwards and rotational movement given to the drive.
    *
-   * @return An array of length 2, where the first element is the forwards output and the second is
-   *     the rotational, both from [-1, 1]
+   * @return A Pair of Doubles, where the first element is the forwards output and the second is the
+   *     rotational, both from [-1, 1]
    */
   @Override
   @Log
-  public double[] getFwdRotOutputCached() {
+  public @NotNull Pair<Double, Double> getFwdRotOutputCached() {
     return this.cachedFwdRotOutput;
   }
 
@@ -106,7 +105,9 @@ public class OIOutreach implements OIUnidirectional {
   @Override
   @Log
   public boolean commandingStraight() {
-    return this.getLeftRightOutputCached()[0] == this.getLeftRightOutputCached()[1];
+    return this.getLeftRightOutputCached()
+        .getFirst()
+        .equals(this.getLeftRightOutputCached().getSecond());
   }
 
   /** Updates all cached values with current ones. */

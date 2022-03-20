@@ -74,7 +74,7 @@ public class OITankSimple extends OITank {
   @Override
   @Log
   public boolean commandingStraight() {
-    return Math.abs(getLeftRightOutputCached()[0] - getLeftRightOutputCached()[1])
+    return Math.abs(getLeftRightOutputCached().getFirst() - getLeftRightOutputCached().getSecond())
         <= commandingStraightTolerance;
   }
 }

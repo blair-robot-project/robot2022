@@ -47,9 +47,9 @@ public class DriveStraight extends CommandBase {
   @Override
   public void execute() {
     if (useLeft) {
-      subsystem.setOutput(oi.getLeftRightOutputCached()[0], oi.getLeftRightOutputCached()[0]);
+      subsystem.setOutput(oi.getLeftOutputCached(), oi.getLeftOutputCached());
     } else {
-      subsystem.setOutput(oi.getLeftRightOutputCached()[1], oi.getLeftRightOutputCached()[1]);
+      subsystem.setOutput(oi.getRightOutputCached(), oi.getRightOutputCached());
     }
   }
 

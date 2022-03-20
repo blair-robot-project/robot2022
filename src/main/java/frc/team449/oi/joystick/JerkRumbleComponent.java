@@ -7,7 +7,6 @@ import frc.team449.other.Clock;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * A component to rumble controllers based off the jerk measurements from an AHRS (jerk is the

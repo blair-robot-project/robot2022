@@ -1,17 +1,19 @@
 package frc.team449.oi.unidirectional.tank;
 
+import edu.wpi.first.math.Pair;
 import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.NotNull;
 
 /** A tank-style dual joystick OI. */
 public abstract class OITank implements OIUnidirectional {
 
   /** Cached left and right output. */
-  private double[] leftRightOutputCached;
+  private @NotNull Pair<Double, Double> leftRightOutputCached = Pair.of(0.0, 0.0);
 
   /** Cached forwards and rotational output. */
-  private double[] fwdRotOutputCached;
+  private @NotNull Pair<Double, Double> fwdRotOutputCached = Pair.of(0.0, 0.0);
 
   protected OITank() {
     Updater.subscribe(this);
@@ -36,50 +38,50 @@ public abstract class OITank implements OIUnidirectional {
   /**
    * The output to be given to the left and right sides of the drive.
    *
-   * @return An array of length 2, where the 1st element is the output for the left and the second
+   * @return A Pair of Doubles, where the 1st element is the output for the left and the second
    *     for the right, both from [-1, 1].
    */
   @Override
   @Log
-  public double[] getLeftRightOutput() {
-    return new double[] {getLeftThrottle(), getRightThrottle()};
+  public @NotNull Pair<Double, Double> getLeftRightOutput() {
+    return Pair.of(getLeftThrottle(), getRightThrottle());
   }
 
   /**
    * The cached output to be given to the left and right sides of the drive.
    *
-   * @return An array of length 2, where the 1st element is the output for the left and the second
+   * @return A Pair of Doubles, where the 1st element is the output for the left and the second
    *     for the right, both from [-1, 1].
    */
   @Override
   @Log
-  public double[] getLeftRightOutputCached() {
+  public @NotNull Pair<Double, Double> getLeftRightOutputCached() {
     return leftRightOutputCached;
   }
 
   /**
    * The forwards and rotational movement given to the drive.
    *
-   * @return An array of length 2, where the first element is the forwards output and the second is
+   * @return A Pair of Doubles, where the first element is the forwards output and the second is
    *     the rotational, both from [-1, 1]
    */
   @Override
   @Log
-  public double[] getFwdRotOutput() {
-    return new double[] {
-      (getLeftThrottle() + getRightThrottle()) / 2., (getLeftThrottle() - getRightThrottle()) / 2.
-    };
+  public @NotNull Pair<Double, Double> getFwdRotOutput() {
+    return Pair.of(
+        (getLeftThrottle() + getRightThrottle()) / 2.,
+        (getLeftThrottle() - getRightThrottle()) / 2.);
   }
 
   /**
    * The cached forwards and rotational movement given to the drive.
    *
-   * @return An array of length 2, where the first element is the forwards output and the second is
+   * @return A Pair of Doubles, where the first element is the forwards output and the second is
    *     the rotational, both from [-1, 1]
    */
   @Override
   @Log
-  public double[] getFwdRotOutputCached() {
+  public @NotNull Pair<Double, Double> getFwdRotOutputCached() {
     return fwdRotOutputCached;
   }
 

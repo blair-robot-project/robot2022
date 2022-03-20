@@ -24,8 +24,8 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
 
   /**
    * @param drivetrain
-   * @param pidController PID controller to use (two copies will be made so both sides have the same
-   *     PID)
+   * @param leftController Velocity PID controller to use for the left side
+   * @param rightController Velocity PID controller to use for the right side
    * @param trajectory Trajectory to follow
    * @param feedforward
    */

@@ -123,8 +123,8 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
     // Why exactly this line is necessary is beyond me
     controller.getOutput(subsystem.getAHRS().getCachedHeading());
     // Get the outputs
-    double leftOutput = this.oi.getLeftRightOutput()[0];
-    double rightOutput = this.oi.getLeftRightOutput()[1];
+    double leftOutput = this.oi.getLeftOutputCached();
+    double rightOutput = this.oi.getRightOutputCached();
     // Ramp if it exists
     if (this.leftRamp != null && this.rightRamp != null) {
       leftOutput = this.leftRamp.applyAsDouble(leftOutput);

@@ -1,6 +1,8 @@
 package frc.team449.oi.unidirectional;
 
+import edu.wpi.first.math.Pair;
 import frc.team449.oi.OI;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An OI to control a robot with a unidirectional drive that has a left and right side (e.g. not
@@ -11,34 +13,48 @@ public interface OIUnidirectional extends OI {
   /**
    * The output to be given to the left and right sides of the drive.
    *
-   * @return An array of length 2, where the 1st element is the output for the left and the second
+   * @return A Pair of Doubles, where the 1st element is the output for the left and the second
    *     for the right, both from [-1, 1].
    */
-  double[] getLeftRightOutput();
+  @NotNull Pair<Double, Double> getLeftRightOutput();
 
   /**
    * The cached output to be given to the left and right sides of the drive.
    *
-   * @return An array of length 2, where the 1st element is the output for the left and the second
+   * @return A Pair of Doubles, where the 1st element is the output for the left and the second
    *     for the right, both from [-1, 1].
    */
-  double[] getLeftRightOutputCached();
+  @NotNull Pair<Double, Double> getLeftRightOutputCached();
+
+  /**
+   * The cached output to be given to the left side of the drive, in the range [-1, 1].
+   */
+  default double getLeftOutputCached() {
+    return this.getLeftRightOutputCached().getFirst();
+  }
+
+  /**
+   * The cached output to be given to the right side of the drive, in the range [-1, 1].
+   */
+  default double getRightOutputCached() {
+    return this.getLeftRightOutputCached().getSecond();
+  }
 
   /**
    * The forwards and rotational movement given to the drive.
    *
-   * @return An array of length 2, where the first element is the forwards output and the second is
+   * @return A Pair of Doubles, where the first element is the forwards output and the second is
    *     the rotational, both from [-1, 1]
    */
-  double[] getFwdRotOutput();
+  @NotNull Pair<Double, Double> getFwdRotOutput();
 
   /**
    * The cached forwards and rotational movement given to the drive.
    *
-   * @return An array of length 2, where the first element is the forwards output and the second is
+   * @return A Pair of Doubles, where the first element is the forwards output and the second is
    *     the rotational, both from [-1, 1]
    */
-  double[] getFwdRotOutputCached();
+  @NotNull Pair<Double, Double> getFwdRotOutputCached();
 
   /**
    * Whether the driver is trying to drive straight.

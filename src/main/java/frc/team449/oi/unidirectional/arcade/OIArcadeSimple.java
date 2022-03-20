@@ -1,5 +1,6 @@
 package frc.team449.oi.unidirectional.arcade;
 
+import edu.wpi.first.math.Pair;
 import frc.team449.oi.throttles.Throttle;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -33,12 +34,12 @@ public class OIArcadeSimple extends OIArcade {
   /**
    * The forwards and rotational movement given to the drive.
    *
-   * @return An array of length 2, where the first element is the forwards output and the second is
+   * @return A Pair of Doubles, where the first element is the forwards output and the second is
    *     the rotational, both from [-1, 1]
    */
   @Override
   @Log
-  public double[] getFwdRotOutput() {
-    return new double[] {velThrottle.getValue(), rotThrottle.getValue()};
+  public @NotNull Pair<Double, Double> getFwdRotOutput() {
+    return Pair.of(velThrottle.getValue(), rotThrottle.getValue());
   }
 }

@@ -1,5 +1,6 @@
 package frc.team449.oi.unidirectional.arcade;
 
+import edu.wpi.first.math.Pair;
 import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.annotations.Log;
@@ -12,9 +13,9 @@ public abstract class OIArcade implements OIUnidirectional {
   /** Whether or not to scale the left and right outputs so the max output is 1. */
   private final boolean rescaleOutputs;
   /** Cached forwards and rotational output. */
-  private double @Nullable [] fwdRotOutputCached;
+  private @Nullable Pair<Double, Double> fwdRotOutputCached;
   /** Cached left-right output values */
-  private double @Nullable [] leftRightOutputCached;
+  private @Nullable Pair<Double, Double> leftRightOutputCached;
 
   /**
    * Default constructor.
@@ -35,22 +36,22 @@ public abstract class OIArcade implements OIUnidirectional {
   @Override
   @Log
   public boolean commandingStraight() {
-    return getFwdRotOutputCached()[1] == 0;
+    return getFwdRotOutputCached().getFirst() == 0;
   }
 
   /**
    * The output to be given to the left and right sides of the drive.
    *
-   * @return An array of length 2, where the 1st element is the output for the left and the second
+   * @return A Pair of Doubles, where the 1st element is the output for the left and the second
    *     for the right, both from [-1, 1].
    */
   @Override
-  public double @NotNull [] getLeftRightOutput() {
+  public @NotNull Pair<Double, Double> getLeftRightOutput() {
     this.fwdRotOutputCached = getFwdRotOutput();
 
     // Unscaled, unclipped values for left and right output.
-    final double tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
-    final double tmpRight = fwdRotOutputCached[0] - fwdRotOutputCached[1];
+    final double tmpLeft = fwdRotOutputCached.getFirst() + fwdRotOutputCached.getSecond();
+    final double tmpRight = fwdRotOutputCached.getFirst() - fwdRotOutputCached.getSecond();
 //    System.out.println("Left : " + tmpLeft + " Right : " + tmpRight);
 //    if (tmpLeft != 0 || tmpRight != 0) System.out.println("tmpleft=" + tmpLeft + ", tmpRight=" + tmpRight);
 
@@ -58,33 +59,33 @@ public abstract class OIArcade implements OIUnidirectional {
     if (Math.abs(tmpLeft) > 1) {
       if (rescaleOutputs) {
         // Rescale right, return left clipped to [-1, 1]
-        return new double[] {Math.signum(tmpLeft), tmpRight / Math.abs(tmpLeft)};
+        return Pair.of(Math.signum(tmpLeft), tmpRight / Math.abs(tmpLeft));
       } else {
         // Return left clipped to [-1, 1], don't change right
-        return new double[] {Math.signum(tmpLeft), tmpRight};
+        return Pair.of(Math.signum(tmpLeft), tmpRight);
       }
     } else if (Math.abs(tmpRight) > 1) { // If right is too large
       if (rescaleOutputs) {
         // Rescale left, return right clipped to [-1, 1]
-        return new double[] {tmpLeft / Math.abs(tmpRight), Math.signum(tmpRight)};
+        return Pair.of(tmpLeft / Math.abs(tmpRight), Math.signum(tmpRight));
       } else {
         // Return right clipped to [-1, 1], don't change left
-        return new double[] {tmpLeft, Math.signum(tmpRight)};
+        return Pair.of(tmpLeft, Math.signum(tmpRight));
       }
     } else {
       // Return unaltered if nothing is too large
-      return new double[] {tmpLeft, tmpRight};
+      return Pair.of(tmpLeft, tmpRight);
     }
   }
 
   /**
    * The cached output to be given to the left and right sides of the drive.
    *
-   * @return An array of length 2, where the 1st element is the output for the left and the second
+   * @return A Pair of Doubles, where the 1st element is the output for the left and the second
    *     for the right, both from [-1, 1].
    */
   @Override
-  public double @NotNull [] getLeftRightOutputCached() {
+  public @NotNull Pair<Double, Double> getLeftRightOutputCached() {
     if (leftRightOutputCached == null) {
       this.leftRightOutputCached = this.getLeftRightOutput();
     }
@@ -94,11 +95,11 @@ public abstract class OIArcade implements OIUnidirectional {
   /**
    * The cached forwards and rotational movement given to the drive.
    *
-   * @return An array of length 2, where the first element is the forwards output and the second is
+   * @return A Pair of Doubles, where the first element is the forwards output and the second is
    *     the rotational, both from [-1, 1]
    */
   @Override
-  public double @NotNull [] getFwdRotOutputCached() {
+  public @NotNull Pair<Double, Double> getFwdRotOutputCached() {
     if (fwdRotOutputCached == null) {
       this.fwdRotOutputCached = this.getFwdRotOutput();
     }
@@ -110,6 +111,5 @@ public abstract class OIArcade implements OIUnidirectional {
   public void update() {
     fwdRotOutputCached = getFwdRotOutput();
     leftRightOutputCached = getLeftRightOutput();
-//    if (leftRightOutputCached[0] != 0) System.out.println("leftrightoutputc=" + leftRightOutputCached[0] + ", " + leftRightOutputCached[1]);
   }
 }

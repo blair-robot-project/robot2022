@@ -1,5 +1,6 @@
 package frc.team449.oi.unidirectional.arcade;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.GenericHID;
 import frc.team449.oi.throttles.Polynomial;
 import frc.team449.oi.throttles.Throttle;
@@ -71,32 +72,22 @@ public class OIArcadeWithDPad extends OIArcade {
   /**
    * The forwards and rotational movement given to the drive.
    *
-   * @return An array of length 2, where the first element is the forwards output and the second is
-   *     the rotational, both from [-1, 1]
+   * @return A Pair of Doubles, where the first element is the forwards output and the second is the
+   *     rotational, both from [-1, 1]
    */
   @Override
-  public double[] getFwdRotOutput() {
+  public @NotNull Pair<Double, Double> getFwdRotOutput() {
     double fwd = fwdThrottle.getValue();
-//    System.out.print("OIArcadeWithDPad.getFwdRotOutput: fwd=" + fwd + ", rot=");
-//    System.out.println(("Rotation"+ rotThrottle.getValue()));
-//    System.out.println("Forward" + fwd);
     // If the gamepad is being pushed to the left or right
     if (gamepad != null && !(gamepad.getPOV() == -1 || gamepad.getPOV() % 180 == 0)) {
       // Output the shift value
-//      System.out.println("N/A");
-      return new double[] {fwd, gamepad.getPOV() < 180 ? dPadShift : -dPadShift};
+      return Pair.of(fwd, gamepad.getPOV() < 180 ? dPadShift : -dPadShift);
     } else if (fwd == 0) { // Turning in place
-//      System.out.println(rotThrottle.getValue() * turnInPlaceRotScale);
-      return new double[] {fwd, rotThrottle.getValue() * turnInPlaceRotScale};
+      return Pair.of(fwd, rotThrottle.getValue() * turnInPlaceRotScale);
     } else if (scaleRotByFwdPoly != null) { // If we're using Cheezy Drive
-//      System.out.println(rotThrottle.getValue() * scaleRotByFwdPoly.applyAsDouble(Math.abs(fwd)));
-      return new double[] {
-        fwd, rotThrottle.getValue() * scaleRotByFwdPoly.applyAsDouble(Math.abs(fwd))
-      };
+      return Pair.of(fwd, rotThrottle.getValue() * scaleRotByFwdPoly.applyAsDouble(Math.abs(fwd)));
     } else { // Plain and simple
-
-      return new double[] {fwd, rotThrottle.getValue()};
+      return Pair.of(fwd, rotThrottle.getValue());
     }
-
   }
 }
