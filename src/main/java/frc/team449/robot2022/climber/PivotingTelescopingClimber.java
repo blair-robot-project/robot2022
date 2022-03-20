@@ -18,10 +18,10 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
   public final double midDistance;
 
   private final @NotNull ClimberArm rightArm;
-  private @NotNull ClimberState state;
   private final @NotNull ClimberArm leftArm;
   private final @NotNull DoubleSolenoid pivotPiston;
   private final @NotNull BooleanSupplierUpdatable hallSensor;
+  private @NotNull ClimberState state;
   /** The current goal */
   private double goal;
 
@@ -103,27 +103,23 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
    * sets velocity to 0 if:
    *
    * <ul>
-   *   <li>Hall sensor is active and velocity is negative
-   *   <li>Arms are stowed, velocity is positive, and is beyond {@link
-   *       PivotingTelescopingClimber#midDistance}
+   *   <li>Hall sensor is active, arms are below half the mid climb height limit, and velocity is
+   *       negative (going down too far)
+   *   <li>Hall sensor is active, climber is stowed, arms are above half the mid climb height limit,
+   *       and velocity is positive (going up too far during mid climb)
    * </ul>
    */
   public void set(double velocity) {
-    double leftVel = velocity;
-    double rightVel = velocity;
-    if (velocity <= 0 && this.hitBottom()) {
-      leftVel = rightVel = 0;
-    } else if (this.isStowed()) {
-      if (leftArm.getMeasurement() > midDistance) {
-        leftVel = 0;
-      }
-      if (rightArm.getMeasurement() > midDistance) {
-        rightVel = 0;
-      }
+    if (velocity <= 0 && this.reachedBottom()) {
+      // Don't move further down when already at the bottom
+      velocity = 0;
+    } else if (this.isStowed() && this.reachedMid()) {
+      // Don't move further up when already at the mid climb height limit
+      velocity = 0;
     }
 
-    leftArm.set(leftVel);
-    rightArm.set(rightVel);
+    leftArm.set(velocity);
+    rightArm.set(velocity);
   }
 
   /** Whether the arms are vertical */
@@ -161,9 +157,22 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
     return this.leftArm.getController().atGoal() && this.rightArm.getController().atGoal();
   }
 
-  /** Whether or not the hall sensor is on, meaning one arm hit the bottom */
-  public boolean hitBottom() {
-    return hallSensor.getAsBoolean();
+  /**
+   * Whether the arms have hit the bottom. The hall effect sensor should be detecting something and
+   * the arms must be below half the climber distance. This actually just checks the left arm
+   * instead of both arms, though.
+   */
+  public boolean reachedBottom() {
+    return hallSensor.getAsBoolean() && leftArm.getMeasurement() < midDistance / 2;
+  }
+
+  /**
+   * Whether the arms have reached the mid climb height limit. The hall effect sensor should be
+   * detecting something and the arms must be above half the climber distance. This actually just
+   * checks the left arm instead of both arms, though.
+   */
+  public boolean reachedMid() {
+    return hallSensor.getAsBoolean() && leftArm.getMeasurement() > midDistance / 2;
   }
 
   public enum ClimberState {
