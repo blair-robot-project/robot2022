@@ -1,6 +1,7 @@
 package frc.team449.javaMaps;
 
 import com.pathplanner.lib.PathPlanner;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -17,7 +18,16 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -38,9 +48,10 @@ import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
-import frc.team449.oi.throttles.Polynomial;
 import frc.team449.motor.builder.SparkMaxConfig;
 import frc.team449.oi.RampComponent;
+import frc.team449.oi.joystick.RumbleCommand;
+import frc.team449.oi.throttles.Polynomial;
 import frc.team449.oi.throttles.ThrottlePolynomialBuilder;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.throttles.ThrottleWithRamp;
@@ -130,6 +141,8 @@ public class FullMap {
       CLIMBER_FF_KG = 0;
   public static final double CLIMBER_LEFT_UPR = 0.239, // 0.1778,
       CLIMBER_RIGHT_UPR = 0.239; // 0.2286;
+  // How close the arm gets to the limits before climber joystick starts rumbling
+  public static final double CLIMBER_RUMBLE_TOLERANCE = 0.1;
 
   // Intake
   public static final int INTAKE_PISTON_FWD_CHANNEL = 3, INTAKE_PISTON_REV_CHANNEL = 2;
@@ -401,6 +414,31 @@ public class FullMap {
     new JoystickButton(climberJoystick, XboxController.Button.kX.value)
         .whenPressed(climber::pivotTelescopingArmIn);
 
+    // Rumbles the joystick when either arm gets within `CLIMBER_RUMBLE_THRESHOLD` of the limits.
+    // Rumbling increases linearly.
+    var climberRumbleCommand =
+        new RumbleCommand(
+            List.of(climberJoystick),
+            CLIMBER_RUMBLE_TOLERANCE,
+            () -> {
+              var leftDist = leftArm.getMeasurement();
+              var rightDist = rightArm.getMeasurement();
+
+              // Check the height limit depending on whether it's in mid climb (stowed) or high
+              // climb
+              var topLimit = climber.isStowed() ? climber.midDistance : climber.distanceTopBottom;
+
+              // Amount to rumble left arm by if reached the bottom
+              var leftBottomRumble = Math.max(0, CLIMBER_RUMBLE_TOLERANCE - leftDist);
+              // Amount to rumble left arm by if reached the top
+              var leftTopRumble = Math.max(0, CLIMBER_RUMBLE_TOLERANCE - (topLimit - leftDist));
+              var rightBottomRumble = Math.max(0, CLIMBER_RUMBLE_TOLERANCE - rightDist);
+              var rightTopRumble = Math.max(0, CLIMBER_RUMBLE_TOLERANCE - (topLimit - rightDist));
+
+              return new Pair<>(
+                  leftBottomRumble + leftTopRumble, rightBottomRumble + rightTopRumble);
+            });
+
     var ramsetePrototype =
         new RamseteBuilder()
             .drivetrain(drive)
@@ -610,7 +648,8 @@ public class FullMap {
         List.of(
             new InstantCommand(climber::disable),
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
-            new InstantCommand(cargo::stop));
+            new InstantCommand(cargo::stop),
+            climberRumbleCommand);
 
     List<Command> testStartupCommands = List.of();
     var allCommands =

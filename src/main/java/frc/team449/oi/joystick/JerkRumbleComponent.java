@@ -1,35 +1,25 @@
-package frc.team449.components;
+package frc.team449.oi.joystick;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.GenericHID;
 import frc.team449.ahrs.AHRS;
 import frc.team449.other.Clock;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A component to rumble controllers based off the jerk measurements from an AHRS (jerk is the
  * derivative of acceleration).
  */
-public class AHRSRumbleComponent implements Runnable {
+public class JerkRumbleComponent implements Supplier<Pair<Double, Double>> {
 
   /** The NavX to get jerk measurements from. */
   @NotNull private final AHRS ahrs;
 
-  /** The joysticks to rumble. */
-  @NotNull private final List<? extends GenericHID> joysticks;
-
   /** The minimum jerk that will trigger rumbling, in meters/second^3. */
   private final double minJerk;
-
-  /**
-   * The jerk, in meters/second^3, that's scaled to maximum rumble. All jerks of greater magnitude
-   * are capped at 1.
-   */
-  private final double maxJerk;
 
   /** Whether the NavX Y-axis measures forwards-back jerk or left-right jerk. */
   private final boolean yIsFrontBack; // TODO why is this never accessed
@@ -49,21 +39,16 @@ public class AHRSRumbleComponent implements Runnable {
    * @param ahrs The NavX to get jerk measurements from.
    * @param joysticks The things to rumble.
    * @param minJerk The minimum jerk that will trigger rumbling, in meters/(sec^3).
-   * @param maxJerk The jerk, in meters/(sec^3), that's scaled to maximum rumble. All jerks of
-   *     greater magnitude are capped at 1.
    * @param yIsFrontBack Whether the NavX Y-axis measures forwards-back jerk or left-right jerk.
    *     Defaults to false.
    */
-  public AHRSRumbleComponent(
+  public JerkRumbleComponent(
       @NotNull AHRS ahrs,
       @NotNull List<? extends @NotNull GenericHID> joysticks,
       double minJerk,
-      double maxJerk,
       boolean yIsFrontBack) {
     this.ahrs = ahrs;
-    this.joysticks = joysticks;
     this.minJerk = minJerk;
-    this.maxJerk = maxJerk;
     this.yIsFrontBack = yIsFrontBack;
     this.timeLastCalled = 0;
     this.lastFrontBackAccel = 0;
@@ -72,7 +57,7 @@ public class AHRSRumbleComponent implements Runnable {
 
   /** Read the NavX jerk data and rumble the joysticks based off of it. */
   @Override
-  public void run() {
+  public Pair<Double, Double> get() {
     double frontBackAccel = this.ahrs.getYAccel();
     double leftRightAccel = this.ahrs.getXAccel();
 
@@ -87,16 +72,13 @@ public class AHRSRumbleComponent implements Runnable {
     double leftJerk = Math.abs((deltaFrontBack - deltaLeftRight) / dt);
     double rightJerk = Math.abs((deltaFrontBack + deltaLeftRight) / dt);
 
-    double leftRumble = leftJerk <= this.minJerk ? 0 : (leftJerk - this.minJerk) / this.maxJerk;
-    double rightRumble = rightJerk <= this.minJerk ? 0 : (rightJerk - this.minJerk) / this.maxJerk;
-
-    for (var joystick : this.joysticks) {
-      joystick.setRumble(GenericHID.RumbleType.kLeftRumble, leftRumble);
-      joystick.setRumble(GenericHID.RumbleType.kRightRumble, rightRumble);
-    }
+    double leftRumble = Math.max(leftJerk, minJerk) - minJerk;
+    double rightRumble = Math.max(rightJerk, minJerk) - minJerk;
 
     this.lastLeftRightAccel = leftRightAccel;
     this.lastFrontBackAccel = frontBackAccel;
     this.timeLastCalled = currTime;
+
+    return new Pair<>(leftRumble, rightRumble);
   }
 }
