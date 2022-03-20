@@ -1,7 +1,6 @@
 package frc.team449.javaMaps;
 
 import com.pathplanner.lib.PathPlanner;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -59,7 +58,9 @@ import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.Debouncer;
 import frc.team449.other.FollowerUtils;
 import frc.team449.robot2022.cargo.Cargo2022;
+import frc.team449.robot2022.cargo.IntakeLimelightRumbleComponent;
 import frc.team449.robot2022.climber.ClimberArm;
+import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.ThreeBallAuto;
 import frc.team449.updatable.Updater;
@@ -167,6 +168,11 @@ public class FullMap {
     var limelight = new Limelight(DRIVER_PIPELINE);
     limelight.setStreamMode(Limelight.StreamMode.STANDARD);
     limelight.setLedMode(Limelight.LedMode.OFF);
+
+    var intakeLimelightRumbleCommand =
+        new RumbleCommand(
+            List.of(cargoJoystick),
+            new IntakeLimelightRumbleComponent(limelight, BLUE_PIPELINE, RED_PIPELINE));
 
     var driveMasterPrototype =
         new SparkMaxConfig()
@@ -419,25 +425,7 @@ public class FullMap {
     var climberRumbleCommand =
         new RumbleCommand(
             List.of(climberJoystick),
-            CLIMBER_RUMBLE_TOLERANCE,
-            () -> {
-              var leftDist = leftArm.getMeasurement();
-              var rightDist = rightArm.getMeasurement();
-
-              // Check the height limit depending on whether it's in mid climb (stowed) or high
-              // climb
-              var topLimit = climber.isStowed() ? climber.midDistance : climber.distanceTopBottom;
-
-              // Amount to rumble left arm by if reached the bottom
-              var leftBottomRumble = Math.max(0, CLIMBER_RUMBLE_TOLERANCE - leftDist);
-              // Amount to rumble left arm by if reached the top
-              var leftTopRumble = Math.max(0, CLIMBER_RUMBLE_TOLERANCE - (topLimit - leftDist));
-              var rightBottomRumble = Math.max(0, CLIMBER_RUMBLE_TOLERANCE - rightDist);
-              var rightTopRumble = Math.max(0, CLIMBER_RUMBLE_TOLERANCE - (topLimit - rightDist));
-
-              return new Pair<>(
-                  leftBottomRumble + leftTopRumble, rightBottomRumble + rightTopRumble);
-            });
+            new ClimberLimitRumbleComponent(climber, CLIMBER_RUMBLE_TOLERANCE));
 
     var ramsetePrototype =
         new RamseteBuilder()
@@ -649,7 +637,8 @@ public class FullMap {
             new InstantCommand(climber::disable),
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
             new InstantCommand(cargo::stop),
-            climberRumbleCommand);
+            climberRumbleCommand,
+            intakeLimelightRumbleCommand);
 
     List<Command> testStartupCommands = List.of();
     var allCommands =

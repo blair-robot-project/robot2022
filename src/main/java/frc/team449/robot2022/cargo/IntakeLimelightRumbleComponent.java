@@ -1,25 +1,21 @@
 package frc.team449.robot2022.cargo;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.team449.oi.joystick.RumbleComponent;
 import frc.team449.wrappers.Limelight;
 
-public class IntakeLimelightCommand extends CommandBase {
-  private final Cargo2022 cargo;
+/** Rumble the intake joystick if Limelight detects a ball of the opposite color */
+public class IntakeLimelightRumbleComponent implements RumbleComponent {
   private final Limelight limelight;
   private final int bluePipeline;
   private final int redPipeline;
 
   /**
-   *
-   * @param cargo
-   * @param limelight
    * @param bluePipeline Pipeline for detecting blue balls
    * @param redPipeline Pipeline for detecting red balls
    */
-  public IntakeLimelightCommand(Cargo2022 cargo, Limelight limelight, int bluePipeline, int redPipeline) {
-    addRequirements(cargo);
-    this.cargo = cargo;
+  public IntakeLimelightRumbleComponent(Limelight limelight, int bluePipeline, int redPipeline) {
     this.limelight = limelight;
     this.bluePipeline = bluePipeline;
     this.redPipeline = redPipeline;
@@ -28,6 +24,7 @@ public class IntakeLimelightCommand extends CommandBase {
   @Override
   public void initialize() {
     var isBlue = DriverStation.getAlliance() == DriverStation.Alliance.Blue;
+    // Set it to the pipeline to detect balls of the opposite color
     if (isBlue) {
       limelight.setPipeline(redPipeline);
     } else {
@@ -36,15 +33,13 @@ public class IntakeLimelightCommand extends CommandBase {
   }
 
   @Override
-  public void execute() {
-    if (limelight.hasTarget()) {
-      cargo.stop();
-    } else {
-      cargo.runIntake();
-    }
+  public double maxOutput() {
+    return 1;
   }
 
   @Override
-  public void end(boolean interrupted) {
+  public Pair<Double, Double> getOutput() {
+    var output = limelight.hasTarget() ? 1.0 : 0.0;
+    return new Pair<>(output, output);
   }
 }

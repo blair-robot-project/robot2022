@@ -13,13 +13,19 @@ import java.util.function.Supplier;
  * A component to rumble controllers based off the jerk measurements from an AHRS (jerk is the
  * derivative of acceleration).
  */
-public class JerkRumbleComponent implements Supplier<Pair<Double, Double>> {
+public class JerkRumbleComponent implements RumbleComponent {
 
   /** The NavX to get jerk measurements from. */
   @NotNull private final AHRS ahrs;
 
   /** The minimum jerk that will trigger rumbling, in meters/second^3. */
   private final double minJerk;
+
+  /**
+   * The jerk, in meters/second^3, that's scaled to maximum rumble. All jerks of greater magnitude
+   * are capped at 1.
+   */
+  private final double maxJerk;
 
   /** Whether the NavX Y-axis measures forwards-back jerk or left-right jerk. */
   private final boolean yIsFrontBack; // TODO why is this never accessed
@@ -39,6 +45,8 @@ public class JerkRumbleComponent implements Supplier<Pair<Double, Double>> {
    * @param ahrs The NavX to get jerk measurements from.
    * @param joysticks The things to rumble.
    * @param minJerk The minimum jerk that will trigger rumbling, in meters/(sec^3).
+   * @param maxJerk The jerk, in meters/(sec^3), that's scaled to maximum rumble. All jerks of
+   *     greater magnitude are capped at 1.
    * @param yIsFrontBack Whether the NavX Y-axis measures forwards-back jerk or left-right jerk.
    *     Defaults to false.
    */
@@ -46,18 +54,25 @@ public class JerkRumbleComponent implements Supplier<Pair<Double, Double>> {
       @NotNull AHRS ahrs,
       @NotNull List<? extends @NotNull GenericHID> joysticks,
       double minJerk,
+      double maxJerk,
       boolean yIsFrontBack) {
     this.ahrs = ahrs;
     this.minJerk = minJerk;
+    this.maxJerk = maxJerk;
     this.yIsFrontBack = yIsFrontBack;
     this.timeLastCalled = 0;
     this.lastFrontBackAccel = 0;
     this.lastLeftRightAccel = 0;
   }
 
+  @Override
+  public double maxOutput() {
+    return maxJerk;
+  }
+
   /** Read the NavX jerk data and rumble the joysticks based off of it. */
   @Override
-  public Pair<Double, Double> get() {
+  public Pair<Double, Double> getOutput() {
     double frontBackAccel = this.ahrs.getYAccel();
     double leftRightAccel = this.ahrs.getXAccel();
 

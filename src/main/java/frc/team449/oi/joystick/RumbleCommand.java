@@ -1,6 +1,5 @@
 package frc.team449.oi.joystick;
 
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -10,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * A command to rumble controllers given a supplier to provide rumble output. Runs until
@@ -27,24 +25,17 @@ public class RumbleCommand extends CommandBase {
   /** The joysticks to rumble. */
   @NotNull private final List<? extends GenericHID> joysticks;
 
-  @NotNull private final Supplier<Pair<Double, Double>> rumbleSupplier;
-
-  private final double maxOutput;
+  @NotNull private final RumbleComponent rumbleSupplier;
 
   /**
    * @param joysticks The things to rumble.
-   * @param maxOutput The maximum output of {@code rumbleSupplier} (absolute value). Used for
-   *     scaling rumble output to [0, 1]. If, after scaling, the output is still not in the range
-   *     [0, 1], it is clipped.
    * @param rumbleSupplier Give the rumble output for both sides of the joysticks.
    */
   public RumbleCommand(
       @NotNull List<? extends @NotNull GenericHID> joysticks,
-      double maxOutput,
-      @NotNull Supplier<Pair<Double, Double>> rumbleSupplier) {
+      @NotNull RumbleComponent rumbleSupplier) {
     this.joysticks = joysticks;
     this.rumbleSupplier = rumbleSupplier;
-    this.maxOutput = maxOutput;
 
     for (var joystick : joysticks) {
       if (!usedJoysticks.containsKey(joystick)) {
@@ -57,10 +48,10 @@ public class RumbleCommand extends CommandBase {
 
   @Override
   public void execute() {
-    var leftRightRumble = rumbleSupplier.get();
+    var leftRightRumble = rumbleSupplier.getOutput();
     this.rumbleJoysticks(
-        Util.clamp(leftRightRumble.getFirst() / maxOutput, 0.0, 1.0),
-        Util.clamp(leftRightRumble.getSecond() / maxOutput, 0.0, 1.0));
+        Util.clamp(leftRightRumble.getFirst() / rumbleSupplier.maxOutput(), 0.0, 1.0),
+        Util.clamp(leftRightRumble.getSecond() / rumbleSupplier.maxOutput(), 0.0, 1.0));
   }
 
   private void rumbleJoysticks(double leftRumble, double rightRumble) {

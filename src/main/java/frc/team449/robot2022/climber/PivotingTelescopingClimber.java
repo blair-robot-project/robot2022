@@ -17,8 +17,8 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
 
   public final double midDistance;
 
-  private final @NotNull ClimberArm rightArm;
-  private final @NotNull ClimberArm leftArm;
+  final @NotNull ClimberArm rightArm;
+  final @NotNull ClimberArm leftArm;
   private final @NotNull DoubleSolenoid pivotPiston;
   private final @NotNull BooleanSupplierUpdatable hallSensor;
   private @NotNull ClimberState state;
