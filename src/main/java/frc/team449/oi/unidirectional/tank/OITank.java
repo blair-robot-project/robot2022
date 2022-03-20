@@ -5,15 +5,16 @@ import frc.team449.oi.unidirectional.OIUnidirectional;
 import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /** A tank-style dual joystick OI. */
 public abstract class OITank implements OIUnidirectional {
 
   /** Cached left and right output. */
-  private @NotNull Pair<Double, Double> leftRightOutputCached = Pair.of(0.0, 0.0);
+  private @Nullable Pair<Double, Double> leftRightOutputCached;
 
   /** Cached forwards and rotational output. */
-  private @NotNull Pair<Double, Double> fwdRotOutputCached = Pair.of(0.0, 0.0);
+  private @Nullable Pair<Double, Double> fwdRotOutputCached;
 
   protected OITank() {
     Updater.subscribe(this);
@@ -56,6 +57,9 @@ public abstract class OITank implements OIUnidirectional {
   @Override
   @Log
   public @NotNull Pair<Double, Double> getLeftRightOutputCached() {
+    if (leftRightOutputCached == null) {
+      this.leftRightOutputCached = getLeftRightOutput();
+    }
     return leftRightOutputCached;
   }
 
@@ -82,6 +86,9 @@ public abstract class OITank implements OIUnidirectional {
   @Override
   @Log
   public @NotNull Pair<Double, Double> getFwdRotOutputCached() {
+    if (fwdRotOutputCached == null) {
+      this.fwdRotOutputCached = this.getFwdRotOutput();
+    }
     return fwdRotOutputCached;
   }
 

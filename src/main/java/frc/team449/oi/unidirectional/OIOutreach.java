@@ -19,10 +19,10 @@ public class OIOutreach implements OIUnidirectional {
   @NotNull private final Button button;
 
   /** The cached outputs for the left and right sides of the drive. */
-  private @NotNull Pair<Double, Double> cachedLeftRightOutput = Pair.of(0.0, 0.0);
+  private @Nullable Pair<Double, Double> cachedLeftRightOutput;
 
   /** The cached forwards and rotational outputs. */
-  private @NotNull Pair<Double, Double> cachedFwdRotOutput = Pair.of(0.0, 0.0);
+  private @Nullable Pair<Double, Double> cachedFwdRotOutput;
 
   /**
    * Default constructor
@@ -66,6 +66,9 @@ public class OIOutreach implements OIUnidirectional {
   @Override
   @Log
   public @NotNull Pair<Double, Double> getLeftRightOutputCached() {
+    if (this.cachedLeftRightOutput == null) {
+      this.cachedLeftRightOutput = this.getLeftRightOutput();
+    }
     return this.cachedLeftRightOutput;
   }
 
@@ -94,6 +97,9 @@ public class OIOutreach implements OIUnidirectional {
   @Override
   @Log
   public @NotNull Pair<Double, Double> getFwdRotOutputCached() {
+    if (this.cachedFwdRotOutput == null) {
+      this.cachedFwdRotOutput = this.getFwdRotOutput();
+    }
     return this.cachedFwdRotOutput;
   }
 

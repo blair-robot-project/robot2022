@@ -82,6 +82,9 @@ public class Limelight extends SubsystemBase implements Loggable {
   private double height;
   private int pipeIndex;
 
+  /** Average HSV color under the crosshair region */
+  private Number[] c;
+
   // The possible camtran values
   /** the xPose of the robot in camtran */
   private double poseX;
@@ -157,6 +160,7 @@ public class Limelight extends SubsystemBase implements Loggable {
     if (pipeIndex != driverPipeline) {
       x = xTable.getDouble(0);
       y = yTable.getDouble(0);
+      c = cTable.getNumberArray(new Number[] {0, 0, 0});
       // System.out.println("X = " + x + ", y = " + y);
       area = areaTable.getDouble(0);
       skew = skewTable.getDouble(0);
@@ -188,6 +192,11 @@ public class Limelight extends SubsystemBase implements Loggable {
   @Log
   public double getY() {
     return y;
+  }
+
+  @Log
+  public Number[] getC() {
+    return c;
   }
 
   @Log

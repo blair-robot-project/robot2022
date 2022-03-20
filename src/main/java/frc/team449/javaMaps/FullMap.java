@@ -44,7 +44,7 @@ import frc.team449.auto.builders.RamseteBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
+import frc.team449.drive.unidirectional.commands.NavXTurnToAngle;
 import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.motor.builder.SparkMaxConfig;
@@ -419,8 +419,6 @@ public class FullMap {
     var ramsetePrototype =
         new RamseteBuilder()
             .drivetrain(drive)
-            //            .b(2.25)
-            //            .zeta(0.6)
             .anglePID(
                 new PIDAngleControllerBuilder()
                     .absoluteTolerance(0.5)

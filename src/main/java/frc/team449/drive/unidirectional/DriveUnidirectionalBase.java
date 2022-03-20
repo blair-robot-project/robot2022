@@ -60,11 +60,6 @@ public class DriveUnidirectionalBase extends SubsystemBase
   }
 
   @Override
-  public void enableMotors() {
-    // todo can this method just be removed?
-  }
-
-  @Override
   public void setOutput(double left, double right) {
     this.leftMaster.set(left);
     this.rightMaster.set(right);

@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
+import frc.team449.drive.unidirectional.commands.NavXTurnToAngle;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

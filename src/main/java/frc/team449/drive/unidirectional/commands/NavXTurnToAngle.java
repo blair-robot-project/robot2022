@@ -1,4 +1,4 @@
-package frc.team449.drive.unidirectional.commands.AHRS;
+package frc.team449.drive.unidirectional.commands;
 
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -31,7 +31,7 @@ public class NavXTurnToAngle extends CommandBase {
   protected final PIDAngleController controller;
 
   /**
-   * Default constructor.
+   * Construct a {@link NavXTurnToAngle} command to turn to an (absolute) angle.
    *
    * @param setpoint The setpoint, in degrees from 180 to -180.
    * @param timeout How long this command is allowed to run for, in seconds. Needed because
@@ -48,7 +48,8 @@ public class NavXTurnToAngle extends CommandBase {
   }
 
   /**
-   * Default constructor.
+   * Construct a {@link NavXTurnToAngle} command that generates the setpoint only when the command
+   * initializes, in case you want to turn to an angle relative to current heading
    *
    * @param setpointSupplier Supply the setpoint, in degrees from 180 to -180.
    * @param timeout How long this command is allowed to run for, in seconds. Needed because

@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.auto.commands.RamseteControllerUnidirectionalDrive;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.drive.unidirectional.commands.AHRS.NavXTurnToAngle;
+import frc.team449.drive.unidirectional.commands.NavXTurnToAngle;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -18,8 +18,6 @@ public final class RamseteBuilder {
   private @Nullable Trajectory traj;
   private @Nullable Field2d field;
   private @Nullable String name;
-  private double b = 2;
-  private double zeta = .7;
   private @Nullable PIDAngleController pidAngleController;
   private double angleTimeout = 0;
 
@@ -48,24 +46,6 @@ public final class RamseteBuilder {
   }
 
   /**
-   * Set the b parameter for Ramsete (b &gt; 0 rad²/m²) for which larger values make convergence
-   * more aggressive like a proportional term.
-   */
-  public RamseteBuilder b(double b) {
-    this.b = b;
-    return this;
-  }
-
-  /**
-   * Set the zeta tuning parameter for Ramsete (0 rad<sup>-1</sup> &lt; zeta &lt; 1
-   * rad<sup>-1</sup>) for which larger values provide more damping in response.
-   */
-  public RamseteBuilder zeta(double zeta) {
-    this.zeta = zeta;
-    return this;
-  }
-
-  /**
    * Set the PIDAngleController to use when turning the robot in place at the end of the trajectory.
    * The controller is optional
    */
@@ -86,8 +66,6 @@ public final class RamseteBuilder {
         .traj(traj)
         .field(field)
         .name(name)
-        .b(b)
-        .zeta(zeta)
         .anglePID(pidAngleController)
         .angleTimeout(angleTimeout);
   }
@@ -106,17 +84,6 @@ public final class RamseteBuilder {
             drivetrain.rightVelPID(),
             traj,
             drivetrain.getFeedforward());
-    //        new edu.wpi.first.wpilibj2.command.RamseteCommand(
-    //            this.traj,
-    //            drivetrain::getCurrentPose,
-    //            new RamseteController(b, zeta),
-    //            drivetrain.getFeedforward(),
-    //            drivetrain.getDriveKinematics(),
-    //            drivetrain::getWheelSpeeds,
-    //            leftPid,
-    //            rightPid,
-    //            drivetrain::setVoltage,
-    //            drivetrain);
     if (this.name != null) {
       ramseteCmd.setName(this.name);
     }

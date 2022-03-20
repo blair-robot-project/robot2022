@@ -65,6 +65,7 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
     this.prevTime = startingTime;
     leftController.reset();
     rightController.reset();
+    drivetrain.resetOdometry(trajectory.getInitialPose());
   }
 
   @Override
