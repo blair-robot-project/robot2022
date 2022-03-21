@@ -1,7 +1,7 @@
 package frc.team449.ahrs;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.Debouncer;
+import frc.team449.other.Debouncer;
 import frc.team449.other.Util;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -55,7 +55,7 @@ public class PIDAngleController implements Loggable {
    */
   public PIDAngleController(
       double absoluteTolerance,
-      @Nullable edu.wpi.first.math.filter.Debouncer onTargetBuffer,
+      @Nullable frc.team449.other.Debouncer onTargetBuffer,
       double minimumOutput,
       @Nullable Double maximumOutput,
       @Nullable Integer loopTimeMillis,
@@ -153,7 +153,7 @@ public class PIDAngleController implements Loggable {
     if (onTargetBuffer == null) {
       return pidController.atSetpoint();
     } else {
-      return onTargetBuffer.calculate(pidController.atSetpoint());
+      return onTargetBuffer.get(pidController.atSetpoint());
     }
   }
 

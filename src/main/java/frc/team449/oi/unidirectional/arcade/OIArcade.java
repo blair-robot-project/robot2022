@@ -36,7 +36,7 @@ public abstract class OIArcade implements OIUnidirectional {
   @Override
   @Log
   public boolean commandingStraight() {
-    return getFwdRotOutputCached().getFirst() == 0;
+    return getFwdRotOutputCached().getFirst() == 0.0;
   }
 
   /**

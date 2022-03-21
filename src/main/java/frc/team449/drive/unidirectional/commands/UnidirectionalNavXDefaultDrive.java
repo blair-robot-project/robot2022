@@ -1,13 +1,14 @@
 package frc.team449.drive.unidirectional.commands;
 
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.oi.RampComponent;
 import frc.team449.oi.unidirectional.OIUnidirectional;
+import frc.team449.other.Debouncer;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -81,6 +82,10 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
     // Logging, but in Spanish.
     Shuffleboard.addEventMarker(
         "Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
+
+    SmartDashboard.putData("UnidirectionalNavXDefaultDrive", builder -> {
+      builder.addBooleanProperty("drivingStraight", () -> drivingStraight, x -> {});
+    });
   }
 
   /** Initialize PIDController and variables. */
@@ -107,7 +112,7 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
       this.drivingStraight = false;
     }
     // If we're free driving and the driver stops turning:
-    else if (this.driveStraightLoopEntryTimer.calculate(
+    else if (this.driveStraightLoopEntryTimer.get(
         !(this.subsystem.getOverrideGyro())
             && !(this.drivingStraight)
             && this.oi.commandingStraight()
@@ -121,7 +126,6 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
     }
 
     // Update the controller with the current heading
-    // Why exactly this line is necessary is beyond me
     controller.getOutput(subsystem.getAHRS().getCachedHeading());
     // Get the outputs
     double leftOutput = this.oi.getLeftOutputCached();
@@ -133,12 +137,9 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
     }
 
     // If we're driving straight..
-    double processedOutput;
-    double finalOutput;
     if (this.drivingStraight) {
-      // Process the output (minimumOutput, deadband, etc.)
-      processedOutput = controller.getOutput(subsystem.getAHRS().getCachedHeading());
-
+      double processedOutput = controller.getOutput(subsystem.getAHRS().getCachedHeading());
+      double finalOutput;
       // Deadband if we're stationary
       if (leftOutput == 0 && rightOutput == 0) {
         finalOutput = controller.deadbandOutput(processedOutput);
@@ -182,10 +183,5 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
         this.getClass().getSimpleName(),
         EventImportance.kNormal);
     // Logger.addEvent("UnidirectionalNavXArcadeDrive End.", this.getClass());
-  }
-
-  // @Log
-  public boolean isDrivingStraight() {
-    return this.drivingStraight;
   }
 }

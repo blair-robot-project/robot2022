@@ -1,6 +1,6 @@
 package frc.team449.ahrs;
 
-import edu.wpi.first.math.filter.Debouncer;
+import frc.team449.other.Debouncer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
