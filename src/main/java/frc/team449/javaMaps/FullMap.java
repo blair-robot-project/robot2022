@@ -2,9 +2,7 @@ package frc.team449.javaMaps;
 
 import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,9 +13,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
@@ -73,24 +69,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class FullMap {
-  // Motor IDs
-  public static final int RIGHT_LEADER_PORT = 1,
-      RIGHT_LEADER_FOLLOWER_1_PORT = 11,
-      RIGHT_LEADER_FOLLOWER_2_PORT = 7,
-      LEFT_LEADER_PORT = 2,
-      LEFT_LEADER_FOLLOWER_1_PORT = 4,
-      LEFT_LEADER_FOLLOWER_2_PORT = 3,
-      INTAKE_LEADER_PORT = 8,
-      INTAKE_FOLLOWER_PORT = 10,
-      SPITTER_PORT = 9,
-      RIGHT_CLIMBER_MOTOR_PORT = 6,
-      LEFT_CLIMBER_MOTOR_PORT = 5,
-      LEFT_EXTERNAL_FWD_PORT = 6,
-      LEFT_EXTERNAL_REV_PORT = 7,
-      RIGHT_EXTERNAL_FWD_PORT = 4,
-      RIGHT_EXTERNAL_REV_PORT = 5;
+import static frc.team449.robot2022.DriveConstants.*;
+import static frc.team449.robot2022.cargo.CargoConstants.*;
+import static frc.team449.robot2022.climber.ClimberConstants.*;
 
+public class FullMap {
   // Other CAN IDs
   public static final int PDP_CAN = 1, PCM_MODULE = 0;
   // Controller ports
@@ -100,55 +83,7 @@ public class FullMap {
   // Limelight
   public static final int DRIVER_PIPELINE = 0, BLUE_PIPELINE = 1, RED_PIPELINE = 2;
   // Speeds
-  public static final double INTAKE_SPEED = 0.75, SPITTER_SPEED = 0.45;
   public static final double AUTO_MAX_SPEED = 2, AUTO_MAX_ACCEL = .4;
-  // Drive constants
-  public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
-  public static final double DRIVE_GEARING = 1; // 5.86;
-  public static final int DRIVE_ENCODER_CPR = 256;
-  public static final int DRIVE_CURRENT_LIM = 40;
-  public static final double DRIVE_UPR = 0.3021211527151539;
-  public static final double DRIVE_KP_VEL = .0, // 27.2,
-      DRIVE_KI_VEL = 0.0,
-      DRIVE_KD_VEL = 0.0,
-      DRIVE_FF_KS = 0.20835,
-      DRIVE_FF_KV = 2.4401,
-      DRIVE_FF_KA = 0.3523;
-  // todo actually use these feedforward values
-  public static final double DRIVE_ANGLE_FF_KS = 0.20112,
-      DRIVE_ANGLE_FF_KV = 10.58, // 171.58,
-      DRIVE_ANGLE_FF_KA = 22.755,
-      DRIVE_ANGLE_KP = 0.006, // 221.18
-      DRIVE_ANGLE_KI = 0,
-      DRIVE_ANGLE_KD = 0.03;
-  // old value from measuring from the outside of the wheel: 0.6492875
-  // measuring from the inside of the wheel : .57785
-  public static final double DRIVE_TRACK_WIDTH = 0.61401; // 0.6492875;
-  // Ramping
-  public static final double RAMP_INCREASE = 0.9, RAMP_DECREASE = 0.7;
-  // Climber
-  public static final int CLIMBER_PISTON_FWD_CHANNEL = 1, CLIMBER_PISTON_REV_CHANNEL = 0;
-  public static final int CLIMBER_LEFT_SENSOR_CHANNEL = 1, CLIMBER_RIGHT_SENSOR_CHANNEL = 0;
-  // todo find out what the sensor ports are
-  public static final double CLIMBER_MAX_VEL = 0.1, CLIMBER_MAX_ACCEL = 0.1;
-  public static final double CLIMBER_EXTEND_VEL = 0.4, CLIMBER_RETRACT_VEL = -0.5;
-  public static final double CLIMBER_DISTANCE = 1.8, CLIMBER_MID_DISTANCE = 1.67;
-  public static final double CLIMBER_DIFFERENTIATION_HEIGHT = 0.5;
-  public static final double CLIMBER_KP = 500; // 600;
-  public static final double CLIMBER_FF_KS = 0,
-      CLIMBER_FF_KV = 0,
-      CLIMBER_FF_KA = 0,
-      CLIMBER_FF_KG = 0;
-  public static final double CLIMBER_LEFT_UPR = 0.239, // 0.1778,
-      CLIMBER_RIGHT_UPR = 0.239; // 0.2286;
-  // How close the arm gets to the limits before climber joystick starts rumbling
-  public static final double CLIMBER_RUMBLE_TOLERANCE = 0.1;
-  /** Whether the hall effect sensors are plugged in */
-  public static final boolean CLIMBER_HAS_SENSORS = true;
-
-  // Intake
-  public static final int INTAKE_PISTON_FWD_CHANNEL = 3, INTAKE_PISTON_REV_CHANNEL = 2;
-  public static final int INTAKE_CURR_LIM = 20;
 
   private FullMap() {}
 
@@ -325,9 +260,6 @@ public class FullMap {
             .setPostEncoderGearing(27)
             .setEnableBrakeMode(true);
 
-    var climberConstraints = new TrapezoidProfile.Constraints(CLIMBER_MAX_VEL, CLIMBER_MAX_ACCEL);
-    var climberFeedforward =
-        new ElevatorFeedforward(CLIMBER_FF_KS, CLIMBER_FF_KG, CLIMBER_FF_KV, CLIMBER_FF_KA);
     var leftArm =
         new ClimberArm(
             armPrototype
@@ -337,8 +269,6 @@ public class FullMap {
                 .setUnitPerRotation(CLIMBER_LEFT_UPR)
                 .setReverseOutput(true)
                 .createReal(),
-            new ProfiledPIDController(CLIMBER_KP, 0, 0, climberConstraints),
-            climberFeedforward,
             CLIMBER_DIFFERENTIATION_HEIGHT,
             CLIMBER_MID_DISTANCE,
             RobotBase.isReal() && CLIMBER_HAS_SENSORS
@@ -353,8 +283,6 @@ public class FullMap {
                 .setUnitPerRotation(CLIMBER_RIGHT_UPR)
                 .setReverseOutput(false)
                 .createReal(),
-            new ProfiledPIDController(CLIMBER_KP, 0, 0, climberConstraints),
-            climberFeedforward,
             CLIMBER_DIFFERENTIATION_HEIGHT,
             CLIMBER_MID_DISTANCE,
             RobotBase.isReal() && CLIMBER_HAS_SENSORS
@@ -625,7 +553,6 @@ public class FullMap {
 
     List<Command> teleopStartupCommands =
         List.of(
-            new InstantCommand(climber::disable),
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
             new InstantCommand(cargo::stop),
             climberRumbleCommand,

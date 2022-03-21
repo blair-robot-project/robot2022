@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.motor.WrappedMotor;
 import frc.team449.multiSubsystem.BooleanSupplierUpdatable;
 import io.github.oblarg.oblog.Loggable;
@@ -17,20 +18,16 @@ import java.util.function.BooleanSupplier;
  * then it determines whether the arm is at the bottom or mid climb height limit, and resets its
  * motor's encoder's position based on that
  */
-public class ClimberArm extends ProfiledPIDSubsystem implements Loggable {
+public class ClimberArm extends SubsystemBase implements Loggable {
   private final @NotNull WrappedMotor motor;
-  private final @NotNull ElevatorFeedforward feedforward;
   private final @NotNull BooleanSupplierUpdatable hallSensor;
   private final double sensorDifferentiationHeight;
   private final double midClimbLimit;
   private double prevOutput = 0.0;
-  @Log.ToString private @NotNull PivotingTelescopingClimber.ClimberState state =
-      PivotingTelescopingClimber.ClimberState.BOTTOM;
+  @Log.ToString private @NotNull ClimberArm.ClimberState state = ClimberState.BOTTOM;
 
   /**
    * @param motor Winch motor used for retracting/extending arm
-   * @param controller Profiled PID controller used for controlling this arm. Unused currently
-   * @param feedforward Feedforward
    * @param sensorDifferentiationHeight If the arm is above this height and the hall sensor is on,
    *     the arm is considered to be at the mid climb height limit. If the arm is below this height
    *     and the hall effect sensor is on, the arm is considered to be at the bottom
@@ -40,14 +37,10 @@ public class ClimberArm extends ProfiledPIDSubsystem implements Loggable {
    */
   public ClimberArm(
       @NotNull WrappedMotor motor,
-      @NotNull ProfiledPIDController controller,
-      @NotNull ElevatorFeedforward feedforward,
       double sensorDifferentiationHeight,
       double midClimbLimit,
       @NotNull BooleanSupplier hallSensor) {
-    super(controller);
     this.motor = motor;
-    this.feedforward = feedforward;
     this.sensorDifferentiationHeight = sensorDifferentiationHeight;
     this.midClimbLimit = midClimbLimit;
     this.hallSensor = new BooleanSupplierUpdatable(hallSensor, null);
@@ -56,69 +49,75 @@ public class ClimberArm extends ProfiledPIDSubsystem implements Loggable {
   /** Whether this arm's reached the bottom. Based on encoder position */
   @Log
   public boolean reachedBottom() {
-    return state == PivotingTelescopingClimber.ClimberState.BOTTOM;
+    return state == ClimberState.BOTTOM;
   }
 
   /** Whether this arm's reached the mid climb height limit. Based on encoder position */
   @Log
   public boolean reachedMidLimit() {
-    return state == PivotingTelescopingClimber.ClimberState.MID_LIMIT
-        || state == PivotingTelescopingClimber.ClimberState.ABOVE_MID;
-  }
-
-  @Override
-  protected void useOutput(double output, TrapezoidProfile.State setpoint) {
-    this.motor.setVoltage(output + feedforward.calculate(setpoint.velocity));
-  }
-
-  @Override
-  public double getMeasurement() {
-    return this.motor.getPositionUnits();
-  }
-
-  public void stop() {
-    this.getController().reset(getMeasurement());
+    return state == ClimberState.MID_LIMIT || state == ClimberState.ABOVE_MID;
   }
 
   @Override
   public void periodic() {
     super.periodic();
 
+    var sensorOn = hallSensor.getAsBoolean();
+    switch (this.state) {
+      case BOTTOM:
+        if (!sensorOn) {
+          this.state = ClimberState.BETWEEN;
+        }
+        break;
+      case BETWEEN:
+        if (sensorOn) {
+          this.state = prevOutput < 0 ? ClimberState.BOTTOM : ClimberState.MID_LIMIT;
+        }
+        break;
+      case MID_LIMIT:
+        if (!sensorOn) {
+          this.state = prevOutput < 0 ? ClimberState.BETWEEN : ClimberState.ABOVE_MID;
+        }
+        break;
+      case ABOVE_MID:
+        if (sensorOn) {
+          this.state = ClimberState.MID_LIMIT;
+        }
+    }
+
     // Reset encoder position based on the Hall effect sensors
-    if (this.hallSensor.getAsBoolean()) {
-      if (state == PivotingTelescopingClimber.ClimberState.BETWEEN) {
-        if (prevOutput > 0) {
-          this.state = PivotingTelescopingClimber.ClimberState.MID_LIMIT;
-        } else {
-          this.state = PivotingTelescopingClimber.ClimberState.BOTTOM;
-        }
-      } else if (state == PivotingTelescopingClimber.ClimberState.ABOVE_MID) {
-        if (prevOutput < 0) {
-          this.state = PivotingTelescopingClimber.ClimberState.MID_LIMIT;
-        }
-      }
-    } else {
-      if (state == PivotingTelescopingClimber.ClimberState.BOTTOM) {
-        if (prevOutput > 0) {
-          this.state = PivotingTelescopingClimber.ClimberState.BETWEEN;
-        }
-      } else if (state == PivotingTelescopingClimber.ClimberState.MID_LIMIT) {
-        if (prevOutput < 0) {
-          this.state = PivotingTelescopingClimber.ClimberState.BETWEEN;
-        } else {
-          this.state = PivotingTelescopingClimber.ClimberState.ABOVE_MID;
-        }
-      }
+    if (this.state == ClimberState.BOTTOM) {
+      motor.encoder.resetPosition(0);
+    } else if (this.state == ClimberState.MID_LIMIT) {
+      motor.encoder.resetPosition(midClimbLimit);
     }
   }
 
-  public void set(double velocity) {
-    this.motor.set(velocity);
-    this.prevOutput = velocity;
+  public void set(double output) {
+    this.motor.set(output);
+    this.prevOutput = output;
+  }
+
+  public double getHeight() {
+    return motor.getPositionUnits();
   }
 
   @Override
   public String configureLogName() {
     return "ClimberArm" + motor.configureLogName();
+  }
+
+  public enum ClimberState {
+    /** Bottom position */
+    BOTTOM,
+    /** Between the bottom and mid climb limit */
+    BETWEEN,
+    /** Mid climb height limit */
+    MID_LIMIT,
+    /**
+     * Somewhere above the mid climb height limit (should only be when doing high climb (climber is
+     * not stowed))
+     */
+    ABOVE_MID
   }
 }

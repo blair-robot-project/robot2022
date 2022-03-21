@@ -1,8 +1,6 @@
 package frc.team449.robot2022.climber;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -17,9 +15,6 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
   final @NotNull ClimberArm rightArm;
   final @NotNull ClimberArm leftArm;
   private final @NotNull DoubleSolenoid pivotPiston;
-  private @NotNull ClimberState state;
-  /** The current goal */
-  private double goal;
 
   /**
    * @param leftArm Climber's left arm
@@ -38,48 +33,6 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
     this.pivotPiston = pivotPiston;
     this.distanceTopBottom = distanceTopBottom;
     this.midDistance = midDistance;
-    // Start arm retracted
-    this.state = ClimberState.BETWEEN;
-    this.goal = 0;
-  }
-
-  @Log.ToString
-  @NotNull
-  public ClimberState getState() {
-    return state;
-  }
-
-  public void setState(@NotNull ClimberState state) {
-    this.state = state;
-  }
-
-  @Log
-  public double getGoal() {
-    return goal;
-  }
-
-  public void setGoal(double goal) {
-    if (goal < 0) {
-      goal = 0;
-      Shuffleboard.addEventMarker(
-          "Tried setting climber goal below 0, clipping", EventImportance.kLow);
-    } else if (goal > this.distanceTopBottom) {
-      goal = this.distanceTopBottom;
-      Shuffleboard.addEventMarker(
-          "Tried setting climber goal above " + distanceTopBottom + ", clipping",
-          EventImportance.kLow);
-    }
-    this.goal = goal;
-    this.leftArm.setGoal(goal);
-    this.rightArm.setGoal(goal);
-  }
-
-  public void hold() {
-    leftArm.getController().reset(leftArm.getMeasurement());
-    rightArm.getController().reset(rightArm.getMeasurement());
-    leftArm.setGoal(leftArm.getMeasurement());
-    rightArm.setGoal(rightArm.getMeasurement());
-    this.enable();
   }
 
   public void pivotTelescopingArmOut() {
@@ -127,49 +80,11 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
 
     leftArm.set(leftVel);
     rightArm.set(rightVel);
-
   }
 
   /** Whether the arms are vertical */
   @Log
   public boolean isStowed() {
     return pivotPiston.get() == DoubleSolenoid.Value.kForward;
-  }
-
-  public void enable() {
-    this.leftArm.enable();
-    this.rightArm.enable();
-  }
-
-  public void disable() {
-    this.leftArm.disable();
-    this.rightArm.disable();
-  }
-
-  public void stop() {
-    this.leftArm.stop();
-    this.rightArm.stop();
-  }
-
-  /** Clear the previous goal and go to this one */
-  public void reset(double goal) {
-    this.leftArm.getController().reset(this.leftArm.getMeasurement());
-    this.rightArm.getController().reset(this.rightArm.getMeasurement());
-    this.leftArm.setGoal(goal);
-    this.rightArm.setGoal(goal);
-
-    this.goal = goal;
-    System.out.println("resetting to goal " + goal);
-  }
-
-  public boolean atGoal() {
-    return this.leftArm.getController().atGoal() && this.rightArm.getController().atGoal();
-  }
-
-  public enum ClimberState {
-    BOTTOM,
-    BETWEEN,
-    MID_LIMIT,
-    ABOVE_MID
   }
 }

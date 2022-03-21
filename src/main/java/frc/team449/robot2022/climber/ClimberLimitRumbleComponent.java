@@ -28,8 +28,8 @@ public class ClimberLimitRumbleComponent implements RumbleComponent {
 
   @Override
   public Pair<Double, Double> getOutput() {
-    var leftDist = climber.leftArm.getMeasurement();
-    var rightDist = climber.rightArm.getMeasurement();
+    var leftDist = climber.leftArm.getHeight();
+    var rightDist = climber.rightArm.getHeight();
 
     // Check the height limit depending on whether it's in mid climb (stowed) or high
     // climb
