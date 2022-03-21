@@ -2,13 +2,15 @@ package frc.team449.other;
 
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.LinkedList;
 
 /** Debouncer that takes the average of the samples in a limited-length buffer. */
 public class DebouncerEx implements Loggable {
   private final double bufferSize;
   private final boolean stateWhenTied;
-  @Log.ToString private final LinkedList<Boolean> buffer;
+  @Log.ToString @NotNull private final LinkedList<@NotNull Boolean> buffer = new LinkedList<>();
   @Log private int bufferSum;
 
   /**
@@ -21,7 +23,6 @@ public class DebouncerEx implements Loggable {
   public DebouncerEx(final int bufferSize, final boolean stateWhenTied) {
     this.bufferSize = bufferSize;
     this.stateWhenTied = stateWhenTied;
-    this.buffer = new LinkedList<>();
   }
 
   public DebouncerEx(final int bufferSize) {
@@ -33,7 +34,7 @@ public class DebouncerEx implements Loggable {
     this.bufferSum += currentState ? 1 : -1;
 
     if (this.buffer.size() > this.bufferSize) {
-      this.bufferSum -= Boolean.TRUE.equals(buffer.removeLast()) ? 1 : -1;
+      this.bufferSum -= buffer.removeLast() ? 1 : -1;
     }
   }
 

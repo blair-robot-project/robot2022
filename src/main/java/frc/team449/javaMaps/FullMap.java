@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -17,7 +18,16 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -46,7 +56,6 @@ import frc.team449.oi.throttles.ThrottlePolynomialBuilder;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.throttles.ThrottleWithRamp;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
-import frc.team449.other.Debouncer;
 import frc.team449.other.FollowerUtils;
 import frc.team449.robot2022.cargo.Cargo2022;
 import frc.team449.robot2022.cargo.IntakeLimelightRumbleComponent;
@@ -109,7 +118,7 @@ public class FullMap {
   public static final double DRIVE_ANGLE_FF_KS = 0.20112,
       DRIVE_ANGLE_FF_KV = 10.58, // 171.58,
       DRIVE_ANGLE_FF_KA = 22.755,
-      DRIVE_ANGLE_KP = 0.004, // 221.18
+      DRIVE_ANGLE_KP = 0.006, // 221.18
       DRIVE_ANGLE_KI = 0,
       DRIVE_ANGLE_KD = 0.03;
   // old value from measuring from the outside of the wheel: 0.6492875
@@ -417,14 +426,14 @@ public class FullMap {
             .drivetrain(drive)
             .anglePID(
                 new PIDAngleControllerBuilder()
-                    .absoluteTolerance(0.5)
+                    .absoluteTolerance(0.001)
                     .onTargetBuffer(null)
                     .minimumOutput(0)
                     .maximumOutput(null)
                     .loopTimeMillis(20)
-                    .deadband(0.05)
+                    .deadband(2)
                     .inverted(false)
-                    .pid(.002, 0, 0)
+                    .pid(.006, 0, 0.03)
                     .build())
             .angleTimeout(0)
             .field(null);

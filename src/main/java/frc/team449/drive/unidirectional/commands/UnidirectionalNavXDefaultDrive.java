@@ -1,5 +1,6 @@
 package frc.team449.drive.unidirectional.commands;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -7,7 +8,6 @@ import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.oi.RampComponent;
 import frc.team449.oi.unidirectional.OIUnidirectional;
-import frc.team449.other.Debouncer;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -107,11 +107,12 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
       this.drivingStraight = false;
     }
     // If we're free driving and the driver stops turning:
-    else if (this.driveStraightLoopEntryTimer.get(
+    else if (this.driveStraightLoopEntryTimer.calculate(
         !(this.subsystem.getOverrideGyro())
             && !(this.drivingStraight)
             && this.oi.commandingStraight()
-            && Math.abs(this.subsystem.getAHRS().getCachedAngularVelocity()) <= this.maxAngularVelToEnterLoop)) {
+            && Math.abs(this.subsystem.getAHRS().getCachedAngularVelocity())
+                <= this.maxAngularVelToEnterLoop)) {
       // Switch to driving straight
       this.drivingStraight = true;
       // Set the setpoint to the current heading and reset the AHRS
