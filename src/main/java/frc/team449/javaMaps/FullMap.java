@@ -413,7 +413,7 @@ public class FullMap {
         twoBallTraj(
             drive,
             cargo,
-            ramsetePrototype.copy().name("hangar_two_ball_auto").field(field).angleTimeout(0),
+            ramsetePrototype.copy().name("hangar_two_ball_auto").field(null).angleTimeout(0),
             pose(6.06, 5.13, 136.40),
             pose(5.33, 5.87, 134.37),
             pose(6.76, 4.05, 180 - 41));

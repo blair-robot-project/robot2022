@@ -97,5 +97,7 @@ wrapper {
     gradleVersion = '7.3.2'
 }
 
-compileJava.options.compilerArgs.add '-parameters'
-compileJava.options.compilerArgs.add '-Xlint'
+compileJava {
+    options.compilerArgs += ['-parameters', '-Xlint']
+    options.incremental = true
+}
