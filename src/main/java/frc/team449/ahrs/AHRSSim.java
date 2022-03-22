@@ -2,6 +2,7 @@ package frc.team449.ahrs;
 
 import edu.wpi.first.hal.SimBoolean;
 import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +47,7 @@ public class AHRSSim extends AHRS {
     this.linearWorldAccelX = deviceSim.getDouble("LinearWorldAccelX");
     this.linearWorldAccelY = deviceSim.getDouble("LinearWorldAccelY");
     this.linearWorldAccelZ = deviceSim.getDouble("LinearWorldAccelZ");
-    setHeading(0);
+    setHeading(new Rotation2d());
   }
 
   /**

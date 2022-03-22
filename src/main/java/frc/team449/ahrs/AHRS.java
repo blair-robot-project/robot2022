@@ -1,5 +1,6 @@
 package frc.team449.ahrs;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
@@ -42,7 +43,7 @@ public class AHRS implements Updatable, Loggable {
     } else {
       this.ahrs = new com.kauailabs.navx.frc.AHRS(port, kProcessedData, (byte) 100);
     }
-    setHeading(0);
+    setHeading(new Rotation2d());
     if (invertYaw) {
       this.invertYaw = -1;
     } else {
@@ -87,12 +88,20 @@ public class AHRS implements Updatable, Loggable {
   }
 
   /**
+   * Get the heading as a Rotation2d object
+   */
+  @NotNull
+  public Rotation2d getRotation() {
+    return Rotation2d.fromDegrees(this.getCachedHeading());
+  }
+
+  /**
    * Set the current yaw value.
    *
-   * @param headingDegrees An angle in degrees, from [-180, 180], to set the heading to.
+   * @param headingDegrees An angle to set the heading to.
    */
-  public void setHeading(final double headingDegrees) {
-    ahrs.setAngleAdjustment(headingDegrees);
+  public void setHeading(@NotNull Rotation2d headingDegrees) {
+    ahrs.setAngleAdjustment(headingDegrees.getDegrees());
   }
 
   /**

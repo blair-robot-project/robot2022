@@ -9,5 +9,5 @@ public interface DriveSubsystem extends Subsystem {
   void fullStop();
 
   /** Reset the position of the drive if it has encoders. */
-  void resetPosition();
+  void resetEncoders();
 }

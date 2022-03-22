@@ -37,7 +37,6 @@ public class DriveUnidirectionalBase extends SubsystemBase
     this.leftMaster = leftMaster;
     this.rightMaster = rightMaster;
     this.settings = settings;
-    Updater.subscribe(this);
   }
 
   @Override
@@ -48,7 +47,7 @@ public class DriveUnidirectionalBase extends SubsystemBase
 
   /** Reset the position of the drive if it has encoders. */
   @Override
-  public void resetPosition() {
+  public void resetEncoders() {
     this.leftMaster.encoder.resetPosition(0);
     this.rightMaster.encoder.resetPosition(0);
   }
@@ -130,7 +129,7 @@ public class DriveUnidirectionalBase extends SubsystemBase
 
   /** Updates all cached values with current ones. */
   @Override
-  public void update() {
+  public void periodic() {
     this.cachedLeftVel = this.getLeftVel();
     this.cachedLeftPos = this.getLeftPos();
     this.cachedRightVel = this.getRightVel();

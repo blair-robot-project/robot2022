@@ -7,12 +7,11 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import frc.team449.ahrs.AHRS;
 import frc.team449.drive.DriveSettings;
-import frc.team449.updatable.Updatable;
 import frc.team449.motor.WrappedMotor;
 import frc.team449.other.Clock;
 import org.jetbrains.annotations.NotNull;
 
-public class DriveUnidirectionalWithGyroSim extends DriveUnidirectionalWithGyro implements Updatable {
+public class DriveUnidirectionalWithGyroSim extends DriveUnidirectionalWithGyro {
   private final @NotNull DifferentialDrivetrainSim driveSim;
   private final @NotNull EncoderSim leftEncSim;
   private final @NotNull EncoderSim rightEncSim;
@@ -73,12 +72,6 @@ public class DriveUnidirectionalWithGyroSim extends DriveUnidirectionalWithGyro 
   }
 
   @Override
-  public void periodic() {
-    this.update();
-    super.periodic();
-  }
-
-  @Override
   public void resetOdometry(Pose2d pose) {
     driveSim.setPose(pose);
     super.resetOdometry(pose);
@@ -96,15 +89,17 @@ public class DriveUnidirectionalWithGyroSim extends DriveUnidirectionalWithGyro 
   }
 
   @Override
-  public void update() {
+  public void periodic() {
     var currTime = Clock.currentTimeSeconds();
     driveSim.update(currTime - this.lastTime);
     leftEncSim.setDistance(driveSim.getLeftPositionMeters());
     leftEncSim.setRate(driveSim.getLeftVelocityMetersPerSecond());
     rightEncSim.setDistance(driveSim.getRightPositionMeters());
     rightEncSim.setRate(driveSim.getRightVelocityMetersPerSecond());
-    ahrs.setHeading(driveSim.getHeading().getDegrees());
+    ahrs.setHeading(driveSim.getHeading());
 
     this.lastTime = currTime;
+
+    super.periodic();
   }
 }

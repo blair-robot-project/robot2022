@@ -1,8 +1,6 @@
 package frc.team449.drive.unidirectional;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -48,8 +46,7 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
     this.ahrs = ahrs;
     this.overrideGyro = false;
     this.driveKinematics = new DifferentialDriveKinematics(driveSettings.trackWidth);
-    this.driveOdometry =
-        new DifferentialDriveOdometry(Rotation2d.fromDegrees(this.ahrs.getHeading()));
+    this.driveOdometry = new DifferentialDriveOdometry(this.ahrs.getRotation());
   }
 
   /**
@@ -83,6 +80,7 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
 
   @Override
   public void periodic() {
+    super.periodic();
     updateOdometry();
   }
 
@@ -123,16 +121,13 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
   /** Reset odometry tracker to current robot pose */
   @Log
   public void resetOdometry(final Pose2d pose) {
-    resetPosition();
-    ahrs.setHeading(pose.getRotation().getDegrees());
-    driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.ahrs.getHeading()));
+    resetEncoders();
+    driveOdometry.resetPosition(pose, this.ahrs.getRotation());
   }
 
   /** Update odometry tracker with current heading, and encoder readings */
   public void updateOdometry() {
-    // need to convert to meters
-    this.driveOdometry.update(
-        Rotation2d.fromDegrees(this.ahrs.getHeading()), this.getLeftPos(), this.getRightPos());
+    this.driveOdometry.update(this.ahrs.getRotation(), this.getLeftPos(), this.getRightPos());
   }
 
   /**
@@ -143,7 +138,7 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
   public Pose2d getCurrentPose() {
     return this.driveOdometry.getPoseMeters() != null
         ? this.driveOdometry.getPoseMeters()
-        : new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
+        : new Pose2d();
   }
 
   /**
