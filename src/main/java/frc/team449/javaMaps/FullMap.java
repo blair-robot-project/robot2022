@@ -543,7 +543,7 @@ public class FullMap {
         List.of(
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
             new InstantCommand(cargo::stop),
-            climberRumbleCommand,
+//            climberRumbleCommand,
             intakeLimelightRumbleCommand);
 
     List<Command> testStartupCommands = List.of();
