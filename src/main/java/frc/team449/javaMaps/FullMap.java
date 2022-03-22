@@ -97,8 +97,8 @@ public class FullMap {
 
     var intakeLimelightRumbleCommand =
         new RumbleCommand(
-            List.of(cargoJoystick),
-            new IntakeLimelightRumbleComponent(limelight, BLUE_PIPELINE, RED_PIPELINE));
+            new IntakeLimelightRumbleComponent(limelight, BLUE_PIPELINE, RED_PIPELINE),
+            cargoJoystick);
 
     var driveMasterPrototype =
         new SparkMaxConfig()
@@ -336,8 +336,7 @@ public class FullMap {
     // Rumbling increases linearly.
     var climberRumbleCommand =
         new RumbleCommand(
-            List.of(climberJoystick),
-            new ClimberLimitRumbleComponent(climber, CLIMBER_RUMBLE_TOLERANCE));
+            new ClimberLimitRumbleComponent(climber, CLIMBER_RUMBLE_TOLERANCE), climberJoystick);
 
     var ramsetePrototype =
         new RamseteBuilder()
