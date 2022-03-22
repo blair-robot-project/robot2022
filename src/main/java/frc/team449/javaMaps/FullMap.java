@@ -261,6 +261,7 @@ public class FullMap {
                 .createReal(),
             CLIMBER_DIFFERENTIATION_HEIGHT,
             CLIMBER_MID_DISTANCE,
+            CLIMBER_DISTANCE,
             RobotBase.isReal() && CLIMBER_HAS_SENSORS
                 ? new DigitalInput(CLIMBER_LEFT_SENSOR_CHANNEL)::get
                 : () -> false);
@@ -275,6 +276,7 @@ public class FullMap {
                 .createReal(),
             CLIMBER_DIFFERENTIATION_HEIGHT,
             CLIMBER_MID_DISTANCE,
+            CLIMBER_DISTANCE,
             RobotBase.isReal() && CLIMBER_HAS_SENSORS
                 ? new DigitalInput(CLIMBER_RIGHT_SENSOR_CHANNEL)::get
                 : () -> false);

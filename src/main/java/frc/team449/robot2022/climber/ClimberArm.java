@@ -19,6 +19,7 @@ public class ClimberArm extends SubsystemBase implements Loggable {
   private final @NotNull BooleanSupplierUpdatable hallSensor;
   private final double sensorDifferentiationHeight;
   private final double midClimbLimit;
+  private final double topLimit;
   private double prevOutput = 0.0;
   @Log.ToString private @NotNull ClimberArm.ClimberState state = ClimberState.BOTTOM;
 
@@ -28,6 +29,7 @@ public class ClimberArm extends SubsystemBase implements Loggable {
    *     the arm is considered to be at the mid climb height limit. If the arm is below this height
    *     and the hall effect sensor is on, the arm is considered to be at the bottom
    * @param midClimbLimit The height limit for mid climb
+   * @param topLimit The distance to the hard stop
    * @param hallSensor Hall effect sensor to determine if the climber is at either the bottom or mid
    *     climb height limit
    */
@@ -35,23 +37,33 @@ public class ClimberArm extends SubsystemBase implements Loggable {
       @NotNull WrappedMotor motor,
       double sensorDifferentiationHeight,
       double midClimbLimit,
+      double topLimit,
       @NotNull BooleanSupplier hallSensor) {
     this.motor = motor;
     this.sensorDifferentiationHeight = sensorDifferentiationHeight;
     this.midClimbLimit = midClimbLimit;
+    this.topLimit = topLimit;
     this.hallSensor = new BooleanSupplierUpdatable(hallSensor, null);
   }
 
-  /** Whether this arm's reached the bottom. Based on encoder position */
+  /** Whether this arm's reached the bottom. */
   @Log
   public boolean reachedBottom() {
     return state == ClimberState.BOTTOM;
   }
 
-  /** Whether this arm's reached the mid climb height limit. Based on encoder position */
+  /** Whether this arm's at or above the mid climb height limit. */
   @Log
   public boolean reachedMidLimit() {
-    return state == ClimberState.MID_LIMIT || state == ClimberState.ABOVE_MID;
+    return state == ClimberState.MID_LIMIT
+        || state == ClimberState.ABOVE_MID
+        || state == ClimberState.TOP;
+  }
+
+  /** Whether this arm's reached the absolute top. */
+  @Log
+  public boolean reachedTop() {
+    return state == ClimberState.TOP;
   }
 
   @Override
@@ -62,22 +74,27 @@ public class ClimberArm extends SubsystemBase implements Loggable {
     switch (this.state) {
       case BOTTOM:
         if (!sensorOn) {
-          this.state = ClimberState.BETWEEN;
+          this.state = ClimberState.BELOW_MID;
         }
         break;
-      case BETWEEN:
+      case BELOW_MID:
         if (sensorOn) {
           this.state = prevOutput < 0 ? ClimberState.BOTTOM : ClimberState.MID_LIMIT;
         }
         break;
       case MID_LIMIT:
         if (!sensorOn) {
-          this.state = prevOutput < 0 ? ClimberState.BETWEEN : ClimberState.ABOVE_MID;
+          this.state = prevOutput < 0 ? ClimberState.BELOW_MID : ClimberState.ABOVE_MID;
         }
         break;
       case ABOVE_MID:
         if (sensorOn) {
           this.state = ClimberState.MID_LIMIT;
+        }
+        break;
+      case TOP:
+        if (!sensorOn) {
+          this.state = ClimberState.ABOVE_MID;
         }
     }
 
@@ -86,6 +103,8 @@ public class ClimberArm extends SubsystemBase implements Loggable {
       motor.encoder.resetPosition(0);
     } else if (this.state == ClimberState.MID_LIMIT) {
       motor.encoder.resetPosition(midClimbLimit);
+    } else if (this.state == ClimberState.TOP) {
+      motor.encoder.resetPosition(topLimit);
     }
   }
 
@@ -107,13 +126,15 @@ public class ClimberArm extends SubsystemBase implements Loggable {
     /** Bottom position */
     BOTTOM,
     /** Between the bottom and mid climb limit */
-    BETWEEN,
+    BELOW_MID,
     /** Mid climb height limit */
     MID_LIMIT,
     /**
      * Somewhere above the mid climb height limit (should only be when doing high climb (climber is
      * not stowed))
      */
-    ABOVE_MID
+    ABOVE_MID,
+    /** At the height limit for high/traversal climb */
+    TOP
   }
 }
