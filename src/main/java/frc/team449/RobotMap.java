@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team449.motor.MotorContainer;
 import frc.team449.wrappers.PDP;
+import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,15 +15,17 @@ import java.util.List;
 public class RobotMap {
   @SuppressWarnings("FieldCanBeLocal")
   @NotNull
-  private final List<Subsystem> subsystems;
+  private final List<? extends Subsystem> subsystems;
 
   @NotNull private final MotorContainer motors = MotorContainer.getInstance();
 
   @NotNull private final CommandContainer commands;
 
   @SuppressWarnings("FieldCanBeLocal")
-  @NotNull
-  private final PDP pdp;
+  @NotNull private final List<? extends Loggable> loggables;
+
+  @SuppressWarnings("FieldCanBeLocal")
+  @NotNull private final PDP pdp;
 
   /** Whether the camera server should be run. */
   private final boolean useCameraServer;
@@ -33,17 +36,20 @@ public class RobotMap {
    * @param subsystems The robot's subsystems.
    * @param pdp The PDP
    * @param commands A container to hold all of the robot's commands.
+   * @param loggables Other loggables with their own tab
    * @param useCameraServer Whether the camera server should be run. Defaults to false.
    */
   public RobotMap(
-      @NotNull List<Subsystem> subsystems,
+      @NotNull List<? extends Subsystem> subsystems,
       @NotNull PDP pdp,
       @NotNull CommandContainer commands,
+      @NotNull List<? extends Loggable> loggables,
       boolean useCameraServer) {
     this.pdp = pdp;
     this.useCameraServer = useCameraServer;
     this.subsystems = subsystems;
     this.commands = commands;
+    this.loggables = loggables;
   }
 
   /** @return The commands to be run when first enabled in autonomous mode. */

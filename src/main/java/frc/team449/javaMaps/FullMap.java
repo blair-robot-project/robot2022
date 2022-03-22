@@ -4,6 +4,7 @@ import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -42,7 +43,6 @@ import frc.team449.oi.throttles.ThrottlePolynomialBuilder;
 import frc.team449.oi.throttles.ThrottleSum;
 import frc.team449.oi.throttles.ThrottleWithRamp;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
-import frc.team449.other.Debouncer;
 import frc.team449.other.FollowerUtils;
 import frc.team449.robot2022.cargo.Cargo2022;
 import frc.team449.robot2022.cargo.IntakeLimelightRumbleComponent;
@@ -290,7 +290,7 @@ public class FullMap {
             leftArm, rightArm, pivotPiston, CLIMBER_DISTANCE, CLIMBER_MID_DISTANCE);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
-    var subsystems = List.<Subsystem>of(drive, cargo, climber);
+    var subsystems = List.of(drive, cargo, climber);
 
     SmartDashboard.putData("Intake deploy piston: ", new InstantCommand(cargo::deployIntake));
     SmartDashboard.putData("Intake retract piston: ", new InstantCommand(cargo::retractIntake));
@@ -550,7 +550,9 @@ public class FullMap {
         new CommandContainer(
             robotStartupCommands, autoStartupCommands, teleopStartupCommands, testStartupCommands);
 
-    return new RobotMap(subsystems, pdp, allCommands, false);
+    var otherLoggables = List.of(driveDefaultCmd);
+
+    return new RobotMap(subsystems, pdp, allCommands, otherLoggables, false);
   }
 
   @NotNull

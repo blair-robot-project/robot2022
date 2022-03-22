@@ -68,11 +68,11 @@ public class AHRSSim extends AHRS {
   }
 
   @Override
-  public void setHeading(double headingDegrees) {
+  public void setHeading(@NotNull Rotation2d heading) {
     // todo this is kind of a hack to get around yaw being unitialized
     //   when super() calls setHeading(0)
     if (yaw != null) {
-      yaw.set(headingDegrees * invertYaw);
+      yaw.set(heading.getDegrees() * invertYaw);
     }
   }
 

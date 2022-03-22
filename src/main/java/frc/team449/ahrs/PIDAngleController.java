@@ -1,7 +1,8 @@
 package frc.team449.ahrs;
 
 import edu.wpi.first.math.controller.PIDController;
-import frc.team449.other.Debouncer;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.wpilibj.Sendable;
 import frc.team449.other.Util;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PIDAngleController implements Loggable {
   /** On-board PID controller */
-  @Log @NotNull protected final PIDController pidController;
+  @NotNull protected final PIDController pidController;
 
   /** The minimum the robot should be able to output, to overcome friction. */
   private final double minimumOutput;
@@ -55,7 +56,7 @@ public class PIDAngleController implements Loggable {
    */
   public PIDAngleController(
       double absoluteTolerance,
-      @Nullable frc.team449.other.Debouncer onTargetBuffer,
+      @Nullable Debouncer onTargetBuffer,
       double minimumOutput,
       @Nullable Double maximumOutput,
       @Nullable Integer loopTimeMillis,
@@ -153,7 +154,7 @@ public class PIDAngleController implements Loggable {
     if (onTargetBuffer == null) {
       return pidController.atSetpoint();
     } else {
-      return onTargetBuffer.get(pidController.atSetpoint());
+      return onTargetBuffer.calculate(pidController.atSetpoint());
     }
   }
 
