@@ -22,17 +22,16 @@ import java.util.List;
  */
 public final class BraindeadAutoCommand {
   /**
-   * @param drive
+   * @param drive Drivetrain to execute command on
    * @param reversed Whether to go backwards
    * @param output Number in range [0, 1] (not [-1, 1]) representing portion of voltage to use for
    *     {@link DriveDistanceCommand}
-   * @param pidAngleController
+   * @param pidAngleController Controller used to turn in place to angle
    * @param turnToAngleTimeout Timeout in seconds for the {@link NavXTurnToAngle} commands to turn
    *     in place.
-   * @param startPose
-   * @param endPose
-   * @param waypoints
-   * @return
+   * @param startPose Starting pose
+   * @param endPose Ending pose
+   * @param waypoints Places to hit on the way
    */
   @Contract("_, _, _, _, _, _, _, _ -> new")
   @NotNull

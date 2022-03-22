@@ -29,11 +29,11 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase implements
   @Log private double desiredLeftVoltage;
   @Log private double desiredRightVoltage;
   /**
-   * @param drivetrain
+   * @param drivetrain Drivetrain to execute command on
    * @param leftController Velocity PID controller to use for the left side
    * @param rightController Velocity PID controller to use for the right side
    * @param trajectory Trajectory to follow
-   * @param feedforward
+   * @param feedforward Feedforward used for both sides
    */
   public RamseteControllerUnidirectionalDrive(
       @NotNull DriveUnidirectionalWithGyro drivetrain,

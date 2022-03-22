@@ -5,7 +5,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.drive.DriveSettings;
 import frc.team449.motor.WrappedMotor;
-import frc.team449.updatable.Updater;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,55 +63,61 @@ public class DriveUnidirectionalBase extends SubsystemBase
     this.rightMaster.set(right);
   }
 
-  @NotNull
   @Override
-  public Double getLeftVel() {
+  public double getLeftVel() {
     return this.leftMaster.encoder.getVelocityUnits();
   }
 
-  @NotNull
   @Override
-  public Double getRightVel() {
+  public double getRightVel() {
     return this.rightMaster.encoder.getVelocityUnits();
   }
 
-  @NotNull
   @Override
-  public Double getLeftPos() {
+  public double getLeftPos() {
     return this.leftMaster.encoder.getPositionUnits();
   }
 
-  @NotNull
   @Override
-  public Double getRightPos() {
+  public double getRightPos() {
     return this.rightMaster.encoder.getPositionUnits();
   }
 
-  @NotNull
   @Override
-  public Double getLeftVelCached() {
+  public double getLeftVelCached() {
+    if (Double.isNaN(this.cachedLeftVel)) {
+      this.cachedLeftVel = this.getLeftVel();
+    }
     return this.cachedLeftVel;
   }
 
-  @NotNull
   @Override
-  public Double getRightVelCached() {
+  public double getRightVelCached() {
+    if (Double.isNaN(this.cachedRightVel)) {
+      this.cachedRightVel = this.getRightVel();
+    }
     return this.cachedRightVel;
   }
 
-  @NotNull
   @Override
-  public Double getLeftPosCached() {
+  public double getLeftPosCached() {
+    if (Double.isNaN(this.cachedLeftPos)) {
+      this.cachedLeftPos = this.getLeftPos();
+    }
     return this.cachedLeftPos;
   }
 
-  @NotNull
   @Override
-  public Double getRightPosCached() {
+  public double getRightPosCached() {
+    if (Double.isNaN(this.cachedRightPos)) {
+      this.cachedRightPos = this.getRightPos();
+    }
     return this.cachedRightPos;
   }
 
-  /** @return The feedforward calculator for left motors */
+  /**
+   * @return The feedforward calculator for left motors
+   */
   public SimpleMotorFeedforward getFeedforward() {
     return settings.feedforward;
   }

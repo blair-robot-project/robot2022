@@ -1,9 +1,5 @@
 package frc.team449.robot2022.climber;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.motor.WrappedMotor;
 import frc.team449.multiSubsystem.BooleanSupplierUpdatable;

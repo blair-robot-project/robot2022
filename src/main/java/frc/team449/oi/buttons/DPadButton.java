@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import org.jetbrains.annotations.NotNull;
 
 /** A Button triggered by pushing the D-pad to a specific angle. */
-public class dPadButton extends Button {
+public class DPadButton extends Button {
 
   /**
    * The angle that the D-pad must be pushed to to trigger this button. 0 degrees is probably
@@ -22,7 +22,7 @@ public class dPadButton extends Button {
    * @param joystick The joystick with the D-pad.
    * @param angle The angle that the D-pad must be pushed to to trigger this button.
    */
-  public dPadButton(@NotNull final GenericHID joystick, final int angle) {
+  public DPadButton(@NotNull final GenericHID joystick, final int angle) {
     this.angle = angle;
     this.joystick = joystick;
   }

@@ -22,62 +22,54 @@ public interface DriveUnidirectional extends DriveSubsystem {
    *
    * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
-  @Nullable
-  Double getLeftVel();
+  double getLeftVel();
 
   /**
    * Get the velocity of the right side of the drive.
    *
    * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
-  @Nullable
-  Double getRightVel();
+  double getRightVel();
 
   /**
    * Get the position of the left side of the drive.
    *
    * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
-  @Nullable
-  Double getLeftPos();
+  double getLeftPos();
 
   /**
    * Get the position of the right side of the drive.
    *
    * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
-  @Nullable
-  Double getRightPos();
+  double getRightPos();
 
   /**
    * Get the cached velocity of the left side of the drive.
    *
    * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
-  @Nullable
-  Double getLeftVelCached();
+  double getLeftVelCached();
 
   /**
    * Get the cached velocity of the right side of the drive.
    *
    * @return The signed velocity in meters per second, or null if the drive doesn't have encoders.
    */
-  @Nullable
-  Double getRightVelCached();
+  double getRightVelCached();
 
   /**
    * Get the cached position of the left side of the drive.
    *
    * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
-  @Nullable
-  Double getLeftPosCached();
+  double getLeftPosCached();
 
   /**
    * Get the cached position of the right side of the drive.
    *
    * @return The signed position in meters, or null if the drive doesn't have encoders.
    */
-  @Nullable
-  Double getRightPosCached();
+  double getRightPosCached();
 }

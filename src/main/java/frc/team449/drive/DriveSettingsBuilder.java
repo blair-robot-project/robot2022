@@ -10,18 +10,6 @@ public final class DriveSettingsBuilder {
   private PIDController rightVelPID;
   private Double trackWidth;
 
-  public DriveSettingsBuilder copy() {
-    var copy =
-        new DriveSettingsBuilder()
-            .feedforward(feedforward)
-            .leftVelPID(leftVelPID)
-            .rightVelPID(rightVelPID);
-    if (this.trackWidth != null) {
-      copy.trackWidth(this.trackWidth);
-    }
-    return copy;
-  }
-
   @NotNull
   public DriveSettings build() {
     return new DriveSettings(

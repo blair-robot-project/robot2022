@@ -2,7 +2,6 @@ package frc.team449.ahrs;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.wpilibj.Sendable;
 import frc.team449.other.Util;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;

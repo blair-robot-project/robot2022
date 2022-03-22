@@ -3,7 +3,6 @@ package frc.team449.drive.unidirectional.commands;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
@@ -40,7 +39,7 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
    */
   @Nullable private final DoubleUnaryOperator leftRamp, rightRamp;
   /** Whether or not we should be using the NavX to drive straight stably. */
-  private boolean drivingStraight;
+  @Log private boolean drivingStraight;
   /** Controller to calculate how much to turn */
   @NotNull private final PIDAngleController controller;
 
@@ -82,10 +81,6 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
     // Logging, but in Spanish.
     Shuffleboard.addEventMarker(
         "Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
-
-    SmartDashboard.putData("UnidirectionalNavXDefaultDrive", builder -> {
-      builder.addBooleanProperty("drivingStraight", () -> drivingStraight, x -> {});
-    });
   }
 
   /** Initialize PIDController and variables. */

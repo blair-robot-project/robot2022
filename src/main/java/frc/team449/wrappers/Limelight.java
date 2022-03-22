@@ -133,22 +133,29 @@ public class Limelight extends SubsystemBase implements Loggable {
 
   /**
    * Determine the X distance to the base of a target
+   *
    * @param targetHeight The height of the target
    * @param limelightHeight The height of the Limelight itself
    * @param limelightAngle The mounting angle above the horizontal of the Limelight, in degrees
    */
   public double getDistance(double targetHeight, double limelightHeight, double limelightAngle) {
-    return (targetHeight - limelightHeight) / Math.tan(Math.toRadians(limelightAngle + this.getY()));
+    return (targetHeight - limelightHeight)
+        / Math.tan(Math.toRadians(limelightAngle + this.getY()));
   }
 
   /**
    * Determine the distance to a target (the length of the hypotenuse, not the base)
+   *
    * @param targetHeight The height of the target
    * @param limelightHeight The height of the Limelight itself
    * @param limelightAngleRight The mounting angle to the right of the robot front, in degrees
    * @param limelightAngleUp The mounting angle above the horizontal of the limelight, in degrees
    */
-  public double getDiagonalDistance(double targetHeight, double limelightHeight, double limelightAngleRight, double limelightAngleUp) {
+  public double getDiagonalDistance(
+      double targetHeight,
+      double limelightHeight,
+      double limelightAngleRight,
+      double limelightAngleUp) {
     var baseLength = getDistance(targetHeight, limelightHeight, limelightAngleUp);
     return baseLength * Math.cos(Math.toRadians(limelightAngleRight + this.getX()));
   }
@@ -272,6 +279,15 @@ public class Limelight extends SubsystemBase implements Loggable {
   @Log
   public double getRoll() {
     return roll;
+  }
+
+  /**
+   * Set camera mode
+   *
+   * @param visionProcessor {@code true} if vision processor, {@code false} if driver camera
+   */
+  public void setCamMode(boolean visionProcessor) {
+    camModeSet.setNumber(visionProcessor ? 0 : 1);
   }
 
   public void setLedMode(@NotNull LedMode ledMode) {
