@@ -57,6 +57,24 @@ public interface OIUnidirectional extends OI {
   @NotNull Pair<Double, Double> getFwdRotOutputCached();
 
   /**
+   * The cached forwards movement given to the drive.
+   *
+   * @return The forwards output, from [-1, 1]
+   */
+  default double getFwdOutputCached() {
+    return getFwdRotOutputCached().getFirst();
+  }
+
+  /**
+   * The cached rotational movement given to the drive.
+   *
+   * @return The forwards output, from [-1, 1]
+   */
+  default double getRotOutputCached() {
+    return getFwdRotOutputCached().getSecond();
+  }
+
+  /**
    * Whether the driver is trying to drive straight.
    *
    * @return True if the driver is trying to drive straight, false otherwise.

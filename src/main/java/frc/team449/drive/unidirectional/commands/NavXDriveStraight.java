@@ -51,9 +51,7 @@ public class NavXDriveStraight extends CommandBase {
     double output = controller.getOutput(drive.getAHRS().getCachedHeading());
 
     // Set throttle to the specified stick.
-    drive.setOutput(
-        oi.getLeftRightOutputCached().getFirst() - output,
-        oi.getLeftRightOutputCached().getSecond() + output);
+    drive.setOutput(oi.getLeftOutputCached() - output, oi.getRightOutputCached() + output);
   }
 
   /**

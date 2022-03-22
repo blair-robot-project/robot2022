@@ -149,10 +149,8 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
 
       // Adjust the heading according to the PID output, it'll be positive if we want to go right.
       this.subsystem.setOutput(leftOutput - finalOutput, rightOutput + finalOutput);
-    }
-    // If we're free driving...
-    else {
-      // Set the throttle to normal arcade throttle.
+    } else {
+      // If we're free driving, set the throttle to normal arcade throttle.
       this.subsystem.setOutput(leftOutput, rightOutput);
     }
   }

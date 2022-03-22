@@ -36,7 +36,7 @@ public abstract class OIArcade implements OIUnidirectional {
   @Override
   @Log
   public boolean commandingStraight() {
-    return getFwdRotOutputCached().getFirst() == 0.0;
+    return getRotOutputCached() == 0;
   }
 
   /**
@@ -52,8 +52,6 @@ public abstract class OIArcade implements OIUnidirectional {
     // Unscaled, unclipped values for left and right output.
     final double tmpLeft = fwdRotOutputCached.getFirst() + fwdRotOutputCached.getSecond();
     final double tmpRight = fwdRotOutputCached.getFirst() - fwdRotOutputCached.getSecond();
-//    System.out.println("Left : " + tmpLeft + " Right : " + tmpRight);
-//    if (tmpLeft != 0 || tmpRight != 0) System.out.println("tmpleft=" + tmpLeft + ", tmpRight=" + tmpRight);
 
     // If left is too large
     if (Math.abs(tmpLeft) > 1) {

@@ -111,9 +111,7 @@ public class OIOutreach implements OIUnidirectional {
   @Override
   @Log
   public boolean commandingStraight() {
-    return this.getLeftRightOutputCached()
-        .getFirst()
-        .equals(this.getLeftRightOutputCached().getSecond());
+    return this.getLeftOutputCached() == this.getRightOutputCached();
   }
 
   /** Updates all cached values with current ones. */
