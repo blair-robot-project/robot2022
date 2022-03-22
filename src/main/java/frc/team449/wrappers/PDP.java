@@ -98,11 +98,6 @@ public class PDP implements Loggable, Updatable {
     return voltagePerCurrentLinReg == null ? null : unloadedVoltage;
   }
 
-  @Log
-  public double channel0Current() {
-    return this.PDP.getCurrent(0);
-  }
-
   /** Updates all cached values with current ones. */
   @Override
   public void update() {
