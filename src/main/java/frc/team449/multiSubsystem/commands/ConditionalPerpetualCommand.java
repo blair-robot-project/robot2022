@@ -2,7 +2,7 @@ package frc.team449.multiSubsystem.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import frc.team449.multiSubsystem.BooleanSupplierUpdatable;
+import frc.team449.updatable.Cached;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +42,7 @@ public final class ConditionalPerpetualCommand {
    * <p>The condition is not monitored while a command is being run as a result of a change.
    */
   public static Command createConditionalPerpetualCommandChangeBased(
-      @NotNull BooleanSupplierUpdatable booleanSupplier,
+      @NotNull Cached<Boolean> booleanSupplier,
       @Nullable Command afterBecomingTrue,
       @Nullable Command afterBecomingFalse) {
     // The command to run when the condition changes.
@@ -50,7 +50,7 @@ public final class ConditionalPerpetualCommand {
         new ConditionalCommand(
             Objects.requireNonNullElse(afterBecomingTrue, PlaceholderCommand.getInstance()),
             Objects.requireNonNullElse(afterBecomingFalse, PlaceholderCommand.getInstance()),
-            booleanSupplier);
+            booleanSupplier::get);
 
     // A supplier that tests for whether the condition has changed.
     var supplier =
@@ -61,7 +61,7 @@ public final class ConditionalPerpetualCommand {
           public boolean getAsBoolean() {
             booleanSupplier.update();
 
-            boolean current = booleanSupplier.getAsBoolean();
+            boolean current = booleanSupplier.get();
             boolean stateChanged = current != this.lastState;
             this.lastState = current;
             return stateChanged;
