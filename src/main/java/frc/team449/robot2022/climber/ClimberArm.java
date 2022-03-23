@@ -2,7 +2,6 @@ package frc.team449.robot2022.climber;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.motor.WrappedMotor;
-import frc.team449.multiSubsystem.BooleanSupplierUpdatable;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +15,7 @@ import java.util.function.BooleanSupplier;
  */
 public class ClimberArm extends SubsystemBase implements Loggable {
   private final @NotNull WrappedMotor motor;
-  private final @NotNull BooleanSupplierUpdatable hallSensor;
+  private final @NotNull BooleanSupplier hallSensor;
   private final double sensorDifferentiationHeight;
   private final double midClimbLimit;
   private final double topLimit;
@@ -43,7 +42,7 @@ public class ClimberArm extends SubsystemBase implements Loggable {
     this.sensorDifferentiationHeight = sensorDifferentiationHeight;
     this.midClimbLimit = midClimbLimit;
     this.topLimit = topLimit;
-    this.hallSensor = new BooleanSupplierUpdatable(hallSensor, null);
+    this.hallSensor = hallSensor;
   }
 
   /** Whether this arm's reached the bottom. */
@@ -52,24 +51,15 @@ public class ClimberArm extends SubsystemBase implements Loggable {
     return state == ClimberState.BOTTOM;
   }
 
-  /** Whether this arm's at or above the mid climb height limit. */
-  @Log
-  public boolean reachedMidLimit() {
-    return state == ClimberState.MID_LIMIT
-        || state == ClimberState.ABOVE_MID
-        || state == ClimberState.TOP;
-  }
-
-  /** Whether this arm's reached the absolute top. */
-  @Log
-  public boolean reachedTop() {
-    return state == ClimberState.TOP;
+  /**
+   * Whether the arm is below the given state
+   */
+  public boolean belowState(@NotNull ClimberState state) {
+    return this.state.compareTo(state) < 0;
   }
 
   @Override
   public void periodic() {
-    super.periodic();
-
     var sensorOn = hallSensor.getAsBoolean();
     switch (this.state) {
       case BOTTOM:
@@ -89,7 +79,7 @@ public class ClimberArm extends SubsystemBase implements Loggable {
         break;
       case ABOVE_MID:
         if (sensorOn) {
-          this.state = ClimberState.MID_LIMIT;
+          this.state = prevOutput < 0 ? ClimberState.MID_LIMIT : ClimberState.TOP;
         }
         break;
       case TOP:

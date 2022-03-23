@@ -58,25 +58,25 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
     double leftVel = velocity;
     double rightVel = velocity;
 
-//    if (velocity <= 0) {
-//      // Don't move further down when already at the bottom
-//      if (leftArm.reachedBottom()) {
-//        leftVel = 0;
-//      }
-//      if (rightArm.reachedBottom()) {
-//        rightVel = 0;
-//      }
-//    } else if (this.isStowed()) {
-//      // During mid climb, don't move further up when already at the mid climb height limit
-//      if (leftArm.reachedMidLimit()) {
-//        System.out.println("Left arm stowed and reached mid limit");
-//        leftVel = 0;
-//      }
-//      if (rightArm.reachedMidLimit()) {
-//        System.out.println("Right arm stowed and reached mid limit");
-//        rightVel = 0;
-//      }
-//    }
+    if (velocity <= 0) {
+      // Don't move further down when already at the bottom
+      if (leftArm.reachedBottom()) {
+        leftVel = 0;
+      }
+      if (rightArm.reachedBottom()) {
+        rightVel = 0;
+      }
+    } else {
+      var topLimit =
+          this.isStowed() ? ClimberArm.ClimberState.MID_LIMIT : ClimberArm.ClimberState.TOP;
+      // During mid climb, don't move further up when already at the mid or high height limit
+      if (!leftArm.belowState(topLimit)) {
+        leftVel = 0;
+      }
+      if (!leftArm.belowState(topLimit)) {
+        rightVel = 0;
+      }
+    }
 
     leftArm.set(leftVel);
     rightArm.set(rightVel);
