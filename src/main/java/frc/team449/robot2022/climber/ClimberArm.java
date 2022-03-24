@@ -60,7 +60,7 @@ public class ClimberArm extends SubsystemBase implements Loggable {
 
   @Override
   public void periodic() {
-    var sensorOn = hallSensor.getAsBoolean();
+    var sensorOn = this.sensorOn();
     switch (this.state) {
       case BOTTOM:
         if (!sensorOn) {
@@ -110,6 +110,14 @@ public class ClimberArm extends SubsystemBase implements Loggable {
   @Override
   public String configureLogName() {
     return "ClimberArm" + motor.configureLogName();
+  }
+
+  /**
+   * Inverted because WPILib is stupid
+   */
+  @Log
+  private boolean sensorOn() {
+    return !this.hallSensor.getAsBoolean();
   }
 
   public enum ClimberState {

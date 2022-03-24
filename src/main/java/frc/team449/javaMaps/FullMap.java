@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449.ahrs.AHRS;
@@ -318,20 +319,28 @@ public class FullMap {
     new JoystickButton(cargoJoystick, XboxController.Button.kB.value)
         .whileHeld(cargo::runIntakeReverse, cargo)
         .whenReleased(cargo::stop);
-    // Extend Climber
+    // Extend Climber override
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)
+        .whileHeld(() -> climber.setRaw(CLIMBER_EXTEND_VEL), climber)
+        .whenReleased(() -> climber.setRaw(0), climber);
+    // Retract climber override
+    new JoystickButton(climberJoystick, XboxController.Button.kA.value)
+        .whileHeld(() -> climber.setRaw(CLIMBER_RETRACT_VEL), climber)
+        .whenReleased(() -> climber.setRaw(0), climber);
+    // Extend Climber
+    new POVButton(climberJoystick, 0)
         .whileHeld(() -> climber.set(CLIMBER_EXTEND_VEL), climber)
         .whenReleased(() -> climber.set(0), climber);
     // Retract climber
-    new JoystickButton(climberJoystick, XboxController.Button.kA.value)
+    new POVButton(climberJoystick, 180)
         .whileHeld(() -> climber.set(CLIMBER_RETRACT_VEL), climber)
         .whenReleased(() -> climber.set(0), climber);
     // Pivot climber out
-    new JoystickButton(climberJoystick, XboxController.Button.kB.value)
+    new JoystickButton(climberJoystick, XboxController.Button.kX.value)
         .whenPressed(
             new InstantCommand(cargo::deployIntake).andThen(climber::pivotTelescopingArmOut));
     // Retract climber arm in with piston
-    new JoystickButton(climberJoystick, XboxController.Button.kX.value)
+    new JoystickButton(climberJoystick, XboxController.Button.kB.value)
         .whenPressed(climber::pivotTelescopingArmIn);
 
     // Rumbles the joystick when either arm gets within `CLIMBER_RUMBLE_THRESHOLD` of the limits.
@@ -543,7 +552,7 @@ public class FullMap {
         List.of(
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
             new InstantCommand(cargo::stop),
-//            climberRumbleCommand,
+            //            climberRumbleCommand,
             intakeLimelightRumbleCommand);
 
     List<Command> testStartupCommands = List.of();

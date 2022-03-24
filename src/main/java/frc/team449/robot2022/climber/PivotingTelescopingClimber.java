@@ -66,7 +66,7 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
       if (rightArm.reachedBottom()) {
         rightVel = 0;
       }
-    } else {
+    } /*else {
       var topLimit =
           this.isStowed() ? ClimberArm.ClimberState.MID_LIMIT : ClimberArm.ClimberState.TOP;
       // During mid climb, don't move further up when already at the mid or high height limit
@@ -76,10 +76,18 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
       if (!leftArm.belowState(topLimit)) {
         rightVel = 0;
       }
-    }
+    }*/
 
     leftArm.set(leftVel);
     rightArm.set(rightVel);
+  }
+
+  /**
+   * Set output for both arms without checking sensors
+   */
+  public void setRaw(double output) {
+    leftArm.set(output);
+    rightArm.set(output);
   }
 
   /** Whether the arms are vertical */

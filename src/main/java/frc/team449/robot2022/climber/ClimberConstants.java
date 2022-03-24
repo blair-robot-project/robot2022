@@ -6,7 +6,7 @@ public final class ClimberConstants {
   /** Solenoid channels */
   public static final int CLIMBER_PISTON_FWD_CHANNEL = 1, CLIMBER_PISTON_REV_CHANNEL = 0;
   /** Hall Effect sensor channels */
-  public static final int CLIMBER_LEFT_SENSOR_CHANNEL = 1, CLIMBER_RIGHT_SENSOR_CHANNEL = 0;
+  public static final int CLIMBER_LEFT_SENSOR_CHANNEL = 0, CLIMBER_RIGHT_SENSOR_CHANNEL = 1;
   /** Speeds at which to extend and retract arms */
   public static final double CLIMBER_EXTEND_VEL = 0.4, CLIMBER_RETRACT_VEL = -0.5;
   /** Height limit during high climb */
