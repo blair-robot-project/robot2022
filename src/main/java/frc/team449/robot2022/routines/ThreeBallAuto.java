@@ -17,6 +17,7 @@ public class ThreeBallAuto {
   public static final Pose2d start = StationTwoBallAuto.end;
   public static final Pose2d ball =
       new Pose2d(5.41, 1.76, Rotation2d.fromDegrees(133.92)); // 5.54, 2.24, 360 - 146.61
+  // new Pose2d(5.54, 2.06, Rotation2d.fromDegrees(-169.14));
   public static final Pose2d end = start;
 
   public static Command createCommand(

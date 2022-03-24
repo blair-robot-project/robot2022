@@ -23,7 +23,7 @@ public class DriveConstants {
   public static final int DRIVE_ENCODER_CPR = 256;
   public static final int DRIVE_CURRENT_LIM = 40;
   public static final double DRIVE_UPR = 0.3021211527151539;
-  public static final double DRIVE_KP_VEL = 0.02, // 27.2,
+  public static final double DRIVE_KP_VEL = 0.5, // 27.2,
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0.0,
       DRIVE_FF_KS = 0.20835,

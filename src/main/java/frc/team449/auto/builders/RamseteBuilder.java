@@ -3,7 +3,6 @@ package frc.team449.auto.builders;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.auto.commands.RamseteControllerUnidirectionalDrive;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
@@ -90,10 +89,7 @@ public final class RamseteBuilder {
 
     var lastPose = traj.getStates().get(traj.getStates().size() - 1).poseMeters;
 
-    var cmd =
-        new InstantCommand(() -> drivetrain.resetOdometry(traj.getInitialPose()))
-            .andThen(ramseteCmd)
-            .andThen(drivetrain::fullStop, drivetrain);
+    var cmd = ramseteCmd.andThen(drivetrain::fullStop, drivetrain);
     cmd.setName("Ramsete command");
 
     // If angleTimeout is nonzero, then we want to turn after the Ramsete command is over

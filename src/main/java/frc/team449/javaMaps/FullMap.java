@@ -50,6 +50,7 @@ import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.FiveBallAuto;
+import frc.team449.robot2022.routines.ThreeBallAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -74,7 +75,7 @@ public class FullMap {
   // Limelight
   public static final int DRIVER_PIPELINE = 0, BLUE_PIPELINE = 1, RED_PIPELINE = 2;
   // Speeds
-  public static final double AUTO_MAX_SPEED = 2, AUTO_MAX_ACCEL = .4;
+  public static final double AUTO_MAX_SPEED = 3.5, AUTO_MAX_ACCEL = 0.9;
 
   private FullMap() {}
 

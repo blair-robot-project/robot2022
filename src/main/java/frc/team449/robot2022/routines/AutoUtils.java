@@ -48,9 +48,8 @@ public final class AutoUtils {
     }
     return new InstantCommand(cargo::runIntake)
         .andThen(ramseteBuilder.copy().traj(toBall).build())
-        .andThen(new WaitCommand(1))
         .andThen(ramseteBuilder.copy().traj(fromBall).build())
         .andThen(new InstantCommand(cargo::spit))
-        .andThen(new WaitCommand(1));
+        .andThen(new WaitCommand(0.3));
   }
 }

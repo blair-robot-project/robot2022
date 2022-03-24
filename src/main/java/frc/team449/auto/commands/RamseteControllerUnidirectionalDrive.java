@@ -62,8 +62,8 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase implements
               "right vel",
               () -> rightController.getSetpoint() - rightController.getPositionError(),
               null);
-          builder.addDoubleProperty("left desired", () -> desiredLeftVoltage, x -> {});
-          builder.addDoubleProperty("right desired", () -> desiredRightVoltage, x -> {});
+          builder.addDoubleProperty("left desired", leftController::getSetpoint, x -> {});
+          builder.addDoubleProperty("right desired", rightController::getSetpoint, x -> {});
         });
   }
 
@@ -83,7 +83,7 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase implements
     leftController.reset();
     rightController.reset();
     drivetrain.resetOdometry(trajectory.getInitialPose());
-    ramseteFeedback.setEnabled(false);
+//    ramseteFeedback.setEnabled(false);
   }
 
   @Override

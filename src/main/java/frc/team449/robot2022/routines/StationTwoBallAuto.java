@@ -19,6 +19,7 @@ public class StationTwoBallAuto {
   public static final Pose2d ball =
       new Pose2d(7.45, 0.92, Rotation2d.fromDegrees(180 + 90)); // 7.55, 1.06
   public static final Pose2d end = new Pose2d(7.77, 2.86, Rotation2d.fromDegrees(180 + 73));
+  //          new Pose2d(7.53, 2.90, Rotation2d.fromDegrees(180 + 54.06));
 
   public static Command createCommand(
       @NotNull DriveUnidirectionalWithGyro drive,

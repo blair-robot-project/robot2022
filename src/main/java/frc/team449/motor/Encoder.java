@@ -191,7 +191,7 @@ public abstract class Encoder implements Loggable {
 
     @Override
     public void resetPosition(double pos) {
-      this.positionOffset = getPositionNative() - unitToEncoder(pos);
+      this.positionOffset = unitToEncoder(pos) - encoder.getDistance();
     }
 
     @Override
