@@ -1,18 +1,29 @@
 package frc.team449.motor.builder;
 
-import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.ControlFrame;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
-import frc.team449.other.FollowerUtils;
+import frc.team449.motor.BackupEncoder;
 import frc.team449.motor.Encoder;
 import frc.team449.motor.WrappedMotor;
+import frc.team449.other.FollowerUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /** Motor controller configuration, along with Talon-specific stuff */
 public class TalonConfig extends MotorConfig<TalonConfig> {
@@ -120,22 +131,40 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
     var externalEncoder = this.getExternalEncoder();
     var encoderName =
         this.getName() != null ? this.getName() + "_enc" : "talon_enc_" + this.getPort();
-    var wrappedEnc =
-        externalEncoder == null
-            ? new Encoder.TalonEncoder(
+    Encoder wrappedEnc;
+    if (externalEncoder == null) {
+      wrappedEnc =
+          new Encoder.TalonEncoder(
+              encoderName,
+              motor,
+              this.getEncoderCPR(),
+              this.getUnitPerRotation(),
+              this.getPostEncoderGearing(),
+              this.getCalculateVel());
+    } else {
+      var wpiEnc =
+          new Encoder.WPIEncoder(
+              encoderName,
+              externalEncoder,
+              this.getExtEncoderCPR(),
+              this.getUnitPerRotation(),
+              this.getCalculateVel());
+      if (!this.getUseInternalEncAsFallback()) {
+        wrappedEnc = wpiEnc;
+      } else {
+        var internalEnc =
+            new Encoder.TalonEncoder(
                 encoderName,
                 motor,
                 this.getEncoderCPR(),
                 this.getUnitPerRotation(),
                 this.getPostEncoderGearing(),
-                this.getCalculateVel())
-            : new Encoder.WPIEncoder(
-                encoderName,
-                externalEncoder,
-                this.getEncoderCPR(),
-                this.getUnitPerRotation(),
-                this.getPostEncoderGearing(),
                 this.getCalculateVel());
+        wrappedEnc =
+            new BackupEncoder(
+                wpiEnc, internalEnc, fallbackEncPosThreshold, fallbackEncVelThreshold);
+      }
+    }
 
     motor.setInverted(this.isReverseOutput());
     // Set brake mode

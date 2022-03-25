@@ -39,6 +39,18 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
   private boolean enableVoltageComp;
   private @Nullable Encoder externalEncoder;
   private boolean calculateVel = false;
+  /**
+   * The threshold for position before falling back to the internal encoder instead of the external
+   * encoder. Only used if {@link MotorConfig#useInternalEncAsFallback} is true
+   */
+  protected double fallbackEncPosThreshold = Double.POSITIVE_INFINITY;
+  /**
+   * The threshold for velocity before falling back to the internal encoder instead of the external
+   * encoder. Only used if {@link MotorConfig#useInternalEncAsFallback} is true
+   */
+  protected double fallbackEncVelThreshold = Double.POSITIVE_INFINITY;
+  private int extEncoderCPR = 1;
+  private boolean useInternalEncAsFallback = false;
 
   public int getPort() {
     return port;
@@ -121,7 +133,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     return (Self) this;
   }
 
-  /** The counts per rotation of the encoder being used, if applicable */
+  /** The counts per rotation of the integrated encoder being used, if applicable */
   public int getEncoderCPR() {
     return encoderCPR;
   }
@@ -131,10 +143,24 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     return (Self) this;
   }
 
+  /** The counts per rotation of the external encoder being used, if applicable */
+  public int getExtEncoderCPR() {
+    return extEncoderCPR;
+  }
+
+  public Self setExtEncoderCPR(int extEncoderCPR) {
+    this.extEncoderCPR = extEncoderCPR;
+    return (Self) this;
+  }
+
   public double getPostEncoderGearing() {
     return postEncoderGearing;
   }
 
+  /**
+   * Set the gearing after an integrated encoder makes its measurements. Not used for external
+   * encoders
+   */
   public Self setPostEncoderGearing(double postEncoderGearing) {
     this.postEncoderGearing = postEncoderGearing;
     return (Self) this;
@@ -205,6 +231,24 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     return (Self) this;
   }
 
+  public boolean getUseInternalEncAsFallback() {
+    return this.useInternalEncAsFallback;
+  }
+
+  /**
+   * Whether to use the internal encoder as a fallback if an external encoder is given. {@code
+   * false} by default
+   */
+  public Self setUseInternalEncAsFallback(
+      boolean useInternalEncAsFallback,
+      double fallbackEncPosThreshold,
+      double fallbackEncVelThreshold) {
+    this.useInternalEncAsFallback = useInternalEncAsFallback;
+    this.fallbackEncPosThreshold = fallbackEncPosThreshold;
+    this.fallbackEncVelThreshold = fallbackEncVelThreshold;
+    return (Self) this;
+  }
+
   /** Copy properties from this config to another config */
   protected final void copyTo(@NotNull MotorConfig<?> other) {
     other
@@ -217,6 +261,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
         .setFwdSoftLimit(fwdSoftLimit)
         .setRevSoftLimit(revSoftLimit)
         .setEncoderCPR(encoderCPR)
+        .setExtEncoderCPR(extEncoderCPR)
         .setPostEncoderGearing(postEncoderGearing)
         .setUnitPerRotation(unitPerRotation)
         .setRampRate(rampRate)
@@ -226,6 +271,9 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
 
     if (this.name != null) other.setName(name);
     if (this.externalEncoder != null) other.setExternalEncoder(externalEncoder);
+    if (this.useInternalEncAsFallback) {
+      other.setUseInternalEncAsFallback(true, fallbackEncPosThreshold, fallbackEncVelThreshold);
+    }
   }
 
   /**

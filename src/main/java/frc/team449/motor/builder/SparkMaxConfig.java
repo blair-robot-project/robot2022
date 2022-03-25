@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
+import frc.team449.motor.BackupEncoder;
 import frc.team449.motor.Encoder;
 import frc.team449.motor.WrappedMotor;
 import org.jetbrains.annotations.Contract;
@@ -84,21 +85,39 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
     var externalEncoder = this.getExternalEncoder();
     var encoderName =
         this.getName() != null ? this.getName() + "_enc" : "spark_enc_" + this.getPort();
-    var wrappedEnc =
-        externalEncoder == null
-            ? new Encoder.SparkEncoder(
+    Encoder wrappedEnc;
+    if (externalEncoder == null) {
+      wrappedEnc =
+          new Encoder.SparkEncoder(
+              encoderName,
+              motor.getEncoder(),
+              this.getUnitPerRotation(),
+              this.getPostEncoderGearing(),
+              this.getCalculateVel());
+    } else {
+      var wpiEnc =
+          new Encoder.WPIEncoder(
+              encoderName,
+              externalEncoder,
+              this.getExtEncoderCPR(),
+              this.getUnitPerRotation(),
+              this.getCalculateVel());
+      if (!this.getUseInternalEncAsFallback()) {
+        wrappedEnc = wpiEnc;
+      } else {
+        // todo reduce code duplication here
+        var internalEnc =
+            new Encoder.SparkEncoder(
                 encoderName,
                 motor.getEncoder(),
                 this.getUnitPerRotation(),
                 this.getPostEncoderGearing(),
-                this.getCalculateVel())
-            : new Encoder.WPIEncoder(
-                encoderName,
-                externalEncoder,
-                this.getEncoderCPR(),
-                this.getUnitPerRotation(),
-                this.getPostEncoderGearing(),
                 this.getCalculateVel());
+        wrappedEnc =
+            new BackupEncoder(
+                wpiEnc, internalEnc, fallbackEncPosThreshold, fallbackEncVelThreshold);
+      }
+    }
 
     motor.restoreFactoryDefaults();
 
