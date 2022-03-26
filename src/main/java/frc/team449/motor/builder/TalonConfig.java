@@ -144,7 +144,7 @@ public class TalonConfig extends MotorConfig<TalonConfig> {
     } else {
       var wpiEnc =
           new Encoder.WPIEncoder(
-              encoderName,
+              encoderName + "ext",
               externalEncoder,
               this.getExtEncoderCPR(),
               this.getUnitPerRotation(),

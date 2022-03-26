@@ -240,10 +240,9 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
    * false} by default
    */
   public Self setUseInternalEncAsFallback(
-      boolean useInternalEncAsFallback,
       double fallbackEncPosThreshold,
       double fallbackEncVelThreshold) {
-    this.useInternalEncAsFallback = useInternalEncAsFallback;
+    this.useInternalEncAsFallback = true;
     this.fallbackEncPosThreshold = fallbackEncPosThreshold;
     this.fallbackEncVelThreshold = fallbackEncVelThreshold;
     return (Self) this;
@@ -272,7 +271,7 @@ public abstract class MotorConfig<Self extends MotorConfig<Self>> {
     if (this.name != null) other.setName(name);
     if (this.externalEncoder != null) other.setExternalEncoder(externalEncoder);
     if (this.useInternalEncAsFallback) {
-      other.setUseInternalEncAsFallback(true, fallbackEncPosThreshold, fallbackEncVelThreshold);
+      other.setUseInternalEncAsFallback(fallbackEncPosThreshold, fallbackEncVelThreshold);
     }
   }
 

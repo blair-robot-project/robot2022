@@ -20,9 +20,9 @@ public class DriveConstants {
 
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
   public static final double DRIVE_GEARING = 5.86;
-  public static final int DRIVE_EXT_ENCODER_CPR = 256;
+  public static final int NEO_ENCODER_CPR = 42, DRIVE_EXT_ENCODER_CPR = 256;
   public static final int DRIVE_CURRENT_LIM = 40;
-  public static final double DRIVE_ENC_POS_THRESHOLD = 0.3, DRIVE_ENC_VEL_THRESHOLD = 0.4;
+  public static final double DRIVE_ENC_POS_THRESHOLD = 0.15, DRIVE_ENC_VEL_THRESHOLD = 0.1;
   public static final double DRIVE_UPR = 0.3021211527151539;
   public static final double DRIVE_KP_VEL = 0.5, // 27.2,
       DRIVE_KI_VEL = 0.0,
@@ -32,7 +32,7 @@ public class DriveConstants {
       DRIVE_FF_KA = 0.3523;
   // todo actually use these feedforward values
   public static final double DRIVE_ANGLE_FF_KS = 0.20112,
-      DRIVE_ANGLE_FF_KV = 3, // 171.58,
+      DRIVE_ANGLE_FF_KV = 8, // 171.58,
       DRIVE_ANGLE_FF_KA = 22.755,
       DRIVE_ANGLE_KP = 0.006, // 221.18
       DRIVE_ANGLE_KI = 0,

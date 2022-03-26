@@ -211,6 +211,7 @@ public abstract class Encoder implements Loggable {
     /**
      * @param name Motor name used for logging
      * @param encoder Actual encoder to wrap
+     * @param encoderCPR Counts per rotation
      * @param unitPerRotation Meters per rotation
      * @param postEncoderGearing Factor output is multiplied by after encoders. NOTE: This should be
      *     >1, not a reciprocal
@@ -218,10 +219,11 @@ public abstract class Encoder implements Loggable {
     public SparkEncoder(
         @NotNull String name,
         @NotNull RelativeEncoder encoder,
+        int encoderCPR,
         double unitPerRotation,
         double postEncoderGearing,
         boolean calculateVel) {
-      super(name, 1, unitPerRotation, postEncoderGearing, calculateVel);
+      super(name, encoderCPR, unitPerRotation, postEncoderGearing, calculateVel);
       this.encoder = encoder;
       this.resetPosition(0);
     }

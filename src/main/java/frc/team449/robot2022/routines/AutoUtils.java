@@ -1,6 +1,7 @@
 package frc.team449.robot2022.routines;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.spline.Spline;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -19,6 +20,10 @@ import java.util.function.Supplier;
 /** Helpers for auto */
 public final class AutoUtils {
   private AutoUtils() {}
+
+  public static Pose2d pose(double x, double y, double degs) {
+    return new Pose2d(x, y, Rotation2d.fromDegrees(degs));
+  }
 
   /**
    * Create an auto command that runs intake, goes to a ball, picks it up, comes back, and spits it

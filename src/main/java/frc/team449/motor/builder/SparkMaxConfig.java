@@ -91,13 +91,14 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
           new Encoder.SparkEncoder(
               encoderName,
               motor.getEncoder(),
+              this.getEncoderCPR(),
               this.getUnitPerRotation(),
               this.getPostEncoderGearing(),
               this.getCalculateVel());
     } else {
       var wpiEnc =
           new Encoder.WPIEncoder(
-              encoderName,
+              encoderName + "ext",
               externalEncoder,
               this.getExtEncoderCPR(),
               this.getUnitPerRotation(),
@@ -110,6 +111,7 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
             new Encoder.SparkEncoder(
                 encoderName,
                 motor.getEncoder(),
+                this.getEncoderCPR(),
                 this.getUnitPerRotation(),
                 this.getPostEncoderGearing(),
                 this.getCalculateVel());

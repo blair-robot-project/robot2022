@@ -1,5 +1,6 @@
 package frc.team449.motor;
 
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -18,14 +19,14 @@ public class BackupEncoder extends Encoder {
   private final double velThreshold;
 
   /** Whether the primary encoder's stopped working */
-  private boolean useFallback = false;
+  @Log private boolean useFallback = false;
 
   public BackupEncoder(
       @NotNull Encoder primary,
       @NotNull Encoder fallback,
       double posThreshold,
       double velThreshold) {
-    super(primary.configureLogName(), 1, 1, 1, false);
+    super(primary.configureLogName() + "_backup", 1, 1, 1, false);
 
     this.primary = primary;
     this.fallback = fallback;
@@ -72,12 +73,12 @@ public class BackupEncoder extends Encoder {
 
   @Override
   public double nativeToRPS(double nat) {
-    return currentEncoder().nativeToRPS(nat);
+    return nat; //currentEncoder().nativeToRPS(nat);
   }
 
   @Override
   public double rpsToNative(double rps) {
-    return currentEncoder().rpsToNative(rps);
+    return rps; //currentEncoder().rpsToNative(rps);
   }
 
   private Encoder currentEncoder() {

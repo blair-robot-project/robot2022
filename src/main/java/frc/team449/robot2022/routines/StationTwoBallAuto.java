@@ -19,7 +19,8 @@ public class StationTwoBallAuto {
       new Pose2d(7.54, 1.87, Rotation2d.fromDegrees(180 + 89.32)); // TODO later
   public static final Pose2d ball =
       new Pose2d(7.45, 0.92, Rotation2d.fromDegrees(180 + 90)); // 7.55, 1.06
-  public static final Pose2d end = new Pose2d(7.60, 3.01, Rotation2d.fromDegrees(180 + 73));
+  public static final Pose2d end = AutoUtils.pose(7.62, 2.58, -110.82);
+          //new Pose2d(7.60, 3.01, Rotation2d.fromDegrees(180 + 73));
   //          new Pose2d(7.53, 2.90, Rotation2d.fromDegrees(180 + 54.06));
 
   public static Command createCommand(

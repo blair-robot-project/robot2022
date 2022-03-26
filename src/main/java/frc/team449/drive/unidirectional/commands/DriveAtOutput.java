@@ -8,7 +8,7 @@ import frc.team449.other.Clock;
 import org.jetbrains.annotations.NotNull;
 
 /** Go at a certain velocity for a set number of seconds */
-public class DriveAtSpeed extends CommandBase {
+public class DriveAtOutput extends CommandBase {
 
   /** Speed to go at */
   private final double velocity;
@@ -26,13 +26,13 @@ public class DriveAtSpeed extends CommandBase {
    * Default constructor
    *
    * @param subsystem The drive to execute this command on
-   * @param velocity How fast to go, in RPS
+   * @param output How fast to go as a number from [-1, 1]
    * @param seconds How long to drive for.
    */
-  public DriveAtSpeed(@NotNull DriveUnidirectional subsystem, double velocity, double seconds) {
+  public DriveAtOutput(@NotNull DriveUnidirectional subsystem, double output, double seconds) {
     // Initialize stuff
     this.subsystem = subsystem;
-    this.velocity = velocity;
+    this.velocity = output;
     this.seconds = seconds;
     addRequirements(subsystem);
     Shuffleboard.addEventMarker(

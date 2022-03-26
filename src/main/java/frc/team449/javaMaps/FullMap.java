@@ -13,6 +13,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
@@ -32,7 +33,7 @@ import frc.team449.auto.builders.RamseteBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.drive.unidirectional.commands.DriveAtSpeed;
+import frc.team449.drive.unidirectional.commands.DriveAtOutput;
 import frc.team449.drive.unidirectional.commands.NavXTurnToAngle;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.motor.builder.SparkMaxConfig;
@@ -50,7 +51,7 @@ import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.AutoConstants;
-import frc.team449.robot2022.routines.FiveBallAuto;
+import frc.team449.robot2022.routines.StationTwoBallAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -106,9 +107,9 @@ public class FullMap {
             .setUnitPerRotation(DRIVE_UPR)
             .setCurrentLimit(DRIVE_CURRENT_LIM)
             .setPostEncoderGearing(DRIVE_GEARING)
-            .setEncoderCPR(1)
+            .setEncoderCPR(NEO_ENCODER_CPR)
             .setExtEncoderCPR(DRIVE_EXT_ENCODER_CPR)
-            .setUseInternalEncAsFallback(true, DRIVE_ENC_POS_THRESHOLD, DRIVE_ENC_VEL_THRESHOLD)
+            .setUseInternalEncAsFallback(DRIVE_ENC_POS_THRESHOLD, DRIVE_ENC_VEL_THRESHOLD)
             .setEnableVoltageComp(true);
 
     var driveSim =
@@ -502,15 +503,15 @@ public class FullMap {
         new InstantCommand(cargo::spit, cargo)
             .andThen(new WaitCommand(1))
             .andThen(cargo::stop, cargo)
-            .andThen(new DriveAtSpeed(drive, 0.13, 5));
+            .andThen(new DriveAtOutput(drive, 0.13, 5));
     var twoBallAuto =
         new InstantCommand(cargo::runIntake, cargo)
             .andThen(() -> drive.resetOdometry(pose(6.06, 5.13, 136.40)), drive)
             .andThen(cargo::deployIntake, cargo)
             .andThen(new WaitCommand(.4))
-            .andThen(new DriveAtSpeed(drive, .13, 2))
+            .andThen(new DriveAtOutput(drive, .13, 2))
             .andThen(new WaitCommand(.4))
-            .andThen(new DriveAtSpeed(drive, -.13, 4.4))
+            .andThen(new DriveAtOutput(drive, -.13, 4.4))
             .andThen(cargo::spit, cargo)
             .andThen(new WaitCommand(2))
             .andThen(cargo::stop, cargo)
@@ -541,16 +542,21 @@ public class FullMap {
                     new DifferentialDriveVoltageConstraint(
                         driveFeedforward,
                         drive.getDriveKinematics(),
-                        RobotController.getBatteryVoltage()));
+                        RobotController.getBatteryVoltage()))
+                .addConstraint(
+                    new CentripetalAccelerationConstraint(
+                        AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL));
     List<Command> autoStartupCommands =
         List.of(
-            FiveBallAuto.createCommand(drive, cargo, ramsetePrototype, trajConfig, field)
+            StationTwoBallAuto.createCommand(drive, cargo, ramsetePrototype, trajConfig, field)
+                .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
                 .andThen(cargo::stop, cargo));
 
     List<Command> robotStartupCommands = List.of();
 
     List<Command> teleopStartupCommands =
         List.of(
+
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
             new InstantCommand(cargo::stop, cargo),
             //            climberRumbleCommand,
