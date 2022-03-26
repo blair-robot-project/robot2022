@@ -16,6 +16,10 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
   final @NotNull ClimberArm leftArm;
   private final @NotNull DoubleSolenoid pivotPiston;
 
+  private final double extendOutput;
+  private final double retractOutputFast;
+  private final double retractOutputSlow;
+
   /**
    * @param leftArm Climber's left arm
    * @param rightArm Climber's right arm
@@ -27,12 +31,18 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
       @NotNull ClimberArm rightArm,
       @NotNull DoubleSolenoid pivotPiston,
       double distanceTopBottom,
-      double midDistance) {
+      double midDistance,
+      double extendOutput,
+      double retractOutputFast,
+      double retractOutputSlow) {
     this.leftArm = leftArm;
     this.rightArm = rightArm;
     this.pivotPiston = pivotPiston;
     this.distanceTopBottom = distanceTopBottom;
     this.midDistance = midDistance;
+    this.extendOutput = extendOutput;
+    this.retractOutputFast = retractOutputFast;
+    this.retractOutputSlow = retractOutputSlow;
   }
 
   public void pivotTelescopingArmOut() {
@@ -41,6 +51,45 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
 
   public void pivotTelescopingArmIn() {
     pivotPiston.set(DoubleSolenoid.Value.kForward);
+  }
+
+  public void setRetract() {
+    if (leftArm.reachedBottom()) {
+      leftArm.set(0);
+    } else if (leftArm.getHeight() < ClimberConstants.CLIMBER_DIFFERENTIATION_HEIGHT) {
+      leftArm.set(retractOutputSlow);
+    } else {
+      leftArm.set(retractOutputFast);
+    }
+
+    if (rightArm.reachedBottom()) {
+      rightArm.set(0);
+    } else if (rightArm.getHeight() < ClimberConstants.CLIMBER_DIFFERENTIATION_HEIGHT) {
+      rightArm.set(retractOutputSlow);
+    } else {
+      rightArm.set(retractOutputFast);
+    }
+  }
+
+  public void setExtend() {
+    var topLimit =
+        this.isStowed() ? ClimberArm.ClimberState.MID_LIMIT : ClimberArm.ClimberState.TOP;
+    // During mid climb, don't move further up when already at the mid or high height limit
+    if (!leftArm.belowState(topLimit)) {
+      leftArm.set(0);
+    } else {
+      leftArm.set(extendOutput);
+    }
+    if (!rightArm.belowState(topLimit)) {
+      rightArm.set(0);
+    } else {
+      rightArm.set(extendOutput);
+    }
+  }
+
+  public void stop() {
+    leftArm.set(0);
+    rightArm.set(0);
   }
 
   /**
@@ -82,9 +131,7 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
     rightArm.set(rightVel);
   }
 
-  /**
-   * Set output for both arms without checking sensors
-   */
+  /** Set output for both arms without checking sensors */
   public void setRaw(double output) {
     leftArm.set(output);
     rightArm.set(output);

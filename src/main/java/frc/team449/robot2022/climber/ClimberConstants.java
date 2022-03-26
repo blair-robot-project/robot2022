@@ -8,7 +8,9 @@ public final class ClimberConstants {
   /** Hall Effect sensor channels */
   public static final int CLIMBER_LEFT_SENSOR_CHANNEL = 0, CLIMBER_RIGHT_SENSOR_CHANNEL = 1;
   /** Speeds at which to extend and retract arms */
-  public static final double CLIMBER_EXTEND_VEL = 0.4, CLIMBER_RETRACT_VEL = -0.5;
+  public static final double CLIMBER_EXTEND_VEL = 0.2,
+      CLIMBER_RETRACT_VEL = -0.5,
+      CLIMBER_RETRACT_VEL_SLOW = -0.2;
   /** Height limit during high climb */
   public static final double CLIMBER_DISTANCE = 1.8;
   /** Height limit during mid climb */
@@ -16,7 +18,7 @@ public final class ClimberConstants {
   /**
    * Height below which climber is considered to be at the bottom if hall effect sensor is activated
    */
-  public static final double CLIMBER_DIFFERENTIATION_HEIGHT = 0.5;
+  public static final double CLIMBER_DIFFERENTIATION_HEIGHT = 0.2;
 
   public static final double CLIMBER_FF_KS = 0,
       CLIMBER_FF_KV = 0,

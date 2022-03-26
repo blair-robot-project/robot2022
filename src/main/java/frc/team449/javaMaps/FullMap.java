@@ -291,7 +291,14 @@ public class FullMap {
             CLIMBER_PISTON_REV_CHANNEL);
     var climber =
         new PivotingTelescopingClimber(
-            leftArm, rightArm, pivotPiston, CLIMBER_DISTANCE, CLIMBER_MID_DISTANCE);
+            leftArm,
+            rightArm,
+            pivotPiston,
+            CLIMBER_DISTANCE,
+            CLIMBER_MID_DISTANCE,
+            CLIMBER_EXTEND_VEL,
+            CLIMBER_RETRACT_VEL,
+            CLIMBER_RETRACT_VEL_SLOW);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.of(drive, cargo, climber);
@@ -331,12 +338,12 @@ public class FullMap {
         .whenReleased(() -> climber.setRaw(0), climber);
     // Extend Climber
     new POVButton(climberJoystick, 0)
-        .whileHeld(() -> climber.set(CLIMBER_EXTEND_VEL), climber)
-        .whenReleased(() -> climber.set(0), climber);
+        .whileHeld(climber::setExtend, climber)
+        .whenReleased(climber::stop, climber);
     // Retract climber
     new POVButton(climberJoystick, 180)
-        .whileHeld(() -> climber.set(CLIMBER_RETRACT_VEL), climber)
-        .whenReleased(() -> climber.set(0), climber);
+        .whileHeld(climber::setRetract, climber)
+        .whenReleased(climber::stop, climber);
     // Pivot climber out
     new JoystickButton(climberJoystick, XboxController.Button.kX.value)
         .whenPressed(
@@ -556,8 +563,8 @@ public class FullMap {
 
     List<Command> teleopStartupCommands =
         List.of(
-
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
+            new InstantCommand(climber::pivotTelescopingArmIn, climber),
             new InstantCommand(cargo::stop, cargo),
             //            climberRumbleCommand,
             intakeLimelightRumbleCommand);
