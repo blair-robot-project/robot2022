@@ -11,6 +11,7 @@ import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.robot2022.cargo.Cargo2022;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class HangarTwoBallAuto {
@@ -28,6 +29,12 @@ public class HangarTwoBallAuto {
     return new InstantCommand(cargo::deployIntake, cargo)
         .andThen(
             AutoUtils.getBallAndScore(
-                cargo, ramseteBuilder, trajConfig, start, ball, end, "HangarTwoBallAuto", field));
+                cargo,
+                ramseteBuilder,
+                trajConfig,
+                List.of(start, ball),
+                List.of(ball, end),
+                "HangarTwoBallAuto",
+                field));
   }
 }
