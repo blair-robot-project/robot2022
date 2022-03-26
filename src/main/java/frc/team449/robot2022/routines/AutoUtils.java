@@ -5,7 +5,6 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team449.auto.builders.RamseteBuilder;
 import frc.team449.robot2022.cargo.Cargo2022;
@@ -40,12 +39,24 @@ public final class AutoUtils {
     var fromBallTraj =
         TrajectoryGenerator.generateTrajectory(fromBall, trajConfig.get().setReversed(true));
     var fullTraj = toBallTraj.concatenate(fromBallTraj);
+
     if (field != null) {
       field.getObject(name).setTrajectory(fullTraj);
     }
-    return new InstantCommand(cargo::runIntake)
-        .andThen(ramseteBuilder.copy().traj(fullTraj).build())
-        .andThen(new InstantCommand(cargo::spit))
-        .andThen(new WaitCommand(0.3));
+
+    // How much to wait to spit after the intake starts
+    var spitWaitTime =
+        fullTraj.getTotalTimeSeconds()
+            - AutoConstants.PAUSE_BEFORE_INTAKE
+            - AutoConstants.PAUSE_AFTER_SPIT;
+    return ramseteBuilder
+        .copy()
+        .traj(fullTraj)
+        .build()
+        .alongWith(
+            new WaitCommand(AutoConstants.PAUSE_BEFORE_INTAKE)
+                .andThen(cargo::runIntake, cargo)
+                .andThen(new WaitCommand(spitWaitTime))
+                .andThen(cargo::spit, cargo));
   }
 }
