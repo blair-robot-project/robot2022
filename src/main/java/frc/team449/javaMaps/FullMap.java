@@ -75,7 +75,7 @@ public class FullMap {
   // Limelight
   public static final int DRIVER_PIPELINE = 0, BLUE_PIPELINE = 1, RED_PIPELINE = 2;
   // Speeds
-  public static final double AUTO_MAX_SPEED = 3.5, AUTO_MAX_ACCEL = 0.9;
+  public static final double AUTO_MAX_SPEED = 5, AUTO_MAX_ACCEL = 1.6;
 
   private FullMap() {}
 
