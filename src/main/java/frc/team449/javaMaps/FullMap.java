@@ -14,16 +14,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -58,8 +49,8 @@ import frc.team449.robot2022.cargo.IntakeLimelightRumbleComponent;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
+import frc.team449.robot2022.routines.AutoConstants;
 import frc.team449.robot2022.routines.FiveBallAuto;
-import frc.team449.robot2022.routines.StationFourBallAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -83,8 +74,6 @@ public class FullMap {
       CLIMBER_JOYSTICK_PORT = 2;
   // Limelight
   public static final int DRIVER_PIPELINE = 0, BLUE_PIPELINE = 1, RED_PIPELINE = 2;
-  // Speeds
-  public static final double AUTO_MAX_SPEED = 5, AUTO_MAX_ACCEL = 1.6;
 
   private FullMap() {}
 
@@ -546,7 +535,7 @@ public class FullMap {
     // Auto
     Supplier<TrajectoryConfig> trajConfig =
         () ->
-            new TrajectoryConfig(AUTO_MAX_SPEED, AUTO_MAX_ACCEL)
+            new TrajectoryConfig(AutoConstants.AUTO_MAX_SPEED, AutoConstants.AUTO_MAX_ACCEL)
                 .setKinematics(drive.getDriveKinematics())
                 .addConstraint(
                     new DifferentialDriveVoltageConstraint(
@@ -579,7 +568,7 @@ public class FullMap {
 
   @NotNull
   private static TrajectoryConfig trajConfig(@NotNull DriveUnidirectionalWithGyro drive) {
-    return new TrajectoryConfig(AUTO_MAX_SPEED, AUTO_MAX_ACCEL)
+    return new TrajectoryConfig(AutoConstants.AUTO_MAX_SPEED, AutoConstants.AUTO_MAX_ACCEL)
         .setKinematics(drive.getDriveKinematics())
         .addConstraint(
             new DifferentialDriveVoltageConstraint(
@@ -591,7 +580,9 @@ public class FullMap {
 
   @NotNull
   private static Trajectory loadPathPlannerTraj(@NotNull String trajName) {
-    var traj = PathPlanner.loadPath(trajName, AUTO_MAX_SPEED, AUTO_MAX_ACCEL, false);
+    var traj =
+        PathPlanner.loadPath(
+            trajName, AutoConstants.AUTO_MAX_SPEED, AutoConstants.AUTO_MAX_ACCEL, false);
     if (traj == null) {
       throw new Error("Trajectory not found: " + trajName);
     }
