@@ -4,30 +4,40 @@ import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.team449.motor.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 
 public class FlywheelShooter extends SubsystemBase {
     public final MotorController flywheelMotor;
     /** The desired speed of the flywheel motor */
-    private final double setpoint;
+    private double setpoint;
     private final BangBangController controller = new BangBangController();
-    private final Counter encoder;
     private final SimpleMotorFeedforward feedforward;
+    private final double FFdampener;
+    private final Counter encoder;
 
-    public FlywheelShooter(@NotNull MotorController flywheelMotor, double setpoint, Counter encoder, double kS, double kA, double kV) {
+    public FlywheelShooter(@NotNull MotorController flywheelMotor, double setpoint, SimpleMotorFeedforward feedforward, double FFdampener, Counter encoder) {
         this.flywheelMotor = flywheelMotor;
         this.setpoint = setpoint;
+        this.feedforward = feedforward;
+        this.FFdampener = FFdampener;
         this.encoder = encoder;
-        this.feedforward = new SimpleMotorFeedforward(kS, kV, kA);
     }
 
     public void shoot() {
-        flywheelMotor.setVoltage(controller.calculate(encoder.getRate(), setpoint) * 12.0 + 0.9 * feedforward.calculate(setpoint));
+        setpoint = 10; // TODO: ACTUALLY GET A TESTED NUMBER FOR THIS
     }
 
     public void stop() {
-        flywheelMotor.set(0);
+        setpoint = 0;
+    }
+
+    @Override
+    public void periodic() {
+        double voltage_multiplier = RobotController.getBatteryVoltage();
+        flywheelMotor.setVoltage(controller.calculate(encoder.getRate(), setpoint) * voltage_multiplier + FFdampener * feedforward.calculate(setpoint));
     }
 }
