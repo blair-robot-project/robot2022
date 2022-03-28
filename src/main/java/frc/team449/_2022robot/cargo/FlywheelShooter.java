@@ -11,20 +11,18 @@ import frc.team449.motor.WrappedMotor;
 import org.jetbrains.annotations.NotNull;
 
 public class FlywheelShooter extends SubsystemBase {
-    public final MotorController flywheelMotor;
+    public final WrappedMotor flywheelMotor;
     /** The desired speed of the flywheel motor */
     private double setpoint;
     private final BangBangController controller = new BangBangController();
     private final SimpleMotorFeedforward feedforward;
     private final double FFdampener;
-    private final Counter encoder;
 
-    public FlywheelShooter(@NotNull MotorController flywheelMotor, double setpoint, SimpleMotorFeedforward feedforward, double FFdampener, Counter encoder) {
+    public FlywheelShooter(@NotNull WrappedMotor flywheelMotor, double setpoint, SimpleMotorFeedforward feedforward, double FFdampener) {
         this.flywheelMotor = flywheelMotor;
         this.setpoint = setpoint;
         this.feedforward = feedforward;
         this.FFdampener = FFdampener;
-        this.encoder = encoder;
     }
 
     public void shoot() {
@@ -38,6 +36,6 @@ public class FlywheelShooter extends SubsystemBase {
     @Override
     public void periodic() {
         double voltage_multiplier = RobotController.getBatteryVoltage();
-        flywheelMotor.setVoltage(controller.calculate(encoder.getRate(), setpoint) * voltage_multiplier + FFdampener * feedforward.calculate(setpoint));
+        flywheelMotor.setVoltage(controller.calculate(flywheelMotor.encoder.getVelocityUnits(), setpoint) * voltage_multiplier + FFdampener * feedforward.calculate(setpoint));
     }
 }
