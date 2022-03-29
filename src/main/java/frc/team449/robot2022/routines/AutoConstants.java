@@ -11,7 +11,7 @@ public final class AutoConstants {
   public static final double PAUSE_AFTER_SPIT = 0.2;
   // Speeds
   public static final double AUTO_MAX_SPEED = 3,
-      AUTO_MAX_ACCEL = 1.0,
+      AUTO_MAX_ACCEL = 1.2,
       AUTO_MAX_CENTRIPETAL_ACCEL = 2.0;
 
   private AutoConstants() {}
