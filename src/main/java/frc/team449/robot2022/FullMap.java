@@ -244,7 +244,8 @@ public class FullMap {
                         .createReal(),
                 new SparkMaxConfig()
                         .setName("flywheelMotor")
-                        .setPort()
+                        .setPort(FLYWHEEL_MOTOR_PORT)
+                        .createReal(),
 
                   @Override
                   public double get() {
