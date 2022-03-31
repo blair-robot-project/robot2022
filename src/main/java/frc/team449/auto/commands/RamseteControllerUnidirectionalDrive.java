@@ -83,7 +83,7 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase implements
     leftController.reset();
     rightController.reset();
     drivetrain.resetOdometry(trajectory.getInitialPose());
-//    ramseteFeedback.setEnabled(false);
+//    ramseteFeedback.setEnabled(false); // re-comment this line
   }
 
   @Override
@@ -111,8 +111,7 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase implements
     double rightFeedforward = feedforward.calculate(rightTarget, rightDelta / dt);
 
     this.desiredLeftVoltage = leftFeedforward + leftController.calculate(leftCurrent, leftTarget);
-    this.desiredRightVoltage =
-        rightFeedforward + rightController.calculate(rightCurrent, rightTarget);
+    this.desiredRightVoltage = rightFeedforward + rightController.calculate(rightCurrent, rightTarget);
 
     drivetrain.setVoltage(desiredLeftVoltage, desiredRightVoltage);
 

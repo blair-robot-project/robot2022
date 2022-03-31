@@ -24,12 +24,12 @@ public class DriveConstants {
   public static final int DRIVE_CURRENT_LIM = 40;
   public static final double DRIVE_ENC_POS_THRESHOLD = 0.15, DRIVE_ENC_VEL_THRESHOLD = 0.1;
   public static final double DRIVE_UPR = 0.3021211527151539;
-  public static final double DRIVE_KP_VEL = 0.5, // 27.2,
+  public static final double DRIVE_KP_VEL = .2, // 27.2,
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0.0,
-      DRIVE_FF_KS = 0.20835,
-      DRIVE_FF_KV = 2.4401,
-      DRIVE_FF_KA = 0.3523;
+      DRIVE_FF_KS = 0.1908,
+      DRIVE_FF_KV = 2.5406,
+      DRIVE_FF_KA = 0.44982;
   // todo actually use these feedforward values
   public static final double DRIVE_ANGLE_FF_KS = 0.20112,
       DRIVE_ANGLE_FF_KV = 8, // 171.58,
