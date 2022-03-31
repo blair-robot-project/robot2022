@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -46,6 +47,7 @@ import frc.team449.oi.throttles.ThrottleWithRamp;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.FollowerUtils;
 import frc.team449.robot2022.cargo.Cargo2022;
+import frc.team449.robot2022.cargo.FlywheelShooter;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
@@ -229,20 +231,49 @@ public class FullMap {
 
     var cargo =
         new Cargo2022(
-            new SparkMaxConfig()
-                .setName("intakeMotor")
-                .setPort(INTAKE_LEADER_PORT)
-                .setCurrentLimit(INTAKE_CURR_LIM)
-                .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), true)
-                .createReal(),
-            new SparkMaxConfig()
-                .setName("spitterMotor")
-                .setPort(SPITTER_PORT)
-                .setEnableBrakeMode(false)
-                .createReal(),
-            deployIntake,
-            INTAKE_SPEED,
-            SPITTER_SPEED);
+                new SparkMaxConfig()
+                        .setName("intakeMotor")
+                        .setPort(INTAKE_LEADER_PORT)
+                        .setCurrentLimit(INTAKE_CURR_LIM)
+                        .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), true)
+                        .createReal(),
+                new SparkMaxConfig()
+                        .setName("spitterMotor")
+                        .setPort(SPITTER_PORT)
+                        .setEnableBrakeMode(false)
+                        .createReal(),
+                new SparkMaxConfig()
+                        .setName("flywheelMotor")
+                        .setPort()
+
+                  @Override
+                  public double get() {
+                    return 0;
+                  }
+
+                  @Override
+                  public void setInverted(boolean isInverted) {
+
+                  }
+
+                  @Override
+                  public boolean getInverted() {
+                    return false;
+                  }
+
+                  @Override
+                  public void disable() {
+
+                  }
+
+                  @Override
+                  public void stopMotor() {
+
+                  }
+                }
+                deployIntake,
+                INTAKE_SPEED,
+                SPITTER_SPEED);
 
     var armPrototype =
         new SparkMaxConfig()
