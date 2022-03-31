@@ -1,4 +1,4 @@
-package frc.team449.javaMaps;
+package frc.team449.robot2022;
 
 import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.math.VecBuilder;
@@ -46,14 +46,11 @@ import frc.team449.oi.throttles.ThrottleWithRamp;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.FollowerUtils;
 import frc.team449.robot2022.cargo.Cargo2022;
-import frc.team449.robot2022.cargo.IntakeLimelightRumbleComponent;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.AutoConstants;
 import frc.team449.robot2022.routines.FiveBallStart;
-import frc.team449.robot2022.routines.StationFourBallAuto;
-import frc.team449.robot2022.routines.StationTwoBallAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -98,10 +95,10 @@ public class FullMap {
     limelight.setStreamMode(Limelight.StreamMode.STANDARD);
     limelight.setLedMode(Limelight.LedMode.OFF);
 
-//    var intakeLimelightRumbleCommand =
-//        new RumbleCommand(
-//            new IntakeLimelightRumbleComponent(limelight, BLUE_PIPELINE, RED_PIPELINE),
-//            cargoJoystick);
+    //    var intakeLimelightRumbleCommand =
+    //        new RumbleCommand(
+    //            new IntakeLimelightRumbleComponent(limelight, BLUE_PIPELINE, RED_PIPELINE),
+    //            cargoJoystick);
 
     var driveMasterPrototype =
         new SparkMaxConfig()
@@ -111,7 +108,8 @@ public class FullMap {
             .setPostEncoderGearing(DRIVE_GEARING)
             .setEncoderCPR(NEO_ENCODER_CPR)
             .setExtEncoderCPR(DRIVE_EXT_ENCODER_CPR)
-//            .setUseInternalEncAsFallback(DRIVE_ENC_POS_THRESHOLD, DRIVE_ENC_VEL_THRESHOLD)
+            //            .setUseInternalEncAsFallback(DRIVE_ENC_POS_THRESHOLD,
+            // DRIVE_ENC_VEL_THRESHOLD)
             .setEnableVoltageComp(true);
 
     var driveSim =
@@ -330,11 +328,11 @@ public class FullMap {
     // Driver joystick intake deploy and retract controls
     // Stow/retract intake
     new JoystickButton(driveJoystick, XboxController.Button.kX.value)
-            .whenPressed(cargo::retractIntake);
+        .whenPressed(cargo::retractIntake);
     // Deploy intake
     new JoystickButton(driveJoystick, XboxController.Button.kA.value)
-            .whileHeld(cargo::deployIntake, cargo)
-            .whenReleased(cargo::stop, cargo);
+        .whileHeld(cargo::deployIntake, cargo)
+        .whenReleased(cargo::stop, cargo);
     // Run intake backwards
     new JoystickButton(cargoJoystick, XboxController.Button.kB.value)
         .whileHeld(cargo::runIntakeReverse, cargo)
@@ -565,7 +563,7 @@ public class FullMap {
                         AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL));
     List<Command> autoStartupCommands =
         List.of(
-            StationFourBallAuto.createCommand(drive, cargo, ramsetePrototype, trajConfig, field)
+            FiveBallStart.createCommand(drive, cargo, ramsetePrototype, trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
                 .andThen(cargo::stop, cargo));
 
@@ -575,7 +573,7 @@ public class FullMap {
         List.of(
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
             new InstantCommand(climber::pivotTelescopingArmIn, climber),
-            new InstantCommand(cargo::stop, cargo)/*,
+            new InstantCommand(cargo::stop, cargo) /*,
             //            climberRumbleCommand,
             intakeLimelightRumbleCommand*/);
 
