@@ -5,6 +5,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -91,7 +92,7 @@ public class FullMap {
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
   public static final double DRIVE_GEARING = 5.86;
   public static final int DRIVE_CURRENT_LIM = 50;
-  public static final double DRIVE_KP_VEL = 27.2,
+  public static final double DRIVE_KP_VEL = 0.00, //27.2,
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0,
       DRIVE_KP_POS = 45.269,
@@ -102,8 +103,8 @@ public class FullMap {
       DRIVE_KV_LINEAR = 2.3776,
       DRIVE_KA_LINEAR = 0.31082,
       DRIVE_KS_ANGULAR = 0.59239,
-      DRIVE_KV_ANGULAR = 25.315,
-      DRIVE_KA_ANGULAR = 145.68;
+      DRIVE_KV_ANGULAR = 1.5, //25.315,
+      DRIVE_KA_ANGULAR = 0.3; //145.68;
   // old value from measuring from the outside of the wheel: 0.6492875
   // measuring from the inside of the wheel : .57785
   public static final double DRIVE_TRACK_WIDTH = 0.6492875;
@@ -203,14 +204,14 @@ public class FullMap {
             .measStdDev(0.01, 0.01) // todo tune this
             .build();
 
+    //                new DriveFeedforward.SimpleFF(DRIVE_KS_LINEAR, DRIVE_KV_LINEAR,
+    // DRIVE_KA_LINEAR),
+    var driveFeedforward = new DriveFeedforward.LinearSystemFF(driveLoop);
     var drive =
         new DriveUnidirectionalWithGyro(
                 leftMaster,
                 rightMaster,
                 navx,
-                //                new DriveFeedforward.SimpleFF(DRIVE_KS_LINEAR, DRIVE_KV_LINEAR,
-                // DRIVE_KA_LINEAR),
-                new DriveFeedforward.LinearSystemFF(driveLoop),
                 DRIVE_TRACK_WIDTH)
             .simIfNeeded(driveSim, leftEncSim, rightEncSim);
 
@@ -432,6 +433,7 @@ public class FullMap {
             .drivetrain(drive)
             .leftPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
             .rightPid(new PIDController(DRIVE_KP_VEL, DRIVE_KI_VEL, DRIVE_KD_VEL))
+            .feedforward(driveFeedforward)
             .b(2.25)
             .zeta(0.6)
             .anglePID(
@@ -448,6 +450,8 @@ public class FullMap {
             .angleTimeout(4)
             .field(null);
     // .field(field);
+
+
 
     Supplier<Command> spit =
         () ->
@@ -674,7 +678,7 @@ public class FullMap {
         .setKinematics(drive.getDriveKinematics())
         .addConstraint(
             new DifferentialDriveVoltageConstraint(
-                drive.getFeedforward().asWpiFF(),
+                new SimpleMotorFeedforward(DRIVE_KS_LINEAR, DRIVE_KV_LINEAR, DRIVE_KA_LINEAR),
                 drive.getDriveKinematics(),
                 RobotController.getBatteryVoltage()))
         .addConstraint(new CentripetalAccelerationConstraint(0.5));
@@ -749,5 +753,3 @@ public class FullMap {
     return pose(pose.getX(), pose.getY(), 180 + pose.getRotation().getDegrees());
   }
 }
-
-// Hi there!

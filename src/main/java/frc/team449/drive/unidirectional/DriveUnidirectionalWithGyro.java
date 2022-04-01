@@ -15,30 +15,29 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-/** A drive with a cluster of any number of motors on each side. */
 public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase implements SubsystemAHRS {
   /** The NavX gyro */
   @NotNull protected final AHRS ahrs;
 
   /** Drivetrain odometry tracker for tracking position */
   private final DifferentialDriveOdometry driveOdometry;
+
   /** Whether or not to use the NavX for driving straight */
   private boolean overrideGyro;
 
   /**
    * Default constructor.
    *
-   * @param leftMaster The master talon on the left side of the drive.
-   * @param rightMaster The master talon on the right side of the drive.
+   * @param leftMaster The leader motor on the left side of the drive.
+   * @param rightMaster The leader motor on the right side of the drive.
    * @param ahrs The NavX gyro for calculating this drive's heading and angular velocity.
    */
   public DriveUnidirectionalWithGyro(
       @NotNull WrappedMotor leftMaster,
       @NotNull WrappedMotor rightMaster,
       @NotNull AHRS ahrs,
-      @NotNull DriveFeedforward feedforward,
       double trackWidth) {
-    super(leftMaster, rightMaster, feedforward, trackWidth);
+    super(leftMaster, rightMaster, trackWidth);
     // Initialize stuff
     this.ahrs = ahrs;
     this.overrideGyro = false;

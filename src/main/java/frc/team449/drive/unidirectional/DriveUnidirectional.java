@@ -1,6 +1,7 @@
 package frc.team449.drive.unidirectional;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.team449.drive.DriveSubsystem;
 import frc.team449.generalInterfaces.updatable.Updatable;
 import org.jetbrains.annotations.Nullable;
@@ -9,10 +10,6 @@ import org.jetbrains.annotations.Nullable;
  * A drive with a left side and a right side. "Unidirectional" because it can only move forwards or
  * backwards, not sideways.
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.CLASS,
-    include = JsonTypeInfo.As.WRAPPER_OBJECT,
-    property = "@class")
 public interface DriveUnidirectional extends DriveSubsystem, Updatable {
 
   /**
@@ -22,6 +19,12 @@ public interface DriveUnidirectional extends DriveSubsystem, Updatable {
    * @param right the output for the right side of the drive, from [-1, 1]
    */
   void setOutput(double left, double right);
+
+  /** Set the voltage of each side of the drive */
+  default void setVoltage(double left, double right) {
+    setOutput(
+        left / RobotController.getBatteryVoltage(), right / RobotController.getBatteryVoltage());
+  }
 
   /**
    * Get the velocity of the left side of the drive.

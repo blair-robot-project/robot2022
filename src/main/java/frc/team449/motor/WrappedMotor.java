@@ -39,6 +39,10 @@ public final class WrappedMotor implements MotorController, Loggable {
     return encoder.getPositionUnits();
   }
 
+  public double getVelocityUnits() {
+    return encoder.getVelocityUnits();
+  }
+
   @Override
   public boolean getInverted() {
     return motor.getInverted();
