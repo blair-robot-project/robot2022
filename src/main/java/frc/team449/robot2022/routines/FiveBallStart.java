@@ -29,7 +29,7 @@ public class FiveBallStart {
     // trajConfig.get());
     var traj =
         PathPlanner.loadPath(
-            "Curvy 5 ball", AutoConstants.AUTO_MAX_SPEED, AutoConstants.AUTO_MAX_ACCEL);
+            "Curvy 5 ball", AutoConstants.AUTO_MAX_SPEED, .8);
     field.getObject("FiveBallStart").setTrajectory(traj);
     return ramseteBuilder.copy().traj(traj).build();
   }

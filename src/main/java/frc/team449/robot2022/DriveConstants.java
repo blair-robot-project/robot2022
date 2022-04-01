@@ -24,7 +24,7 @@ public class DriveConstants {
   public static final int DRIVE_CURRENT_LIM = 40;
   public static final double DRIVE_ENC_POS_THRESHOLD = 0.15, DRIVE_ENC_VEL_THRESHOLD = 0.1;
   public static final double DRIVE_UPR = 0.3021211527151539;
-  public static final double DRIVE_KP_VEL = .2, // 27.2,
+  public static final double DRIVE_KP_VEL = 2, // 27.2,
       DRIVE_KI_VEL = 0.0,
       DRIVE_KD_VEL = 0.0,
       DRIVE_FF_KS = 0.1908,

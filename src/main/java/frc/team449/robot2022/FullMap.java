@@ -42,8 +42,7 @@ import frc.team449.robot2022.cargo.Cargo2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
-import frc.team449.robot2022.routines.AutoConstants;
-import frc.team449.robot2022.routines.StationFourBallAuto;
+import frc.team449.robot2022.routines.*;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -401,12 +400,14 @@ public class FullMap {
                         driveFeedforward,
                         drive.getDriveKinematics(),
                         RobotController.getBatteryVoltage()))
-                .addConstraint(
-                    new CentripetalAccelerationConstraint(
-                        AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL));
+//                .addConstraint(
+//                    new CentripetalAccelerationConstraint(
+//                        AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL)
+//                )
+            ;
     List<Command> autoStartupCommands =
         List.of(
-            StationFourBallAuto.createCommand(drive, cargo, ramsetePrototype, trajConfig, field)
+            StationTwoBallAuto.createCommand(drive, cargo, ramsetePrototype, trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
                 .andThen(cargo::stop, cargo));
 

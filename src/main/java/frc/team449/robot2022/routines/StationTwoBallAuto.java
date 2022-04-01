@@ -16,9 +16,9 @@ import java.util.function.Supplier;
 
 public class StationTwoBallAuto {
   public static final Pose2d start =
-      new Pose2d(7.54, 1.87, Rotation2d.fromDegrees(180 + 89.32)); // TODO later
+      new Pose2d(7.55, 1.84, Rotation2d.fromDegrees(-90)); // TODO later
   public static final Pose2d ball =
-      new Pose2d(7.45, 0.92, Rotation2d.fromDegrees(180 + 90)); // 7.55, 1.06
+      new Pose2d(7.58, 0.85, Rotation2d.fromDegrees(-86)); // 7.55, 1.06
   public static final Pose2d end = AutoUtils.pose(7.80, 2.88, -110.82);
           //new Pose2d(7.60, 3.01, Rotation2d.fromDegrees(180 + 73));
   //          new Pose2d(7.53, 2.90, Rotation2d.fromDegrees(180 + 54.06));
