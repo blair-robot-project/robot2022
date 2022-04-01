@@ -7,6 +7,7 @@ import com.revrobotics.SparkMaxLimitSwitch;
 import frc.team449.motor.BackupEncoder;
 import frc.team449.motor.Encoder;
 import frc.team449.motor.WrappedMotor;
+import frc.team449.motor.sim.DummyMotorController;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,7 +77,7 @@ public final class SparkMaxConfig extends MotorConfig<SparkMaxConfig> {
   public WrappedMotor createReal() {
     var motor = new CANSparkMax(this.getPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
     if (motor.getLastError() != REVLibError.kOk) {
-      throw new Error(
+      System.out.println(
           "Motor could not be constructed on port "
               + this.getPort()
               + " due to error "

@@ -8,7 +8,7 @@ public final class ClimberConstants {
   /** Hall Effect sensor channels */
   public static final int CLIMBER_LEFT_SENSOR_CHANNEL = 0, CLIMBER_RIGHT_SENSOR_CHANNEL = 1;
   /** Speeds at which to extend and retract arms */
-  public static final double CLIMBER_EXTEND_VEL = 0.2,
+  public static final double CLIMBER_EXTEND_VEL = 0.5,
       CLIMBER_RETRACT_VEL = -0.5,
       CLIMBER_RETRACT_VEL_SLOW = -0.2;
   /** Height limit during high climb */
@@ -26,6 +26,8 @@ public final class ClimberConstants {
       CLIMBER_FF_KG = 0;
   public static final double CLIMBER_LEFT_UPR = 0.239, // 0.1778,
       CLIMBER_RIGHT_UPR = 0.239; // 0.2286;
+
+  public static final double CLIMBER_GEARING = 27;
   // How close the arm gets to the limits before climber joystick starts rumbling
   public static final double CLIMBER_RUMBLE_TOLERANCE = 0.1;
   /** Whether the hall effect sensors are plugged in */

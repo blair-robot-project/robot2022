@@ -10,7 +10,7 @@ public final class CargoConstants {
 
   public static final double INTAKE_SPEED = 0.75, SPITTER_SPEED = 0.45;
 
-  public static final double SHOOT_HIGH_OUTPUT = 0.7, SHOOT_LOW_OUTPUT = 0.45;
+  public static final double SHOOT_HIGH_OUTPUT = 0.7;
 
   private CargoConstants() {}
 }

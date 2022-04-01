@@ -36,6 +36,7 @@ build
 bash.exe.stackdump
 .vscode/
 .wpilib/
+.Sysid/
 
 #Copied log files
 logs/
