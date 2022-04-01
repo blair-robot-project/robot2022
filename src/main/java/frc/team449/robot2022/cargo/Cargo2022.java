@@ -7,9 +7,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class Cargo2022 extends SubsystemBase {
   /** The leader motor for the intake */
-  public final MotorController intakeMotor;
+  private final MotorController intakeMotor;
   /** The top motor that lets balls be spit out */
-  public final MotorController spitterMotor;
+  private final MotorController spitterMotor;
+  /** Motor used for shooting flywheel */
+  private final MotorController flywheelMotor;
   /** Piston used to extend and retract intake */
   private final DoubleSolenoid deployIntake;
   /** The speed when intaking */
@@ -20,11 +22,13 @@ public class Cargo2022 extends SubsystemBase {
   public Cargo2022(
       @NotNull MotorController intakeMotor,
       @NotNull MotorController spitterMotor,
+      @NotNull MotorController flywheelMotor,
       @NotNull DoubleSolenoid deployIntake,
       double intakeSpeed,
       double spitterSpeed) {
     this.intakeMotor = intakeMotor;
     this.spitterMotor = spitterMotor;
+    this.flywheelMotor = flywheelMotor;
     this.deployIntake = deployIntake;
     this.intakeSpeed = intakeSpeed;
     this.spitterSpeed = spitterSpeed;
@@ -33,16 +37,25 @@ public class Cargo2022 extends SubsystemBase {
   public void runIntake() {
     intakeMotor.set(intakeSpeed);
     spitterMotor.set(-spitterSpeed);
+    flywheelMotor.set(0);
   }
 
   public void runIntakeReverse() {
     intakeMotor.set(-intakeSpeed);
     spitterMotor.set(-spitterSpeed);
+    flywheelMotor.set(0);
   }
 
   public void spit() {
     intakeMotor.set(intakeSpeed);
     spitterMotor.set(spitterSpeed);
+    flywheelMotor.set(CargoConstants.SHOOT_LOW_OUTPUT);
+  }
+
+  public void highShoot() {
+    intakeMotor.set(intakeSpeed);
+    spitterMotor.set(spitterSpeed);
+    flywheelMotor.set(CargoConstants.SHOOT_HIGH_OUTPUT);
   }
 
   public void stop() {
@@ -57,5 +70,4 @@ public class Cargo2022 extends SubsystemBase {
   public void retractIntake() {
     this.deployIntake.set(DoubleSolenoid.Value.kForward);
   }
-
 }
