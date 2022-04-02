@@ -9,7 +9,8 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.team449.auto.builders.RamseteBuilder;
+import frc.team449.auto.commands.RamseteControllerUnidirectionalDrive;
+import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.robot2022.cargo.Cargo2022;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,8 +35,8 @@ public final class AutoUtils {
    * @param fromBallTraj The trajectory to go back to the hub
    */
   public static Command getBallAndScore(
+      @NotNull DriveUnidirectionalWithGyro drive,
       @NotNull Cargo2022 cargo,
-      @NotNull RamseteBuilder ramseteBuilder,
       @NotNull Trajectory toBallTraj,
       @NotNull Trajectory fromBallTraj,
       String name,
@@ -51,15 +52,12 @@ public final class AutoUtils {
         fullTraj.getTotalTimeSeconds()
             - AutoConstants.PAUSE_BEFORE_INTAKE
             - AutoConstants.PAUSE_AFTER_SPIT;
-    return ramseteBuilder
-        .copy()
-        .traj(fullTraj)
-        .build()
+    return new RamseteControllerUnidirectionalDrive(drive, fullTraj)
         .alongWith(
             new WaitCommand(AutoConstants.PAUSE_BEFORE_INTAKE)
                 .andThen(cargo::runIntake, cargo)
                 .andThen(new WaitCommand(spitWaitTime))
-                .andThen(cargo::spit, cargo));
+                .andThen(cargo::spitOrShoot, cargo));
   }
 
   /**
@@ -71,8 +69,8 @@ public final class AutoUtils {
    * @param fromBall The poses to hit on the way back to the hub (including the start and end poses)
    */
   public static Command getBallAndScore(
+      @NotNull DriveUnidirectionalWithGyro drive,
       @NotNull Cargo2022 cargo,
-      @NotNull RamseteBuilder ramseteBuilder,
       @NotNull Supplier<TrajectoryConfig> trajConfig,
       @NotNull List<Pose2d> toBall,
       @NotNull List<Pose2d> fromBall,
@@ -82,7 +80,7 @@ public final class AutoUtils {
         TrajectoryGenerator.generateTrajectory(toBall, trajConfig.get().setReversed(false));
     var fromBallTraj =
         TrajectoryGenerator.generateTrajectory(fromBall, trajConfig.get().setReversed(true));
-    return AutoUtils.getBallAndScore(cargo, ramseteBuilder, toBallTraj, fromBallTraj, name, field);
+    return AutoUtils.getBallAndScore(drive, cargo, toBallTraj, fromBallTraj, name, field);
   }
 
   /**
@@ -91,11 +89,12 @@ public final class AutoUtils {
    * two balls on the way
    *
    * @param toBall The points to hit on the way to the ball (including the start and end poses)
-   * @param fromBall The points to hit on the way back to the hub (including the start and end poses)
+   * @param fromBall The points to hit on the way back to the hub (including the start and end
+   *     poses)
    */
   public static Command getBallAndScoreVectors(
+      @NotNull DriveUnidirectionalWithGyro drive,
       @NotNull Cargo2022 cargo,
-      @NotNull RamseteBuilder ramseteBuilder,
       @NotNull Supplier<TrajectoryConfig> trajConfig,
       @NotNull List<Spline.ControlVector> toBall,
       @NotNull List<Spline.ControlVector> fromBall,
@@ -108,6 +107,6 @@ public final class AutoUtils {
         TrajectoryGenerator.generateTrajectory(
             new TrajectoryGenerator.ControlVectorList(fromBall),
             trajConfig.get().setReversed(true));
-    return AutoUtils.getBallAndScore(cargo, ramseteBuilder, toBallTraj, fromBallTraj, name, field);
+    return AutoUtils.getBallAndScore(drive, cargo, toBallTraj, fromBallTraj, name, field);
   }
 }

@@ -32,7 +32,7 @@ public class DriveConstants {
       DRIVE_FF_KA = 0.44982;
   // todo actually use these feedforward values
   public static final double DRIVE_ANGLE_FF_KS = 0.20112,
-      DRIVE_ANGLE_FF_KV = 8, // 171.58,
+      DRIVE_ANGLE_FF_KV = 171.58,
       DRIVE_ANGLE_FF_KA = 22.755,
       DRIVE_ANGLE_KP = 0.006, // 221.18
       DRIVE_ANGLE_KI = 0,

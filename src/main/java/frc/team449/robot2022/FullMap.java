@@ -8,9 +8,17 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -24,7 +32,6 @@ import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449.ahrs.AHRS;
 import frc.team449.ahrs.PIDAngleControllerBuilder;
-import frc.team449.auto.builders.RamseteBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
@@ -42,7 +49,8 @@ import frc.team449.robot2022.cargo.Cargo2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
-import frc.team449.robot2022.routines.*;
+import frc.team449.robot2022.routines.AutoConstants;
+import frc.team449.robot2022.routines.StationTwoBallAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -87,11 +95,6 @@ public class FullMap {
     limelight.setStreamMode(Limelight.StreamMode.STANDARD);
     limelight.setLedMode(Limelight.LedMode.OFF);
 
-    //    var intakeLimelightRumbleCommand =
-    //        new RumbleCommand(
-    //            new IntakeLimelightRumbleComponent(limelight, BLUE_PIPELINE, RED_PIPELINE),
-    //            cargoJoystick);
-
     var driveMasterPrototype =
         new SparkMaxConfig()
             .setEnableBrakeMode(true)
@@ -107,7 +110,7 @@ public class FullMap {
     var driveSim =
         new DifferentialDrivetrainSim(
             LinearSystemId.identifyDrivetrainSystem(
-                DRIVE_FF_KV, DRIVE_FF_KA, DRIVE_ANGLE_FF_KV, DRIVE_ANGLE_FF_KA, DRIVE_TRACK_WIDTH),
+                DRIVE_FF_KV, DRIVE_FF_KA, DRIVE_ANGLE_FF_KV, DRIVE_ANGLE_FF_KA),
             DCMotor.getNEO(3),
             DRIVE_GEARING,
             DRIVE_TRACK_WIDTH,
@@ -212,13 +215,6 @@ public class FullMap {
         () -> new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive);
     SmartDashboard.putData("Reset odometry", resetDriveOdometry.get());
 
-    var deployIntake =
-        new DoubleSolenoid(
-            PCM_MODULE,
-            PneumaticsModuleType.CTREPCM,
-            INTAKE_PISTON_FWD_CHANNEL,
-            INTAKE_PISTON_REV_CHANNEL);
-
     var cargo =
         new Cargo2022(
             new SparkMaxConfig()
@@ -232,14 +228,21 @@ public class FullMap {
                 .setPort(SPITTER_PORT)
                 .setEnableBrakeMode(false)
                 .createReal(),
-            //            new SparkMaxConfig()
-            //                .setName("flywheelMotor")
-            //                .setPort(FLYWHEEL_MOTOR_PORT)
-            //                .setEnableBrakeMode(false)
-            //                .createSim(new EncoderSim(new Encoder(10, 10))),
-            deployIntake,
-            INTAKE_SPEED,
-            SPITTER_SPEED);
+            new SparkMaxConfig()
+                .setName("flywheelMotor")
+                .setPort(FLYWHEEL_MOTOR_PORT)
+                .setEnableBrakeMode(false)
+                .createSim(new EncoderSim(new Encoder(10, 11))),
+            new DoubleSolenoid(
+                PCM_MODULE,
+                PneumaticsModuleType.CTREPCM,
+                INTAKE_PISTON_FWD_CHANNEL,
+                INTAKE_PISTON_REV_CHANNEL),
+            new DoubleSolenoid(
+                PCM_MODULE,
+                PneumaticsModuleType.CTREPCM,
+                HOOD_PISTON_FWD_CHANNEL,
+                HOOD_PISTON_REV_CHANNEL));
 
     var armPrototype =
         new SparkMaxConfig()
@@ -313,6 +316,9 @@ public class FullMap {
     new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
         .whileHeld(cargo::spit, cargo)
         .whenReleased(cargo::stop, cargo);
+    // Toggle shooter. Hood must be on
+    new JoystickButton(cargoJoystick, XboxController.Button.kY.value)
+        .whenPressed(cargo::toggleShoot, cargo);
     // Stow/retract intake
     new JoystickButton(cargoJoystick, XboxController.Button.kX.value)
         .whenPressed(cargo::retractIntake);
@@ -333,9 +339,10 @@ public class FullMap {
     new JoystickButton(cargoJoystick, XboxController.Button.kB.value)
         .whileHeld(cargo::runIntakeReverse, cargo)
         .whenReleased(cargo::stop, cargo);
-    new JoystickButton(cargoJoystick, XboxController.Button.kY.value)
-        .whileHeld(cargo::shootHigh, cargo)
-        .whenReleased(cargo::stop, cargo);
+    // Deploy hood
+    new POVButton(cargoJoystick, 0).whenPressed(cargo::deployHood, cargo);
+    // Remove hood
+    new POVButton(cargoJoystick, 180).whenPressed(cargo::removeHood, cargo);
 
     // Extend Climber override
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)
@@ -367,29 +374,6 @@ public class FullMap {
         new RumbleCommand(
             new ClimberLimitRumbleComponent(climber, CLIMBER_RUMBLE_TOLERANCE), climberJoystick);
 
-    var ramsetePrototype =
-        new RamseteBuilder()
-            .drivetrain(drive)
-            .anglePID(
-                new PIDAngleControllerBuilder()
-                    .absoluteTolerance(0.001)
-                    .onTargetBuffer(null)
-                    .minimumOutput(0)
-                    .maximumOutput(null)
-                    .loopTimeMillis(20)
-                    .deadband(2)
-                    .inverted(false)
-                    .pid(.006, 0, 0.03)
-                    .build())
-            .angleTimeout(0)
-            .field(null);
-    // .field(field);
-    Supplier<Command> spit =
-        () ->
-            new InstantCommand(cargo::spit, cargo)
-                .andThen(new WaitCommand(1))
-                .andThen(cargo::stop, cargo);
-
     // Auto
     Supplier<TrajectoryConfig> trajConfig =
         () ->
@@ -400,14 +384,14 @@ public class FullMap {
                         driveFeedforward,
                         drive.getDriveKinematics(),
                         RobotController.getBatteryVoltage()))
-//                .addConstraint(
-//                    new CentripetalAccelerationConstraint(
-//                        AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL)
-//                )
-            ;
+        //                .addConstraint(
+        //                    new CentripetalAccelerationConstraint(
+        //                        AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL)
+        //                )
+        ;
     List<Command> autoStartupCommands =
         List.of(
-            StationTwoBallAuto.createCommand(drive, cargo, ramsetePrototype, trajConfig, field)
+            StationTwoBallAuto.createCommand(drive, cargo, trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
                 .andThen(cargo::stop, cargo));
 

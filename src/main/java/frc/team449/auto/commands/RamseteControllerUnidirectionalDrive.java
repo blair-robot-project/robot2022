@@ -30,22 +30,16 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase implements
   @Log private double desiredRightVoltage;
   /**
    * @param drivetrain Drivetrain to execute command on
-   * @param leftController Velocity PID controller to use for the left side
-   * @param rightController Velocity PID controller to use for the right side
    * @param trajectory Trajectory to follow
-   * @param feedforward Feedforward used for both sides
    */
   public RamseteControllerUnidirectionalDrive(
       @NotNull DriveUnidirectionalWithGyro drivetrain,
-      @NotNull PIDController leftController,
-      @NotNull PIDController rightController,
-      @NotNull Trajectory trajectory,
-      @NotNull SimpleMotorFeedforward feedforward) {
+      @NotNull Trajectory trajectory) {
     this.drivetrain = drivetrain;
     this.ramseteFeedback = new RamseteController();
-    this.leftController = leftController;
-    this.rightController = rightController;
-    this.feedforward = feedforward;
+    this.leftController = drivetrain.leftVelPID();
+    this.rightController = drivetrain.rightVelPID();
+    this.feedforward = drivetrain.getFeedforward();
     this.trajectory = trajectory;
     addRequirements(drivetrain);
 
