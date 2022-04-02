@@ -23,9 +23,7 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.team449.CommandContainer;
@@ -220,6 +218,7 @@ public class FullMap {
             new SparkMaxConfig()
                 .setName("intakeMotor")
                 .setPort(INTAKE_LEADER_PORT)
+                .setUnitPerRotation(1)
                 .setCurrentLimit(INTAKE_CURR_LIM)
                 .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), true)
                 .createReal(),
@@ -228,11 +227,15 @@ public class FullMap {
                 .setPort(SPITTER_PORT)
                 .setEnableBrakeMode(false)
                 .createReal(),
+//          Spitter FF
+            new SimpleMotorFeedforward(0.171731,.12658,.017184),
             new SparkMaxConfig()
                 .setName("flywheelMotor")
                 .setPort(FLYWHEEL_MOTOR_PORT)
                 .setEnableBrakeMode(false)
-                .createSim(new EncoderSim(new Encoder(10, 11))),
+                .createReal(),
+//          Flywheel FF
+            new SimpleMotorFeedforward(0.171731,.12658,.017184),
             new DoubleSolenoid(
                 PCM_MODULE,
                 PneumaticsModuleType.CTREPCM,
@@ -313,12 +316,29 @@ public class FullMap {
         .whileHeld(cargo::runIntake, cargo)
         .whenReleased(cargo::stop, cargo);
     // Run all motors in intake to spit balls out
-    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
-        .whileHeld(cargo::spit, cargo)
-        .whenReleased(cargo::stop, cargo);
+    JoystickButton shootingButton = new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value);
+    shootingButton
+        .whenPressed(
+//                new InstantCommand(cargo::runIntakeReverse)
+//                .andThen(new WaitCommand(.5))
+//            .andThen(new InstantCommand(cargo::spinUp)
+//            .andThen(new WaitUntilCommand(cargo::atSpeed))
+//            .andThen(cargo::shoot))
+//                new InstantCommand(cargo::spinUp)
+//                .andThen(new WaitCommand(2)
+//                .andThen(cargo::spinUp))
+                new ParallelRaceGroup(
+                        new InstantCommand(cargo::runIntakeReverse)
+                        .andThen(new WaitCommand(.5))
+                        .andThen(cargo::stop)
+                        .andThen(new InstantCommand(cargo::spinUp)
+                        .andThen(new WaitCommand(5))
+                        .andThen(cargo::shoot)).andThen(new WaitCommand(9999))
+                        , new WaitUntilCommand(() -> !shootingButton.get())
+                ).andThen(cargo::stop));
     // Toggle shooter. Hood must be on
     new JoystickButton(cargoJoystick, XboxController.Button.kY.value)
-        .whenPressed(cargo::toggleShoot, cargo);
+        .whenPressed(cargo::stopFlywheel, cargo);
     // Stow/retract intake
     new JoystickButton(cargoJoystick, XboxController.Button.kX.value)
         .whenPressed(cargo::retractIntake);
@@ -326,7 +346,6 @@ public class FullMap {
     new JoystickButton(cargoJoystick, XboxController.Button.kA.value)
         .whileHeld(cargo::deployIntake, cargo)
         .whenReleased(cargo::stop, cargo);
-
     // Driver joystick intake deploy and retract controls
     // Stow/retract intake
     new JoystickButton(driveJoystick, XboxController.Button.kX.value)
@@ -401,7 +420,8 @@ public class FullMap {
         List.of(
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
             new InstantCommand(climber::pivotTelescopingArmIn, climber),
-            new InstantCommand(cargo::stop, cargo) /*,
+            new InstantCommand(cargo::stop, cargo),
+            new InstantCommand(cargo::deployHood)/*,
             //            climberRumbleCommand,
             intakeLimelightRumbleCommand*/);
 

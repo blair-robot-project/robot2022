@@ -13,11 +13,13 @@ public final class CargoConstants {
   /** How much is given to feeder and intake motors */
   public static final double FEEDER_OUTPUT = 0.75;
   /** How much is given to the spitter when actually spitting */
-  public static final double SPITTER_OUTPUT = 0.45;
+  public static final double SPITTER_SPEED_RPS = 3;
+  /** How much is given to the spitter when actually intaking */
+  public static final double SPITTER_INTAKE_SPEED_RPS = 1;
   /** How much is given to the spitter when shooting */
-  public static final double SPITTER_SHOOT_OUTPUT = 0.6;
+  public static final double SPITTER_SHOOT_SPEED_RPS = 12;
   /** How much is given to the shooter flywheel when shooting high */
-  public static final double SHOOTER_OUTPUT = 0.7;
+  public static final double SHOOTER_SPEED_RPS= 12;
 
   private CargoConstants() {}
 }

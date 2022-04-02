@@ -40,12 +40,12 @@ public class FiveBallAutoJames {
                         .andThen(new WaitCommand(FIRST_HALF_SPIT))
                         .andThen(quickSpit(cargo))
                         .andThen(new WaitCommand(SECOND_HALF_SPIT))
-                        .andThen(cargo::spitOrShoot, cargo)));
+                        .andThen(cargo::shoot, cargo)));
   }
 
   // this call is blocking for any given command chain
   private static Command quickSpit(Cargo2022 cargo) {
-    return new InstantCommand(cargo::spitOrShoot, cargo)
+    return new InstantCommand(cargo::shoot, cargo)
         .andThen(new WaitCommand(SPIT_TIME))
         .andThen(cargo::runIntake, cargo);
   }
