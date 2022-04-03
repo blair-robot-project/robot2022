@@ -9,16 +9,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -50,6 +41,7 @@ import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.AutoConstants;
+import frc.team449.robot2022.routines.FiveBallAuto;
 import frc.team449.robot2022.routines.StationTwoBallAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
@@ -103,8 +95,7 @@ public class FullMap {
             .setPostEncoderGearing(DRIVE_GEARING)
             .setEncoderCPR(NEO_ENCODER_CPR)
             .setExtEncoderCPR(DRIVE_EXT_ENCODER_CPR)
-            //            .setUseInternalEncAsFallback(DRIVE_ENC_POS_THRESHOLD,
-            // DRIVE_ENC_VEL_THRESHOLD)
+//            .setUseInternalEncAsFallback(DRIVE_ENC_POS_THRESHOLD, DRIVE_ENC_VEL_THRESHOLD)
             .setEnableVoltageComp(true);
 
     var driveSim =
@@ -222,17 +213,20 @@ public class FullMap {
                 .setPort(INTAKE_LEADER_PORT)
                 .setUnitPerRotation(1)
                 .setCurrentLimit(INTAKE_CURR_LIM)
+                .setEncoderCPR(NEO_ENCODER_CPR)
                 .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), true)
                 .createReal(),
             new SparkMaxConfig()
                 .setName("spitterMotor")
                 .setPort(SPITTER_PORT)
                 .setEnableBrakeMode(false)
+                .setEncoderCPR(NEO_ENCODER_CPR)
                 .createReal(),
-            new SimpleMotorFeedforward(SHOOTER_KS, SHOOTER_KV, SHOOTER_KA),
+            new SimpleMotorFeedforward(SPITTER_KS, SPITTER_KV, SPITTER_KA),
             new SparkMaxConfig()
                 .setName("flywheelMotor")
                 .setPort(FLYWHEEL_MOTOR_PORT)
+                .setEncoderCPR(NEO_ENCODER_CPR)
                 .setEnableBrakeMode(false)
                 .createReal(),
             new SimpleMotorFeedforward(SHOOTER_KS, SHOOTER_KV, SHOOTER_KA),
@@ -393,7 +387,7 @@ public class FullMap {
         ;
     List<Command> autoStartupCommands =
         List.of(
-            StationTwoBallAuto.createCommand(drive, cargo, trajConfig, field)
+            FiveBallAuto.createCommand(drive, cargo, trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
                 .andThen(cargo::stop, cargo));
 

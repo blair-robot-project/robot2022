@@ -16,7 +16,7 @@ public class FiveBallAuto {
   // Carry over the two ball auto and append to it another path that forms the three ball auto
   public static final Pose2d start = ThreeBallAuto.end;
   public static final Pose2d ball =
-      new Pose2d(1.72, 1.39, Rotation2d.fromDegrees(-150));
+      new Pose2d(1.64, 1.15, Rotation2d.fromDegrees(-169.14));
   public static final Pose2d end = start; // new Pose2d(7.60, 2.98, Rotation2d.fromDegrees(-109.86));
 
   public static Command createCommand(

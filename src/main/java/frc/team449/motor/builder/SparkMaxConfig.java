@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxLimitSwitch;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team449.motor.BackupEncoder;
 import frc.team449.motor.Encoder;
 import frc.team449.motor.WrappedMotor;

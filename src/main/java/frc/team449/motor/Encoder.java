@@ -235,7 +235,7 @@ public abstract class Encoder implements Loggable {
 
     @Override
     public double getVelocityNative() {
-      return encoder.getVelocity();
+      return encoder.getVelocity() / 60;
     }
 
     @Override

@@ -2,16 +2,15 @@ package frc.team449.robot2022.cargo;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.team449.motor.WrappedMotor;
+import io.github.oblarg.logexample.Constants;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-public class Cargo2022 extends SubsystemBase {
+public class Cargo2022 extends SubsystemBase implements Loggable {
   /** The leader motor for the intake */
   private final WrappedMotor intakeMotor;
   /** The top motor that lets balls be spit out */
@@ -27,9 +26,9 @@ public class Cargo2022 extends SubsystemBase {
   /** Piston used to deploy and remove hood */
   private final DoubleSolenoid deployHood;
   /** Tracks the desired speed of the flywheel */
-  @Config private double flywheelSpeed = 0;
+  @Log @Config private double flywheelSpeed = 0;
   /** Tracks the desired speed of the spitter */
-  @Config private double spitterSpeed = 0;
+  @Log @Config private double spitterSpeed = 0;
 
   public Cargo2022(
       @NotNull WrappedMotor intakeMotor,
@@ -63,7 +62,10 @@ public class Cargo2022 extends SubsystemBase {
    * and are ready to spit/shoot
    */
   private void startFeeding() {
-    intakeMotor.set(CargoConstants.FEEDER_OUTPUT);
+    if (!hoodOn()) intakeMotor.set(CargoConstants.FEEDER_OUTPUT);
+    else {
+      intakeMotor.set(CargoConstants.INTAKE_SPEED_HIGH_SEQUENCE);
+    }
   }
 
   /**
@@ -75,9 +77,14 @@ public class Cargo2022 extends SubsystemBase {
       spitterSpeed = CargoConstants.SPITTER_SHOOT_SPEED_RPS;
       flywheelSpeed = CargoConstants.SHOOTER_SPEED_RPS;
     } else {
-      spitterSpeed = CargoConstants.SPITTER_SPEED_RPS;
+      spitterSpeed = CargoConstants.SPITTER_SPIT_SPEED_RPS;
       flywheelSpeed = 0;
     }
+  }
+
+  public boolean atSpeed() {
+    return Math.abs(flywheelSpeed - flywheelMotor.getVelocity()) < CargoConstants.SHOOTER_TOLERANCE
+           && Math.abs(spitterSpeed - spitterMotor.getVelocity()) < CargoConstants.SHOOTER_TOLERANCE;
   }
 
   /**
@@ -90,7 +97,8 @@ public class Cargo2022 extends SubsystemBase {
             .andThen(new WaitCommand(CargoConstants.REVERSE_BEFORE_SHOOT_TIME))
             .andThen(this::stop)
             .andThen(this::spinUp)
-            .andThen(new WaitCommand(CargoConstants.SHOOT_HIGH_SPINUP_TIME))
+            .andThen(
+                new WaitCommand(CargoConstants.SHOOT_HIGH_SPINUP_TIME).withInterrupt(this::atSpeed))
             .andThen(this::startFeeding);
     var spitCommand = new InstantCommand(this::startFeeding).andThen(this::spinUp);
     return new ConditionalCommand(shootCommand, spitCommand, this::hoodOn);
@@ -130,9 +138,9 @@ public class Cargo2022 extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double flywheelDelta = flywheelSpeed - flywheelMotor.getVelocity();
-    double spitterDelta = spitterSpeed - spitterMotor.getVelocity();
-    flywheelMotor.setVoltage(flywheelFF.calculate(flywheelSpeed, flywheelDelta / 0.02));
-    spitterMotor.setVoltage(spitterFF.calculate(spitterSpeed, spitterDelta / 0.02));
+    //    double flywheelDelta = flywheelSpeed - flywheelMotor.getVelocity();
+    //    double spitterDelta = spitterSpeed - spitterMotor.getVelocity();
+    flywheelMotor.setVoltage(flywheelFF.calculate(flywheelSpeed /*, flywheelDelta / 0.02*/));
+    spitterMotor.setVoltage(spitterFF.calculate(spitterSpeed /*, spitterDelta / 0.02*/));
   }
 }

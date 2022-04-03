@@ -20,7 +20,7 @@ public class DriveConstants {
 
   public static final double DRIVE_WHEEL_RADIUS = Units.inchesToMeters(2);
   public static final double DRIVE_GEARING = 5.86;
-  public static final int NEO_ENCODER_CPR = 42, DRIVE_EXT_ENCODER_CPR = 256;
+  public static final int NEO_ENCODER_CPR = 1, DRIVE_EXT_ENCODER_CPR = 256;
   public static final int DRIVE_CURRENT_LIM = 40;
   public static final double DRIVE_ENC_POS_THRESHOLD = 0.15, DRIVE_ENC_VEL_THRESHOLD = 0.1;
   public static final double DRIVE_UPR = 0.3021211527151539;
