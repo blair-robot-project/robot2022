@@ -25,7 +25,7 @@ public class StationFourBallAuto {
       Field2d field) {
     return StationTwoBallAuto.createCommand(drive, cargo, trajConfig, field)
         .andThen(
-            AutoUtils.getBallAndScore(
+            AutoUtils.getBallAndScoreLow(
                 drive,
                 cargo,
                 trajConfig,

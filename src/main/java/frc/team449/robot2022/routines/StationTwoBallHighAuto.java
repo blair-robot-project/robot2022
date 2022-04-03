@@ -13,29 +13,30 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class StationTwoBallAuto {
+public class StationTwoBallHighAuto {
+
   public static final Pose2d start =
-      new Pose2d(7.55, 1.84, Rotation2d.fromDegrees(-90)); // TODO later
+          new Pose2d(7.55, 1.84, Rotation2d.fromDegrees(-90)); // TODO later
   public static final Pose2d ball =
-      new Pose2d(7.58, 0.85, Rotation2d.fromDegrees(-86)); // 7.55, 1.06
+          new Pose2d(7.58, 0.85, Rotation2d.fromDegrees(-86)); // 7.55, 1.06
   public static final Pose2d end = AutoUtils.pose(7.80, 2.88, -110.82);
-          //new Pose2d(7.60, 3.01, Rotation2d.fromDegrees(180 + 73));
+  //new Pose2d(7.60, 3.01, Rotation2d.fromDegrees(180 + 73));
   //          new Pose2d(7.53, 2.90, Rotation2d.fromDegrees(180 + 54.06));
 
   public static Command createCommand(
-      @NotNull DriveUnidirectionalWithGyro drive,
-      @NotNull Cargo2022 cargo,
-      @NotNull Supplier<TrajectoryConfig> trajConfig,
-      Field2d field) {
+          @NotNull DriveUnidirectionalWithGyro drive,
+          @NotNull Cargo2022 cargo,
+          @NotNull Supplier<TrajectoryConfig> trajConfig,
+          Field2d field) {
     return new InstantCommand(cargo::deployIntake, cargo)
-        .andThen(
-            AutoUtils.getBallAndScoreLow(
-                drive,
-                cargo,
-                trajConfig,
-                List.of(start, ball),
-                List.of(ball, end),
-                "StationTwoBallAuto",
-                field));
+            .andThen(
+                    AutoUtils.getBallAndScoreLow(
+                            drive,
+                            cargo,
+                            trajConfig,
+                            List.of(start, ball),
+                            List.of(ball, end),
+                            "StationTwoBallAuto",
+                            field));
   }
 }

@@ -26,7 +26,7 @@ public class HangarTwoBallAuto {
       Field2d field) {
     return new InstantCommand(cargo::deployIntake, cargo)
         .andThen(
-            AutoUtils.getBallAndScore(
+            AutoUtils.getBallAndScoreLow(
                 drive,
                 cargo,
                 trajConfig,

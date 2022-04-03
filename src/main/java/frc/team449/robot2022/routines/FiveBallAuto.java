@@ -26,7 +26,7 @@ public class FiveBallAuto {
       Field2d field) {
     return ThreeBallAuto.createCommand(drive, cargo, trajConfig, field)
         .andThen(
-            AutoUtils.getBallAndScore(
+            AutoUtils.getBallAndScoreLow(
                 drive,
                 cargo,
                 trajConfig,
