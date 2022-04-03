@@ -104,7 +104,7 @@ public class ClimberArm extends SubsystemBase implements Loggable {
   }
 
   public double getHeight() {
-    return motor.getPositionUnits();
+    return motor.getPosition();
   }
 
   @Override

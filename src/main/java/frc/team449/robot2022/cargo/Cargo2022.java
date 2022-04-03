@@ -1,6 +1,5 @@
 package frc.team449.robot2022.cargo;
 
-import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,8 +25,6 @@ public class Cargo2022 extends SubsystemBase {
   private final DoubleSolenoid deployIntake;
   /** Piston used to deploy and remove hood */
   private final DoubleSolenoid deployHood;
-  /** Bang bang controller for both the shooter and spitter */
-  private final BangBangController bangBangController = new BangBangController();
   /** Tracks the desired speed of the flywheel */
   private double flywheelSpeed = 0;
   /** Tracks the desired speed of the spitter */
@@ -98,6 +95,7 @@ public class Cargo2022 extends SubsystemBase {
     return new ConditionalCommand(shootCommand, spitCommand, this::hoodOn);
   }
 
+  /** Stop all motors */
   public void stop() {
     intakeMotor.set(0);
     spitterSpeed = 0;
@@ -124,19 +122,16 @@ public class Cargo2022 extends SubsystemBase {
     deployHood.set(DoubleSolenoid.Value.kForward);
   }
 
+  /** Is the hood on to shoot or is it out of the way to spit? */
   private boolean hoodOn() {
     return deployHood.get() == DoubleSolenoid.Value.kReverse;
   }
 
   @Override
   public void periodic() {
-    flywheelMotor.setVoltage(
-        //        bangBangController.calculate(flywheelMotor.encoder.getPositionUnits(), 0 *
-        // flywheelSpeed) * 12.0 +
-        flywheelFF.calculate(flywheelSpeed));
-    spitterMotor.setVoltage(
-        //        bangBangController.calculate(spitterMotor.encoder.getVelocityUnits(), 0 *
-        // spitterSpeed) * 12.0 +
-        spitterFF.calculate(spitterSpeed));
+    double flywheelDelta = flywheelSpeed - flywheelMotor.getVelocity();
+    double spitterDelta = spitterSpeed - spitterMotor.getVelocity();
+    flywheelMotor.setVoltage(flywheelFF.calculate(flywheelSpeed, flywheelDelta / 0.02));
+    spitterMotor.setVoltage(spitterFF.calculate(spitterSpeed, spitterDelta / 0.02));
   }
 }

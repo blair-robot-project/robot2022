@@ -10,6 +10,11 @@ public final class CargoConstants {
 
   public static final int INTAKE_CURR_LIM = 20;
 
+  /** Spitter feedforward */
+  public static final double SPITTER_KS = 0.171731, SPITTER_KV = .12658, SPITTER_KA = .017184;
+  /** Shooter feedforward */
+  public static final double SHOOTER_KS = 0.171731, SHOOTER_KV = .12658, SHOOTER_KA = .017184;
+
   /** How much is given to feeder and intake motors */
   public static final double FEEDER_OUTPUT = 0.75;
   /** How much is given to the spitter when actually spitting */

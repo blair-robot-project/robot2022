@@ -229,15 +229,13 @@ public class FullMap {
                 .setPort(SPITTER_PORT)
                 .setEnableBrakeMode(false)
                 .createReal(),
-            //          Spitter FF
-            new SimpleMotorFeedforward(0.171731, .12658, .017184),
+            new SimpleMotorFeedforward(SHOOTER_KS, SHOOTER_KV, SHOOTER_KA),
             new SparkMaxConfig()
                 .setName("flywheelMotor")
                 .setPort(FLYWHEEL_MOTOR_PORT)
                 .setEnableBrakeMode(false)
                 .createReal(),
-            //          Flywheel FF
-            new SimpleMotorFeedforward(0.171731, .12658, .017184),
+            new SimpleMotorFeedforward(SHOOTER_KS, SHOOTER_KV, SHOOTER_KA),
             new DoubleSolenoid(
                 PCM_MODULE,
                 PneumaticsModuleType.CTREPCM,
