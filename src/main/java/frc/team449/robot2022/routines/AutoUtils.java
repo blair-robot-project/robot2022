@@ -57,7 +57,7 @@ public final class AutoUtils {
             new WaitCommand(AutoConstants.PAUSE_BEFORE_INTAKE)
                 .andThen(cargo::runIntake, cargo)
                 .andThen(new WaitCommand(spitWaitTime))
-                .andThen(cargo::shoot, cargo));
+                .andThen(cargo.startShooterCommand()));
   }
 
   /**

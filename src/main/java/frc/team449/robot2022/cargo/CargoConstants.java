@@ -14,12 +14,16 @@ public final class CargoConstants {
   public static final double FEEDER_OUTPUT = 0.75;
   /** How much is given to the spitter when actually spitting */
   public static final double SPITTER_SPEED_RPS = 3;
-  /** How much is given to the spitter when actually intaking */
+  /** The speed of the spitter when actually intaking, in RPS */
   public static final double SPITTER_INTAKE_SPEED_RPS = 1;
-  /** How much is given to the spitter when shooting */
+  /** The speed of the spitter when shooting, in RPS */
   public static final double SPITTER_SHOOT_SPEED_RPS = 12;
-  /** How much is given to the shooter flywheel when shooting high */
-  public static final double SHOOTER_SPEED_RPS= 12;
+  /** The speed of the shooter flywheel when shooting high, in RPS */
+  public static final double SHOOTER_SPEED_RPS = 12;
+  /** Seconds to wait for flywheel to reach target velocity when shooting high */
+  public static final double SHOOT_HIGH_SPINUP_TIME = 5;
+  /** How many seconds to reverse the intake before spinning up and shooting */
+  public static final double REVERSE_BEFORE_SHOOT_TIME = .5;
 
   private CargoConstants() {}
 }

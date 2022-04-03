@@ -23,7 +23,9 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.team449.CommandContainer;
@@ -227,15 +229,15 @@ public class FullMap {
                 .setPort(SPITTER_PORT)
                 .setEnableBrakeMode(false)
                 .createReal(),
-//          Spitter FF
-            new SimpleMotorFeedforward(0.171731,.12658,.017184),
+            //          Spitter FF
+            new SimpleMotorFeedforward(0.171731, .12658, .017184),
             new SparkMaxConfig()
                 .setName("flywheelMotor")
                 .setPort(FLYWHEEL_MOTOR_PORT)
                 .setEnableBrakeMode(false)
                 .createReal(),
-//          Flywheel FF
-            new SimpleMotorFeedforward(0.171731,.12658,.017184),
+            //          Flywheel FF
+            new SimpleMotorFeedforward(0.171731, .12658, .017184),
             new DoubleSolenoid(
                 PCM_MODULE,
                 PneumaticsModuleType.CTREPCM,
@@ -316,27 +318,10 @@ public class FullMap {
         .whileHeld(cargo::runIntake, cargo)
         .whenReleased(cargo::stop, cargo);
     // Run all motors in intake to spit balls out
-    JoystickButton shootingButton = new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value);
-    shootingButton
-        .whenPressed(
-//                new InstantCommand(cargo::runIntakeReverse)
-//                .andThen(new WaitCommand(.5))
-//            .andThen(new InstantCommand(cargo::spinUp)
-//            .andThen(new WaitUntilCommand(cargo::atSpeed))
-//            .andThen(cargo::shoot))
-//                new InstantCommand(cargo::spinUp)
-//                .andThen(new WaitCommand(2)
-//                .andThen(cargo::spinUp))
-                new ParallelRaceGroup(
-                        new InstantCommand(cargo::runIntakeReverse)
-                        .andThen(new WaitCommand(.5))
-                        .andThen(cargo::stop)
-                        .andThen(new InstantCommand(cargo::spinUp)
-                        .andThen(new WaitCommand(5))
-                        .andThen(cargo::shoot)).andThen(new WaitCommand(9999))
-                        , new WaitUntilCommand(() -> !shootingButton.get())
-                ).andThen(cargo::stop));
-    // Toggle shooter. Hood must be on
+    new JoystickButton(cargoJoystick, XboxController.Button.kRightBumper.value)
+        .whenHeld(cargo.startShooterCommand())
+        .whenReleased(cargo::stop);
+    // Stop the flywheel for shooting
     new JoystickButton(cargoJoystick, XboxController.Button.kY.value)
         .whenPressed(cargo::stopFlywheel, cargo);
     // Stow/retract intake
@@ -421,7 +406,7 @@ public class FullMap {
             new InstantCommand(() -> drive.setDefaultCommand(driveDefaultCmd)),
             new InstantCommand(climber::pivotTelescopingArmIn, climber),
             new InstantCommand(cargo::stop, cargo),
-            new InstantCommand(cargo::deployHood)/*,
+            new InstantCommand(cargo::deployHood) /*,
             //            climberRumbleCommand,
             intakeLimelightRumbleCommand*/);
 
