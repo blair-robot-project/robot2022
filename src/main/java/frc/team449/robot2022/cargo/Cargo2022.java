@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team449.motor.WrappedMotor;
+import io.github.oblarg.oblog.annotations.Config;
 import org.jetbrains.annotations.NotNull;
 
 public class Cargo2022 extends SubsystemBase {
@@ -26,9 +27,9 @@ public class Cargo2022 extends SubsystemBase {
   /** Piston used to deploy and remove hood */
   private final DoubleSolenoid deployHood;
   /** Tracks the desired speed of the flywheel */
-  private double flywheelSpeed = 0;
+  @Config private double flywheelSpeed = 0;
   /** Tracks the desired speed of the spitter */
-  private double spitterSpeed = 0;
+  @Config private double spitterSpeed = 0;
 
   public Cargo2022(
       @NotNull WrappedMotor intakeMotor,
