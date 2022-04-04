@@ -29,7 +29,8 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
   @Log @Config private double flywheelSpeed = 0;
   /** Tracks the desired speed of the spitter */
   @Log @Config private double spitterSpeed = 0;
-
+  /** Tracks if the balls are ready to shoot*/
+  private boolean isReady = false;
   public Cargo2022(
       @NotNull WrappedMotor intakeMotor,
       @NotNull WrappedMotor spitterMotor,
@@ -50,11 +51,13 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
   public void runIntake() {
     intakeMotor.set(CargoConstants.FEEDER_OUTPUT);
     spitterSpeed = -CargoConstants.SPITTER_INTAKE_SPEED_RPS;
+    isReady = false;
   }
 
   public void runIntakeReverse() {
     intakeMotor.set(-CargoConstants.FEEDER_OUTPUT);
     spitterSpeed = -CargoConstants.SPITTER_INTAKE_SPEED_RPS;
+    isReady = true;
   }
 
   /**
@@ -87,14 +90,25 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
            && Math.abs(spitterSpeed - spitterMotor.getVelocity()) < CargoConstants.SHOOTER_TOLERANCE;
   }
 
+  /** Prepares the shooter without actually shooting, minimizes shooting time*/
+  public Command ready() {
+      return new InstantCommand(this::runIntakeReverse)
+              .andThen(new WaitCommand(CargoConstants.REVERSE_BEFORE_SHOOT_TIME))
+              .andThen(this::stop)
+              .andThen(this::spinUp);
+  }
   /**
    * Create a command that spins up the spitter (and flywheel, if the hood is on), waits till
    * they're at a speed to shoot, then spits/shoot
    */
   public Command startShooterCommand() {
-    var shootCommand =
-        new InstantCommand(this::runIntakeReverse)
+    var preSpinUp =
+            (isReady)? new WaitCommand(0) :
+            new InstantCommand(this::runIntakeReverse)
             .andThen(new WaitCommand(CargoConstants.REVERSE_BEFORE_SHOOT_TIME))
+            .andThen(this::stop);
+    var shootCommand =
+            preSpinUp
             .andThen(this::stop)
             .andThen(this::spinUp)
             .andThen(

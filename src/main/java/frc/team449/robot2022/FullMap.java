@@ -316,7 +316,7 @@ public class FullMap {
         .whenReleased(cargo::stop);
     // Stop the flywheel for shooting
     new JoystickButton(cargoJoystick, XboxController.Button.kY.value)
-        .whenPressed(cargo::stopFlywheel, cargo);
+        .whenHeld(cargo.ready());
     // Stow/retract intake
     new JoystickButton(cargoJoystick, XboxController.Button.kX.value)
         .whenPressed(cargo::retractIntake);
