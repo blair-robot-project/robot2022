@@ -6,7 +6,11 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team449.motor.WrappedMotor;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
@@ -115,11 +119,12 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
    */
   public Command startShooterCommand() {
     var preSpinUp =
-        (isReady)
-            ? new WaitCommand(0)
-            : new InstantCommand(this::runIntakeReverse, this)
+        new ConditionalCommand(
+            new WaitCommand(0),
+            new InstantCommand(this::runIntakeReverse, this)
                 .andThen(new WaitCommand(CargoConstants.REVERSE_BEFORE_SHOOT_TIME))
-                .andThen(this::stop, this);
+                .andThen(this::stop, this),
+            () -> this.isReady);
     var shootCommand =
         preSpinUp
             .andThen(this::stop, this)
