@@ -22,7 +22,7 @@ public final class CargoConstants {
   /** The speed of the spitter when actually intaking, in RPS */
   public static final double SPITTER_INTAKE_SPEED_RPS = 31;
   /** The speed of the spitter when shooting, in RPS */
-  public static final double SPITTER_SHOOT_SPEED_RPS = 40;//5;
+  public static final double SPITTER_SHOOT_SPEED_RPS = 40;
   /** The speed of the shooter flywheel when shooting high, in RPS */
   public static final double SHOOTER_SPEED_RPS = 45;
   /** Seconds to wait for flywheel to reach target velocity when shooting high */
@@ -33,5 +33,6 @@ public final class CargoConstants {
   public static final double INTAKE_SPEED_HIGH_SEQUENCE = 0.5;
   /* Tolerance for the speed (flywheel and spitter)*/
   public static final double SHOOTER_TOLERANCE = 2.0;
+
   private CargoConstants() {}
 }

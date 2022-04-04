@@ -151,7 +151,9 @@ public final class AutoUtils {
         fromBallTraj.getTotalTimeSeconds()
             - AutoConstants.PAUSE_BEFORE_INTAKE
             - AutoConstants.PAUSE_AFTER_SPIT;
-    return new RamseteControllerUnidirectionalDrive(drive, toBallTraj)
+    return new InstantCommand(cargo::deployIntake, cargo)
+        .andThen(cargo::runIntake, cargo)
+        .andThen(new RamseteControllerUnidirectionalDrive(drive, toBallTraj))
         .andThen(
             new NavXTurnToAngle(
                 fromBall.get(0).getRotation().getDegrees(),

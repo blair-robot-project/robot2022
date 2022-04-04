@@ -12,11 +12,11 @@ public final class AutoConstants {
   /** How long to wait for a ball to be shot out */
   public static final double PAUSE_AFTER_SHOOT = 1;
   // Speeds
-  public static final double AUTO_MAX_SPEED = 3.5,
-      AUTO_MAX_ACCEL = 1.75,
+  public static final double AUTO_MAX_SPEED = 3.8,
+      AUTO_MAX_ACCEL = 1.8,
       AUTO_MAX_CENTRIPETAL_ACCEL = 1.8;
   /** How long to wait for the robot to finish turning in place */
-  public static final double TURN_TIMEOUT = 4;
+  public static final double TURN_TIMEOUT = 5;
 
   private AutoConstants() {}
 }

@@ -43,7 +43,7 @@ import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.AutoConstants;
-import frc.team449.robot2022.routines.StationThreeHigh;
+import frc.team449.robot2022.routines.StationTwoBallHighAuto;
 import frc.team449.robot2022.routines.ThreeBallHighCurvyAuto;
 import frc.team449.robot2022.routines.ThreeBallHighStraightAuto;
 import frc.team449.updatable.Updater;
@@ -370,9 +370,11 @@ public class FullMap {
     // Remove hood
     new POVButton(cargoJoystick, 180).whenPressed(cargo::removeHood, cargo);
     // Remove hood
-    new JoystickButton(driveJoystick, XboxController.Button.kB.value).whenPressed(cargo::removeHood, cargo);
+    new JoystickButton(driveJoystick, XboxController.Button.kB.value)
+        .whenPressed(cargo::removeHood, cargo);
     // Deploy hood
-    new JoystickButton(driveJoystick, XboxController.Button.kY.value).whenPressed(cargo::deployHood, cargo);
+    new JoystickButton(driveJoystick, XboxController.Button.kY.value)
+        .whenPressed(cargo::deployHood, cargo);
 
     // Extend Climber override
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)
@@ -421,7 +423,8 @@ public class FullMap {
         ;
     List<Command> autoStartupCommands =
         List.of(
-            ThreeBallHighCurvyAuto.createCommand(drive, cargo, trajConfig, field)
+            ThreeBallHighCurvyAuto.createCommand(
+                    drive, cargo, trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
                 .andThen(cargo::stop, cargo));
 
