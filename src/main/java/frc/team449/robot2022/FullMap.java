@@ -1,10 +1,14 @@
 package frc.team449.robot2022;
 
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -65,6 +69,8 @@ public class FullMap {
       CLIMBER_JOYSTICK_PORT = 2;
   // Limelight
   public static final int DRIVER_PIPELINE = 0, BLUE_PIPELINE = 1, RED_PIPELINE = 2;
+  /** Control loop time */
+  public static final double LOOP_TIME = 0.02;
 
   private FullMap() {}
 
@@ -94,7 +100,8 @@ public class FullMap {
             .setPostEncoderGearing(DRIVE_GEARING)
             .setEncoderCPR(NEO_ENCODER_CPR)
             .setExtEncoderCPR(DRIVE_EXT_ENCODER_CPR)
-//            .setUseInternalEncAsFallback(DRIVE_ENC_POS_THRESHOLD, DRIVE_ENC_VEL_THRESHOLD)
+            //            .setUseInternalEncAsFallback(DRIVE_ENC_POS_THRESHOLD,
+            // DRIVE_ENC_VEL_THRESHOLD)
             .setEnableVoltageComp(true);
 
     var driveSim =
@@ -205,6 +212,22 @@ public class FullMap {
         () -> new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive);
     SmartDashboard.putData("Reset odometry", resetDriveOdometry.get());
 
+    var flywheelPlant = LinearSystemId.identifyVelocitySystem(SHOOTER_KV, SHOOTER_KA);
+    var flywheelObserver =
+        new KalmanFilter<>(
+            Nat.N1(),
+            Nat.N1(),
+            flywheelPlant,
+            VecBuilder.fill(3.0),
+            VecBuilder.fill(0.01),
+            LOOP_TIME);
+    var flywheelController =
+        new LinearQuadraticRegulator<>(
+            flywheelPlant, VecBuilder.fill(8.0), VecBuilder.fill(12.0), LOOP_TIME);
+    var flywheelLoop =
+        new LinearSystemLoop<>(
+            flywheelPlant, flywheelController, flywheelObserver, RobotController.getBatteryVoltage(), LOOP_TIME);
+
     var cargo =
         new Cargo2022(
             new SparkMaxConfig()
@@ -313,8 +336,7 @@ public class FullMap {
         .whenHeld(cargo.startShooterCommand())
         .whenReleased(cargo::stop);
     // Stop the flywheel for shooting
-    new JoystickButton(cargoJoystick, XboxController.Button.kY.value)
-        .whenHeld(cargo.ready());
+    new JoystickButton(cargoJoystick, XboxController.Button.kY.value).whenHeld(cargo.ready());
     // Stow/retract intake
     new JoystickButton(cargoJoystick, XboxController.Button.kX.value)
         .whenPressed(cargo::retractIntake);
@@ -386,7 +408,7 @@ public class FullMap {
         ;
     List<Command> autoStartupCommands =
         List.of(
-                ThreeBallHighCurvyAuto.createCommand(drive, cargo, trajConfig, field)
+            ThreeBallHighCurvyAuto.createCommand(drive, cargo, trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
                 .andThen(cargo::stop, cargo));
 
