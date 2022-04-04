@@ -125,7 +125,7 @@ public final class AutoUtils {
   public static Command getBallAndScoreHigh(
       @NotNull DriveUnidirectionalWithGyro drive,
       @NotNull Cargo2022 cargo,
-      @NotNull Supplier<PIDAngleController> pidAngleController,
+      @NotNull PIDAngleController angleController,
       @NotNull Supplier<TrajectoryConfig> trajConfig,
       @NotNull List<Pose2d> toBall,
       @NotNull List<Pose2d> fromBall,
@@ -146,9 +146,13 @@ public final class AutoUtils {
         fromBallTraj.getTotalTimeSeconds()
             - AutoConstants.PAUSE_BEFORE_INTAKE
             - AutoConstants.PAUSE_AFTER_SPIT;
-//    var turn = toBall.get(toBall.size() - 1).
     return new RamseteControllerUnidirectionalDrive(drive, toBallTraj)
-//            .andThen(new NavXTurnToAngle())
+        .andThen(
+            new NavXTurnToAngle(
+                fromBall.get(0).getRotation().getDegrees(),
+                AutoConstants.TURN_TIMEOUT,
+                drive,
+                angleController))
         .andThen(
             new RamseteControllerUnidirectionalDrive(drive, fromBallTraj)
                 .alongWith(

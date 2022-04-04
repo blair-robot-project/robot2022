@@ -35,7 +35,7 @@ public class StationTwoBallLowAuto {
                 trajConfig,
                 List.of(start, ball),
                 List.of(ball, end),
-                "StationTwoBallAuto",
+                StationTwoBallLowAuto.class.getSimpleName(),
                 field));
   }
 }
