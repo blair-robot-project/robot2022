@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ThreeBallHighGoalCurvyAuto {
+public class ThreeBallHighCurvyAuto {
   private static final Pose2d start = AutoUtils.pose(7.58, 2.97, 180 - 112.55);
   private static final Pose2d turnPoint = AutoUtils.pose(7.30, 1.23, 180 - 79.53);
   private static final Pose2d ball2 = AutoUtils.pose(5.58, 2.16, -151.70);
@@ -42,7 +42,7 @@ public class ThreeBallHighGoalCurvyAuto {
             List.of(turnPoint, ball2, between, ball3, end),
             trajConfig.get().setReversed(false).addConstraints(constraints));
     var fullTraj = turnTraj.concatenate(getBallsTraj);
-    field.getObject(ThreeBallAuto.class.getSimpleName()).setTrajectory(fullTraj);
+    field.getObject(ThreeBallLowAuto.class.getSimpleName()).setTrajectory(fullTraj);
     return AutoUtils.shootHighCommand(cargo)
         .andThen(cargo::runIntake, cargo)
         .andThen(new RamseteControllerUnidirectionalDrive(drive, fullTraj))

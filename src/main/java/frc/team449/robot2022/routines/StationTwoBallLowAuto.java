@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class StationTwoBallAuto {
+public class StationTwoBallLowAuto {
   public static final Pose2d start =
       new Pose2d(7.55, 1.84, Rotation2d.fromDegrees(-90)); // TODO later
   public static final Pose2d ball =

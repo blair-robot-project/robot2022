@@ -12,10 +12,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class StationFourBallAuto {
-  public static final Pose2d start = StationTwoBallAuto.end;
-  public static final Pose2d ball3 = new Pose2d(5.57, 1.91, Rotation2d.fromDegrees(-171.63));
-  public static final Pose2d ball4 = AutoUtils.pose(1.64, 1.15, -169.14);//new Pose2d(1.69, 1.15, Rotation2d.fromDegrees(180.0));
+public class ThreeBallLowAuto {
+  // Carry over the two ball auto and append to it another path that forms the three ball auto
+  public static final Pose2d start = StationTwoBallLowAuto.end;
+  public static final Pose2d ball =
+      new Pose2d(5.41, 1.76, Rotation2d.fromDegrees(133.92)); // 5.54, 2.24, 360 - 146.61
+  // new Pose2d(5.54, 2.06, Rotation2d.fromDegrees(-169.14));
   public static final Pose2d end = start;
 
   public static Command createCommand(
@@ -23,16 +25,15 @@ public class StationFourBallAuto {
       @NotNull Cargo2022 cargo,
       @NotNull Supplier<TrajectoryConfig> trajConfig,
       Field2d field) {
-    return StationTwoBallAuto.createCommand(drive, cargo, trajConfig, field)
+    return StationTwoBallLowAuto.createCommand(drive, cargo, trajConfig, field)
         .andThen(
             AutoUtils.getBallAndScoreLow(
                 drive,
                 cargo,
                 trajConfig,
-                List.of(start, ball3, ball4),
-                List.of(ball4, ball3, end),
-                "StationFourBallAuto",
+                List.of(start, ball),
+                List.of(ball, end),
+                "ThreeBallAuto",
                 field));
   }
 }
-
