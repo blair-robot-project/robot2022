@@ -30,6 +30,13 @@ public final class AutoUtils {
   }
 
   /**
+   * Reverse the heading of a pose
+   */
+  public static Pose2d reverse(Pose2d pose) {
+    return pose(pose.getX(), pose.getY(), pose.getRotation().getDegrees() + 180);
+  }
+
+  /**
    * Create an auto command that runs intake, goes to a ball, picks it up, comes back, and spits it
    * out. Despite the name, the robot may already have a preloaded ball xor may happen to pick up
    * two balls on the way
