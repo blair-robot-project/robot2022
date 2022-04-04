@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class Encoder implements Loggable {
   /** Counts per rotation of the encoder */
   protected final int encoderCPR;
+
   private final String name;
   /** Meters traveled per rotation of the motor */
   private final double unitPerRotation;
@@ -23,9 +24,9 @@ public abstract class Encoder implements Loggable {
    */
   private final boolean calculateVel;
   /** The last measured position, in case we're calculating velocity on our own */
-  private double prevPos;
+  private double prevPos = 0;
   /** The time at which the last position was measured */
-  private double prevTime;
+  private double prevTime = Double.NaN;
 
   /**
    * @param encoderCPR Counts per rotation of the encoder
@@ -46,7 +47,6 @@ public abstract class Encoder implements Loggable {
     this.postEncoderGearing = postEncoderGearing;
     this.calculateVel = calculateVel;
   }
-
 
   /** Reset encoder position to the given position */
   public abstract void resetPosition(double pos);

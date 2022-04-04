@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Cargo2022 extends SubsystemBase implements Loggable {
   /** Whether or not to use the state space API for flywheel */
-  private static final boolean USE_STATE_SPACE = true;
+  private static final boolean USE_STATE_SPACE = false;
   /** The leader motor for the intake */
   private final WrappedMotor intakeMotor;
   /** The top motor that lets balls be spit out */

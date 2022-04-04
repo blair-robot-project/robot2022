@@ -2,13 +2,10 @@ package frc.team449.robot2022;
 
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -32,6 +29,7 @@ import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.motor.builder.SparkMaxConfig;
+import frc.team449.multiSubsystem.StateSpaceModelBuilder;
 import frc.team449.oi.RampComponent;
 import frc.team449.oi.joystick.RumbleCommand;
 import frc.team449.oi.throttles.Polynomial;
@@ -104,10 +102,12 @@ public class FullMap {
             // DRIVE_ENC_VEL_THRESHOLD)
             .setEnableVoltageComp(true);
 
+    var drivePlant =
+        LinearSystemId.identifyDrivetrainSystem(
+            DRIVE_FF_KV, DRIVE_FF_KA, DRIVE_ANGLE_FF_KV, DRIVE_ANGLE_FF_KA);
     var driveSim =
         new DifferentialDrivetrainSim(
-            LinearSystemId.identifyDrivetrainSystem(
-                DRIVE_FF_KV, DRIVE_FF_KA, DRIVE_ANGLE_FF_KV, DRIVE_ANGLE_FF_KA),
+            drivePlant,
             DCMotor.getNEO(3),
             DRIVE_GEARING,
             DRIVE_TRACK_WIDTH,
@@ -139,6 +139,17 @@ public class FullMap {
             .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_1_PORT), false)
             .addSlaveSpark(FollowerUtils.createFollowerSpark(RIGHT_LEADER_FOLLOWER_2_PORT), false)
             .createRealOrSim(rightEncSim);
+
+    // todo characterize and then actually use this
+    var driveLoop =
+        new StateSpaceModelBuilder<>(Nat.N2())
+            .loopTime(LOOP_TIME)
+            .plant(drivePlant)
+            .stateStdDevs(VecBuilder.fill(3.0, 3.0))
+            .measStdDevs(VecBuilder.fill(0.01, 0.01))
+            .errorTolerances(VecBuilder.fill(1.0, 1.0))
+            .maxControlEfforts(VecBuilder.fill(12, 12))
+            .build();
 
     var driveFeedforward = new SimpleMotorFeedforward(DRIVE_FF_KS, DRIVE_FF_KV, DRIVE_FF_KA);
     var drive =
@@ -212,21 +223,15 @@ public class FullMap {
         () -> new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive);
     SmartDashboard.putData("Reset odometry", resetDriveOdometry.get());
 
-    var flywheelPlant = LinearSystemId.identifyVelocitySystem(SHOOTER_KV, SHOOTER_KA);
-    var flywheelObserver =
-        new KalmanFilter<>(
-            Nat.N1(),
-            Nat.N1(),
-            flywheelPlant,
-            VecBuilder.fill(3.0),
-            VecBuilder.fill(0.01),
-            LOOP_TIME);
-    var flywheelController =
-        new LinearQuadraticRegulator<>(
-            flywheelPlant, VecBuilder.fill(8.0), VecBuilder.fill(12.0), LOOP_TIME);
     var flywheelLoop =
-        new LinearSystemLoop<>(
-            flywheelPlant, flywheelController, flywheelObserver, RobotController.getBatteryVoltage(), LOOP_TIME);
+        new StateSpaceModelBuilder<>(Nat.N1())
+            .loopTime(LOOP_TIME)
+            .plant(LinearSystemId.identifyVelocitySystem(SHOOTER_KV, SHOOTER_KA))
+            .stateStdDevs(VecBuilder.fill(3.0))
+            .measStdDevs(VecBuilder.fill(0.01))
+            .errorTolerances(VecBuilder.fill(SHOOTER_TOLERANCE))
+            .maxControlEfforts(VecBuilder.fill(RobotController.getBatteryVoltage()))
+            .build();
 
     var cargo =
         new Cargo2022(
@@ -244,12 +249,14 @@ public class FullMap {
                 .setEnableBrakeMode(false)
                 .setEncoderCPR(NEO_ENCODER_CPR)
                 .createReal(),
+            flywheelLoop,
             new SimpleMotorFeedforward(SPITTER_KS, SPITTER_KV, SPITTER_KA),
             new SparkMaxConfig()
                 .setName("flywheelMotor")
                 .setPort(FLYWHEEL_MOTOR_PORT)
                 .setEncoderCPR(NEO_ENCODER_CPR)
                 .setEnableBrakeMode(false)
+                .setCalculateVel(true)
                 .createReal(),
             new SimpleMotorFeedforward(SHOOTER_KS, SHOOTER_KV, SHOOTER_KA),
             new DoubleSolenoid(
