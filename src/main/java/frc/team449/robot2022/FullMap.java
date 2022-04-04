@@ -43,7 +43,9 @@ import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.AutoConstants;
+import frc.team449.robot2022.routines.StationThreeHigh;
 import frc.team449.robot2022.routines.ThreeBallHighCurvyAuto;
+import frc.team449.robot2022.routines.ThreeBallHighStraightAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -223,10 +225,11 @@ public class FullMap {
         () -> new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive);
     SmartDashboard.putData("Reset odometry", resetDriveOdometry.get());
 
+    var flywheelPlant = LinearSystemId.identifyVelocitySystem(SHOOTER_KV, SHOOTER_KA);
     var flywheelLoop =
         new StateSpaceModelBuilder<>(Nat.N1())
             .loopTime(LOOP_TIME)
-            .plant(LinearSystemId.identifyVelocitySystem(SHOOTER_KV, SHOOTER_KA))
+            .plant(flywheelPlant)
             .stateStdDevs(VecBuilder.fill(3.0))
             .measStdDevs(VecBuilder.fill(0.01))
             .errorTolerances(VecBuilder.fill(SHOOTER_TOLERANCE))
@@ -256,7 +259,6 @@ public class FullMap {
                 .setPort(FLYWHEEL_MOTOR_PORT)
                 .setEncoderCPR(NEO_ENCODER_CPR)
                 .setEnableBrakeMode(false)
-                .setCalculateVel(true)
                 .createReal(),
             new SimpleMotorFeedforward(SHOOTER_KS, SHOOTER_KV, SHOOTER_KA),
             new DoubleSolenoid(
@@ -354,7 +356,7 @@ public class FullMap {
     // Driver joystick intake deploy and retract controls
     // Stow/retract intake
     new JoystickButton(driveJoystick, XboxController.Button.kX.value)
-        .whenPressed(cargo::retractIntake);
+        .whenPressed(cargo::retractIntake, cargo);
     // Deploy intake
     new JoystickButton(driveJoystick, XboxController.Button.kA.value)
         .whileHeld(cargo::deployIntake, cargo)
@@ -367,6 +369,10 @@ public class FullMap {
     new POVButton(cargoJoystick, 0).whenPressed(cargo::deployHood, cargo);
     // Remove hood
     new POVButton(cargoJoystick, 180).whenPressed(cargo::removeHood, cargo);
+    // Remove hood
+    new JoystickButton(driveJoystick, XboxController.Button.kB.value).whenPressed(cargo::removeHood, cargo);
+    // Deploy hood
+    new JoystickButton(driveJoystick, XboxController.Button.kY.value).whenPressed(cargo::deployHood, cargo);
 
     // Extend Climber override
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)

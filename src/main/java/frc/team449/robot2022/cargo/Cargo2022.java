@@ -1,13 +1,15 @@
 package frc.team449.robot2022.cargo;
 
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.team449.motor.WrappedMotor;
-import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
@@ -117,17 +119,17 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
     var preSpinUp =
         (isReady)
             ? new WaitCommand(0)
-            : new InstantCommand(this::runIntakeReverse)
+            : new InstantCommand(this::runIntakeReverse, this)
                 .andThen(new WaitCommand(CargoConstants.REVERSE_BEFORE_SHOOT_TIME))
-                .andThen(this::stop);
+                .andThen(this::stop, this);
     var shootCommand =
         preSpinUp
-            .andThen(this::stop)
-            .andThen(this::spinUp)
+            .andThen(this::stop, this)
+            .andThen(this::spinUp, this)
             .andThen(
                 new WaitCommand(CargoConstants.SHOOT_HIGH_SPINUP_TIME).withInterrupt(this::atSpeed))
-            .andThen(this::startFeeding);
-    var spitCommand = new InstantCommand(this::startFeeding).andThen(this::spinUp);
+            .andThen(this::startFeeding, this);
+    var spitCommand = new InstantCommand(this::startFeeding, this).andThen(this::spinUp, this);
     return new ConditionalCommand(shootCommand, spitCommand, this::hoodOn);
   }
 
@@ -163,19 +165,24 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
     return deployHood.get() == DoubleSolenoid.Value.kReverse;
   }
 
+  @Log
+  private double flywheelOutput() {
+    return flywheelMotor.get();
+  }
+
   @Override
   public void periodic() {
+    var currTime = Timer.getFPGATimestamp();
+    if (Double.isNaN(lastTime)) {
+      this.lastTime = currTime;
+    }
+    var dt = currTime - lastTime;
+
     if (USE_STATE_SPACE) {
-      var currTime = Clock.currentTimeSeconds();
-      if (Double.isNaN(lastTime)) {
-        this.lastTime = currTime;
-      }
-      var dt = currTime - lastTime;
       flywheelLoop.setNextR(flywheelSpeed);
       flywheelLoop.correct(VecBuilder.fill(flywheelMotor.getVelocity()));
       flywheelLoop.predict(dt);
       flywheelMotor.setVoltage(flywheelLoop.getU(0));
-      this.lastTime = currTime;
     } else {
       //    double flywheelDelta = flywheelSpeed - flywheelMotor.getVelocity();
       //    double spitterDelta = spitterSpeed - spitterMotor.getVelocity();
@@ -183,5 +190,6 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
     }
 
     spitterMotor.setVoltage(spitterFF.calculate(spitterSpeed /*, spitterDelta / 0.02*/));
+    this.lastTime = currTime;
   }
 }

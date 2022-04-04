@@ -33,7 +33,7 @@ public class ThreeBallLowAuto {
                 trajConfig,
                 List.of(start, ball),
                 List.of(ball, end),
-                "ThreeBallAuto",
+                ThreeBallLowAuto.class.getSimpleName(),
                 field));
   }
 }

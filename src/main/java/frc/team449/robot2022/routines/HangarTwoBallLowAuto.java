@@ -32,7 +32,7 @@ public class HangarTwoBallLowAuto {
                 trajConfig,
                 List.of(start, ball),
                 List.of(ball, end),
-                "HangarTwoBallAuto",
+                HangarTwoBallLowAuto.class.getSimpleName(),
                 field));
   }
 }

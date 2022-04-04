@@ -29,9 +29,7 @@ public final class AutoUtils {
     return new Pose2d(x, y, Rotation2d.fromDegrees(degs));
   }
 
-  /**
-   * Reverse the heading of a pose
-   */
+  /** Reverse the heading of a pose */
   public static Pose2d reverse(Pose2d pose) {
     return pose(pose.getX(), pose.getY(), pose.getRotation().getDegrees() + 180);
   }
@@ -163,8 +161,8 @@ public final class AutoUtils {
         .andThen(
             new RamseteControllerUnidirectionalDrive(drive, fromBallTraj)
                 .alongWith(
-                    new InstantCommand(cargo::deployHood, cargo),
-                    new WaitCommand(AutoConstants.PAUSE_BEFORE_INTAKE)
+                    new InstantCommand(cargo::deployHood, cargo)
+                        .andThen(new WaitCommand(AutoConstants.PAUSE_BEFORE_INTAKE))
                         .andThen(cargo::runIntake, cargo)
                         .andThen(new WaitCommand(spitWaitTime))
                         .andThen(cargo.startShooterCommand())));
