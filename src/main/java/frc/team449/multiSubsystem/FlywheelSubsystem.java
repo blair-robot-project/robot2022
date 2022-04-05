@@ -29,7 +29,7 @@ public class FlywheelSubsystem extends SubsystemBase implements Loggable {
   private double lastTime = Double.NaN;
 
   /** The desired velocity of the flywheel */
-  @Log @Config private double targetVel;
+  @Log private double targetVel;
 
   protected FlywheelSubsystem(
       @NotNull WrappedMotor motor,

@@ -7,10 +7,10 @@ public final class ClimberConstants {
   public static final int CLIMBER_PISTON_FWD_CHANNEL = 1, CLIMBER_PISTON_REV_CHANNEL = 0;
   /** Hall Effect sensor channels */
   public static final int CLIMBER_LEFT_SENSOR_CHANNEL = 0, CLIMBER_RIGHT_SENSOR_CHANNEL = 1;
-  /** Speeds at which to extend and retract arms */
-  public static final double CLIMBER_EXTEND_VEL = 0.5,
-      CLIMBER_RETRACT_VEL = -0.5,
-      CLIMBER_RETRACT_VEL_SLOW = -0.2;
+  /** Percent output at which to extend and retract arms */
+  public static final double CLIMBER_EXTEND_OUTPUT = 0.75,
+      CLIMBER_RETRACT_OUTPUT = -0.55,
+      CLIMBER_RETRACT_OUTPUT_SLOW = -0.3;
   /** Height limit during high climb */
   public static final double CLIMBER_DISTANCE = 1.8;
   /** Height limit during mid climb */

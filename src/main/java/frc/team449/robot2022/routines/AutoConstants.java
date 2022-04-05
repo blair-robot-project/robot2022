@@ -10,7 +10,7 @@ public final class AutoConstants {
   /** How long to wait for the balls to be spat out */
   public static final double PAUSE_AFTER_SPIT = 0.2;
   /** How long to wait for a ball to be shot out */
-  public static final double PAUSE_AFTER_SHOOT = 1;
+  public static final double PAUSE_AFTER_SHOOT = .8;
   // Speeds
   public static final double AUTO_MAX_SPEED = 3.8,
       AUTO_MAX_ACCEL = 1.8,

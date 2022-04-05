@@ -169,6 +169,7 @@ public final class AutoUtils {
   public static Command shootHighCommand(@NotNull Cargo2022 cargo) {
     return new InstantCommand(cargo::deployHood)
         .andThen(cargo.startShooterCommand())
-        .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SHOOT));
+        .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SHOOT))
+        .andThen(cargo::stop, cargo);
   }
 }

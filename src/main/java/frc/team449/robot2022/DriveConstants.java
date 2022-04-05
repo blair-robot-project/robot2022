@@ -30,10 +30,10 @@ public class DriveConstants {
       DRIVE_FF_KS = 0.1908,
       DRIVE_FF_KV = 2.5406,
       DRIVE_FF_KA = 0.44982;
-  // todo actually use these feedforward values
+  // todo characterize again to get better angular gains
   public static final double DRIVE_ANGLE_FF_KS = 0.20112,
-      DRIVE_ANGLE_FF_KV = 171.58,
-      DRIVE_ANGLE_FF_KA = 22.755,
+      DRIVE_ANGLE_FF_KV = 2, //171.58,
+      DRIVE_ANGLE_FF_KA = 0.5, //22.755,
       DRIVE_ANGLE_KP = 0.006, // 221.18
       DRIVE_ANGLE_KI = 0,
       DRIVE_ANGLE_KD = 0.03;

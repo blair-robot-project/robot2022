@@ -20,7 +20,7 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
   /** Piston used to deploy and remove hood */
   private final DoubleSolenoid deployHood;
   /** Tracks if the balls are ready to shoot */
-  private boolean isReady = false;
+  @Log private boolean isReady = false;
 
   public Cargo2022(
       @NotNull WrappedMotor intakeMotor,
@@ -48,8 +48,8 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
   }
 
   /**
-   * Run the intake belts (but don't change the spitter and shooter speeds) so the balls move up
-   * and are ready to spit/shoot
+   * Run the intake belts (but don't change the spitter and shooter speeds) so the balls move up and
+   * are ready to spit/shoot
    */
   private void startFeeding() {
     if (!hoodOn()) intakeMotor.set(CargoConstants.FEEDER_OUTPUT);
@@ -85,20 +85,19 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
         .andThen(this::spinUp);
   }
   /**
-   * Create a command that spins up the spitter (and shooter, if the hood is on), waits till
-   * they're at a speed to shoot, then spits/shoot
+   * Create a command that spins up the spitter (and shooter, if the hood is on), waits till they're
+   * at a speed to shoot, then spits/shoot
    */
   public Command startShooterCommand() {
     var preSpinUp =
         new ConditionalCommand(
             new WaitCommand(0),
             new InstantCommand(this::runIntakeReverse, this)
-                .andThen(new WaitCommand(CargoConstants.REVERSE_BEFORE_SHOOT_TIME))
-                .andThen(this::stop, this),
+                .andThen(new WaitCommand(CargoConstants.REVERSE_BEFORE_SHOOT_TIME)),
             () -> this.isReady);
     var shootCommand =
         preSpinUp
-            .andThen(this::stop, this)
+            .andThen(() -> intakeMotor.set(0), this)
             .andThen(this::spinUp, this)
             .andThen(
                 new WaitCommand(CargoConstants.SHOOT_HIGH_SPINUP_TIME).withInterrupt(this::atSpeed))

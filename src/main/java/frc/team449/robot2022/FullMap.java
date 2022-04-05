@@ -45,6 +45,7 @@ import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.AutoConstants;
+import frc.team449.robot2022.routines.PathPlannerThreeBallHighAuto;
 import frc.team449.robot2022.routines.ThreeBallHighCurvyAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
@@ -244,6 +245,7 @@ public class FullMap {
                 .setPostEncoderGearing(SPITTER_GEARING)
                 .setEnableBrakeMode(false)
                 .setEncoderCPR(NEO_ENCODER_CPR)
+                .setCalculateVel(true)
                 .createRealOrSim(spitterEncSim),
             spitterLoop,
             new SimpleMotorFeedforward(SPITTER_KS, SPITTER_KV, SPITTER_KA),
@@ -264,11 +266,12 @@ public class FullMap {
     var shooter =
         FlywheelSubsystem.create(
             new SparkMaxConfig()
-                .setName("flywheelMotor")
+                .setName("shooterMotor")
                 .setPort(SHOOTER_PORT)
                 .setPostEncoderGearing(SHOOTER_GEARING)
                 .setEncoderCPR(NEO_ENCODER_CPR)
                 .setEnableBrakeMode(false)
+                .setCalculateVel(true)
                 .createRealOrSim(shooterEncSim),
             shooterLoop,
             new SimpleMotorFeedforward(SHOOTER_KS, SHOOTER_KV, SHOOTER_KA),
@@ -349,9 +352,9 @@ public class FullMap {
             pivotPiston,
             CLIMBER_DISTANCE,
             CLIMBER_MID_DISTANCE,
-            CLIMBER_EXTEND_VEL,
-            CLIMBER_RETRACT_VEL,
-            CLIMBER_RETRACT_VEL_SLOW);
+                CLIMBER_EXTEND_OUTPUT,
+                CLIMBER_RETRACT_OUTPUT,
+                CLIMBER_RETRACT_OUTPUT_SLOW);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.of(drive, cargo, climber);
@@ -404,11 +407,11 @@ public class FullMap {
 
     // Extend Climber override
     new JoystickButton(climberJoystick, XboxController.Button.kY.value)
-        .whileHeld(() -> climber.setRaw(CLIMBER_EXTEND_VEL), climber)
+        .whileHeld(() -> climber.setRaw(CLIMBER_EXTEND_OUTPUT), climber)
         .whenReleased(() -> climber.setRaw(0), climber);
     // Retract climber override
     new JoystickButton(climberJoystick, XboxController.Button.kA.value)
-        .whileHeld(() -> climber.setRaw(CLIMBER_RETRACT_VEL), climber)
+        .whileHeld(() -> climber.setRaw(CLIMBER_RETRACT_OUTPUT), climber)
         .whenReleased(() -> climber.setRaw(0), climber);
     // Extend Climber
     new POVButton(climberJoystick, 0)

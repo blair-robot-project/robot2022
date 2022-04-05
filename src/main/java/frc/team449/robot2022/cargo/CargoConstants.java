@@ -26,15 +26,15 @@ public final class CargoConstants {
   /** The speed of the spitter when shooting, in RPS */
   public static final double SPITTER_SHOOT_SPEED_RPS = 40;
   /** The speed of the shooter flywheel when shooting high, in RPS */
-  public static final double SHOOTER_SPEED_RPS = 45;
+  public static final double SHOOTER_SPEED_RPS = 45.1;
   /** Seconds to wait for flywheel to reach target velocity when shooting high */
-  public static final double SHOOT_HIGH_SPINUP_TIME = 2;
+  public static final double SHOOT_HIGH_SPINUP_TIME = 1;
   /** How many seconds to reverse the intake before spinning up and shooting */
   public static final double REVERSE_BEFORE_SHOOT_TIME = .07;
   /* Speed of the intake while doing the high shooter sequence */
   public static final double INTAKE_SPEED_HIGH_SEQUENCE = 0.5;
-  /* Tolerance for the speed (flywheel and spitter)*/
-  public static final double SHOOTER_TOLERANCE = 2.0;
+  /* Tolerance for the speed (shooter and spitter)*/
+  public static final double SHOOTER_TOLERANCE = 2.5;
 
   private CargoConstants() {}
 }

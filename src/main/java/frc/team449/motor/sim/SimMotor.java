@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SimMotor implements MotorController {
   @NotNull private final DCMotorSim motorSim;
-  private double currOutput;
+  private double currOutput = 0;
   private boolean isInverted = false;
 
   public SimMotor(@NotNull DCMotorSim motorSim) {
