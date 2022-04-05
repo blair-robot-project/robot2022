@@ -23,7 +23,7 @@ public class ThreeBallHighCurvyAuto {
   private static final Pose2d ball2 = AutoUtils.pose(5.52, 2.40, -129.29);
   private static final Pose2d between1 = AutoUtils.pose(5.98, 1.27, -34.08);
   private static final Pose2d ball3 = AutoUtils.pose(7.26, 0.83, -48.95);
-  private static final Pose2d between2 = AutoUtils.pose(8.11, 0.85, 67.89);
+  private static final Pose2d between2 = AutoUtils.pose(8.11, 0.9, 20.00);
   private static final Pose2d between3 = AutoUtils.pose(8.23, 1.75, 98.13);
 
   public static Command createCommand(

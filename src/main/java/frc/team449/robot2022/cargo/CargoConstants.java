@@ -4,11 +4,13 @@ public final class CargoConstants {
   public static final int INTAKE_LEADER_PORT = 8,
       INTAKE_FOLLOWER_PORT = 10,
       SPITTER_PORT = 9,
-      FLYWHEEL_MOTOR_PORT = 12;
+      SHOOTER_PORT = 12;
   public static final int INTAKE_PISTON_FWD_CHANNEL = 3, INTAKE_PISTON_REV_CHANNEL = 2;
   public static final int HOOD_PISTON_FWD_CHANNEL = 5, HOOD_PISTON_REV_CHANNEL = 4;
 
   public static final int INTAKE_CURR_LIM = 20;
+
+  public static final double SHOOTER_GEARING = 1, SPITTER_GEARING = 1;
 
   /** Spitter feedforward */
   public static final double SPITTER_KS = -0.15654, SPITTER_KV = .12658, SPITTER_KA = .017184; //0.171731 ks
@@ -26,7 +28,7 @@ public final class CargoConstants {
   /** The speed of the shooter flywheel when shooting high, in RPS */
   public static final double SHOOTER_SPEED_RPS = 45;
   /** Seconds to wait for flywheel to reach target velocity when shooting high */
-  public static final double SHOOT_HIGH_SPINUP_TIME = 10;
+  public static final double SHOOT_HIGH_SPINUP_TIME = 2;
   /** How many seconds to reverse the intake before spinning up and shooting */
   public static final double REVERSE_BEFORE_SHOOT_TIME = .07;
   /* Speed of the intake while doing the high shooter sequence */

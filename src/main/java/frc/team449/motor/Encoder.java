@@ -13,12 +13,12 @@ public abstract class Encoder implements Loggable {
 
   private final String name;
   /** Meters traveled per rotation of the motor */
-  private final double unitPerRotation;
+  public final double unitPerRotation;
   /**
    * The coefficient the output changes by after being measured by the encoder, e.g. this would be
    * 1/70 if there was a 70:1 gearing between the encoder and the final output.
    */
-  private final double postEncoderGearing;
+  private final double gearing;
   /**
    * Whether or not to calculate velocity on our own instead of using the encoder's implementation
    */
@@ -31,7 +31,7 @@ public abstract class Encoder implements Loggable {
   /**
    * @param encoderCPR Counts per rotation of the encoder
    * @param unitPerRotation Meters traveled per rotation of the motor
-   * @param postEncoderGearing The factor the output changes by after being measured by the encoder
+   * @param gearing The factor the output changes by after being measured by the encoder
    * @param calculateVel Whether or not we should calculate velocity ourselves (instead of using the
    *     encoder's own velocity)
    */
@@ -39,12 +39,12 @@ public abstract class Encoder implements Loggable {
       @NotNull String name,
       int encoderCPR,
       double unitPerRotation,
-      double postEncoderGearing,
+      double gearing,
       boolean calculateVel) {
     this.name = name;
     this.unitPerRotation = unitPerRotation;
     this.encoderCPR = encoderCPR;
-    this.postEncoderGearing = postEncoderGearing;
+    this.gearing = gearing;
     this.calculateVel = calculateVel;
   }
 
@@ -74,7 +74,7 @@ public abstract class Encoder implements Loggable {
    * @return The encoder distance converted to meters
    */
   public final double encoderToUnit(double revs) {
-    return revs * unitPerRotation / postEncoderGearing / encoderCPR;
+    return revs * unitPerRotation / gearing / encoderCPR;
   }
 
   /**
@@ -84,7 +84,7 @@ public abstract class Encoder implements Loggable {
    * @return A distance in encoder units
    */
   public final double unitToEncoder(double meters) {
-    return meters * encoderCPR * postEncoderGearing / unitPerRotation;
+    return meters * encoderCPR * gearing / unitPerRotation;
   }
 
   /**
@@ -114,7 +114,7 @@ public abstract class Encoder implements Loggable {
    *     no encoder CPR was given.
    */
   public double encoderToUPS(final double encoderReading) {
-    return nativeToRPS(encoderReading) * unitPerRotation / postEncoderGearing;
+    return nativeToRPS(encoderReading) * unitPerRotation / gearing;
   }
 
   /**
@@ -126,7 +126,7 @@ public abstract class Encoder implements Loggable {
    *     given.
    */
   public double upsToEncoder(final double MPS) {
-    return rpsToNative((MPS * postEncoderGearing) / unitPerRotation);
+    return rpsToNative((MPS * gearing) / unitPerRotation);
   }
 
   /** Current position in meters */

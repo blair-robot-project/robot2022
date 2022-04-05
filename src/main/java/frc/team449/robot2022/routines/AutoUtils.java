@@ -122,7 +122,8 @@ public final class AutoUtils {
   /**
    * Create an auto command that runs intake, goes to a ball, picks it up, turns around, comes back,
    * and shoots it into the upper hub. Despite the name, the robot may already have a preloaded ball
-   * xor may happen to pick up two balls on the way
+   * xor may happen to pick up two balls on the way.<br>
+   * Assumes you start facing the ball. The Command ends with the robot facing the hub
    *
    * @param toBall The poses to hit on the way to the ball (including the start and end poses)
    * @param fromBall The poses to hit on the way back to the hub (including the start and end poses)
@@ -146,11 +147,6 @@ public final class AutoUtils {
       field.getObject(name + "fromball").setTrajectory(fromBallTraj);
     }
 
-    // How much to wait to spit after the intake starts
-    var spitWaitTime =
-        fromBallTraj.getTotalTimeSeconds()
-            - AutoConstants.PAUSE_BEFORE_INTAKE
-            - AutoConstants.PAUSE_AFTER_SPIT;
     return new InstantCommand(cargo::deployIntake, cargo)
         .andThen(cargo::runIntake, cargo)
         .andThen(new RamseteControllerUnidirectionalDrive(drive, toBallTraj))
@@ -164,10 +160,9 @@ public final class AutoUtils {
             new RamseteControllerUnidirectionalDrive(drive, fromBallTraj)
                 .alongWith(
                     new InstantCommand(cargo::deployHood, cargo)
-                        .andThen(new WaitCommand(AutoConstants.PAUSE_BEFORE_INTAKE))
-                        .andThen(cargo::runIntake, cargo)
-                        .andThen(new WaitCommand(spitWaitTime))
-                        .andThen(cargo.startShooterCommand())));
+                        .andThen(cargo::retractIntake, cargo)
+                        .andThen(cargo::runIntake, cargo)))
+        .andThen(cargo.startShooterCommand());
   }
 
   /** A complete command to shoot high */

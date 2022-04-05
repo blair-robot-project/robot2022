@@ -13,6 +13,7 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +30,7 @@ import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.motor.builder.SparkMaxConfig;
+import frc.team449.multiSubsystem.FlywheelSubsystem;
 import frc.team449.multiSubsystem.StateSpaceModelBuilder;
 import frc.team449.oi.RampComponent;
 import frc.team449.oi.joystick.RumbleCommand;
@@ -43,9 +45,7 @@ import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.AutoConstants;
-import frc.team449.robot2022.routines.StationTwoBallHighAuto;
 import frc.team449.robot2022.routines.ThreeBallHighCurvyAuto;
-import frc.team449.robot2022.routines.ThreeBallHighStraightAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -225,16 +225,55 @@ public class FullMap {
         () -> new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive);
     SmartDashboard.putData("Reset odometry", resetDriveOdometry.get());
 
-    var flywheelPlant = LinearSystemId.identifyVelocitySystem(SHOOTER_KV, SHOOTER_KA);
-    var flywheelLoop =
+    var spitterEncSim = new EncoderSim(new Encoder(10, 11));
+    var spitterPlant = LinearSystemId.identifyVelocitySystem(SHOOTER_KV, SHOOTER_KA);
+    var spitterLoop =
         new StateSpaceModelBuilder<>(Nat.N1())
             .loopTime(LOOP_TIME)
-            .plant(flywheelPlant)
+            .plant(spitterPlant)
             .stateStdDevs(VecBuilder.fill(3.0))
             .measStdDevs(VecBuilder.fill(0.01))
             .errorTolerances(VecBuilder.fill(SHOOTER_TOLERANCE))
             .maxControlEfforts(VecBuilder.fill(RobotController.getBatteryVoltage()))
             .build();
+    var spitter =
+        FlywheelSubsystem.create(
+            new SparkMaxConfig()
+                .setName("spitterMotor")
+                .setPort(SPITTER_PORT)
+                .setPostEncoderGearing(SPITTER_GEARING)
+                .setEnableBrakeMode(false)
+                .setEncoderCPR(NEO_ENCODER_CPR)
+                .createRealOrSim(spitterEncSim),
+            spitterLoop,
+            new SimpleMotorFeedforward(SPITTER_KS, SPITTER_KV, SPITTER_KA),
+            new FlywheelSim(spitterPlant, DCMotor.getNEO(1), SPITTER_GEARING),
+            spitterEncSim);
+
+    var shooterEncSim = new EncoderSim(new Encoder(12, 13));
+    var shooterPlant = LinearSystemId.identifyVelocitySystem(SHOOTER_KV, SHOOTER_KA);
+    var shooterLoop =
+        new StateSpaceModelBuilder<>(Nat.N1())
+            .loopTime(LOOP_TIME)
+            .plant(shooterPlant)
+            .stateStdDevs(VecBuilder.fill(3.0))
+            .measStdDevs(VecBuilder.fill(0.01))
+            .errorTolerances(VecBuilder.fill(SHOOTER_TOLERANCE))
+            .maxControlEfforts(VecBuilder.fill(RobotController.getBatteryVoltage()))
+            .build();
+    var shooter =
+        FlywheelSubsystem.create(
+            new SparkMaxConfig()
+                .setName("flywheelMotor")
+                .setPort(SHOOTER_PORT)
+                .setPostEncoderGearing(SHOOTER_GEARING)
+                .setEncoderCPR(NEO_ENCODER_CPR)
+                .setEnableBrakeMode(false)
+                .createRealOrSim(shooterEncSim),
+            shooterLoop,
+            new SimpleMotorFeedforward(SHOOTER_KS, SHOOTER_KV, SHOOTER_KA),
+            new FlywheelSim(shooterPlant, DCMotor.getNEO(1), SHOOTER_GEARING),
+            shooterEncSim);
 
     var cargo =
         new Cargo2022(
@@ -246,21 +285,8 @@ public class FullMap {
                 .setEncoderCPR(NEO_ENCODER_CPR)
                 .addSlaveSpark(FollowerUtils.createFollowerSpark(INTAKE_FOLLOWER_PORT), true)
                 .createReal(),
-            new SparkMaxConfig()
-                .setName("spitterMotor")
-                .setPort(SPITTER_PORT)
-                .setEnableBrakeMode(false)
-                .setEncoderCPR(NEO_ENCODER_CPR)
-                .createReal(),
-            flywheelLoop,
-            new SimpleMotorFeedforward(SPITTER_KS, SPITTER_KV, SPITTER_KA),
-            new SparkMaxConfig()
-                .setName("flywheelMotor")
-                .setPort(FLYWHEEL_MOTOR_PORT)
-                .setEncoderCPR(NEO_ENCODER_CPR)
-                .setEnableBrakeMode(false)
-                .createReal(),
-            new SimpleMotorFeedforward(SHOOTER_KS, SHOOTER_KV, SHOOTER_KA),
+            spitter,
+            shooter,
             new DoubleSolenoid(
                 PCM_MODULE,
                 PneumaticsModuleType.CTREPCM,
@@ -423,8 +449,7 @@ public class FullMap {
         ;
     List<Command> autoStartupCommands =
         List.of(
-            ThreeBallHighCurvyAuto.createCommand(
-                    drive, cargo, trajConfig, field)
+            ThreeBallHighCurvyAuto.createCommand(drive, cargo, trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
                 .andThen(cargo::stop, cargo));
 

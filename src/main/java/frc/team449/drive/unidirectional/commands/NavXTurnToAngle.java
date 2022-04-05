@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
 import frc.team449.other.Clock;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.DoubleSupplier;
@@ -28,7 +29,10 @@ public class NavXTurnToAngle extends CommandBase {
   /** The time this command was initiated */
   protected long startTime;
 
-  protected final PIDAngleController controller;
+  private final PIDAngleController controller;
+
+  @Log
+  private double currOutput;
 
   /**
    * Construct a {@link NavXTurnToAngle} command to turn to an (absolute) angle.
@@ -106,6 +110,7 @@ public class NavXTurnToAngle extends CommandBase {
   public void execute() {
     // Process the output with deadband, minimum output, etc.
     double output = controller.getOutput(drive.getAHRS().getCachedHeading());
+    this.currOutput = output;
 
     // spin to the right angle
     drive.setOutput(-output, output);
