@@ -1,5 +1,6 @@
 package frc.team449.drive.unidirectional.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -98,7 +99,7 @@ public class NavXTurnToAngle extends CommandBase {
     // Logger.addEvent("NavXTurnToAngle init.", this.getClass());
     // Set up start time
     this.startTime = Clock.currentTimeMillis();
-    controller.setSetpoint(Util.clipTo180(setpointSupplier.getAsDouble()));
+    controller.setSetpoint(MathUtil.inputModulus(setpointSupplier.getAsDouble(), -180, 180));
   }
 
   /** Give output to the motors based on the output of the PID loop. */

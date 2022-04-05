@@ -1,5 +1,6 @@
 package frc.team449.oi.joystick;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449.multiSubsystem.SubsystemWrapper;
@@ -36,8 +37,8 @@ public class RumbleCommand extends CommandBase {
   public void execute() {
     var leftRightRumble = rumbleSupplier.getOutput();
     this.rumbleJoysticks(
-        Util.clamp(leftRightRumble.getFirst() / rumbleSupplier.maxOutput(), 0.0, 1.0),
-        Util.clamp(leftRightRumble.getSecond() / rumbleSupplier.maxOutput(), 0.0, 1.0));
+        MathUtil.clamp(leftRightRumble.getFirst() / rumbleSupplier.maxOutput(), 0.0, 1.0),
+        MathUtil.clamp(leftRightRumble.getSecond() / rumbleSupplier.maxOutput(), 0.0, 1.0));
   }
 
   private void rumbleJoysticks(double leftRumble, double rightRumble) {

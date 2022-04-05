@@ -1,5 +1,6 @@
 package frc.team449.ahrs;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import frc.team449.other.Util;
@@ -42,7 +43,7 @@ public class PIDAngleController implements Loggable {
    * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
    *     Can be null for no buffer.
    * @param minimumOutput The minimum output (absolute value) of the loop. Defaults to zero.
-   * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
+   * @param maximumOutput The maximum output (absolute value) of the loop. Can be null, and if it is, no maximum
    *     output is used.
    * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
    *     ms.
@@ -121,9 +122,9 @@ public class PIDAngleController implements Loggable {
    */
   private double processOutput(double controllerOutput) {
     if (controllerOutput > 0) {
-      controllerOutput = Util.clamp(controllerOutput, minimumOutput, maximumOutput);
+      controllerOutput = MathUtil.clamp(controllerOutput, minimumOutput, maximumOutput);
     } else if (controllerOutput < 0) {
-      controllerOutput = Util.clamp(controllerOutput, -maximumOutput, -minimumOutput);
+      controllerOutput = MathUtil.clamp(controllerOutput, -maximumOutput, -minimumOutput);
     }
 
     if (inverted) {

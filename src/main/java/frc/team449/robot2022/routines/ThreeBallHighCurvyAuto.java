@@ -38,9 +38,13 @@ public class ThreeBallHighCurvyAuto {
             trajConfig.get().setReversed(true).addConstraints(constraints));
     var getBallsTraj =
         TrajectoryGenerator.generateTrajectory(
-            List.of(turnPoint, ball2, between1, ball3, between2, between3, end),
+            List.of(turnPoint, ball2, between1, ball3),
             trajConfig.get().setReversed(false).addConstraints(constraints));
-    var fullTraj = turnTraj.concatenate(getBallsTraj);
+    var returnTraj =
+        TrajectoryGenerator.generateTrajectory(
+            List.of(ball3, between2, between3, end),
+            trajConfig.get().setReversed(false).addConstraints(constraints));
+    var fullTraj = turnTraj.concatenate(getBallsTraj).concatenate(returnTraj);
     field.getObject(ThreeBallHighCurvyAuto.class.getSimpleName()).setTrajectory(fullTraj);
     return AutoUtils.shootHighCommand(cargo)
         .andThen(
@@ -49,7 +53,11 @@ public class ThreeBallHighCurvyAuto {
                     new WaitCommand(0.2)
                         .andThen(cargo::deployIntake, cargo)
                         .andThen(cargo::runIntake, cargo)
-                        .andThen(new WaitCommand(fullTraj.getTotalTimeSeconds() - 3))
+                        .andThen(
+                            new WaitCommand(
+                                turnTraj.getTotalTimeSeconds()
+                                    + getBallsTraj.getTotalTimeSeconds()
+                                    + 0.1))
                         .andThen(cargo::retractIntake, cargo)))
         .andThen(AutoUtils.shootHighCommand(cargo));
   }
