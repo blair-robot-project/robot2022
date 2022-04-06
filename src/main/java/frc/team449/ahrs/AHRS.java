@@ -142,6 +142,15 @@ public class AHRS implements Updatable, Loggable {
   }
 
   /**
+   * Get the absolute Z acceleration of the robot.
+   *
+   * @return Linear Z acceleration, in meters/(sec^2)
+   */
+  public double getZAccel() {
+    return gsToMetersPerSecondSquared(ahrs.getWorldLinearAccelZ());
+  }
+
+  /**
    * Get the pitch value.
    *
    * @return The pitch, in degrees from [-180, 180]

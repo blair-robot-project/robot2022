@@ -26,9 +26,6 @@ public class JerkRumbleComponent implements RumbleComponent {
    */
   private final double maxJerk;
 
-  /** Whether the NavX Y-axis measures forwards-back jerk or left-right jerk. */
-  private final boolean yIsFrontBack; // TODO why is this never accessed
-
   /**
    * Variables for the per-call rumble calculation representing the directional accelerations.
    * Fields to avoid garbage collection.
@@ -53,12 +50,10 @@ public class JerkRumbleComponent implements RumbleComponent {
       @NotNull AHRS ahrs,
       @NotNull List<? extends @NotNull GenericHID> joysticks,
       double minJerk,
-      double maxJerk,
-      boolean yIsFrontBack) {
+      double maxJerk) {
     this.ahrs = ahrs;
     this.minJerk = minJerk;
     this.maxJerk = maxJerk;
-    this.yIsFrontBack = yIsFrontBack;
     this.timeLastCalled = 0;
     this.lastFrontBackAccel = 0;
     this.lastLeftRightAccel = 0;

@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 public class HangarTwoBallLowAuto {
   public static final Pose2d start =
-      new Pose2d(6.06, 5.13, Rotation2d.fromDegrees(135)); // TODO later
+      new Pose2d(6.06, 5.13, Rotation2d.fromDegrees(135));
   public static final Pose2d ball = new Pose2d(5.33, 5.87, Rotation2d.fromDegrees(132.44));
   public static final Pose2d end = new Pose2d(6.99, 4.53, Rotation2d.fromDegrees(180 - 21.64));
 

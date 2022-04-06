@@ -1,8 +1,5 @@
 package frc.team449.robot2022.routines;
 
-import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
-import frc.team449.robot2022.DriveConstants;
-
 public final class AutoConstants {
 
   /**

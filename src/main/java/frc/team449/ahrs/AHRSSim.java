@@ -87,6 +87,11 @@ public class AHRSSim extends AHRS {
   }
 
   @Override
+  public double getZAccel() {
+    return gsToMetersPerSecondSquared(linearWorldAccelZ.get());
+  }
+
+  @Override
   public double getPitch() {
     return pitch.get();
   }
