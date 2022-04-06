@@ -10,7 +10,16 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -45,9 +54,7 @@ import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.AutoConstants;
-import frc.team449.robot2022.routines.HangarTwoBallHigh;
-import frc.team449.robot2022.routines.PathPlannerThreeBallHighAuto;
-import frc.team449.robot2022.routines.ThreeBallHighCurvyAuto;
+import frc.team449.robot2022.routines.StationTwoBallHighAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -353,9 +360,9 @@ public class FullMap {
             pivotPiston,
             CLIMBER_DISTANCE,
             CLIMBER_MID_DISTANCE,
-                CLIMBER_EXTEND_OUTPUT,
-                CLIMBER_RETRACT_OUTPUT,
-                CLIMBER_RETRACT_OUTPUT_SLOW);
+            CLIMBER_EXTEND_OUTPUT,
+            CLIMBER_RETRACT_OUTPUT,
+            CLIMBER_RETRACT_OUTPUT_SLOW);
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.of(drive, cargo, climber);
@@ -453,7 +460,14 @@ public class FullMap {
         ;
     List<Command> autoStartupCommands =
         List.of(
-            HangarTwoBallHigh.createCommand(drive, cargo, trajConfig, field)
+            StationTwoBallHighAuto.createCommand(
+                    drive,
+                    cargo,
+                    pidAngleControllerPrototype
+                        .maximumOutput(RobotController.getBatteryVoltage())
+                        .pid(AutoConstants.TURN_KP, AutoConstants.TURN_KI, AutoConstants.TURN_KD),
+                    trajConfig,
+                    field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
                 .andThen(cargo::stop, cargo));
 

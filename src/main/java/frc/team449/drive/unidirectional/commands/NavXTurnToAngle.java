@@ -3,6 +3,7 @@ package frc.team449.drive.unidirectional.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team449.ahrs.PIDAngleController;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
@@ -31,7 +32,6 @@ public class NavXTurnToAngle extends CommandBase {
 
   private final PIDAngleController controller;
 
-  @Log
   private double currOutput;
 
   /**
@@ -72,6 +72,9 @@ public class NavXTurnToAngle extends CommandBase {
     this.timeout = (long) (timeout * 1000);
     this.controller = controller;
     addRequirements(this.drive);
+    SmartDashboard.putData("NavxTurnToAngle", builder -> {
+      builder.addDoubleProperty("curroutput", () -> currOutput, x -> {});
+    });
   }
 
   /**
