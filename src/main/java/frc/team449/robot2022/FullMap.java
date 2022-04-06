@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449.ahrs.AHRS;
+import frc.team449.ahrs.PIDAngleController;
 import frc.team449.ahrs.PIDAngleControllerBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
@@ -45,8 +46,8 @@ import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.climber.PivotingTelescopingClimber;
 import frc.team449.robot2022.routines.AutoConstants;
-import frc.team449.robot2022.routines.HangarTwoBallHigh;
 import frc.team449.robot2022.routines.PathPlannerThreeBallHighAuto;
+import frc.team449.robot2022.routines.StationTwoBallHighAuto;
 import frc.team449.robot2022.routines.ThreeBallHighCurvyAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
@@ -362,6 +363,10 @@ public class FullMap {
 
     SmartDashboard.putData("Intake deploy piston: ", new InstantCommand(cargo::deployIntake));
     SmartDashboard.putData("Intake retract piston: ", new InstantCommand(cargo::retractIntake));
+    SmartDashboard.putData("NavxTurnToAngle", builder -> {
+      builder.addDoubleProperty("setpoint", PIDAngleController::getSetpoint, x -> {});
+    });
+    SmartDashboard.putData("NavxTurnToAngle", new InstantCommand(PIDAngleController::getError););
 
     Updater.subscribe(() -> field.setRobotPose(drive.getCurrentPose()));
 
@@ -453,9 +458,9 @@ public class FullMap {
         ;
     List<Command> autoStartupCommands =
         List.of(
-            HangarTwoBallHigh.createCommand(drive, cargo, trajConfig, field)
+            StationTwoBallHighAuto.createCommand(drive, cargo, pidAngleControllerPrototype::build, trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
-                .andThen(cargo::stop, cargo));
+                .andThen(cargo::stop, cargo))
 
     List<Command> robotStartupCommands = List.of();
 
