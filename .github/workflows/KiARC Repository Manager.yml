@@ -1,6 +1,9 @@
 name: KiARC Repository Manager
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - "*"
 jobs:
   kiarc-repository-manager:
     name: KiARC Repository Manager
