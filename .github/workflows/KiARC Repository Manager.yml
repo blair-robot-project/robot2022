@@ -3,7 +3,15 @@ name: KiARC Repository Manager
 on:
   push:
     branches:
+      - dev
+      - mvp-testing
       - "*"
+    paths-ignore:
+      - "README.md"
+      - "gradle/**"
+      - "*.vpr"
+      - "*.sh"
+      - "*.txt"
 jobs:
   kiarc-repository-manager:
     name: KiARC Repository Manager
