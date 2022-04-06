@@ -6,9 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** Builder for {@link frc.team449.ahrs.PIDAngleController PIDAngleController} */
-public final class PIDAngleControllerBuilder {
+public final class PIDAngleControllerBuilder implements Supplier<PIDAngleController> {
   private Double absoluteTolerance;
   private @Nullable Debouncer onTargetBuffer;
   private double minimumOutput = 0;
@@ -94,6 +95,12 @@ public final class PIDAngleControllerBuilder {
       copy.absoluteTolerance(absoluteTolerance);
     }
     return copy;
+  }
+
+  @Override
+  @NotNull
+  public PIDAngleController get() {
+    return this.build();
   }
 
   @Contract(" -> new")
