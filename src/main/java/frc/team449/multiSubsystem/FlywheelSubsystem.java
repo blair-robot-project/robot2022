@@ -17,8 +17,8 @@ import io.github.oblarg.oblog.annotations.Config;
 import org.jetbrains.annotations.NotNull;
 
 public class FlywheelSubsystem extends SubsystemBase implements Loggable {
-  /** Whether or not to use the state space API for flywheel */
-  private static final boolean USE_STATE_SPACE = true;
+  /** Whether or not to use the state space API for flywheels */
+  private static final boolean USE_STATE_SPACE = false;
 
   @NotNull private final String name;
 
@@ -89,7 +89,7 @@ public class FlywheelSubsystem extends SubsystemBase implements Loggable {
   protected final double nextVoltage() {
     var currTime = Timer.getFPGATimestamp();
     if (Double.isNaN(lastTime)) {
-      this.lastTime = currTime;
+      this.lastTime = currTime - 0.02;
     }
     var dt = currTime - lastTime;
     this.lastTime = currTime;
@@ -98,7 +98,7 @@ public class FlywheelSubsystem extends SubsystemBase implements Loggable {
       flywheelLoop.setNextR(targetVel);
       flywheelLoop.correct(VecBuilder.fill(motor.getVelocity()));
       flywheelLoop.predict(dt);
-      return flywheelLoop.getU(0);
+      return flywheelLoop.getU(0) + feedforward.ks * Math.signum(targetVel);
     } else {
       return feedforward.calculate(targetVel);
     }

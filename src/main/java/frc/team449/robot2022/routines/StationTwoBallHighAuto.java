@@ -18,7 +18,7 @@ public class StationTwoBallHighAuto {
   public static final Pose2d start = StationTwoBallLowAuto.start;
   public static final Pose2d ball = StationTwoBallLowAuto.ball;
   public static final Pose2d ballReversed = AutoUtils.reverse(ball);
-  public static final Pose2d end = AutoUtils.reverse(StationTwoBallLowAuto.end);
+  public static final Pose2d end = AutoUtils.pose(7.63, 2.89, 77.47);
 
   public static Command createCommand(
       @NotNull DriveUnidirectionalWithGyro drive,

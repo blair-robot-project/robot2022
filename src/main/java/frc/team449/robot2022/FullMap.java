@@ -150,7 +150,7 @@ public class FullMap {
             .plant(drivePlant)
             .stateStdDevs(VecBuilder.fill(3.0, 3.0))
             .measStdDevs(VecBuilder.fill(0.01, 0.01))
-            .errorTolerances(VecBuilder.fill(1.0, 1.0))
+            .errorTolerances(VecBuilder.fill(0.5, 0.5))
             .maxControlEfforts(VecBuilder.fill(12, 12))
             .build();
 
