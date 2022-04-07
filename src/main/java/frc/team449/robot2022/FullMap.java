@@ -11,7 +11,16 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -42,9 +51,9 @@ import frc.team449.oi.throttles.ThrottleWithRamp;
 import frc.team449.oi.unidirectional.arcade.OIArcadeWithDPad;
 import frc.team449.other.FollowerUtils;
 import frc.team449.robot2022.cargo.Cargo2022;
+import frc.team449.robot2022.climber.Climber2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
-import frc.team449.robot2022.climber.Climber2022;
 import frc.team449.robot2022.routines.AutoConstants;
 import frc.team449.robot2022.routines.StationTwoBallHighAuto;
 import frc.team449.updatable.Updater;
@@ -400,6 +409,12 @@ public class FullMap {
     new POVButton(cargoJoystick, 0).whenPressed(cargo::deployHood, cargo);
     // Remove hood
     new POVButton(cargoJoystick, 180).whenPressed(cargo::removeHood, cargo);
+    // Remove hood and then turn off solenoid
+    new POVButton(cargoJoystick, 90)
+        .whenPressed(
+            new InstantCommand(cargo::removeHood, cargo)
+                .andThen(new WaitCommand(0.02))
+                .andThen(new InstantCommand(cargo::turnHoodOff, cargo)));
     // Remove hood
     new JoystickButton(driveJoystick, XboxController.Button.kB.value)
         .whenPressed(cargo::removeHood, cargo);

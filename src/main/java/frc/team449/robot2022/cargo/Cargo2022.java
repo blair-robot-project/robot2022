@@ -1,7 +1,11 @@
 package frc.team449.robot2022.cargo;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team449.motor.WrappedMotor;
 import frc.team449.multiSubsystem.FlywheelSubsystem;
 import io.github.oblarg.oblog.Loggable;
@@ -52,8 +56,9 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
    * are ready to spit/shoot
    */
   private void startFeeding() {
-    if (!hoodOn()) intakeMotor.set(CargoConstants.FEEDER_OUTPUT);
-    else {
+    if (!hoodOn()) {
+      intakeMotor.set(CargoConstants.FEEDER_OUTPUT);
+    } else {
       intakeMotor.set(CargoConstants.INTAKE_SPEED_HIGH_SEQUENCE);
     }
   }
@@ -63,12 +68,17 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
    * spitter
    */
   private void spinUp() {
-    if (hoodOn()) {
-      spitter.setTargetVel(CargoConstants.SPITTER_SHOOT_SPEED_RPS);
-      shooter.setTargetVel(CargoConstants.SHOOTER_SPEED_RPS);
-    } else {
-      spitter.setTargetVel(CargoConstants.SPITTER_SPIT_SPEED_RPS);
-      shooter.stop();
+    switch (deployHood.get()) {
+      case kReverse:
+        spitter.setTargetVel(CargoConstants.SPITTER_SHOOT_SPEED_RPS);
+        shooter.setTargetVel(CargoConstants.SHOOTER_SPEED_RPS);
+        break;
+      case kForward:
+        spitter.setTargetVel(CargoConstants.SPITTER_SPIT_SPEED_RPS);
+        shooter.stop();
+      case kOff:
+        spitter.setTargetVel(CargoConstants.SPITTER_SHOOT_SPIT_SIDE_SPEED);
+        shooter.setTargetVel(CargoConstants.SHOOTER_SHOOT_SPIT_SIDE_SPEED);
     }
   }
 
@@ -129,8 +139,13 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
     deployHood.set(DoubleSolenoid.Value.kForward);
   }
 
+  /** Set the hood solenoid to off */
+  public void turnHoodOff() {
+    deployHood.set(DoubleSolenoid.Value.kOff);
+  }
+
   /** Is the hood on to shoot or is it out of the way to spit? */
   private boolean hoodOn() {
-    return deployHood.get() == DoubleSolenoid.Value.kReverse;
+    return deployHood.get() != DoubleSolenoid.Value.kForward;
   }
 }

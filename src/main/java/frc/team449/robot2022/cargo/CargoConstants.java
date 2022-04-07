@@ -27,6 +27,10 @@ public final class CargoConstants {
   public static final double SPITTER_SHOOT_SPEED_RPS = 40;
   /** The speed of the shooter flywheel when shooting high, in RPS */
   public static final double SHOOTER_SPEED_RPS = 45.1;
+  /** The speed of the spitter flywheel when shooting high on the same side as low goal */
+  public static final double SPITTER_SHOOT_SPIT_SIDE_SPEED = 100;
+  /** The speed of the shooter flywheel when shooting high on the same side as low goal */
+  public static final double SHOOTER_SHOOT_SPIT_SIDE_SPEED = 50;
   /** Seconds to wait for flywheel to reach target velocity when shooting high */
   public static final double SHOOT_HIGH_SPINUP_TIME = 1;
   /** How many seconds to reverse the intake before spinning up and shooting */
