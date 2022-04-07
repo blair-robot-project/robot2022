@@ -25,7 +25,7 @@ public class ThreeBallHighCurvyAuto {
   public static final double ballsEndVel = 3.0;
   public static final Pose2d between2 = AutoUtils.pose(7.99, 0.88, 41.01);
   public static final Pose2d between3 = AutoUtils.pose(7.93, 1.83, 98.13);
-  public static final Pose2d end = start;
+  public static final Pose2d end = AutoUtils.pose(7.93, 2.78, 78.93);
 
   public static Command createCommand(
       @NotNull DriveUnidirectionalWithGyro drive,
@@ -57,7 +57,7 @@ public class ThreeBallHighCurvyAuto {
     field.getObject(ThreeBallHighCurvyAuto.class.getSimpleName()).setTrajectory(fullTraj);
     var totalTime = fullTraj.getTotalTimeSeconds();
     var deployWaitTime = 0.02;
-    var retractWaitTime = totalTime - deployWaitTime - 3;
+    var retractWaitTime = turnTraj.getTotalTimeSeconds() + getBallsTraj.getTotalTimeSeconds() - deployWaitTime + 3.2;
     var shootWaitTime = totalTime - deployWaitTime - retractWaitTime - 1.5;
     return AutoUtils.shootHighCommand(cargo)
         .andThen(

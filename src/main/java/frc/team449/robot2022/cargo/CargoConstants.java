@@ -24,9 +24,13 @@ public final class CargoConstants {
   /** The speed of the spitter when actually intaking, in RPS */
   public static final double SPITTER_INTAKE_SPEED_RPS = 31;
   /** The speed of the spitter when shooting, in RPS */
-  public static final double SPITTER_SHOOT_SPEED_RPS = 40;
+  public static final double SPITTER_SHOOT_SPEED_RPS = 41.5;
   /** The speed of the shooter flywheel when shooting high, in RPS */
-  public static final double SHOOTER_SPEED_RPS = 45.1;
+  public static final double SHOOTER_SPEED_RPS = 46.5;
+  /** The speed of the spitter when shooting high in auto, in RPS */
+  public static final double AUTO_SPITTER_SHOOT_SPEED = 42.5;
+  /** The speed of the shooter flywheel when shooting high in auto, in RPS */
+  public static final double AUTO_SHOOTER_SPEED = 47.5;
   /** The speed of the spitter flywheel when shooting high on the same side as low goal */
   public static final double SPITTER_SHOOT_SPIT_SIDE_SPEED = 100;
   /** The speed of the shooter flywheel when shooting high on the same side as low goal */

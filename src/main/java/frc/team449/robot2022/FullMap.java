@@ -55,7 +55,7 @@ import frc.team449.robot2022.climber.Climber2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.routines.AutoConstants;
-import frc.team449.robot2022.routines.StationTwoBallHighAuto;
+import frc.team449.robot2022.routines.ThreeBallHighCurvyAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -465,14 +465,16 @@ public class FullMap {
                 .addConstraint(
                     new CentripetalAccelerationConstraint(
                         AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL));
+    var autoPidAngleController =
+        pidAngleControllerPrototype
+            .maximumOutput(RobotController.getBatteryVoltage())
+            .pid(AutoConstants.TURN_KP, AutoConstants.TURN_KI, AutoConstants.TURN_KD);
     List<Command> autoStartupCommands =
         List.of(
-            StationTwoBallHighAuto.createCommand(
+            ThreeBallHighCurvyAuto.createCommand(
                     drive,
                     cargo,
-                    pidAngleControllerPrototype
-                        .maximumOutput(RobotController.getBatteryVoltage())
-                        .pid(AutoConstants.TURN_KP, AutoConstants.TURN_KI, AutoConstants.TURN_KD),
+                    // autoPidAngleController,
                     trajConfig,
                     field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
