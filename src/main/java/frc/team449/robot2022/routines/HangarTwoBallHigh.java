@@ -24,14 +24,23 @@ public class HangarTwoBallHigh {
         PathPlanner.loadPath(
             "Hangar 2-Ball High", AutoConstants.AUTO_MAX_SPEED, AutoConstants.AUTO_MAX_ACCEL);
     field.getObject("Hangar 2-Ball High").setTrajectory(traj);
+    var totalTime = traj.getTotalTimeSeconds();
+    var retractWaitTime = totalTime - 1.5;
+    var shootWaitTime = totalTime - retractWaitTime - 1;
     return new RamseteControllerUnidirectionalDrive(drive, traj)
         .alongWith(
             new InstantCommand(cargo::deployIntake, cargo)
                 .andThen(cargo::runIntake, cargo)
-                .andThen(cargo::removeHood, cargo)
+                .andThen(cargo::deployHood, cargo)
                 .andThen(new WaitCommand(traj.getTotalTimeSeconds() - 1.5))
                 .andThen(cargo::retractIntake, cargo)
-                .andThen(cargo::stop, cargo)
-                .andThen(cargo::startShooterCommand, cargo));
+                .andThen(new WaitCommand(shootWaitTime))
+                .andThen(cargo::deployHood)
+                .andThen(cargo.startShooterCommand())
+            ////                            .andThen(cargo::stop, cargo)
+            //                    .andThen(cargo::deployHood, cargo)
+            //                            .andThen(cargo::startShooterCommand, cargo)
+            //                            .andThen(new WaitCommand(3))
+            );
   }
 }

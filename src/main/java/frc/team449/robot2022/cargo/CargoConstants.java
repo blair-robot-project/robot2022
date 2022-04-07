@@ -22,7 +22,7 @@ public final class CargoConstants {
   /** How much is given to the spitter when actually spitting */
   public static final double SPITTER_SPIT_SPEED_RPS = 30;
   /** The speed of the spitter when actually intaking, in RPS */
-  public static final double SPITTER_INTAKE_SPEED_RPS = 31;
+   public static final double SPITTER_INTAKE_SPEED_RPS = 31;
   /** The speed of the spitter when shooting, in RPS */
   public static final double SPITTER_SHOOT_SPEED_RPS = 41.5;
   /** The speed of the shooter flywheel when shooting high, in RPS */
@@ -40,7 +40,7 @@ public final class CargoConstants {
   /** How many seconds to reverse the intake before spinning up and shooting */
   public static final double REVERSE_BEFORE_SHOOT_TIME = .07;
   /* Speed of the intake while doing the high shooter sequence */
-  public static final double INTAKE_SPEED_HIGH_SEQUENCE = 0.5;
+  public static final double INTAKE_SPEED_HIGH_SEQUENCE = 0.8;
   /* Tolerance for the speed (shooter and spitter)*/
   public static final double SHOOTER_TOLERANCE = 2.5;
 

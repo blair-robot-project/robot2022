@@ -77,6 +77,7 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
       case kForward:
         spitter.setTargetVel(CargoConstants.SPITTER_SPIT_SPEED_RPS);
         shooter.stop();
+        break;
       case kOff:
         spitter.setTargetVel(CargoConstants.SPITTER_SHOOT_SPIT_SIDE_SPEED);
         shooter.setTargetVel(CargoConstants.SHOOTER_SHOOT_SPIT_SIDE_SPEED);

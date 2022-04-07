@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class ThreeBallHighCurvyAuto {
-  public static final double MAX_CENTRIPETAL_ACCEL = 0.8;
+  public static final double MAX_CENTRIPETAL_ACCEL = 1.2;
   public static final Pose2d start = AutoUtils.pose(7.56, 2.99, 180 - 112.55);
   public static final Pose2d turnPoint = AutoUtils.pose(6.78, 1.93, 180 - 69.62);
   public static final Pose2d ball2 = AutoUtils.pose(5.54, 2.40, -132.80);

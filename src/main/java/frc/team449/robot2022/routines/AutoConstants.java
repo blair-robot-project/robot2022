@@ -13,7 +13,7 @@ public final class AutoConstants {
   public static final double PAUSE_AFTER_SHOOT = .8;
   // Speeds
   public static final double AUTO_MAX_SPEED = 4.0,
-      AUTO_MAX_ACCEL = 2,
+      AUTO_MAX_ACCEL = 2.2,
       AUTO_MAX_CENTRIPETAL_ACCEL = 2;
   /** How long to wait for the robot to finish turning in place */
   public static final double TURN_TIMEOUT = 3;

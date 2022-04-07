@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public class StationFourBallLowAuto {
   public static final Pose2d start = StationTwoBallLowAuto.end;
   public static final Pose2d ball3 = new Pose2d(5.57, 1.91, Rotation2d.fromDegrees(-171.63));
-  public static final Pose2d ball4 = AutoUtils.pose(1.64, 1.15, -169.14);//new Pose2d(1.69, 1.15, Rotation2d.fromDegrees(180.0));
+  public static final Pose2d ball4 = AutoUtils.pose(1.78, 1.24, -169.14);
   public static final Pose2d end = start;
 
   public static Command createCommand(
