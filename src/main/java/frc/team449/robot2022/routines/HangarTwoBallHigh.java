@@ -31,6 +31,6 @@ public class HangarTwoBallHigh {
                         .andThen(new WaitCommand(traj.getTotalTimeSeconds() - 1.5))
                         .andThen(cargo::retractIntake, cargo)
                         .andThen(cargo::stop, cargo)
-                .andThen(cargo::startShooterCommand, cargo));
+                        .andThen(cargo::startShooterCommand, cargo));
     }
 }

@@ -55,19 +55,20 @@ public class ThreeBallHighCurvyAuto {
                 .setStartVelocity(ballsEndVel));
     var fullTraj = turnTraj.concatenate(getBallsTraj).concatenate(returnTraj);
     field.getObject(ThreeBallHighCurvyAuto.class.getSimpleName()).setTrajectory(fullTraj);
+    var totalTime = fullTraj.getTotalTimeSeconds();
+    var deployWaitTime = 0.02;
+    var retractWaitTime = totalTime - deployWaitTime - 3;
+    var shootWaitTime = totalTime - deployWaitTime - retractWaitTime - 1.5;
     return AutoUtils.shootHighCommand(cargo)
         .andThen(
             new RamseteControllerUnidirectionalDrive(drive, fullTraj)
                 .alongWith(
-                    new WaitCommand(0.2)
+                    new WaitCommand(deployWaitTime)
                         .andThen(cargo::deployIntake, cargo)
                         .andThen(cargo::runIntake, cargo)
-                        .andThen(
-                            new WaitCommand(
-                                turnTraj.getTotalTimeSeconds()
-                                    + getBallsTraj.getTotalTimeSeconds()
-                                    + 0.1))
-                        .andThen(cargo::retractIntake, cargo)))
-        .andThen(AutoUtils.shootHighCommand(cargo));
+                        .andThen(new WaitCommand(retractWaitTime))
+                        .andThen(cargo::retractIntake, cargo)
+                        .andThen(new WaitCommand(shootWaitTime))
+                        .andThen(AutoUtils.shootHighCommand(cargo))));
   }
 }
