@@ -8,15 +8,19 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.motor.WrappedMotor;
+import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
+import io.github.oblarg.oblog.annotations.Config;
 import org.jetbrains.annotations.NotNull;
 
 public class FlywheelSubsystem extends SubsystemBase implements Loggable {
   /** Whether or not to use the state space API for flywheel */
   private static final boolean USE_STATE_SPACE = true;
+
+  @NotNull private final String name;
 
   @NotNull private final WrappedMotor motor;
 
@@ -25,15 +29,17 @@ public class FlywheelSubsystem extends SubsystemBase implements Loggable {
   @NotNull private final SimpleMotorFeedforward feedforward;
 
   /** The time, in seconds, when the periodic method was last called */
-  private double lastTime = Double.NaN;
+  protected double lastTime = Double.NaN;
 
   /** The desired velocity of the flywheel */
-  @Log private double targetVel;
+  @Config private double targetVel;
 
   protected FlywheelSubsystem(
+      @NotNull String name,
       @NotNull WrappedMotor motor,
       @NotNull LinearSystemLoop<N1, N1, N1> flywheelLoop,
       @NotNull SimpleMotorFeedforward feedforward) {
+    this.name = name;
     this.motor = motor;
     this.flywheelLoop = flywheelLoop;
     this.feedforward = feedforward;
@@ -44,16 +50,21 @@ public class FlywheelSubsystem extends SubsystemBase implements Loggable {
    */
   @NotNull
   public static FlywheelSubsystem create(
+      @NotNull String name,
       @NotNull WrappedMotor motor,
       @NotNull LinearSystemLoop<N1, N1, N1> flywheelLoop,
       @NotNull SimpleMotorFeedforward feedforward,
       @NotNull FlywheelSim sim,
       @NotNull EncoderSim encoderSim) {
     if (RobotBase.isReal()) {
-      return new FlywheelSubsystem(motor, flywheelLoop, feedforward);
+      return new FlywheelSubsystem(name, motor, flywheelLoop, feedforward);
     } else {
-      return new SimFlywheel(sim, encoderSim, motor, flywheelLoop, feedforward);
+      return new SimFlywheel(name, sim, encoderSim, motor, flywheelLoop, feedforward);
     }
+  }
+
+  public double getTargetVel() {
+    return this.targetVel;
   }
 
   public void setTargetVel(double targetVel) {
@@ -75,7 +86,7 @@ public class FlywheelSubsystem extends SubsystemBase implements Loggable {
   }
 
   /** Calculate the voltage to set for this iteration of the loop */
-  protected double nextVoltage() {
+  protected final double nextVoltage() {
     var currTime = Timer.getFPGATimestamp();
     if (Double.isNaN(lastTime)) {
       this.lastTime = currTime;
@@ -98,6 +109,11 @@ public class FlywheelSubsystem extends SubsystemBase implements Loggable {
     motor.setVoltage(this.nextVoltage());
   }
 
+  @Override
+  public String configureLogName() {
+    return this.name;
+  }
+
   public static final class SimFlywheel extends FlywheelSubsystem {
     @NotNull private final FlywheelSim sim;
     @NotNull private final EncoderSim encoderSim;
@@ -105,19 +121,28 @@ public class FlywheelSubsystem extends SubsystemBase implements Loggable {
     private final double circumference;
 
     public SimFlywheel(
+        @NotNull String name,
         @NotNull FlywheelSim sim,
         @NotNull EncoderSim encoderSim,
         @NotNull WrappedMotor motor,
         @NotNull LinearSystemLoop<N1, N1, N1> flywheelLoop,
         @NotNull SimpleMotorFeedforward feedforward) {
-      super(motor, flywheelLoop, feedforward);
+      super(name, motor, flywheelLoop, feedforward);
       this.sim = sim;
       this.encoderSim = encoderSim;
       this.circumference = motor.encoder.unitPerRotation;
+      encoderSim.setInitialized(true);
+      SmartDashboard.putData(
+          "FlywheelSim" + name,
+          builder -> {
+            builder.addDoubleProperty("target", this::getTargetVel, this::setTargetVel);
+            builder.addDoubleProperty("vel", encoderSim::getRate, encoderSim::setRate);
+          });
     }
 
     @Override
     public void periodic() {
+      sim.update(Double.isNaN(this.lastTime) ? 0.02 : Clock.currentTimeSeconds() - this.lastTime);
       sim.setInputVoltage(this.nextVoltage());
       encoderSim.setRate(sim.getAngularVelocityRadPerSec() * this.circumference);
     }

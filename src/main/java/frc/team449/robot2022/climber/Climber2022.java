@@ -6,7 +6,7 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-public class PivotingTelescopingClimber extends SubsystemBase implements Loggable {
+public class Climber2022 extends SubsystemBase implements Loggable {
   /** Distance the climber can travel, in meters */
   public final double distanceTopBottom;
 
@@ -26,7 +26,7 @@ public class PivotingTelescopingClimber extends SubsystemBase implements Loggabl
    * @param pivotPiston Piston used to pivot climber arms
    * @param distanceTopBottom How much the climber arms extend up
    */
-  public PivotingTelescopingClimber(
+  public Climber2022(
       @NotNull ClimberArm leftArm,
       @NotNull ClimberArm rightArm,
       @NotNull DoubleSolenoid pivotPiston,

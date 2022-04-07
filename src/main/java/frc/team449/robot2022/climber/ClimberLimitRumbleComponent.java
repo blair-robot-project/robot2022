@@ -11,12 +11,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ClimberLimitRumbleComponent implements RumbleComponent {
 
-  private final PivotingTelescopingClimber climber;
+  private final Climber2022 climber;
   /** How close the arms can get to the limits before the joystick starts rumbling */
   private final double rumbleTolerance;
 
   public ClimberLimitRumbleComponent(
-      @NotNull PivotingTelescopingClimber climber, double rumbleTolerance) {
+          @NotNull Climber2022 climber, double rumbleTolerance) {
     this.climber = climber;
     this.rumbleTolerance = rumbleTolerance;
   }

@@ -12,9 +12,9 @@ public class Cargo2022 extends SubsystemBase implements Loggable {
   /** The leader motor for the intake */
   private final WrappedMotor intakeMotor;
   /** The top motor that lets balls be spit out */
-  @Log.Exclude private final FlywheelSubsystem spitter;
+  private final FlywheelSubsystem spitter;
   /** Motor used for shooting flywheel */
-  @Log.Exclude private final FlywheelSubsystem shooter;
+  private final FlywheelSubsystem shooter;
   /** Piston used to extend and retract intake */
   private final DoubleSolenoid deployIntake;
   /** Piston used to deploy and remove hood */

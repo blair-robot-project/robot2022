@@ -9,17 +9,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -52,7 +44,7 @@ import frc.team449.other.FollowerUtils;
 import frc.team449.robot2022.cargo.Cargo2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
-import frc.team449.robot2022.climber.PivotingTelescopingClimber;
+import frc.team449.robot2022.climber.Climber2022;
 import frc.team449.robot2022.routines.AutoConstants;
 import frc.team449.robot2022.routines.StationTwoBallHighAuto;
 import frc.team449.updatable.Updater;
@@ -235,7 +227,7 @@ public class FullMap {
     SmartDashboard.putData("Reset odometry", resetDriveOdometry.get());
 
     var spitterEncSim = new EncoderSim(new Encoder(10, 11));
-    var spitterPlant = LinearSystemId.identifyVelocitySystem(SHOOTER_KV, SHOOTER_KA);
+    var spitterPlant = LinearSystemId.identifyVelocitySystem(SPITTER_KV, SPITTER_KA);
     var spitterLoop =
         new StateSpaceModelBuilder<>(Nat.N1())
             .loopTime(LOOP_TIME)
@@ -247,6 +239,7 @@ public class FullMap {
             .build();
     var spitter =
         FlywheelSubsystem.create(
+            "Spitter",
             new SparkMaxConfig()
                 .setName("spitterMotor")
                 .setPort(SPITTER_PORT)
@@ -273,6 +266,7 @@ public class FullMap {
             .build();
     var shooter =
         FlywheelSubsystem.create(
+            "Shooter",
             new SparkMaxConfig()
                 .setName("shooterMotor")
                 .setPort(SHOOTER_PORT)
@@ -354,7 +348,7 @@ public class FullMap {
             CLIMBER_PISTON_FWD_CHANNEL,
             CLIMBER_PISTON_REV_CHANNEL);
     var climber =
-        new PivotingTelescopingClimber(
+        new Climber2022(
             leftArm,
             rightArm,
             pivotPiston,
@@ -453,11 +447,9 @@ public class FullMap {
                         driveFeedforward,
                         drive.getDriveKinematics(),
                         RobotController.getBatteryVoltage()))
-        //                .addConstraint(
-        //                    new CentripetalAccelerationConstraint(
-        //                        AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL)
-        //                )
-        ;
+                .addConstraint(
+                    new CentripetalAccelerationConstraint(
+                        AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL));
     List<Command> autoStartupCommands =
         List.of(
             StationTwoBallHighAuto.createCommand(
