@@ -15,8 +15,8 @@ import java.util.function.Supplier;
 public class FiveBallLowAuto {
   // Carry over the two ball auto and append to it another path that forms the three ball auto
   public static final Pose2d start = ThreeBallLowAuto.end;
-  public static final Pose2d ball =
-      new Pose2d(1.64, 1.15, Rotation2d.fromDegrees(-169.14));
+  public static final Pose2d ball = StationFourBallLowAuto.ball4;
+//      new Pose2d(1.64, 1.15, Rotation2d.fromDegrees(-169.14));
   public static final Pose2d end = start; // new Pose2d(7.60, 2.98, Rotation2d.fromDegrees(-109.86));
 
   public static Command createCommand(

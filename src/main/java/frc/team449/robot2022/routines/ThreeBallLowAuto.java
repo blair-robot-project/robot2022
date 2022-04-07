@@ -16,7 +16,8 @@ public class ThreeBallLowAuto {
   // Carry over the two ball auto and append to it another path that forms the three ball auto
   public static final Pose2d start = StationTwoBallLowAuto.end;
   public static final Pose2d ball =
-      new Pose2d(5.41, 1.76, Rotation2d.fromDegrees(133.92)); // 5.54, 2.24, 360 - 146.61
+          AutoUtils.pose(5.41, 1.8, 180);
+//      new Pose2d(5.41, 1.76, Rotation2d.fromDegrees(133.92)); // 5.54, 2.24, 360 - 146.61
   // new Pose2d(5.54, 2.06, Rotation2d.fromDegrees(-169.14));
   public static final Pose2d end = start;
 

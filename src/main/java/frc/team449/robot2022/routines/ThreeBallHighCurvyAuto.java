@@ -18,10 +18,10 @@ import java.util.function.Supplier;
 public class ThreeBallHighCurvyAuto {
   public static final double MAX_CENTRIPETAL_ACCEL = 1.2;
   public static final Pose2d start = AutoUtils.pose(7.56, 2.99, 180 - 112.55);
-  public static final Pose2d turnPoint = AutoUtils.pose(6.78, 1.93, 180 - 69.62);
-  public static final Pose2d ball2 = AutoUtils.pose(5.54, 2.40, -132.80);
+  public static final Pose2d turnPoint = AutoUtils.pose(6.83, 2.26, 85);
+  public static final Pose2d ball2 = AutoUtils.pose(5.49, 2.36, -129.29);
   public static final Pose2d between1 = AutoUtils.pose(5.97, 1.42, -13.02);
-  public static final Pose2d ball3 = AutoUtils.pose(7.12, 1.00, -48.95);
+  public static final Pose2d ball3 = AutoUtils.pose(7.26, 0.83, -48.95);
   public static final double ballsEndVel = 3.0;
   public static final Pose2d between2 = AutoUtils.pose(7.99, 0.88, 41.01);
   public static final Pose2d between3 = AutoUtils.pose(7.93, 1.83, 98.13);
@@ -39,7 +39,7 @@ public class ThreeBallHighCurvyAuto {
             trajConfig.get().setReversed(true).addConstraints(constraints));
     var getBallsTraj =
         TrajectoryGenerator.generateTrajectory(
-            List.of(turnPoint, ball2, between1, ball3),
+            List.of(turnPoint, ball2/*, between1*/, ball3),
             trajConfig
                 .get()
                 .setReversed(false)
@@ -47,7 +47,7 @@ public class ThreeBallHighCurvyAuto {
                 .setEndVelocity(ballsEndVel));
     var returnTraj =
         TrajectoryGenerator.generateTrajectory(
-            List.of(ball3, between2 /*, between3*/, end),
+            List.of(ball3/*, between2, between3*/, end),
             trajConfig
                 .get()
                 .setReversed(false)

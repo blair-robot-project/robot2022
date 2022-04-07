@@ -55,9 +55,13 @@ import frc.team449.robot2022.climber.Climber2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.routines.AutoConstants;
+import frc.team449.robot2022.routines.CurvyFiveBallAuto;
+import frc.team449.robot2022.routines.FiveBallAutoJames;
+import frc.team449.robot2022.routines.FiveBallLowAuto;
 import frc.team449.robot2022.routines.HangarTwoBallHigh;
 import frc.team449.robot2022.routines.StationFourBallLowAuto;
 import frc.team449.robot2022.routines.ThreeBallHighCurvyAuto;
+import frc.team449.robot2022.routines.ThreeBallHighStraightAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -476,7 +480,7 @@ public class FullMap {
             StationFourBallLowAuto.createCommand(
                     drive,
                     cargo,
-                    // autoPidAngleController,
+//                     autoPidAngleController,
                     trajConfig,
                     field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))

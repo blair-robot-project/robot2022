@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class ThreeBallHighStraightAuto {
-  public static final Pose2d start = StationTwoBallHighAuto.end;
-  public static final Pose2d mid = AutoUtils.pose(6.76, 2.52, 180 - 157.11);
+  public static final Pose2d start = StationTwoBallHighStraightAuto.end;
+  public static final Pose2d mid = AutoUtils.pose(6.7, 1.90, 0);
   public static final Pose2d midRev = AutoUtils.reverse(mid);
-  public static final Pose2d ball = ThreeBallLowAuto.ball;
+  public static final Pose2d ball = AutoUtils.pose(5.41, 1.76, 180);
   public static final Pose2d ballReversed = AutoUtils.reverse(ball);
   public static final Pose2d end = start;
 
@@ -32,7 +32,9 @@ public class ThreeBallHighStraightAuto {
     var reverseTraj =
         TrajectoryGenerator.generateTrajectory(
             List.of(start, mid), trajConfig.get().setReversed(true));
-    return StationTwoBallHighAuto.createCommand(drive, cargo, angleController, trajConfig, field)
+    field.getObject("ThreeBallHighStraightReverse").setTrajectory(reverseTraj);
+    return StationTwoBallHighStraightAuto.createCommand(
+            drive, cargo, angleController, trajConfig, field)
         .andThen(new RamseteControllerUnidirectionalDrive(drive, reverseTraj))
         .andThen(
             new NavXTurnToAngle(midRev.getRotation().getDegrees(), 3, drive, angleController.get()))

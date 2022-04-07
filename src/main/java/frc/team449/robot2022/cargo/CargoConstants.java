@@ -20,7 +20,7 @@ public final class CargoConstants {
   /** How much is given to feeder and intake motors */
   public static final double FEEDER_OUTPUT = 0.75;
   /** How much is given to the spitter when actually spitting */
-  public static final double SPITTER_SPIT_SPEED_RPS = 30;
+  public static final double SPITTER_SPIT_SPEED_RPS = 22;
   /** The speed of the spitter when actually intaking, in RPS */
    public static final double SPITTER_INTAKE_SPEED_RPS = 31;
   /** The speed of the spitter when shooting, in RPS */

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class StationTwoBallHighAuto {
+public class StationTwoBallHighStraightAuto {
 
   public static final Pose2d start = StationTwoBallLowAuto.start;
   public static final Pose2d ball = StationTwoBallLowAuto.ball;
@@ -35,7 +35,7 @@ public class StationTwoBallHighAuto {
                 trajConfig,
                 List.of(start, ball),
                 List.of(ballReversed, end),
-                StationTwoBallHighAuto.class.getSimpleName(),
+                StationTwoBallHighStraightAuto.class.getSimpleName(),
                 field));
   }
 }
