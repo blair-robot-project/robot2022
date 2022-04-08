@@ -34,7 +34,6 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449.ahrs.AHRS;
-import frc.team449.ahrs.PIDAngleController;
 import frc.team449.ahrs.PIDAngleControllerBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
@@ -55,7 +54,8 @@ import frc.team449.robot2022.cargo.Cargo2022;
 import frc.team449.robot2022.climber.Climber2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
-import frc.team449.robot2022.routines.*;
+import frc.team449.robot2022.routines.AutoConstants;
+import frc.team449.robot2022.routines.StationFourBallHighAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -474,11 +474,11 @@ public class FullMap {
                 StationFourBallHighAuto.createCommand(
                     drive,
                     cargo,
-                    autoPidAngleController::build,
+                    autoPidAngleController,
                     trajConfig,
                     field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
-                /*.andThen(cargo::stop, cargo)*/);
+            /*.andThen(cargo::stop, cargo)*/ );
 
     List<Command> robotStartupCommands = List.of();
 

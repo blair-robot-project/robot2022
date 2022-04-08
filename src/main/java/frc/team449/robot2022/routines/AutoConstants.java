@@ -11,6 +11,8 @@ public final class AutoConstants {
   public static final double PAUSE_AFTER_SPIT = 0.2;
   /** How long to wait for a ball to be shot out */
   public static final double PAUSE_AFTER_SHOOT = .8;
+  /** How many seconds before the trajectory ends to begin the shoot sequence */
+  public static final double SHOOT_HEADSTART = 0.5;
   // Speeds
   public static final double AUTO_MAX_SPEED = 4.0,
       AUTO_MAX_ACCEL = 2.3,

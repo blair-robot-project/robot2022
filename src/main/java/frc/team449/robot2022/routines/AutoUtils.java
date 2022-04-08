@@ -30,9 +30,14 @@ public final class AutoUtils {
     return new Pose2d(x, y, Rotation2d.fromDegrees(degs));
   }
 
+  /** Return a pose with the same x, y coords but a different heading (degrees) */
+  public static Pose2d withAngle(Pose2d pose, double degs) {
+    return pose(pose.getX(), pose.getY(), degs);
+  }
+
   /** Reverse the heading of a pose */
   public static Pose2d reverse(Pose2d pose) {
-    return pose(pose.getX(), pose.getY(), pose.getRotation().getDegrees() + 180);
+    return withAngle(pose, pose.getRotation().getDegrees() + 180);
   }
 
   /**
@@ -141,7 +146,7 @@ public final class AutoUtils {
     var toBallTraj =
         TrajectoryGenerator.generateTrajectory(toBall, trajConfig.get().setReversed(false));
     var fromBallTraj =
-        TrajectoryGenerator.generateTrajectory(fromBall, trajConfig.get().setReversed(true));
+        TrajectoryGenerator.generateTrajectory(fromBall, trajConfig.get().setReversed(false));
 
     if (field != null) {
       field.getObject(name + "toball").setTrajectory(toBallTraj);
@@ -156,12 +161,14 @@ public final class AutoUtils {
               "actual", () -> angleController.getSetpoint() + angleController.getError(), x -> {});
         });
 
+    var shootWaitTime = fromBallTraj.getTotalTimeSeconds() - AutoConstants.SHOOT_HEADSTART;
+
     return new InstantCommand(cargo::deployIntake, cargo)
         .andThen(cargo::runIntake, cargo)
         .andThen(new RamseteControllerUnidirectionalDrive(drive, toBallTraj))
         .andThen(
             new NavXTurnToAngle(
-                    (fromBall.get(0).getRotation().getDegrees()+180)%180,
+                fromBall.get(0).getRotation().getDegrees(),
                 AutoConstants.TURN_TIMEOUT,
                 drive,
                 angleController))
@@ -170,8 +177,9 @@ public final class AutoUtils {
                 .alongWith(
                     new InstantCommand(cargo::deployHood, cargo)
                         .andThen(cargo::retractIntake, cargo)
-                        .andThen(cargo::runIntake, cargo)))
-        .andThen(cargo.startShooterCommand());
+                        .andThen(cargo::runIntake, cargo)
+                        .andThen(new WaitCommand(AutoConstants.SHOOT_HEADSTART))
+                        .andThen(AutoUtils.shootHighCommand(cargo))));
   }
 
   /** A complete command to shoot high */
