@@ -17,11 +17,12 @@ import java.util.function.Supplier;
 
 public class ThreeBallHighStraightAuto {
   public static final Pose2d start = StationTwoBallHighStraightAuto.end;
-  public static final Pose2d mid = AutoUtils.pose(6.7, 1.90, 0);
-  public static final Pose2d midRev = AutoUtils.reverse(mid);
-  public static final Pose2d ball = AutoUtils.pose(5.41, 1.76, 180);
-  public static final Pose2d ballReversed = AutoUtils.reverse(ball);
-  public static final Pose2d end = start;
+  public static final Pose2d mid = AutoUtils.pose(7.47, 2.17, start.getRotation().getDegrees());
+  public static final Pose2d midRev = AutoUtils.withAngle(mid, -173.47);
+  public static final Pose2d ball = AutoUtils.pose(5.65, 1.98, -173.04);
+  public static final Pose2d ballReversed = AutoUtils.withAngle(ball, -5);
+  public static final Pose2d beforeEnd = AutoUtils.pose(7.35, 2.43, 60.35);
+  public static final Pose2d end = AutoUtils.pose(7.79, 3.35, 67.17);
 
   public static Command createCommand(
       @NotNull DriveUnidirectionalWithGyro drive,
@@ -35,9 +36,13 @@ public class ThreeBallHighStraightAuto {
     field.getObject("ThreeBallHighStraightReverse").setTrajectory(reverseTraj);
     return StationTwoBallHighStraightAuto.createCommand(
             drive, cargo, angleController, trajConfig, field)
-        .andThen(new RamseteControllerUnidirectionalDrive(drive, reverseTraj))
+        .andThen(new RamseteControllerUnidirectionalDrive(drive, reverseTraj, true))
         .andThen(
-            new NavXTurnToAngle(midRev.getRotation().getDegrees(), 3, drive, angleController.get()))
+            new NavXTurnToAngle(
+                midRev.getRotation().getDegrees(),
+                AutoConstants.TURN_TIMEOUT,
+                drive,
+                angleController.get()))
         .andThen(
             AutoUtils.getBallAndScoreHigh(
                 drive,
@@ -45,8 +50,9 @@ public class ThreeBallHighStraightAuto {
                 angleController.get(),
                 trajConfig,
                 List.of(midRev, ball),
-                List.of(ballReversed, end),
+                List.of(ballReversed, beforeEnd, end),
                 ThreeBallHighStraightAuto.class.getSimpleName(),
-                field));
+                field,
+                true));
   }
 }

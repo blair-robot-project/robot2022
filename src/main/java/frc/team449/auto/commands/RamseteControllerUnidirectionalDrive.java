@@ -28,19 +28,33 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase implements
   private DifferentialDriveWheelSpeeds previousSpeeds;
   @Log private double desiredLeftVoltage;
   @Log private double desiredRightVoltage;
+  private final boolean resetOdometry;
+
   /**
    * @param drivetrain Drivetrain to execute command on
    * @param trajectory Trajectory to follow
    */
   public RamseteControllerUnidirectionalDrive(
+      @NotNull DriveUnidirectionalWithGyro drivetrain, @NotNull Trajectory trajectory) {
+    this(drivetrain, trajectory, true);
+  }
+
+  /**
+   * @param drivetrain Drivetrain to execute command on
+   * @param trajectory Trajectory to follow
+   * @param resetOdometry Whether to reset odometry to initial pose of trajectory when initialized
+   */
+  public RamseteControllerUnidirectionalDrive(
       @NotNull DriveUnidirectionalWithGyro drivetrain,
-      @NotNull Trajectory trajectory) {
+      @NotNull Trajectory trajectory,
+      boolean resetOdometry) {
     this.drivetrain = drivetrain;
     this.ramseteFeedback = new RamseteController();
     this.leftController = drivetrain.leftVelPID();
     this.rightController = drivetrain.rightVelPID();
     this.feedforward = drivetrain.getFeedforward();
     this.trajectory = trajectory;
+    this.resetOdometry = resetOdometry;
     addRequirements(drivetrain);
 
     SmartDashboard.putData(
@@ -76,8 +90,10 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase implements
                     initialState.curvatureRadPerMeter * initialState.velocityMetersPerSecond));
     leftController.reset();
     rightController.reset();
-    drivetrain.resetOdometry(trajectory.getInitialPose());
-//    ramseteFeedback.setEnabled(false); // re-comment this line
+    if (this.resetOdometry) {
+      drivetrain.resetOdometry(trajectory.getInitialPose());
+    }
+    //    ramseteFeedback.setEnabled(false); // re-comment this line
   }
 
   @Override
@@ -105,7 +121,8 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase implements
     double rightFeedforward = feedforward.calculate(rightTarget, rightDelta / dt);
 
     this.desiredLeftVoltage = leftFeedforward + leftController.calculate(leftCurrent, leftTarget);
-    this.desiredRightVoltage = rightFeedforward + rightController.calculate(rightCurrent, rightTarget);
+    this.desiredRightVoltage =
+        rightFeedforward + rightController.calculate(rightCurrent, rightTarget);
 
     drivetrain.setVoltage(desiredLeftVoltage, desiredRightVoltage);
 

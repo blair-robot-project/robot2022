@@ -84,6 +84,7 @@ public final class PIDAngleControllerBuilder implements Supplier<PIDAngleControl
   public PIDAngleControllerBuilder copy() {
     var copy =
         new PIDAngleControllerBuilder()
+            .absoluteTolerance(absoluteTolerance)
             .onTargetBuffer(onTargetBuffer)
             .minimumOutput(minimumOutput)
             .maximumOutput(maximumOutput)

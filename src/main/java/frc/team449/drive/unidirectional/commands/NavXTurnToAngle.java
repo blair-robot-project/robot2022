@@ -104,6 +104,7 @@ public class NavXTurnToAngle extends CommandBase {
     // Logger.addEvent("NavXTurnToAngle init.", this.getClass());
     // Set up start time
     this.startTime = Clock.currentTimeMillis();
+    controller.reset();
     controller.setSetpoint(MathUtil.inputModulus(setpointSupplier.getAsDouble(), -180, 180));
   }
 
@@ -138,7 +139,9 @@ public class NavXTurnToAngle extends CommandBase {
       Shuffleboard.addEventMarker(
           "NavXTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
+    System.out.println("Navx ended, " + interrupted);
     drive.fullStop();
+    controller.reset();
     Shuffleboard.addEventMarker(
         "NavXTurnToAngle end.", this.getClass().getSimpleName(), EventImportance.kNormal);
   }

@@ -95,6 +95,26 @@ public class PIDAngleController implements Loggable {
   }
 
   @Log
+  public double getP() {
+    return pidController.getP();
+  }
+
+  @Log
+  public double getD() {
+    return pidController.getD();
+  }
+
+  //  @Config
+  //  public void setP(double p) {
+  //    pidController.setP(p);
+  //  }
+  //
+  //  @Config
+  //  public void setD(double d) {
+  //    pidController.setD(d);
+  //  }
+
+  @Log
   public double getSetpoint() {
     return pidController.getSetpoint();
   }
@@ -158,7 +178,7 @@ public class PIDAngleController implements Loggable {
   }
 
   /** Reset the error and integral term of the internal PIDController. */
-  public void resetController() {
+  public void reset() {
     this.pidController.reset();
   }
 }

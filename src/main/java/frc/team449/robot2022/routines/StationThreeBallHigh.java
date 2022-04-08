@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-public class HangarTwoBallHigh {
+public class StationThreeBallHigh {
 
   public static Command createCommand(
       @NotNull DriveUnidirectionalWithGyro drive,
@@ -22,8 +22,8 @@ public class HangarTwoBallHigh {
       @NotNull Field2d field) {
     var traj =
         PathPlanner.loadPath(
-            "Hangar 2-Ball High", AutoConstants.AUTO_MAX_SPEED, AutoConstants.AUTO_MAX_ACCEL);
-    field.getObject("Hangar 2-Ball High").setTrajectory(traj);
+            "ThreeStationHigh", AutoConstants.AUTO_MAX_SPEED, AutoConstants.AUTO_MAX_ACCEL);
+    field.getObject("Three Station High").setTrajectory(traj);
     var totalTime = traj.getTotalTimeSeconds();
     var retractWaitTime = totalTime - 1.5;
     var shootWaitTime = totalTime - retractWaitTime - AutoConstants.SHOOT_HEADSTART;
@@ -32,12 +32,20 @@ public class HangarTwoBallHigh {
             new InstantCommand(cargo::deployIntake, cargo)
                 .andThen(cargo::runIntake, cargo)
                 .andThen(cargo::deployHood, cargo)
-                .andThen(new WaitCommand(traj.getTotalTimeSeconds() - 1.5))
+                .andThen(new WaitCommand(1.6))
                 .andThen(cargo::retractIntake, cargo)
                 .andThen(cargo::stop, cargo)
-                .andThen(new WaitCommand(shootWaitTime))
+                .andThen(new WaitCommand(1))
                 .andThen(cargo::deployHood)
                 .andThen(cargo.startShooterCommand())
+                    .andThen(new WaitCommand(1.2))
+                    .andThen(cargo::deployIntake, cargo)
+                    .andThen(cargo::runIntake, cargo)
+                    .andThen(new WaitCommand(1.8))
+                    .andThen(cargo::retractIntake, cargo)
+                    .andThen(cargo::stop, cargo)
+                    .andThen(new WaitCommand(2.7))
+                                    .andThen(cargo.startShooterCommand())
             ////                            .andThen(cargo::stop, cargo)
             //                    .andThen(cargo::deployHood, cargo)
             //                            .andThen(cargo::startShooterCommand, cargo)

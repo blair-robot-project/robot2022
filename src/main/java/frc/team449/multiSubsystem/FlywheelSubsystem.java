@@ -14,6 +14,7 @@ import frc.team449.motor.WrappedMotor;
 import frc.team449.other.Clock;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 public class FlywheelSubsystem extends SubsystemBase implements Loggable {
@@ -32,7 +33,7 @@ public class FlywheelSubsystem extends SubsystemBase implements Loggable {
   protected double lastTime = Double.NaN;
 
   /** The desired velocity of the flywheel */
-  @Config private double targetVel;
+  @Log private double targetVel;
 
   protected FlywheelSubsystem(
       @NotNull String name,
