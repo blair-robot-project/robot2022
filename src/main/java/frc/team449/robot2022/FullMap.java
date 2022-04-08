@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.team449.CommandContainer;
 import frc.team449.RobotMap;
 import frc.team449.ahrs.AHRS;
+import frc.team449.ahrs.PIDAngleController;
 import frc.team449.ahrs.PIDAngleControllerBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
@@ -54,14 +55,7 @@ import frc.team449.robot2022.cargo.Cargo2022;
 import frc.team449.robot2022.climber.Climber2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
-import frc.team449.robot2022.routines.AutoConstants;
-import frc.team449.robot2022.routines.CurvyFiveBallAuto;
-import frc.team449.robot2022.routines.FiveBallAutoJames;
-import frc.team449.robot2022.routines.FiveBallLowAuto;
-import frc.team449.robot2022.routines.HangarTwoBallHigh;
-import frc.team449.robot2022.routines.StationFourBallLowAuto;
-import frc.team449.robot2022.routines.ThreeBallHighCurvyAuto;
-import frc.team449.robot2022.routines.ThreeBallHighStraightAuto;
+import frc.team449.robot2022.routines.*;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -477,10 +471,10 @@ public class FullMap {
             .pid(AutoConstants.TURN_KP, AutoConstants.TURN_KI, AutoConstants.TURN_KD);
     List<Command> autoStartupCommands =
         List.of(
-            StationFourBallLowAuto.createCommand(
+                StationFourBallHighAuto.createCommand(
                     drive,
                     cargo,
-//                     autoPidAngleController,
+                    autoPidAngleController::build,
                     trajConfig,
                     field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
