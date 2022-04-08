@@ -87,7 +87,7 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
   @Override
   public void initialize() {
     // Reset all values of the PIDController and enable it.
-    controller.resetController();
+    controller.reset();
     Shuffleboard.addEventMarker(
         "UnidirectionalNavXArcadeDrive init.",
         this.getClass().getSimpleName(),
@@ -116,7 +116,7 @@ public final class UnidirectionalNavXDefaultDrive extends CommandBase implements
       // Switch to driving straight
       this.drivingStraight = true;
       // Set the setpoint to the current heading and reset the AHRS
-      controller.resetController();
+      controller.reset();
       controller.setSetpoint(this.subsystem.getAHRS().getCachedHeading());
     }
 

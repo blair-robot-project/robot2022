@@ -4,7 +4,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -95,15 +94,25 @@ public class PIDAngleController implements Loggable {
     this.inverted = inverted;
   }
 
-  @Config
-  public void setP(double p) {
-    pidController.setP(p);
+  @Log
+  public double getP() {
+    return pidController.getP();
   }
 
-  @Config
-  public void setD(double d) {
-    pidController.setD(d);
+  @Log
+  public double getD() {
+    return pidController.getD();
   }
+
+  //  @Config
+  //  public void setP(double p) {
+  //    pidController.setP(p);
+  //  }
+  //
+  //  @Config
+  //  public void setD(double d) {
+  //    pidController.setD(d);
+  //  }
 
   @Log
   public double getSetpoint() {
@@ -117,6 +126,7 @@ public class PIDAngleController implements Loggable {
 
   /** Calculate the output needed to reach the setpoint, given the current heading */
   public double getOutput(double heading) {
+    //    System.out.println("p pid=" + pidController.getP());
     return processOutput(pidController.calculate(heading));
   }
 
@@ -169,7 +179,7 @@ public class PIDAngleController implements Loggable {
   }
 
   /** Reset the error and integral term of the internal PIDController. */
-  public void resetController() {
+  public void reset() {
     this.pidController.reset();
   }
 }

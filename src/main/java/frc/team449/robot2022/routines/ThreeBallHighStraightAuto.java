@@ -17,8 +17,8 @@ import java.util.function.Supplier;
 
 public class ThreeBallHighStraightAuto {
   public static final Pose2d start = StationTwoBallHighStraightAuto.end;
-  public static final Pose2d mid = AutoUtils.pose(7.47, 2.45, 75);
-  public static final Pose2d midRev = AutoUtils.withAngle(mid, 190);
+  public static final Pose2d mid = AutoUtils.pose(7.47, 2.17, start.getRotation().getDegrees());
+  public static final Pose2d midRev = AutoUtils.withAngle(mid, 195);
   public static final Pose2d ball = AutoUtils.pose(5.65, 1.98, -170.91);
   public static final Pose2d ballReversed = AutoUtils.withAngle(ball, -5);
   public static final Pose2d end = start;

@@ -108,6 +108,7 @@ public final class PIDAngleControllerBuilder implements Supplier<PIDAngleControl
   public PIDAngleController build() {
     Objects.requireNonNull(
         absoluteTolerance, "Absolute tolerance required for " + this.getClass().getSimpleName());
+    System.out.println("kp builder = " + kP);
     return new PIDAngleController(
         absoluteTolerance,
         onTargetBuffer,

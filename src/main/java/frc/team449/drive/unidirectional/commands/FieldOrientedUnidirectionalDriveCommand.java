@@ -54,7 +54,7 @@ public class FieldOrientedUnidirectionalDriveCommand extends CommandBase {
   @Override
   public void initialize() {
     // Reset all values of the PIDController and enable it.
-    controller.resetController();
+    controller.reset();
     Shuffleboard.addEventMarker(
         "FieldOrientedUnidirectionalDriveCommand init.",
         this.getClass().getSimpleName(),
