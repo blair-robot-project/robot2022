@@ -126,7 +126,6 @@ public class PIDAngleController implements Loggable {
 
   /** Calculate the output needed to reach the setpoint, given the current heading */
   public double getOutput(double heading) {
-    //    System.out.println("p pid=" + pidController.getP());
     return processOutput(pidController.calculate(heading));
   }
 

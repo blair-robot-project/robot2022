@@ -84,6 +84,7 @@ public final class PIDAngleControllerBuilder implements Supplier<PIDAngleControl
   public PIDAngleControllerBuilder copy() {
     var copy =
         new PIDAngleControllerBuilder()
+            .absoluteTolerance(absoluteTolerance)
             .onTargetBuffer(onTargetBuffer)
             .minimumOutput(minimumOutput)
             .maximumOutput(maximumOutput)
@@ -108,7 +109,6 @@ public final class PIDAngleControllerBuilder implements Supplier<PIDAngleControl
   public PIDAngleController build() {
     Objects.requireNonNull(
         absoluteTolerance, "Absolute tolerance required for " + this.getClass().getSimpleName());
-    System.out.println("kp builder = " + kP);
     return new PIDAngleController(
         absoluteTolerance,
         onTargetBuffer,

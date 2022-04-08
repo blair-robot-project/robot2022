@@ -56,6 +56,8 @@ import frc.team449.robot2022.climber.Climber2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.routines.AutoConstants;
+import frc.team449.robot2022.routines.StationFourBallLowAuto;
+import frc.team449.robot2022.routines.StationThreeBallHigh;
 import frc.team449.robot2022.routines.ThreeBallHighStraightAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
@@ -232,17 +234,12 @@ public class FullMap {
         new UnidirectionalNavXDefaultDrive(
             3.0, new Debouncer(0.15), drive, oi, null, pidAngleControllerPrototype.build());
 
-    var drivePidAngleControllerProto =
-        new PIDAngleControllerBuilder()
-            .absoluteTolerance(0.01)
-            .onTargetBuffer(new Debouncer(0.15))
-            .minimumOutput(0)
+    var fasterTurnAngleControllerProto =
+        pidAngleControllerPrototype
+            .copy()
             .maximumOutput(RobotController.getBatteryVoltage())
-            .loopTimeMillis(null)
-            .deadband(2)
-            .inverted(false)
             .pid(AutoConstants.TURN_KP, AutoConstants.TURN_KI, AutoConstants.TURN_KD);
-    var driveAngleController = drivePidAngleControllerProto.build();
+    var driveAngleController = fasterTurnAngleControllerProto.build();
     // Turn 180 to the right
     new POVButton(driveJoystick, 90)
         .whenPressed(NavXTurnToAngle.createRelative(-179.9, 1, drive, driveAngleController));
@@ -486,8 +483,8 @@ public class FullMap {
                         AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL));
     List<Command> autoStartupCommands =
         List.of(
-            ThreeBallHighStraightAuto.createCommand(
-                    drive, cargo, drivePidAngleControllerProto, trajConfig, field)
+            StationThreeBallHigh.createCommand(
+                    drive, cargo, /*fasterTurnAngleControllerProto, */trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
             /*.andThen(cargo::stop, cargo)*/ );
 
