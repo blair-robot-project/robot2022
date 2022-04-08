@@ -141,7 +141,7 @@ public final class AutoUtils {
     var toBallTraj =
         TrajectoryGenerator.generateTrajectory(toBall, trajConfig.get().setReversed(false));
     var fromBallTraj =
-        TrajectoryGenerator.generateTrajectory(fromBall, trajConfig.get().setReversed(true));
+        TrajectoryGenerator.generateTrajectory(fromBall, trajConfig.get().setReversed(false));
 
     if (field != null) {
       field.getObject(name + "toball").setTrajectory(toBallTraj);
@@ -161,7 +161,7 @@ public final class AutoUtils {
         .andThen(new RamseteControllerUnidirectionalDrive(drive, toBallTraj))
         .andThen(
             new NavXTurnToAngle(
-                    (fromBall.get(0).getRotation().getDegrees()+180)%180,
+                fromBall.get(0).getRotation().getDegrees(),
                 AutoConstants.TURN_TIMEOUT,
                 drive,
                 angleController))
