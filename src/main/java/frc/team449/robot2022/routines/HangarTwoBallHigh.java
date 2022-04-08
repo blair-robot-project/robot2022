@@ -26,7 +26,7 @@ public class HangarTwoBallHigh {
     field.getObject("Hangar 2-Ball High").setTrajectory(traj);
     var totalTime = traj.getTotalTimeSeconds();
     var retractWaitTime = totalTime - 1.5;
-    var shootWaitTime = totalTime - retractWaitTime - 1;
+    var shootWaitTime = totalTime - retractWaitTime - AutoConstants.SHOOT_HEADSTART;
     return new RamseteControllerUnidirectionalDrive(drive, traj)
         .alongWith(
             new InstantCommand(cargo::deployIntake, cargo)
@@ -34,6 +34,7 @@ public class HangarTwoBallHigh {
                 .andThen(cargo::deployHood, cargo)
                 .andThen(new WaitCommand(traj.getTotalTimeSeconds() - 1.5))
                 .andThen(cargo::retractIntake, cargo)
+                .andThen(cargo::stop, cargo)
                 .andThen(new WaitCommand(shootWaitTime))
                 .andThen(cargo::deployHood)
                 .andThen(cargo.startShooterCommand())

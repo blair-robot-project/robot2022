@@ -56,7 +56,7 @@ import frc.team449.robot2022.climber.Climber2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.routines.AutoConstants;
-import frc.team449.robot2022.routines.ThreeBallHighStraightAuto;
+import frc.team449.robot2022.routines.HangarTwoBallHigh;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -66,8 +66,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static frc.team449.robot2022.DriveConstants.*;
 import static frc.team449.robot2022.cargo.CargoConstants.*;
@@ -233,6 +231,24 @@ public class FullMap {
     var driveDefaultCmd =
         new UnidirectionalNavXDefaultDrive(
             3.0, new Debouncer(0.15), drive, oi, null, pidAngleControllerPrototype.build());
+
+    var drivePidAngleController =
+        new PIDAngleControllerBuilder()
+            .absoluteTolerance(0.01)
+            .onTargetBuffer(new Debouncer(0.15))
+            .minimumOutput(0)
+            .maximumOutput(RobotController.getBatteryVoltage())
+            .loopTimeMillis(null)
+            .deadband(2)
+            .inverted(false)
+            .pid(AutoConstants.TURN_KP, AutoConstants.TURN_KI, AutoConstants.TURN_KD);
+    var driveAngleController = drivePidAngleController.build();
+    // Turn 180 to the right
+    new POVButton(driveJoystick, 90)
+        .whenHeld(NavXTurnToAngle.createRelative(-179.9, 1, drive, driveAngleController));
+    // Turn 180 to the left
+    new POVButton(driveJoystick, 270)
+        .whenHeld(NavXTurnToAngle.createRelative(179.9, 1, drive, driveAngleController));
 
     Supplier<InstantCommand> resetDriveOdometry =
         () -> new InstantCommand(() -> drive.resetOdometry(new Pose2d()), drive);
@@ -468,26 +484,14 @@ public class FullMap {
                 .addConstraint(
                     new CentripetalAccelerationConstraint(
                         AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL));
-    var autoPidAngleController =
-        new PIDAngleControllerBuilder()
-            .absoluteTolerance(0.01)
-            .onTargetBuffer(new Debouncer(1.5))
-            .minimumOutput(0)
-            .maximumOutput(RobotController.getBatteryVoltage())
-            .loopTimeMillis(null)
-            .deadband(2)
-            .inverted(false)
-            .pid(AutoConstants.TURN_KP, AutoConstants.TURN_KI, AutoConstants.TURN_KD);
-    var testController = autoPidAngleController.build();
-    for (var angle : IntStream.range(0, 9).mapToObj(x -> x * 45).collect(Collectors.toList())) {
-      var saneAngle = 90 - angle;
-      new POVButton(driveJoystick, angle)
-          .whenPressed(new NavXTurnToAngle(saneAngle, 3, drive, testController));
-    }
     List<Command> autoStartupCommands =
         List.of(
-            ThreeBallHighStraightAuto.createCommand(
-                    drive, cargo, autoPidAngleController, trajConfig, field)
+            HangarTwoBallHigh.createCommand(
+                    drive,
+                    cargo,
+                    //                    drivePidAngleController,
+                    trajConfig,
+                    field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
             /*.andThen(cargo::stop, cargo)*/ );
 
@@ -507,7 +511,7 @@ public class FullMap {
         new CommandContainer(
             robotStartupCommands, autoStartupCommands, teleopStartupCommands, testStartupCommands);
 
-    var otherLoggables = List.of(driveDefaultCmd, testController);
+    var otherLoggables = List.of(driveDefaultCmd, driveAngleController);
 
     return new RobotMap(subsystems, pdp, allCommands, otherLoggables, false);
   }

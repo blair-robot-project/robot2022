@@ -178,7 +178,7 @@ public final class AutoUtils {
                 .alongWith(
                     new InstantCommand(cargo::deployHood, cargo)
                         .andThen(cargo::retractIntake, cargo)
-                        .andThen(cargo::runIntake, cargo)
+//                        .andThen(cargo::runIntake, cargo)
                         .andThen(new WaitCommand(shootWaitTime))
                         .andThen(AutoUtils.shootHighCommand(cargo))));
   }

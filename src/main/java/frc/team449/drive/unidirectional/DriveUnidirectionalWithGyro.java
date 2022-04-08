@@ -122,6 +122,8 @@ public class DriveUnidirectionalWithGyro extends DriveUnidirectionalBase impleme
   @Log
   public void resetOdometry(final Pose2d pose) {
     resetEncoders();
+    // Yes, this is necessary because other commands rely on it
+    this.ahrs.setHeading(pose.getRotation());
     driveOdometry.resetPosition(pose, this.ahrs.getRotation());
   }
 

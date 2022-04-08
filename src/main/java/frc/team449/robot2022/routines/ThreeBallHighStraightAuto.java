@@ -35,9 +35,13 @@ public class ThreeBallHighStraightAuto {
     field.getObject("ThreeBallHighStraightReverse").setTrajectory(reverseTraj);
     return StationTwoBallHighStraightAuto.createCommand(
             drive, cargo, angleController, trajConfig, field)
-        .andThen(new RamseteControllerUnidirectionalDrive(drive, reverseTraj, false))
+        .andThen(new RamseteControllerUnidirectionalDrive(drive, reverseTraj, true))
         .andThen(
-            new NavXTurnToAngle(midRev.getRotation().getDegrees(), 3, drive, angleController.get()))
+            new NavXTurnToAngle(
+                midRev.getRotation().getDegrees(),
+                AutoConstants.TURN_TIMEOUT,
+                drive,
+                angleController.get()))
         .andThen(
             AutoUtils.getBallAndScoreHigh(
                 drive,
@@ -48,6 +52,6 @@ public class ThreeBallHighStraightAuto {
                 List.of(ballReversed, end),
                 ThreeBallHighStraightAuto.class.getSimpleName(),
                 field,
-                false));
+                true));
   }
 }
