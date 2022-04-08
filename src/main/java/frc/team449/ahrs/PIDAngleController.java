@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -92,6 +93,16 @@ public class PIDAngleController implements Loggable {
 
     // Set whether or not to invert the loop.
     this.inverted = inverted;
+  }
+
+  @Config
+  public void setP(double p) {
+    pidController.setP(p);
+  }
+
+  @Config
+  public void setD(double d) {
+    pidController.setD(d);
   }
 
   @Log

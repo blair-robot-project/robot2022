@@ -38,6 +38,7 @@ import frc.team449.ahrs.PIDAngleControllerBuilder;
 import frc.team449.components.RunningLinRegComponent;
 import frc.team449.drive.DriveSettingsBuilder;
 import frc.team449.drive.unidirectional.DriveUnidirectionalWithGyro;
+import frc.team449.drive.unidirectional.commands.NavXTurnToAngle;
 import frc.team449.drive.unidirectional.commands.UnidirectionalNavXDefaultDrive;
 import frc.team449.motor.builder.SparkMaxConfig;
 import frc.team449.multiSubsystem.FlywheelSubsystem;
@@ -65,6 +66,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static frc.team449.robot2022.DriveConstants.*;
 import static frc.team449.robot2022.cargo.CargoConstants.*;
@@ -469,14 +472,16 @@ public class FullMap {
         pidAngleControllerPrototype
             .maximumOutput(RobotController.getBatteryVoltage())
             .pid(AutoConstants.TURN_KP, AutoConstants.TURN_KI, AutoConstants.TURN_KD);
+    var testController = autoPidAngleController.build();
+    for (var angle : IntStream.range(0, 9).mapToObj(x -> x * 45).collect(Collectors.toList())) {
+      var saneAngle = 90 - angle;
+      new POVButton(driveJoystick, angle)
+          .whenPressed(new NavXTurnToAngle(saneAngle, 3, drive, testController));
+    }
     List<Command> autoStartupCommands =
         List.of(
-                StationFourBallHighAuto.createCommand(
-                    drive,
-                    cargo,
-                    autoPidAngleController,
-                    trajConfig,
-                    field)
+            StationFourBallHighAuto.createCommand(
+                    drive, cargo, autoPidAngleController, trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
             /*.andThen(cargo::stop, cargo)*/ );
 
@@ -496,7 +501,7 @@ public class FullMap {
         new CommandContainer(
             robotStartupCommands, autoStartupCommands, teleopStartupCommands, testStartupCommands);
 
-    var otherLoggables = List.of(driveDefaultCmd);
+    var otherLoggables = List.of(driveDefaultCmd, testController);
 
     return new RobotMap(subsystems, pdp, allCommands, otherLoggables, false);
   }
