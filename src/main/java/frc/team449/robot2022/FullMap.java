@@ -56,7 +56,7 @@ import frc.team449.robot2022.climber.Climber2022;
 import frc.team449.robot2022.climber.ClimberArm;
 import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.routines.AutoConstants;
-import frc.team449.robot2022.routines.StationFourBallHighAuto;
+import frc.team449.robot2022.routines.ThreeBallHighStraightAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
 import frc.team449.wrappers.PDP;
@@ -469,8 +469,14 @@ public class FullMap {
                     new CentripetalAccelerationConstraint(
                         AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL));
     var autoPidAngleController =
-        pidAngleControllerPrototype
+        new PIDAngleControllerBuilder()
+            .absoluteTolerance(0.01)
+            .onTargetBuffer(new Debouncer(1.5))
+            .minimumOutput(0)
             .maximumOutput(RobotController.getBatteryVoltage())
+            .loopTimeMillis(null)
+            .deadband(2)
+            .inverted(false)
             .pid(AutoConstants.TURN_KP, AutoConstants.TURN_KI, AutoConstants.TURN_KD);
     var testController = autoPidAngleController.build();
     for (var angle : IntStream.range(0, 9).mapToObj(x -> x * 45).collect(Collectors.toList())) {
@@ -480,7 +486,7 @@ public class FullMap {
     }
     List<Command> autoStartupCommands =
         List.of(
-            StationFourBallHighAuto.createCommand(
+            ThreeBallHighStraightAuto.createCommand(
                     drive, cargo, autoPidAngleController, trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
             /*.andThen(cargo::stop, cargo)*/ );

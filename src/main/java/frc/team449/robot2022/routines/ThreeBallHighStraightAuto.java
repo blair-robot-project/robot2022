@@ -17,10 +17,10 @@ import java.util.function.Supplier;
 
 public class ThreeBallHighStraightAuto {
   public static final Pose2d start = StationTwoBallHighStraightAuto.end;
-  public static final Pose2d mid = AutoUtils.pose(6.7, 2.10, 20);
-  public static final Pose2d midRev = AutoUtils.pose(mid.getX(), mid.getY(), 190);
-  public static final Pose2d ball = AutoUtils.pose(5.41, 1.76, 185);
-  public static final Pose2d ballReversed = AutoUtils.reverse(ball);
+  public static final Pose2d mid = AutoUtils.pose(7.47, 2.45, 75);
+  public static final Pose2d midRev = AutoUtils.withAngle(mid, 190);
+  public static final Pose2d ball = AutoUtils.pose(5.65, 1.98, -170.91);
+  public static final Pose2d ballReversed = AutoUtils.withAngle(ball, -5);
   public static final Pose2d end = start;
 
   public static Command createCommand(
@@ -35,7 +35,7 @@ public class ThreeBallHighStraightAuto {
     field.getObject("ThreeBallHighStraightReverse").setTrajectory(reverseTraj);
     return StationTwoBallHighStraightAuto.createCommand(
             drive, cargo, angleController, trajConfig, field)
-        .andThen(new RamseteControllerUnidirectionalDrive(drive, reverseTraj))
+        .andThen(new RamseteControllerUnidirectionalDrive(drive, reverseTraj, false))
         .andThen(
             new NavXTurnToAngle(midRev.getRotation().getDegrees(), 3, drive, angleController.get()))
         .andThen(
@@ -47,6 +47,7 @@ public class ThreeBallHighStraightAuto {
                 List.of(midRev, ball),
                 List.of(ballReversed, end),
                 ThreeBallHighStraightAuto.class.getSimpleName(),
-                field));
+                field,
+                false));
   }
 }

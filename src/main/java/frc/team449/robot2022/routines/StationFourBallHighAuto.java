@@ -53,6 +53,7 @@ public class StationFourBallHighAuto {
                 List.of(midTurnRev, ball3, ball4),
                 List.of(ball4Rev, end),
                 "StationFourBallAuto",
-                field));
+                field,
+                false));
   }
 }

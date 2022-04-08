@@ -36,6 +36,7 @@ public class StationTwoBallHighStraightAuto {
                 List.of(start, ball),
                 List.of(ballReversed, end),
                 StationTwoBallHighStraightAuto.class.getSimpleName(),
-                field));
+                field,
+                true));
   }
 }

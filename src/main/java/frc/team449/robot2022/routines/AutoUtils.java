@@ -142,7 +142,8 @@ public final class AutoUtils {
       @NotNull List<Pose2d> toBall,
       @NotNull List<Pose2d> fromBall,
       String name,
-      @Nullable Field2d field) {
+      @Nullable Field2d field,
+      boolean resetOdometry) {
     var toBallTraj =
         TrajectoryGenerator.generateTrajectory(toBall, trajConfig.get().setReversed(false));
     var fromBallTraj =
@@ -165,20 +166,20 @@ public final class AutoUtils {
 
     return new InstantCommand(cargo::deployIntake, cargo)
         .andThen(cargo::runIntake, cargo)
-        .andThen(new RamseteControllerUnidirectionalDrive(drive, toBallTraj))
+        .andThen(new RamseteControllerUnidirectionalDrive(drive, toBallTraj, resetOdometry))
         .andThen(
-            new NavXTurnToAngle(
-                fromBall.get(0).getRotation().getDegrees(),
+            NavXTurnToAngle.createRelative(
+                fromBall.get(0).getRotation().minus(toBall.get(0).getRotation()).getDegrees(),
                 AutoConstants.TURN_TIMEOUT,
                 drive,
                 angleController))
         .andThen(
-            new RamseteControllerUnidirectionalDrive(drive, fromBallTraj)
+            new RamseteControllerUnidirectionalDrive(drive, fromBallTraj, resetOdometry)
                 .alongWith(
                     new InstantCommand(cargo::deployHood, cargo)
                         .andThen(cargo::retractIntake, cargo)
                         .andThen(cargo::runIntake, cargo)
-                        .andThen(new WaitCommand(AutoConstants.SHOOT_HEADSTART))
+                        .andThen(new WaitCommand(shootWaitTime))
                         .andThen(AutoUtils.shootHighCommand(cargo))));
   }
 
