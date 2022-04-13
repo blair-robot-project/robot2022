@@ -1,5 +1,9 @@
 package frc.team449.robot2022.climber;
 
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team449.motor.WrappedMotor;
 import io.github.oblarg.oblog.Loggable;
@@ -14,12 +18,12 @@ import java.util.function.BooleanSupplier;
  * motor's encoder's position based on that
  */
 public class ClimberArm extends SubsystemBase implements Loggable {
-  private final @NotNull WrappedMotor motor;
+  protected final @NotNull WrappedMotor motor;
   private final @NotNull BooleanSupplier hallSensor;
   private final double sensorDifferentiationHeight;
   private final double midClimbLimit;
   private final double topLimit;
-  private double prevOutput = 0.0;
+  @Log private double prevOutput = 0.0;
   @Log.ToString private @NotNull ClimberArm.ClimberState state = ClimberState.BOTTOM;
 
   /**
@@ -43,6 +47,21 @@ public class ClimberArm extends SubsystemBase implements Loggable {
     this.midClimbLimit = midClimbLimit;
     this.topLimit = topLimit;
     this.hallSensor = hallSensor;
+  }
+
+  public static ClimberArm create(
+      @NotNull WrappedMotor motor,
+      double sensorDifferentiationHeight,
+      double midClimbLimit,
+      double topLimit,
+      @NotNull BooleanSupplier hallSensor,
+      @NotNull ElevatorSim elevatorSim,
+      @NotNull EncoderSim encSim) {
+    if (RobotBase.isReal()) {
+      return new ClimberArm(motor, sensorDifferentiationHeight, midClimbLimit, topLimit, hallSensor);
+    } else {
+      return new ClimberArmSim(motor, sensorDifferentiationHeight, midClimbLimit, topLimit, elevatorSim, encSim);
+    }
   }
 
   /** Whether this arm's reached the bottom. */
@@ -69,17 +88,17 @@ public class ClimberArm extends SubsystemBase implements Loggable {
         break;
       case BELOW_MID:
         if (sensorOn) {
-          this.state = prevOutput < 0 ? ClimberState.BOTTOM : ClimberState.MID_LIMIT;
+          this.state = prevOutput <= 0 ? ClimberState.BOTTOM : ClimberState.MID_LIMIT;
         }
         break;
       case MID_LIMIT:
         if (!sensorOn) {
-          this.state = prevOutput < 0 ? ClimberState.BELOW_MID : ClimberState.ABOVE_MID;
+          this.state = prevOutput <= 0 ? ClimberState.BELOW_MID : ClimberState.ABOVE_MID;
         }
         break;
       case ABOVE_MID:
         if (sensorOn) {
-          this.state = prevOutput < 0 ? ClimberState.MID_LIMIT : ClimberState.TOP;
+          this.state = prevOutput <= 0 ? ClimberState.MID_LIMIT : ClimberState.TOP;
         }
         break;
       case TOP:
@@ -103,6 +122,7 @@ public class ClimberArm extends SubsystemBase implements Loggable {
     this.prevOutput = output;
   }
 
+  @Log
   public double getHeight() {
     return motor.getPosition();
   }
@@ -113,10 +133,10 @@ public class ClimberArm extends SubsystemBase implements Loggable {
   }
 
   /**
-   * Inverted because WPILib is stupid
+   * Must be inverted because of how the sensors work
    */
   @Log
-  private boolean sensorOn() {
+  public boolean sensorOn() {
     return !this.hallSensor.getAsBoolean();
   }
 
@@ -134,5 +154,49 @@ public class ClimberArm extends SubsystemBase implements Loggable {
     ABOVE_MID,
     /** At the height limit for high/traversal climb */
     TOP
+  }
+
+  private static class ClimberArmSim extends ClimberArm {
+    private final ElevatorSim elevatorSim;
+    private final EncoderSim encSim;
+
+    /** How close to the sensor you have to be for it to turn on */
+    private static final double sensorTolerance = 0.03;
+
+    public ClimberArmSim(
+        @NotNull WrappedMotor motor,
+        double sensorDifferentiationHeight,
+        double midClimbLimit,
+        double topLimit,
+        @NotNull ElevatorSim elevatorSim,
+        @NotNull EncoderSim encSim) {
+      super(
+        motor,
+        sensorDifferentiationHeight,
+        midClimbLimit,
+        topLimit,
+        () -> {
+          var atBottom = Math.abs(encSim.getDistance()) < sensorTolerance;
+          var atMidLimit = Math.abs(encSim.getDistance() - midClimbLimit) < sensorTolerance;
+          var atTopLimit = Math.abs(encSim.getDistance() - topLimit) < sensorTolerance;
+          return !atBottom && !atMidLimit && !atTopLimit;
+        });
+      this.elevatorSim = elevatorSim;
+      this.encSim = encSim;
+    }
+
+    @Override
+    public void set(double output) {
+      super.set(output);
+      elevatorSim.setInput(output * RobotController.getBatteryVoltage());
+    }
+
+    @Override
+    public void periodic() {
+      elevatorSim.update(0.02);
+      encSim.setDistance(this.motor.encoder.unitToEncoder(elevatorSim.getPositionMeters()));
+      encSim.setRate(this.motor.encoder.unitToEncoder(elevatorSim.getVelocityMetersPerSecond()));
+      super.periodic();
+    }
   }
 }

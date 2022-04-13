@@ -22,10 +22,14 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -58,6 +62,7 @@ import frc.team449.robot2022.climber.ClimberLimitRumbleComponent;
 import frc.team449.robot2022.routines.AutoConstants;
 import frc.team449.robot2022.routines.StationFourBallLowAuto;
 import frc.team449.robot2022.routines.StationThreeBallHigh;
+import frc.team449.robot2022.routines.ThreeBallHighCurvyAuto;
 import frc.team449.robot2022.routines.ThreeBallHighStraightAuto;
 import frc.team449.updatable.Updater;
 import frc.team449.wrappers.Limelight;
@@ -336,36 +341,65 @@ public class FullMap {
             .setPostEncoderGearing(CLIMBER_GEARING)
             .setEnableBrakeMode(true);
 
+    var climberMech = new Mechanism2d(30, 30);
+    SmartDashboard.putData("Climber Sim", climberMech);
+    var leftArmMechRoot = climberMech.getRoot("LeftArmRoot", 10, 5);
+    var leftArmLigament = leftArmMechRoot.append(new MechanismLigament2d("LeftArm", 20, 90));
+    var rightArmMechRoot = climberMech.getRoot("RightArmRoot", 20, 5);
+    var rightArmLigament = rightArmMechRoot.append(new MechanismLigament2d("RightArm", 20, 90));
+    
+    var leftArmEncSim = new EncoderSim(new Encoder(15, 16));
+    var leftArmSim = new ElevatorSim(
+        DCMotor.getNeo550(1),
+        CLIMBER_GEARING,
+        CLIMBER_CARRIAGE_MASS,
+        CLIMBER_WINCH_RADIUS,
+        0,
+        CLIMBER_DISTANCE
+    );
     var leftArm =
-        new ClimberArm(
+        ClimberArm.create(
             armPrototype
                 .copy()
                 .setName("climber_left")
                 .setPort(LEFT_CLIMBER_MOTOR_PORT)
                 .setUnitPerRotation(CLIMBER_LEFT_UPR)
                 .setReverseOutput(true)
-                .createReal(),
+                .createRealOrSim(leftArmEncSim),
             CLIMBER_DIFFERENTIATION_HEIGHT,
             CLIMBER_MID_DISTANCE,
             CLIMBER_DISTANCE,
             RobotBase.isReal() && CLIMBER_HAS_SENSORS
                 ? new DigitalInput(CLIMBER_LEFT_SENSOR_CHANNEL)::get
-                : () -> true);
+                : () -> true,
+            leftArmSim,
+            leftArmEncSim);
+    var rightArmEncSim = new EncoderSim(new Encoder(17, 18));
+    var rightArmSim = new ElevatorSim(
+        DCMotor.getNeo550(1),
+        CLIMBER_GEARING,
+        CLIMBER_CARRIAGE_MASS,
+        CLIMBER_WINCH_RADIUS,
+        0,
+        CLIMBER_DISTANCE
+    );
     var rightArm =
-        new ClimberArm(
+        ClimberArm.create(
             armPrototype
                 .copy()
                 .setName("climber_right")
                 .setPort(RIGHT_CLIMBER_MOTOR_PORT)
                 .setUnitPerRotation(CLIMBER_RIGHT_UPR)
                 .setReverseOutput(false)
-                .createReal(),
+                .createRealOrSim(rightArmEncSim),
             CLIMBER_DIFFERENTIATION_HEIGHT,
             CLIMBER_MID_DISTANCE,
             CLIMBER_DISTANCE,
             RobotBase.isReal() && CLIMBER_HAS_SENSORS
                 ? new DigitalInput(CLIMBER_RIGHT_SENSOR_CHANNEL)::get
-                : () -> true);
+                : () -> true,
+            rightArmSim,
+            rightArmEncSim);
     var pivotPiston =
         new DoubleSolenoid(
             PCM_MODULE,
@@ -382,6 +416,13 @@ public class FullMap {
             CLIMBER_EXTEND_OUTPUT,
             CLIMBER_RETRACT_OUTPUT,
             CLIMBER_RETRACT_OUTPUT_SLOW);
+    Updater.subscribe(() -> {
+        var armAngle = climber.isStowed() ? 90 : 45;
+        leftArmLigament.setAngle(armAngle);
+        rightArmLigament.setAngle(armAngle);
+        leftArmLigament.setLength((0.2 + leftArm.getHeight()) * CLIMBER_MECH_SCALE);
+        rightArmLigament.setLength((0.2 + rightArm.getHeight()) * CLIMBER_MECH_SCALE);
+    });
 
     // PUT YOUR SUBSYSTEM IN HERE AFTER INITIALIZING IT
     var subsystems = List.of(drive, cargo, climber);
@@ -483,7 +524,7 @@ public class FullMap {
                         AutoConstants.AUTO_MAX_CENTRIPETAL_ACCEL));
     List<Command> autoStartupCommands =
         List.of(
-            StationThreeBallHigh.createCommand(
+            ThreeBallHighCurvyAuto.createCommand(
                     drive, cargo, /*fasterTurnAngleControllerProto, */trajConfig, field)
                 .andThen(new WaitCommand(AutoConstants.PAUSE_AFTER_SPIT))
             /*.andThen(cargo::stop, cargo)*/ );

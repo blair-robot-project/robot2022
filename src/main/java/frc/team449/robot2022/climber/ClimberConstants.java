@@ -1,5 +1,7 @@
 package frc.team449.robot2022.climber;
 
+import edu.wpi.first.math.util.Units;
+
 public final class ClimberConstants {
   /** Motor ports */
   public static final int RIGHT_CLIMBER_MOTOR_PORT = 6, LEFT_CLIMBER_MOTOR_PORT = 5;
@@ -32,6 +34,10 @@ public final class ClimberConstants {
   public static final double CLIMBER_RUMBLE_TOLERANCE = 0.1;
   /** Whether the hall effect sensors are plugged in */
   public static final boolean CLIMBER_HAS_SENSORS = true;
+  public static final double CLIMBER_CARRIAGE_MASS = 10; //Units.lbsToKilograms(125) / 2;
+  public static final double CLIMBER_WINCH_RADIUS = Units.inchesToMeters(5);
+  /** Every meter gets this many units in the Mechanism2d widget */
+  public static final double CLIMBER_MECH_SCALE = 20;
 
   private ClimberConstants() {}
 }

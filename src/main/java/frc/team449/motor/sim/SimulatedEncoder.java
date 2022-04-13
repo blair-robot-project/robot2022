@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SimulatedEncoder extends Encoder {
   public final @NotNull EncoderSim encSim;
+  private double positionOffset = 0.0;
 
   public SimulatedEncoder(
       @NotNull String name,
@@ -19,12 +20,12 @@ public final class SimulatedEncoder extends Encoder {
 
   @Override
   public void resetPosition(double pos) {
-    encSim.setDistance(pos);
+    this.positionOffset = unitToEncoder(pos) - encSim.getDistance();
   }
 
   @Override
   public double getPositionNative() {
-    return encSim.getDistance();
+    return encSim.getDistance() + positionOffset;
   }
 
   @Override
