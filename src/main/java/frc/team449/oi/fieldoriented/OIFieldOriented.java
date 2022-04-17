@@ -1,12 +1,13 @@
 package frc.team449.oi.fieldoriented;
 
-import frc.team449.oi.OI;
+import frc.team449.updatable.Updatable;
 import frc.team449.updatable.Updater;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 
 /** An OI that gives an absolute heading, relative to the field, and a velocity. */
-public abstract class OIFieldOriented implements OI {
+public abstract class OIFieldOriented implements Updatable, Loggable {
 
   /** The cached linear velocity. */
   private double cachedVel;

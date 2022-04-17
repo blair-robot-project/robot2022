@@ -1,14 +1,15 @@
 package frc.team449.oi.unidirectional;
 
 import edu.wpi.first.math.Pair;
-import frc.team449.oi.OI;
+import frc.team449.updatable.Updatable;
+import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * An OI to control a robot with a unidirectional drive that has a left and right side (e.g. not
  * meccanum, swerve, or holonomic)
  */
-public interface OIUnidirectional extends OI {
+public interface OIUnidirectional extends Updatable, Loggable {
 
   /**
    * The output to be given to the left and right sides of the drive.
